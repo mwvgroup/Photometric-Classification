@@ -1,0 +1,15 @@
+# OS Files
+*.DS_Store
+
+# IDE files
+.idea/
+
+# Dist Files and Byte Code
+.cache/
+.eggs/
+build/
+dist/
+*.pyc
+
+# SDSS Data
+sdss_data/
