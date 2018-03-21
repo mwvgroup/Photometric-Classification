@@ -12,4 +12,5 @@ dist/
 *.pyc
 
 # SDSS Data
-sdss_data/
+SMP_Data/
+master_data.txt
