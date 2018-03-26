@@ -30,9 +30,10 @@ def download_data(out_dir=FILE_DIR):
     if not os.path.isdir(out_dir):
         os.mkdir(out_dir)
 
-    data_files = ['master_data.txt', 'SMP_Data.tar.gz']
-    for fname in data_files:
+    data_files = ['master_data.txt', 'SMP_Data.tar.gz',
+                  'SDSS_dataRelease-snana.tar.gz']
 
+    for fname in data_files:
         url = requests.compat.urljoin(SDSS_URL, fname)
         response = requests.get(url)
         response.raise_for_status()
@@ -41,7 +42,7 @@ def download_data(out_dir=FILE_DIR):
         with open(path, 'wb') as ofile:
             ofile.write(response.content)
 
-        if path.endswith("tar.gz"):
+        if path.endswith(".tar.gz"):
             with tarfile.open(path, "r:gz") as data:
                 data.extractall(out_dir)
 
