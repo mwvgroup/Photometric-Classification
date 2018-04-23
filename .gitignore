@@ -4,14 +4,8 @@
 # IDE files
 .idea/
 
-# Dist Files and Byte Code
-.cache/
-.eggs/
-build/
-dist/
-*.pyc
-
 # SDSS Data
-SMP_Data/
-master_data.txt
-SDSS_dataRelease-snana/
+master_table.txt
+smp_data/
+snana_data/
+light_curves/
