@@ -113,19 +113,26 @@ def plot_all_cid_lightcurves(out_dir, verbose=False):
         os.mkdir(out_dir)
 
     master_table = Table.read(MASTR_PTH, format='ascii')
-    iterable = master_table['CID']
+    iterable = master_table
     if verbose:
         print('Plotting light curves:', flush=True)
         iterable = tqdm(iterable)
 
-    for cid in iterable:
+    for target in iterable:
+        cid = target['CID']
+
         for filter in ['u', 'g', 'r', 'i', 'z']:
             data_table = read_smp_table(cid, filter)
             plt.scatter(data_table['MJD'], data_table['MAG'], label=None, s=8)
             plt.plot(data_table['MJD'], data_table['MAG'],
                      label=filter, alpha=0.4)
 
-        plt.title('CID: {}'.format(cid))
+        if target['IAUName']:
+            title = ' CID: {} (SN {})'.format(cid, target['IAUName'])
+        else:
+            title = ' CID: {}'.format(cid)
+
+        plt.title(title)
         plt.ylabel('Magnitude (mag)')
         plt.xlabel('Date (MJD)')
         plt.legend()
