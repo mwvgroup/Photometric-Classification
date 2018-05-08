@@ -4,8 +4,9 @@
 # IDE files
 .idea/
 
+# Python build files
+*__pycache__*
+
 # SDSS Data
-master_table.txt
-smp_data/
-snana_data/
+data/
 light_curves/

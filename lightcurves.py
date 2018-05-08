@@ -12,14 +12,11 @@ from matplotlib import pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
-from . import _settings
+from _path_settings import *
 
 # Indices used by SDSS to label different photometric filters
 FILT_INDICES = {'u': 0, 'g': 1, 'r': 2, 'i': 3, 'z': 4}
-
-# SMP master table
-MASTER_TABLE = Table.read(_settings.MASTER_PTH, format='ascii')
-
+MASTER_TABLE = Table.read(MASTER_PTH, format='ascii')
 
 def cid_data(cid, filt_name):
     """Returns photometric data for a supernova candidate in a given filter
@@ -33,7 +30,7 @@ def cid_data(cid, filt_name):
     """
 
     file_name = 'SMP_{:06d}.dat'.format(cid)
-    file_path = os.path.join(_settings.SMP_DIR, file_name)
+    file_path = os.path.join(SMP_DIR, file_name)
     all_data = Table.read(file_path, format='ascii')
 
     col_names = all_data.meta['comments'][-1].split()
@@ -52,7 +49,7 @@ def _plot_master_row(cid_row, out_dir='./'):
     """Plot the light curve for a given entry in the master table
 
     Args:
-        cid_row (int): A row from the SMP master table
+        cid_row (row): A row from the SMP master table
         out_dir (str): The directory where output plots are written
     """
 
@@ -113,3 +110,7 @@ def plot_sn_light_curves(out_dir, verbose):
 
     for row in classified_objects:
         _plot_master_row(row, out_dir)
+
+
+if __name__ == '__main__':
+    plot_sn_light_curves('./light_curves', True)
