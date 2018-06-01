@@ -18,6 +18,7 @@ from _path_settings import *
 FILT_INDICES = {'u': 0, 'g': 1, 'r': 2, 'i': 3, 'z': 4}
 MASTER_TABLE = Table.read(MASTER_PTH, format='ascii')
 
+
 def cid_data(cid, filt_name):
     """Returns photometric data for a supernova candidate in a given filter
 
