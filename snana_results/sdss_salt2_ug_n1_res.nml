@@ -1,0 +1,41 @@
+! Note that CUTWIN_CID accepts only a fraction of the total.
+
+  &SNLCINP
+    VERSION_PHOTOMETRY = 'SDSS_allCandidates+BOSS'                   ! SN versions to read
+    TEXTFILE_PREFIX = 'sdss_salt2_ug_n1_res'                         ! Prefix for output ascii tables
+    KCOR_FILE   = 'SDSS/SDSS_Doi2010/kcor_SDSS_Bessell90_BD17.fits'  ! fits-formatted KCOR tables
+ 
+    PHOTFLAG_MSKREJ   = 1024       ! PHOTFLAG mask-bits to reject
+    NFIT_ITERATION    = 1          ! Number of fit iterations
+    INTERP_OPT        = 1          ! Type of interpolation
+    H0_REF            = 70.0       ! Reference H0
+    CUTWIN_CID        = 500, 23000 ! What object ID's to process
+    LDMP_SNFAIL       = F          ! (I) T => dump reason for each SN failure
+    ABORT_ON_NOEPOCHS = F
+    cutwin_redshift   = 0.0, 4.0  ! Windows of redshift values to accept
+    CUTWIN_RESTLAM    = 3000, 5500
+    ! SNCID_IGNORE     = 8706, 12108, 12854, 14637, 15483, 19795
+
+  &END
+ 
+    EXTERN_DATAFILE = 
+      'Andy_SDSS.fitres'
+      'Andy_SETe_MB.fitres'
+      'Andy_SETe_X0.fitres'
+
+ 
+  &FITINP
+    FITMODEL_NAME     = 'SALT2'
+
+    PRIOR_MJDSIG      = 100.
+    PRIOR_SHAPE_RANGE = -5.0, 5.0
+    PRIOR_SHAPE_SIGMA = 0.1
+
+    TREST_REJECT      = -15.0, 50.0
+    NGRID_PDF         = 0
+
+    FILTLIST_FIT      = 'ugri'
+    FILTLIST_DMPFUN   = ''
+    FITWIN_PROB       = 0.001, 1.1
+  &END
+  
