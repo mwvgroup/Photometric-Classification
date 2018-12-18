@@ -15,6 +15,7 @@ FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 MASTER_PTH = os.path.join(FILE_DIR, 'data/master_table.txt')  # Master table path
 SMP_DIR = os.path.join(FILE_DIR, 'data/SMP_Data/')            # SMP data files
 
+# Download data if not available
 for path in (MASTER_PTH, SMP_DIR):
     if not os.path.exists(path):
         print('SDSS data not found. Downloading it to ./data/')
@@ -36,7 +37,7 @@ def get_cid_data(cid, filter_name=None):
     """
 
     # Read in ascci data table for specified object
-    file_path = os.path.join(SMP_DIR, f'SMP_{cid:06d}.dat')
+    file_path = os.path.join(SMP_DIR, 'SMP_{:06d}.dat'.format(cid))
     all_data = Table.read(file_path, format='ascii')
 
     # Rename columns using header data from file

@@ -4,7 +4,6 @@
 """This document defines functions for downloading SDSS photometric data."""
 
 import os
-import shutil
 
 import requests
 import tarfile
@@ -18,7 +17,7 @@ def _download_file(url, out_path):
     Any top level .tar.gz archives will be automatically unzipped.
 
     Args:
-        f_name   (str): The name of the file to download
+        url      (str): URL of the file to download
         out_path (str): The path where the downloaded file should be written
     """
 

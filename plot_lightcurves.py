@@ -56,7 +56,7 @@ def plot_cid_light_curve(cid, out_dir):
         out_dir (str): The directory where output plots are written
     """
 
-    index = np.where(MASTER_TABLE['CID'] == f'{cid:06d}')[0][0]
+    index = np.where(MASTER_TABLE['CID'] == '{:06d}'.format(cid))[0][0]
     _plot_master_row(MASTER_TABLE[index], out_dir)
 
 
@@ -75,7 +75,7 @@ def plot_sn_light_curves(out_dir, verbose):
     classified_objects = MASTER_TABLE[is_classified]
 
     if verbose:
-        print('Plotting SN light curves ...', flush=True)
+        print('Plotting SN light curves ...')
         classified_objects = tqdm(classified_objects)
 
     for row in classified_objects:
