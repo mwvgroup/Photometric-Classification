@@ -11,3 +11,6 @@
 # SDSS Data
 data/
 light_curves/
+
+# Images
+*.pdf

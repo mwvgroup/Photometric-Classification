@@ -6,6 +6,7 @@
 import numpy as np
 import sncosmo
 from astropy.table import Table
+from matplotlib import pyplot as plt
 
 from parse_sn_data import get_cid_data, MASTER_TABLE
 
@@ -28,10 +29,11 @@ def iter_sncosmo_input():
 
         sncosmo_table['time'] = all_sn_data['MJD']
         sncosmo_table['band'] = map_index_to_band(all_sn_data['FILT'])
-        sncosmo_table['flux'] = all_sn_data['MAG']
-        sncosmo_table['fluxerr'] = all_sn_data['MERR']
+        sncosmo_table['flux'] = all_sn_data['FLUX']
+        sncosmo_table['fluxerr'] = all_sn_data['FLUXERR']
         sncosmo_table['zp'] = np.full(len(all_sn_data), 25)
         sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
+        sncosmo_table.meta = all_sn_data.meta
 
         yield sncosmo_table
 
@@ -53,4 +55,11 @@ def iter_fit_sdss_data():
         result, fitted_model = sncosmo.fit_lc(
             input_table, model, params_to_fit, bounds=bounds)
 
-        yield result
+        yield input_table, result, fitted_model
+
+
+if __name__ == '__main__':
+
+    for input_table, result, fitted_model in iter_fit_sdss_data():
+        sncosmo.plot_lc(input_table, model=fitted_model, errors=result.errors)
+        plt.show()
