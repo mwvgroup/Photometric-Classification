@@ -6,7 +6,8 @@ curves"""
 
 import os
 
-from tqdm import tqdm
+import snpy
+from matplotlib import pyplot as plt
 
 from parse_sn_data import MASTER_TABLE, get_cid_data
 
@@ -29,8 +30,9 @@ def write_snoopy_sdss_file(out_path, **kwargs):
                                        kwargs["ra"],
                                        kwargs["dec"])
 
-    for band in 'ugriz':
-        filter_name = 'sdss_' + band
+    # Todo: specify correct filters sdss ugriz
+    for band in 'ugri':
+        filter_name = band
         if band not in kwargs:
             continue
 
@@ -44,19 +46,21 @@ def write_snoopy_sdss_file(out_path, **kwargs):
         ofile.write(file_text)
 
 
-def create_snoopy_inputs(out_dir):
+def create_snoopy_inputs(out_dir, iter_paths=False):
     """Create snoopy input files for all SMP targets
 
     Files are named as <out_dir>/<target cid>.txt
 
     Args:
-        out_dir: The directory to write files to
+        out_dir     (str): The directory to write files to
+        iter_paths (bool): Whether to yield output file paths
     """
+
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
     print('Creating snoopy input files.')
-    for cid in tqdm(MASTER_TABLE['CID']):
+    for cid in MASTER_TABLE['CID']:
         out_path = os.path.join(out_dir, '{}.txt'.format(cid))
 
         cid_data = get_cid_data(cid)
@@ -83,5 +87,23 @@ def create_snoopy_inputs(out_dir):
             z=z
         )
 
+        if iter_paths:
+            yield out_path
+
+
 if __name__ == '__main__':
-    create_snoopy_inputs('./snoopy_inputs')
+
+    for path in create_snoopy_inputs('./snoopy/inputs', iter_paths=True):
+        fig_path = path.replace('inputs', 'figs').replace('.txt', '.pdf')
+
+        try:
+            s = snpy.get_sn(path)
+            s.choose_model('max_model')
+            s.fit()
+            s.plot()
+
+            plt.title(path)
+            plt.savefig(fig_path)
+
+        except (ValueError, RuntimeError, TypeError) as e:
+            print path, e
