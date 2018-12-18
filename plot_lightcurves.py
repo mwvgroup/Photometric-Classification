@@ -7,43 +7,11 @@ the SDSS-II SN Catalog Data Release.
 
 import os
 
-from astropy.table import Table
 from matplotlib import pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
-from _path_settings import *
-
-# Indices used by SDSS to label different photometric filters
-FILT_INDICES = {'u': 0, 'g': 1, 'r': 2, 'i': 3, 'z': 4}
-MASTER_TABLE = Table.read(MASTER_PTH, format='ascii')
-
-
-def cid_data(cid, filt_name):
-    """Returns photometric data for a supernova candidate in a given filter
-
-    Args:
-        cid       (int): The Candidate ID of the desired object
-        filt_name (str): The desired filter (u, g, r, i, z)
-
-    Returns:
-        An astropy table of photometric data for the given candidate ID
-    """
-
-    file_name = 'SMP_{:06d}.dat'.format(cid)
-    file_path = os.path.join(SMP_DIR, file_name)
-    all_data = Table.read(file_path, format='ascii')
-
-    col_names = all_data.meta['comments'][-1].split()
-    for i, name in enumerate(col_names):
-        all_data['col{}'.format(i + 1)].name = name
-
-    filt_index = FILT_INDICES[filt_name]
-    indices = np.where(all_data['FILT'] == filt_index)
-    indexed_data = all_data[indices]
-    indexed_data.remove_column('FILT')
-
-    return indexed_data
+from parse_sn_data import MASTER_TABLE, get_cid_data
 
 
 def _plot_master_row(cid_row, out_dir='./'):
@@ -55,10 +23,12 @@ def _plot_master_row(cid_row, out_dir='./'):
     """
 
     for filter_name in ['u', 'g', 'r', 'i', 'z']:
-        data_table = cid_data(cid_row['CID'], filter_name)
+        data_table = get_cid_data(cid_row['CID'], filter_name)
         plt.scatter(data_table['MJD'], data_table['MAG'], label=None, s=8)
-        plt.plot(data_table['MJD'], data_table['MAG'],
-                 label=filter_name, alpha=0.4)
+        plt.plot(data_table['MJD'],
+                 data_table['MAG'],
+                 label=filter_name,
+                 alpha=0.4)
 
     if cid_row['IAUName']:
         title = 'SN {} (CID {}, Type {})'.format(
@@ -86,8 +56,7 @@ def plot_cid_light_curve(cid, out_dir):
         out_dir (str): The directory where output plots are written
     """
 
-    cid_str = '{:06d}'.format(cid)
-    index = np.where(MASTER_TABLE['CID'] == cid_str)[0][0]
+    index = np.where(MASTER_TABLE['CID'] == f'{cid:06d}')[0][0]
     _plot_master_row(MASTER_TABLE[index], out_dir)
 
 
