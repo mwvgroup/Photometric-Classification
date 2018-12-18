@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+
+"""This document defines functions for parsing data from the SDSS-II SN Catalog
+Data Release.
+"""
+
 import os
 
 from astropy.table import Table
