@@ -30,8 +30,10 @@ def _download_file(url, out_path):
         temp_path = out_path + '.temp'
         out_dir = os.path.dirname(out_path)
 
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
     # Download data
-    os.makedirs(out_dir, exist_ok=True)
     response = requests.get(url)
     response.raise_for_status()
     with open(temp_path, 'wb') as ofile:

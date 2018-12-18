@@ -50,6 +50,9 @@ def get_cid_data(cid, filter_name=None):
         all_data = all_data[all_data['FILT'] == filter_index]
         all_data.remove_column('FILT')
 
-    redshift = MASTER_TABLE[MASTER_TABLE['CID'] == cid]
-    all_data.meta['redshift'] = redshift
+    meta_data = MASTER_TABLE[MASTER_TABLE['CID'] == cid]
+    all_data.meta['redshift'] = meta_data['zspecHelio'][0]
+    all_data.meta['ra'] = meta_data['RA'][0]
+    all_data.meta['dec'] = meta_data['DEC'][0]
+
     return all_data
