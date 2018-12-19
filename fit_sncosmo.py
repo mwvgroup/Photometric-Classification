@@ -93,6 +93,10 @@ def fit_sdss_data(out_dir, model_name='salt2'):
     # Store warnings and errors
     logging.captureWarnings(True)
     log_path = os.path.join(out_dir, 'summary.log')
+
+    if os.path.exists(log_path):
+        os.remove(log_path)
+
     logging.basicConfig(filename=log_path, level=logging.WARNING)
 
     # Table to store summary of fit results

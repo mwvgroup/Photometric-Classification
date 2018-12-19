@@ -5,8 +5,10 @@
 curves"""
 
 import os
+import logging
 
 import snpy
+from astropy.table import Table
 from matplotlib import pyplot as plt
 
 from parse_sn_data import MASTER_TABLE, get_cid_data
@@ -30,9 +32,8 @@ def write_snoopy_sdss_file(out_path, **kwargs):
                                        kwargs["ra"],
                                        kwargs["dec"])
 
-    # Todo: specify correct filters sdss ugriz
-    for band in 'ugri':
-        filter_name = band
+    for band in 'ugriz':
+        filter_name = band + '_s'
         if band not in kwargs:
             continue
 
@@ -59,7 +60,6 @@ def create_snoopy_inputs(out_dir, iter_paths=False):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
-    print('Creating snoopy input files.')
     for cid in MASTER_TABLE['CID']:
         out_path = os.path.join(out_dir, '{}.txt'.format(cid))
 
@@ -91,14 +91,37 @@ def create_snoopy_inputs(out_dir, iter_paths=False):
             yield out_path
 
 
-if __name__ == '__main__':
+def fit_sdss_data(out_dir, model_name='color_model'):
 
-    for path in create_snoopy_inputs('./snoopy/inputs', iter_paths=True):
+    # Store warnings and errors
+    logging.captureWarnings(True)
+    log_path = os.path.join(out_dir, 'summary.log')
+
+    if os.path.exists(log_path):
+        os.remove(log_path)
+
+    logging.basicConfig(filename=log_path, level=logging.WARNING)
+
+    # Table to store summary of fit results
+    names = ['cid', 'class', 'z', 'fit_z', 't0', 'x0', 'x1', 'c', 'chi', 'dof', 'message']
+    out_table = Table(names=names, dtype=[object for _ in names])
+    out_path = os.path.join(out_dir, 'summary.csv')
+    out_table.write(out_path, overwrite=True)
+
+    # Make output directories
+    inputs_dir = os.path.join(out_dir, 'inputs')
+    fig_dir = os.path.join(out_dir, 'figs')
+    for directory in (inputs_dir, fig_dir):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+    # Fit smp data with snoopy
+    for path in create_snoopy_inputs(inputs_dir, iter_paths=True):
         fig_path = path.replace('inputs', 'figs').replace('.txt', '.pdf')
 
         try:
             s = snpy.get_sn(path)
-            s.choose_model('max_model')
+            s.choose_model(model_name)
             s.fit()
             s.plot()
 
@@ -106,4 +129,8 @@ if __name__ == '__main__':
             plt.savefig(fig_path)
 
         except (ValueError, RuntimeError, TypeError) as e:
-            print path, e
+            logging.error('{}: {}\n'.format(path, e))
+
+
+if __name__ == '__main__':
+    fit_sdss_data('./snoopy_results')
