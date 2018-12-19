@@ -1,0 +1,784 @@
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssz(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssu, sdssz, sdssg(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+ERROR:root:682: No data points with S/N > 5.0. Initial guessing failed.
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssu(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/models.py:697: RuntimeWarning: overflow encountered in power
+  10. ** (-0.4 * self._colorlaw(wave) * self._parameters[2]))
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/models.py:697: RuntimeWarning: invalid value encountered in multiply
+  10. ** (-0.4 * self._colorlaw(wave) * self._parameters[2]))
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/numpy/core/fromnumeric.py:83: RuntimeWarning: invalid value encountered in reduce
+  return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+
+ERROR:root:702: result is NaN
+User function arguments:
+     z = +0.578379
+    t0 = +53551.856871
+    x0 = -451636296.646523
+    x1 = -168.253318
+     c = -7011.983604
+
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssz(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssg, sdssu, sdssz(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+ERROR:root:682: No data points with S/N > 5.0. Initial guessing failed.
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssu(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/models.py:697: RuntimeWarning: overflow encountered in power
+  10. ** (-0.4 * self._colorlaw(wave) * self._parameters[2]))
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/models.py:697: RuntimeWarning: invalid value encountered in multiply
+  10. ** (-0.4 * self._colorlaw(wave) * self._parameters[2]))
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/numpy/core/fromnumeric.py:83: RuntimeWarning: invalid value encountered in reduce
+  return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+
+ERROR:root:702: result is NaN
+User function arguments:
+     z = +0.578379
+    t0 = +53551.856871
+    x0 = -451636296.646523
+    x1 = -168.253318
+     c = -7011.983604
+
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssg, sdssu(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+ERROR:root:714: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:718: result is NaN
+User function arguments:
+     z = +0.161636
+    t0 = +53723.774155
+    x0 = -9471328.296238
+    x1 = +8.675547
+     c = -99.693284
+
+
+ERROR:root:719: result is NaN
+User function arguments:
+     z = +0.485763
+    t0 = +53593.690632
+    x0 = +15317036.919485
+    x1 = -17.204343
+     c = -116.528282
+
+
+ERROR:root:720: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:724: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:728: result is NaN
+User function arguments:
+     z = +0.101256
+    t0 = +53726.240169
+    x0 = -796223.801933
+    x1 = +2.946398
+     c = -119.399751
+
+
+WARNING:py.warnings:/Users/daniel/Github/SDSS-Classification/fit_sncosmo.py:74: UserWarning: Could not plot figure: cannot convert float NaN to integer
+  warn('Could not plot figure: {}'.format(e))
+
+ERROR:root:750: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:766: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:769: No data points with S/N > 5.0. Initial guessing failed.
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssg, sdssz(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/models.py:162: RuntimeWarning: overflow encountered in multiply
+  fsum *= zpnorm
+
+ERROR:root:774: result is NaN
+User function arguments:
+     z = +0.093331
+    t0 = +53576.822629
+    x0 = -1612074.404427
+    x1 = +22.445196
+     c = -115.111802
+
+
+ERROR:root:789: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:796: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:803: result is NaN
+User function arguments:
+     z = +0.689866
+    t0 = +53693.068775
+    x0 = -3292784264.811970
+    x1 = +170.397526
+     c = -12803.997582
+
+
+ERROR:root:819: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:830: result is NaN
+User function arguments:
+     z = +0.387223
+    t0 = +53598.149646
+    x0 = -39917125.081896
+    x1 = -49.135175
+     c = -214.044440
+
+
+ERROR:root:831: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:840: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:843: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:854: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:856: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:870: result is NaN
+User function arguments:
+     z = +0.666893
+    t0 = +53737.427126
+    x0 = +2305308.552538
+    x1 = +45.405297
+     c = -193.196921
+
+
+ERROR:root:885: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:918: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:923: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:926: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:927: No data points with S/N > 5.0. Initial guessing failed.
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/models.py:117: RuntimeWarning: invalid value encountered in multiply
+  return np.sum(wave * trans * f, axis=1) * dwave / HC_ERG_AA
+
+ERROR:root:930: result is NaN
+User function arguments:
+     z = +0.290116
+    t0 = +53728.748848
+    x0 = +0.374505
+    x1 = +83.844534
+     c = +908.143772
+
+
+ERROR:root:934: result is NaN
+User function arguments:
+     z = +0.675110
+    t0 = +53574.880489
+    x0 = +18401037.744506
+    x1 = +2.881023
+     c = -782.505988
+
+
+ERROR:root:955: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:976: result is NaN
+User function arguments:
+     z = +0.514778
+    t0 = +53696.655686
+    x0 = +906999.669543
+    x1 = -140.313373
+     c = -509.823768
+
+
+ERROR:root:977: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:982: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:991: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:992: No data points with S/N > 5.0. Initial guessing failed.
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/models.py:697: RuntimeWarning: overflow encountered in multiply
+  10. ** (-0.4 * self._colorlaw(wave) * self._parameters[2]))
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/models.py:117: RuntimeWarning: overflow encountered in multiply
+  return np.sum(wave * trans * f, axis=1) * dwave / HC_ERG_AA
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/numpy/core/_methods.py:32: RuntimeWarning: invalid value encountered in reduce
+  return umr_minimum(a, axis, None, out, keepdims, initial)
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/numpy/core/_methods.py:28: RuntimeWarning: invalid value encountered in reduce
+  return umr_maximum(a, axis, None, out, keepdims, initial)
+
+ERROR:root:1027: No data points with S/N > 5.0. Initial guessing failed.
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssg, sdssr, sdssu(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+ERROR:root:1038: result is NaN
+User function arguments:
+     z = +0.205517
+    t0 = +53728.036000
+    x0 = +1704742039.632052
+    x1 = -51.474128
+     c = +7191.725180
+
+
+ERROR:root:1039: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1040: result is NaN
+User function arguments:
+     z = +0.297390
+    t0 = +53575.760533
+    x0 = +30344.515600
+    x1 = -51.760228
+     c = -365.322914
+
+
+ERROR:root:1114: result is NaN
+User function arguments:
+     z = +0.026478
+    t0 = +53683.942555
+    x0 = -338952296.421539
+    x1 = -3603.670690
+     c = -99065.209675
+
+
+ERROR:root:1125: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1133: result is NaN
+User function arguments:
+     z = +0.710028
+    t0 = +53564.811659
+    x0 = +808911.396314
+    x1 = +164.279570
+     c = -1331.292820
+
+
+ERROR:root:1134: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1156: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1165: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1172: No data points with S/N > 5.0. Initial guessing failed.
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssg, sdssu, sdssr, sdssi(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+ERROR:root:1174: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1175: result is NaN
+User function arguments:
+     z = +0.700451
+    t0 = +53668.768685
+    x0 = +36737306.092700
+    x1 = +75.767681
+     c = -2273.680111
+
+
+ERROR:root:1194: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1196: result is NaN
+User function arguments:
+     z = +0.370508
+    t0 = +53648.080482
+    x0 = -379818.823809
+    x1 = -27.850179
+     c = -97.260664
+
+
+ERROR:root:1200: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1201: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1204: result is NaN
+User function arguments:
+     z = +0.455709
+    t0 = +53620.882551
+    x0 = -64177.472845
+    x1 = -25.382040
+     c = -218.388708
+
+
+ERROR:root:1211: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1212: No data points with S/N > 5.0. Initial guessing failed.
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssg(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+ERROR:root:1224: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1227: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1230: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1235: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1236: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1238: result is NaN
+User function arguments:
+     z = +0.588423
+    t0 = +53560.628989
+    x0 = +17181625.041967
+    x1 = +34.701629
+     c = -1323.948219
+
+
+ERROR:root:1244: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1245: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1261: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1269: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1272: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1274: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1275: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1286: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1287: No bands in data overlap the model.
+
+ERROR:root:1310: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1323: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1332: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1343: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1356: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1366: No data points with S/N > 5.0. Initial guessing failed.
+
+WARNING:py.warnings:/anaconda3/envs/sdss_classification_2.7/lib/python2.7/site-packages/sncosmo/fitting.py:160: RuntimeWarning: Dropping following bands from data: sdssg, sdssz, sdssu(out of model wavelength range)
+  "(out of model wavelength range)", RuntimeWarning)
+
+ERROR:root:1368: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1370: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1379: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1387: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1397: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1401: result is NaN
+User function arguments:
+     z = +0.704488
+    t0 = +53646.442417
+    x0 = +0.033550
+    x1 = +29.592894
+     c = -264.164320
+
+
+ERROR:root:1406: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1407: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1410: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1414: result is NaN
+User function arguments:
+     z = +0.421985
+    t0 = +53558.743941
+    x0 = -28124.228816
+    x1 = -30.204750
+     c = -168.030696
+
+
+ERROR:root:1418: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1423: result is NaN
+User function arguments:
+     z = +0.341782
+    t0 = +53638.210109
+    x0 = -350669.962241
+    x1 = -29.292704
+     c = -305.243221
+
+
+ERROR:root:1424: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1427: result is NaN
+User function arguments:
+     z = +0.340249
+    t0 = +53618.851399
+    x0 = -26484307.408049
+    x1 = -46.287692
+     c = -203.679637
+
+
+ERROR:root:1430: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1431: result is NaN
+User function arguments:
+     z = +0.275318
+    t0 = +53662.242821
+    x0 = -906809.242770
+    x1 = +349.135711
+     c = +923.643024
+
+
+ERROR:root:1437: result is NaN
+User function arguments:
+     z = +0.510152
+    t0 = +53566.297312
+    x0 = -261074.142936
+    x1 = -21.614969
+     c = -419.029470
+
+
+ERROR:root:1442: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1444: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1450: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1462: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1475: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1476: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1479: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1484: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1485: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1489: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1497: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1503: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1506: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1507: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1532: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1546: result is NaN
+User function arguments:
+     z = +0.036905
+    t0 = +53591.451992
+    x0 = +2624678.775082
+    x1 = +30.487924
+     c = +599.895230
+
+
+ERROR:root:1547: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1573: result is NaN
+User function arguments:
+     z = +0.493158
+    t0 = +53735.097436
+    x0 = -8266787.554626
+    x1 = +6.851830
+     c = -797.831374
+
+
+ERROR:root:1591: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1598: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1603: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1605: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1615: result is NaN
+User function arguments:
+     z = +0.082675
+    t0 = +53574.754990
+    x0 = +422300073234593.500000
+    x1 = +5624.215074
+     c = +3450656.686755
+
+
+ERROR:root:1623: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1624: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1627: result is NaN
+User function arguments:
+     z = +0.338934
+    t0 = +53681.875087
+    x0 = +593401.167148
+    x1 = +4.150057
+     c = -88.150662
+
+
+ERROR:root:1630: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1633: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1649: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1663: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1676: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1678: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1680: result is NaN
+User function arguments:
+     z = +0.257604
+    t0 = +53583.134878
+    x0 = +5008979.431920
+    x1 = +21.830284
+     c = +694.604124
+
+
+ERROR:root:1687: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1691: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1695: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1708: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1709: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1729: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1745: result is NaN
+User function arguments:
+     z = +0.589572
+    t0 = +53538.053173
+    x0 = -22758284.381042
+    x1 = -69.650420
+     c = -97.532588
+
+
+ERROR:root:1751: result is NaN
+User function arguments:
+     z = +0.774827
+    t0 = +53718.679523
+    x0 = -504308129.714072
+    x1 = -323.162249
+     c = +2713.602440
+
+
+ERROR:root:1755: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1760: result is NaN
+User function arguments:
+     z = +0.394171
+    t0 = +53610.831823
+    x0 = -0.000190
+    x1 = +8.460939
+     c = -72.909497
+
+
+ERROR:root:1763: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1764: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1767: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1768: result is NaN
+User function arguments:
+     z = +0.008866
+    t0 = +53733.179149
+    x0 = +69887515.826642
+    x1 = +88.569967
+     c = +1327.903686
+
+
+ERROR:root:1770: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1774: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1780: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1785: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1796: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1822: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1845: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1846: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1856: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1858: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1871: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1881: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1909: result is NaN
+User function arguments:
+     z = +0.485070
+    t0 = +53718.111061
+    x0 = +97354506.011992
+    x1 = +1.137417
+     c = +2517.482773
+
+
+ERROR:root:1910: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1931: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1940: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1965: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1972: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1982: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1983: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:1987: result is NaN
+User function arguments:
+     z = +0.624780
+    t0 = +53555.549106
+    x0 = +3873906.215036
+    x1 = +6.245656
+     c = -113.446257
+
+
+ERROR:root:1994: No bands in data overlap the model.
+
+ERROR:root:1996: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2009: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2037: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2039: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2050: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2056: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2067: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2068: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2075: result is NaN
+User function arguments:
+     z = +0.737870
+    t0 = +53560.259346
+    x0 = -10853227.332153
+    x1 = +210.978225
+     c = +1248.787910
+
+
+ERROR:root:2099: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2106: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2114: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2117: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2123: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2139: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2150: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2164: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2170: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2175: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2179: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2184: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2223: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2225: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2230: result is NaN
+User function arguments:
+     z = +0.113323
+    t0 = +53713.781564
+    x0 = -104996643.854050
+    x1 = +19.566510
+     c = -677.810077
+
+
+ERROR:root:2231: result is NaN
+User function arguments:
+     z = +0.988375
+    t0 = +53551.823626
+    x0 = +327194649.593597
+    x1 = +11.255300
+     c = -496.109152
+
+
+ERROR:root:2244: result is NaN
+User function arguments:
+     z = +0.684837
+    t0 = +53546.154763
+    x0 = -27601160.285817
+    x1 = -83.482645
+     c = -1984.118131
+
+
+ERROR:root:2250: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2258: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2261: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2263: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2270: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2271: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2273: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2288: result is NaN
+User function arguments:
+     z = +0.108875
+    t0 = +53669.615218
+    x0 = +0.012250
+    x1 = +1.314291
+     c = -150.741961
+
+
+ERROR:root:2291: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2320: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2321: result is NaN
+User function arguments:
+     z = +0.706996
+    t0 = +53639.150224
+    x0 = +297187089.178382
+    x1 = +9.094924
+     c = -472.639914
+
+
+ERROR:root:2335: No data points with S/N > 5.0. Initial guessing failed.
+
+ERROR:root:2346: No data points with S/N > 5.0. Initial guessing failed.
+

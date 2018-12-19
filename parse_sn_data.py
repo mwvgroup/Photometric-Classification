@@ -54,5 +54,6 @@ def get_cid_data(cid, filter_name=None):
     all_data.meta['redshift'] = meta_data['zspecHelio'][0]
     all_data.meta['ra'] = meta_data['RA'][0]
     all_data.meta['dec'] = meta_data['DEC'][0]
+    all_data.meta['classification'] = meta_data['Classification'][0]
 
     return all_data
