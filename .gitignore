@@ -12,5 +12,5 @@
 data/
 light_curves/
 
-# Images
-*.pdf
+# Jupyter Checkpoints
+*.ipynb_checkpoints
