@@ -105,7 +105,7 @@ def fit_sdss_data(out_dir, model_name='salt2', bands=None,
             result = run_fit_for_object(input_table, model_name, params_to_fit)
 
         except (sncosmo.fitting.DataQualityError, RuntimeError, ValueError) as e:
-            new_row = np.full(len(out_table.colnames), np.NAN).tolist()
+            new_row = np.full(len(out_table.colnames) - 1, np.NAN).tolist()
             new_row.append(e)
 
         else:
@@ -125,21 +125,28 @@ def fit_sdss_data(out_dir, model_name='salt2', bands=None,
 
 
 if __name__ == '__main__':
-    # Normal type Ia model
+    print('Fitting type Ia model in ugriz')
     fit_sdss_data('./sncosmo_results/snia_all_bands')
+
+    print('Fitting type Ia model in ug')
     fit_sdss_data('./sncosmo_results/snia_ug', bands=['sdssu', 'sdssg'])
+
+    print('Fitting type Ia model in riz')
     fit_sdss_data('./sncosmo_results/snia_riz', bands=['sdssr', 'sdssi', 'sdssz'])
 
     # 91bg model
+    print('Fitting 91bg model in ugriz')
     fit_sdss_data('./sncosmo_results/91bg_all_bands',
                   model_name='nugent-sn91bg',
                   params_to_fit=['t0', 'amplitude'])
 
+    print('Fitting 91bg model in ug')
     fit_sdss_data('./sncosmo_results/91bg_ug',
                   model_name='nugent-sn91bg',
                   bands=['sdssu', 'sdssg'],
                   params_to_fit=['t0', 'amplitude'])
 
+    print('Fitting 91bg model in riz')
     fit_sdss_data('./sncosmo_results/91bg_riz',
                   model_name='nugent-sn91bg',
                   bands=['sdssr', 'sdssi', 'sdssz'],
