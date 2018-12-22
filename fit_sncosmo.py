@@ -101,16 +101,18 @@ def fit_sdss_data(out_dir, model_name='salt2', bands=None,
     out_path = os.path.join(out_dir, 'summary.csv')
 
     for input_table in iter_sncosmo_input(bands=bands):
+        z_was_fit = int(input_table.meta['redshift'] == -9)
+        new_row = [input_table.meta['cid'], input_table.meta['classification'], z_was_fit]
+
         try:
             result = run_fit_for_object(input_table, model_name, params_to_fit)
 
         except (sncosmo.fitting.DataQualityError, RuntimeError, ValueError) as e:
-            new_row = np.full(len(out_table.colnames) - 1, np.NAN).tolist()
+            mask = np.full(len(out_table.colnames) - 4, np.NAN).tolist()
+            new_row.extend(mask)
             new_row.append(e)
 
         else:
-            z_was_fit = int(input_table.meta['redshift'] == -9)
-            new_row = [input_table.meta['cid'], input_table.meta['classification'], z_was_fit]
             new_row.extend(result.parameters)
             if 'z' not in result.errors:
                 new_row.append(np.NAN)
