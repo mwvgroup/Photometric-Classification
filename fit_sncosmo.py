@@ -15,7 +15,7 @@ from parse_sn_data import get_cid_data, MASTER_TABLE
 
 @np.vectorize
 def map_index_to_band(i):
-    return 'sdss' + 'ugriz'[i]
+    return 'blue_sdss' + 'ugriz'[i]
 
 
 def iter_sncosmo_input(bands=None):
@@ -25,10 +25,14 @@ def iter_sncosmo_input(bands=None):
         An astropy table formatted for use with SNCosmo
     """
 
-    for cid in tqdm(MASTER_TABLE['CID']):
-        sncosmo_table = Table()
+    has_redshift = MASTER_TABLE['zspecHelio'] != -9
+    iter_data = MASTER_TABLE[has_redshift]
+    for cid in tqdm(iter_data['CID']):
         all_sn_data = get_cid_data(cid)
+        if all_sn_data.meta['redshift'] == -9:
+            continue
 
+        sncosmo_table = Table()
         sncosmo_table['time'] = all_sn_data['MJD']
         sncosmo_table['band'] = map_index_to_band(all_sn_data['FILT'])
         sncosmo_table['flux'] = all_sn_data['FLUX']
@@ -60,18 +64,18 @@ def run_fit_for_object(input_table, model_name, params_to_fit):
     # Configure model for fitting
     model = sncosmo.Model(source=model_name)
     z = input_table.meta['redshift']
-    params_to_fit = list(params_to_fit)
-    if z == -9.:
-        params_to_fit.insert(0, 'z')
-        bounds = {'z': (0.002, 1)}
+    model.set(z=0)
 
-    else:
-        model.set(z=z)
-        bounds = None
+    # Register custom band-passes
+    for filter in 'ugriz':
+        band = sncosmo.get_bandpass('sdss' + filter)
+        wave = band.wave / (1 + z)
+        custom_band = sncosmo.Bandpass(wave, band.trans, name='blue_sdss' + filter)
+        sncosmo.registry.register(custom_band, force=True)
 
     # Run fit
     result, fitted_model = sncosmo.fit_lc(
-        input_table, model, params_to_fit, bounds=bounds)
+        input_table, model, params_to_fit, bounds=None)
 
     return result
 
@@ -130,11 +134,13 @@ if __name__ == '__main__':
     print('Fitting type Ia model in ugriz')
     fit_sdss_data('./sncosmo_results/snia_all_bands')
 
-    print('Fitting type Ia model in ug')
-    fit_sdss_data('./sncosmo_results/snia_ug', bands=['sdssu', 'sdssg'])
+    # print('Fitting type Ia model in ug')
+    # fit_sdss_data('./sncosmo_results/snia_ug',
+    #               bands=['blue_sdssu', 'blue_sdssg'])
 
-    print('Fitting type Ia model in riz')
-    fit_sdss_data('./sncosmo_results/snia_riz', bands=['sdssr', 'sdssi', 'sdssz'])
+    # print('Fitting type Ia model in riz')
+    # fit_sdss_data('./sncosmo_results/snia_riz',
+    #               bands=['blue_sdssr', 'blue_sdssi', 'blue_sdssz'])
 
     # 91bg model
     print('Fitting 91bg model in ugriz')
@@ -142,16 +148,16 @@ if __name__ == '__main__':
                   model_name='nugent-sn91bg',
                   params_to_fit=['t0', 'amplitude'])
 
-    print('Fitting 91bg model in ug')
-    fit_sdss_data('./sncosmo_results/91bg_ug',
-                  model_name='nugent-sn91bg',
-                  bands=['sdssu', 'sdssg'],
-                  params_to_fit=['t0', 'amplitude'])
+    # print('Fitting 91bg model in ug')
+    # fit_sdss_data('./sncosmo_results/91bg_ug',
+    #               model_name='nugent-sn91bg',
+    #               bands=['blue_sdssu', 'blue_sdssg'],
+    #               params_to_fit=['t0', 'amplitude'])
 
-    print('Fitting 91bg model in riz')
-    fit_sdss_data('./sncosmo_results/91bg_riz',
-                  model_name='nugent-sn91bg',
-                  bands=['sdssr', 'sdssi', 'sdssz'],
-                  params_to_fit=['t0', 'amplitude'])
+    # print('Fitting 91bg model in riz')
+    # fit_sdss_data('./sncosmo_results/91bg_riz',
+    #               model_name='nugent-sn91bg',
+    #               bands=['blue_sdssr', 'blue_sdssi', 'blue_sdssz'],
+    #               params_to_fit=['t0', 'amplitude'])
 
 
