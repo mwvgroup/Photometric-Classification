@@ -11,7 +11,7 @@ from astropy.table import Table
 from tqdm import tqdm
 
 import sys; sys.path.append('../')
-from parse_sn_data import get_cid_data,master_table
+from parse_sn_data import get_cid_data, master_table
 
 
 @np.vectorize
@@ -49,6 +49,7 @@ def keep_restframe_bands(data_table, bands):
     """
 
     # Effective wavelengths for SDSS filters ugriz in angstroms
+    # https://www.sdss.org/instruments/camera/#Filters
     effective_lambda = np.array([3551, 4686, 6166, 7480, 8932])
 
     # Rest frame effective wavelengths for each observation
@@ -65,7 +66,7 @@ def keep_restframe_bands(data_table, bands):
     return data_table[indices]
 
 
-def iter_sncosmo_input(bands=None):
+def iter_sncosmo_input(bands=None, skip_types=[]):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
     To return a select collection of band passes, specify the band argument.
@@ -77,8 +78,8 @@ def iter_sncosmo_input(bands=None):
         An astropy table formatted for use with SNCosmo
     """
 
-    has_redshift = master_table['zspecHelio'] != -9
-    iter_data = master_table[has_redshift]
+    skip_data_indx = np.isin(master_table['Classification'], skip_types)
+    iter_data = master_table[np.logical_not(skip_data_indx)]
     for cid in tqdm(iter_data['CID']):
         all_sn_data = get_cid_data(cid)
 
@@ -132,7 +133,8 @@ def run_fit_for_object(input_table, model_name, params_to_fit):
 
 
 def fit_sdss_data(out_path, model_name='salt2', bands=None,
-                  params_to_fit=('t0', 'x0', 'x1', 'c')):
+                  params_to_fit=('t0', 'x0', 'x1', 'c'),
+                  skip_types=[]):
     """Fit SDSS light curves with SNCosmo
 
     Files are named as <out_dir>/<target cid>.txt
@@ -141,6 +143,7 @@ def fit_sdss_data(out_path, model_name='salt2', bands=None,
         out_path       (str): Where to write fit results
         model_name     (str): Model to use for fitting. Default = salt2
         params_to_fit (list): List of parameters to fit
+        skip_types    (list): List of case sensitive classifications to skip
         bands         (list): Optional list of bandpasses to fit
     """
 
@@ -156,7 +159,7 @@ def fit_sdss_data(out_path, model_name='salt2', bands=None,
     names.extend(('chi', 'dof', 'message'))
     out_table = Table(names=names, dtype=[object for _ in names])
 
-    for input_table in iter_sncosmo_input(bands=bands):
+    for input_table in iter_sncosmo_input(bands=bands, skip_types=skip_types):
         z_was_fit = int(input_table.meta['redshift'] == -9)
         new_row = [input_table.meta['cid'],
                    len(set(input_table['band'])),
@@ -187,33 +190,38 @@ def fit_sdss_data(out_path, model_name='salt2', bands=None,
 
 
 if __name__ == '__main__':
+    # Normal Ia model
     print('Fitting type Ia model in all bands')
-    fit_sdss_data('./sncosmo_results/snia_ugriz.csv')
+    fit_sdss_data('./sncosmo_results/snia_ugriz.csv',
+                  skip_types=['Variable'])
 
     print('\n\nFitting type Ia model in ug')
     fit_sdss_data('./sncosmo_results/snia_ug.csv',
+                  skip_types=['Variable'],
                   bands=['sdssu', 'sdssg'])
 
     print('\n\nFitting type Ia model in riz')
     fit_sdss_data('./sncosmo_results/snia_riz.csv',
+                  skip_types=['Variable'],
                   bands=['sdssr', 'sdssi', 'sdssz'])
 
     # 91bg model
     print('\n\nFitting 91bg model in all bands')
     fit_sdss_data('./sncosmo_results/91bg_ugriz.csv',
+                  skip_types=['Variable'],
                   model_name='nugent-sn91bg',
                   params_to_fit=['t0', 'amplitude'])
 
     print('\n\nFitting 91bg model in ug')
     fit_sdss_data('./sncosmo_results/91bg_ug.csv',
+                  skip_types=['Variable'],
                   model_name='nugent-sn91bg',
                   bands=['sdssu', 'sdssg'],
                   params_to_fit=['t0', 'amplitude'])
 
     print('\n\nFitting 91bg model in riz')
     fit_sdss_data('./sncosmo_results/91bg_riz.csv',
+                  skip_types=['Variable'],
                   model_name='nugent-sn91bg',
                   bands=['sdssr', 'sdssi', 'sdssz'],
                   params_to_fit=['t0', 'amplitude'])
-
-
