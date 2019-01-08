@@ -15,12 +15,63 @@ from parse_sn_data import get_cid_data,master_table
 
 
 @np.vectorize
-def map_index_to_band(i):
-    return 'sdss' + 'ugriz'[i]
+def band_index_mapping(i):
+    """Vectorized mapping between index and filter name sdss<"ugriz"[i]>
+
+    Args:
+        i (int or str): Index of bandpass or bandpass name
+
+    Returns:
+        If the argument is an integer, return the filter name sdss<"ugriz"[i]>
+        If the argument is a filtername, return the index
+    """
+
+    if isinstance(i, int):
+        return 'sdss' + 'ugriz'[i]
+
+    elif isinstance(i, str):
+        return ['sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz'].index(i)
+
+    else:
+        raise ValueError('Argument must be int or str')
+
+
+def keep_restframe_bands(data_table, bands):
+    """Return select rest-frame bandpasses from an SNCsomo input table
+
+    Args:
+        data_table (Table): An SNCosmo input table as given
+                              by iter_sncosmo_input
+        bands       (list): List of rest-frame bandpasses to keep
+
+    Returns:
+        A new input table for SNCosmo only containing select rest frame bands
+    """
+
+    # Effective wavelengths for SDSS filters ugriz in angstroms
+    effective_lambda = np.array([3551, 4686, 6166, 7480, 8932])
+
+    # Rest frame effective wavelengths for each observation
+    z = data_table.meta['redshift']
+    filter_indices = band_index_mapping(data_table['band'])
+    rest_frame_lambda = effective_lambda[filter_indices] / (1 + z)
+
+    # Find rest frame filter names
+    band_index_array = np.abs(effective_lambda - rest_frame_lambda).argmin()
+    rest_frame_filters = band_index_mapping(band_index_array)
+
+    # Keep only the specified filters
+    indices = np.isin(rest_frame_filters, bands)
+    return data_table[indices]
 
 
 def iter_sncosmo_input(bands=None):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
+
+    To return a select collection of band passes, specify the band argument.
+
+    Args:
+        bands (list): Optional list of bandpasses to return
 
     Yields:
         An astropy table formatted for use with SNCosmo
@@ -30,12 +81,10 @@ def iter_sncosmo_input(bands=None):
     iter_data = master_table[has_redshift]
     for cid in tqdm(iter_data['CID']):
         all_sn_data = get_cid_data(cid)
-        if all_sn_data.meta['redshift'] == -9:
-            continue
 
         sncosmo_table = Table()
         sncosmo_table['time'] = all_sn_data['MJD']
-        sncosmo_table['band'] = map_index_to_band(all_sn_data['FILT'])
+        sncosmo_table['band'] = band_index_mapping(all_sn_data['FILT'])
         sncosmo_table['flux'] = all_sn_data['FLUX']
         sncosmo_table['fluxerr'] = all_sn_data['FLUXERR']
         sncosmo_table['zp'] = np.full(len(all_sn_data), 25)
@@ -44,8 +93,7 @@ def iter_sncosmo_input(bands=None):
         sncosmo_table.meta['cid'] = cid
 
         if bands is not None:
-            indices = np.isin(sncosmo_table['band'], bands)
-            sncosmo_table = sncosmo_table[indices]
+            sncosmo_table = keep_restframe_bands(sncosmo_table, bands)
 
         yield sncosmo_table
 
@@ -66,6 +114,8 @@ def run_fit_for_object(input_table, model_name, params_to_fit):
     model = sncosmo.Model(source=model_name)
     z = input_table.meta['redshift']
     params_to_fit = list(params_to_fit)
+
+    # Tell SNCosmo to fit for the redshift if it is not given
     if z == -9.:
         params_to_fit.insert(0, 'z')
         bounds = {'z': (0.002, 1)}
@@ -91,6 +141,7 @@ def fit_sdss_data(out_path, model_name='salt2', bands=None,
         out_path       (str): Where to write fit results
         model_name     (str): Model to use for fitting. Default = salt2
         params_to_fit (list): List of parameters to fit
+        bands         (list): Optional list of bandpasses to fit
     """
 
     out_dir = os.path.dirname(out_path)
@@ -98,7 +149,7 @@ def fit_sdss_data(out_path, model_name='salt2', bands=None,
         os.makedirs(out_dir)
 
     # To store fit results
-    names = ['cid', 'class', 'fit_z', 'z']
+    names = ['cid', 'num_bands', 'num_points', 'class', 'fit_z', 'z']
     names.extend(params_to_fit)
     names.append('z_err')
     names.extend((v + '_err' for v in params_to_fit))
@@ -107,15 +158,19 @@ def fit_sdss_data(out_path, model_name='salt2', bands=None,
 
     for input_table in iter_sncosmo_input(bands=bands):
         z_was_fit = int(input_table.meta['redshift'] == -9)
-        new_row = [input_table.meta['cid'], input_table.meta['classification'], z_was_fit]
+        new_row = [input_table.meta['cid'],
+                   len(set(input_table['band'])),
+                   len(input_table),
+                   input_table.meta['classification'],
+                   z_was_fit]
 
         try:
             result = run_fit_for_object(input_table, model_name, params_to_fit)
 
         except (sncosmo.fitting.DataQualityError, RuntimeError, ValueError) as e:
-            mask = np.full(len(out_table.colnames) - 4, np.NAN).tolist()
+            mask = np.full(len(out_table.colnames) - len(new_row) - 1, np.NAN).tolist()
             new_row.extend(mask)
-            new_row.append(e)
+            new_row.append(str(e))
 
         else:
             new_row.extend(result.parameters)
@@ -132,33 +187,33 @@ def fit_sdss_data(out_path, model_name='salt2', bands=None,
 
 
 if __name__ == '__main__':
-    print('Fitting type Ia model in ugriz')
+    print('Fitting type Ia model in all bands')
     fit_sdss_data('./sncosmo_results/snia_ugriz.csv')
 
-    print('Fitting type Ia model in ug')
+    print('\n\nFitting type Ia model in ug')
     fit_sdss_data('./sncosmo_results/snia_ug.csv',
-                  bands=['blue_sdssu', 'blue_sdssg'])
+                  bands=['sdssu', 'sdssg'])
 
-    print('Fitting type Ia model in riz')
+    print('\n\nFitting type Ia model in riz')
     fit_sdss_data('./sncosmo_results/snia_riz.csv',
-                  bands=['blue_sdssr', 'blue_sdssi', 'blue_sdssz'])
+                  bands=['sdssr', 'sdssi', 'sdssz'])
 
     # 91bg model
-    print('Fitting 91bg model in ugriz')
+    print('\n\nFitting 91bg model in all bands')
     fit_sdss_data('./sncosmo_results/91bg_ugriz.csv',
                   model_name='nugent-sn91bg',
                   params_to_fit=['t0', 'amplitude'])
 
-    print('Fitting 91bg model in ug')
+    print('\n\nFitting 91bg model in ug')
     fit_sdss_data('./sncosmo_results/91bg_ug.csv',
                   model_name='nugent-sn91bg',
-                  bands=['blue_sdssu', 'blue_sdssg'],
+                  bands=['sdssu', 'sdssg'],
                   params_to_fit=['t0', 'amplitude'])
 
-    print('Fitting 91bg model in riz')
+    print('\n\nFitting 91bg model in riz')
     fit_sdss_data('./sncosmo_results/91bg_riz.csv',
                   model_name='nugent-sn91bg',
-                  bands=['blue_sdssr', 'blue_sdssi', 'blue_sdssz'],
+                  bands=['sdssr', 'sdssi', 'sdssz'],
                   params_to_fit=['t0', 'amplitude'])
 
 
