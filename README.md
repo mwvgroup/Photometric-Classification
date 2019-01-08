@@ -1,15 +1,17 @@
 # SDSS-Classification
 
 This project applies the photometric classification technique from González-Gaitan 
-2014 on SDSS data to identify peculiar Type Ia Supernovae (SNe Ia). Multiple
-light curve fitting programs are tested to identify a software package 
-capable of fulfilling our needs.
+2014 on SDSS data to identify peculiar Type Ia Supernovae (SNe Ia).
 
-
+## Todo:
+- The number of data points fit **per band** needs to be added to the output fit summary.
+- SNCosmo will raise occasional warning about poor fits, bad S/N, and dropped bands. 
+    These warnings are currently being ignored, but need to be handled correctly.
+- We are currently using SNCosmo's builtin 91bg model, but would like to (possibly) use our own custom model. 
 
 ## File List / Overview
 
-##### *./* 
+#### *./* 
 
 General utilities
 
@@ -18,7 +20,7 @@ General utilities
 
 
 
-##### snana/ 
+#### snana/ 
 
 Simulating 91bg lightcurves using the SNANA Fortran package
 
@@ -28,7 +30,7 @@ Simulating 91bg lightcurves using the SNANA Fortran package
 
 
 
-##### SNCosmo/
+#### SNCosmo/
 
 Fitting SDSS data with the SNcosmo python package
 
@@ -38,7 +40,7 @@ Fitting SDSS data with the SNcosmo python package
 
 
 
-##### snoopy/
+#### snoopy/
 
 Fitting SDSS data with the Snoopy (`snpy`) python package. Development here is unfinished and abandoned after the SNCsomo package was found to be more user friendly.
 
