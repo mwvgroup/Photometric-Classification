@@ -10,6 +10,7 @@ import sncosmo
 from astropy.table import Table
 from tqdm import tqdm
 
+import sys; sys.path.append('../')
 from parse_sn_data import get_cid_data, MASTER_TABLE
 
 

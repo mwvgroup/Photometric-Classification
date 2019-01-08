@@ -22,7 +22,7 @@ for path in (MASTER_PTH, SMP_DIR):
         data_dir = os.path.join(FILE_DIR, 'data/')
         download_sdss_data(data_dir)
 
-MASTER_TABLE = Table.read(MASTER_PTH, format='ascii')
+master_table = Table.read(MASTER_PTH, format='ascii')
 
 
 def get_cid_data(cid, filter_name=None):
@@ -50,7 +50,7 @@ def get_cid_data(cid, filter_name=None):
         all_data = all_data[all_data['FILT'] == filter_index]
         all_data.remove_column('FILT')
 
-    meta_data = MASTER_TABLE[MASTER_TABLE['CID'] == cid]
+    meta_data = master_table[master_table['CID'] == cid]
     all_data.meta['redshift'] = meta_data['zspecHelio'][0]
     all_data.meta['ra'] = meta_data['RA'][0]
     all_data.meta['dec'] = meta_data['DEC'][0]
