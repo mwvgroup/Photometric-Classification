@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
-"""This document defines functions for downloading SDSS photometric data."""
+"""This dscript downloads photometric data from the SDSS supernova survey to
+the directory ./data .
+"""
 
 import os
 
@@ -67,7 +69,7 @@ def download_sdss_data(out_dir):
 
     # Download each file
     for f_name, out_path in data_files:
-        print('downloading ', f_name)
+        print('downloading ' + f_name)
         url = requests.compat.urljoin(SDSS_URL, f_name)
         _download_file(url, out_path)
 
