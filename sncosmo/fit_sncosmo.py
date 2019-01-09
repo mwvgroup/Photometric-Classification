@@ -15,6 +15,7 @@ from parse_sn_data import get_cid_data, master_table
 
 SDSS_BANDS = ['sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz']
 
+
 @np.vectorize
 def band_index_mapping(i):
     """Vectorized mapping between index and filter name sdss<"ugriz"[i]>
@@ -257,9 +258,3 @@ if __name__ == '__main__':
     print('Fitting type Ia model in all bands')
     fit_sdss_data('./sncosmo_results/snia_ugriz.csv',
                   skip_types=['Variable', 'AGN'])
-
-    print('\n\nFitting 91bg model in all bands')
-    fit_sdss_data('./sncosmo_results/91bg_ugriz.csv',
-                  skip_types=['Variable', 'AGN'],
-                  model_name='nugent-sn91bg',
-                  params_to_fit=['t0', 'amplitude'])
