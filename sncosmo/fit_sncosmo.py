@@ -232,17 +232,17 @@ def fit_sdss_data(out_path,
 if __name__ == '__main__':
     print('\n\nFitting type Ia model in ug')
     fit_sdss_data('./sncosmo_results/snia_ug.csv',
-                  skip_types=['Variable'],
+                  skip_types=['Variable', 'AGN'],
                   bands=['sdssu', 'sdssg'])
 
     print('\n\nFitting type Ia model in riz')
     fit_sdss_data('./sncosmo_results/snia_riz.csv',
-                  skip_types=['Variable'],
+                  skip_types=['Variable', 'AGN'],
                   bands=['sdssr', 'sdssi', 'sdssz'])
 
     print('\n\nFitting 91bg model in ug')
     fit_sdss_data('./sncosmo_results/91bg_ug.csv',
-                  skip_types=['Variable'],
+                  skip_types=['Variable', 'AGN'],
                   model_name='nugent-sn91bg',
                   bands=['sdssu', 'sdssg'],
                   params_to_fit=['t0', 'amplitude'])
@@ -256,10 +256,10 @@ if __name__ == '__main__':
 
     print('Fitting type Ia model in all bands')
     fit_sdss_data('./sncosmo_results/snia_ugriz.csv',
-                  skip_types=['Variable'])
+                  skip_types=['Variable', 'AGN'])
 
     print('\n\nFitting 91bg model in all bands')
     fit_sdss_data('./sncosmo_results/91bg_ugriz.csv',
-                  skip_types=['Variable'],
+                  skip_types=['Variable', 'AGN'],
                   model_name='nugent-sn91bg',
                   params_to_fit=['t0', 'amplitude'])
