@@ -4,16 +4,18 @@
 """This module fits SDSS light curves using sncosmo"""
 
 import os
+import sys;
 
 import numpy as np
 import sncosmo
 from astropy.table import Table
+from sncosmo.fitting import DataQualityError
 from tqdm import tqdm
 
-import sys; sys.path.append('../')
+sys.path.append('../')
 from parse_sn_data import get_cid_data, master_table
 
-SDSS_BANDS = ['sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz']
+SDSS_BANDS = ('sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz')
 
 
 @np.vectorize
@@ -74,13 +76,14 @@ def keep_restframe_bands(data_table, bands):
     return data_table[indices]
 
 
-def iter_sncosmo_input(bands=None, skip_types=[]):
+def iter_sncosmo_input(bands=None, skip_types=()):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
     To return a select collection of band passes, specify the band argument.
 
     Args:
-        bands (list): Optional list of bandpasses to return
+        bands      (list): Optional list of bandpasses to return
+        skip_types (list): List of case sensitive classifications to skip
 
     Yields:
         An astropy table formatted for use with SNCosmo
@@ -210,8 +213,9 @@ def fit_sdss_data(out_path,
         try:
             result = run_fit_for_object(input_table, model_name, params_to_fit)
 
-        except (sncosmo.fitting.DataQualityError, RuntimeError, ValueError) as e:
-            mask = np.full(len(out_table.colnames) - len(new_row) - 2, np.NAN).tolist()
+        except (DataQualityError, RuntimeError, ValueError) as e:
+            mask_length = len(out_table.colnames) - len(new_row) - 2
+            mask = np.full(mask_length, np.NAN).tolist()
             new_row.append(z)
             new_row.extend(mask)
             new_row.append(str(e))
@@ -250,7 +254,7 @@ if __name__ == '__main__':
 
     print('\n\nFitting 91bg model in riz')
     fit_sdss_data('./sncosmo_results/91bg_riz.csv',
-                  skip_types=['Variable'],
+                  skip_types=['Variable', 'AGN'],
                   model_name='nugent-sn91bg',
                   bands=['sdssr', 'sdssi', 'sdssz'],
                   params_to_fit=['t0', 'amplitude'])
