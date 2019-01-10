@@ -11,7 +11,7 @@ import snpy
 from astropy.table import Table
 from matplotlib import pyplot as plt
 
-from parse_sn_data import MASTER_TABLE, get_cid_data
+from sncosmo.parse_sn_data import MASTER_TABLE, get_cid_data
 
 
 def write_snoopy_sdss_file(out_path, **kwargs):
