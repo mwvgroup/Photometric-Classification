@@ -4,7 +4,6 @@
 """This module fits SDSS light curves using sncosmo"""
 
 import os
-import sys;
 
 import numpy as np
 import sncosmo
@@ -12,7 +11,7 @@ from astropy.table import Table
 from sncosmo.fitting import DataQualityError
 from tqdm import tqdm
 
-sys.path.append('../')
+import sys; sys.path.append('../')
 from parse_sn_data import get_cid_data, master_table
 
 SDSS_BANDS = ('sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz')
