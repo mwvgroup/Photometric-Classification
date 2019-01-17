@@ -20,11 +20,12 @@ General utilities
  - **download_data.py:** This script downloads data from the SDSS supernova survey to a directory called *data/* .
  - **parse_sn_data.py:** This module parses SDSS data tables. Missing data is downloaded automatically.
 
+
 #### 91bg_model/
 
 A spectrophotometric template for 91bg like supernovae. Based on Nugent's 91bg model but extendied to the UV with synthetic spectra from Hachinger et al. 2008.
 
-- **Port 91bg Model.ipynb:** Jupyter notebook that ports the 91bg model into SNCosmo
+- **sncosmo_ported_model.py:** Version of the 91bg model compatible with SNCosmo.
 - **sed_templates/SED.INFO:** Summary file of template spectra
 - **sed_templates/<filename>.SED:** Template spectra with date to maximum, wavelength, and flux values
 
