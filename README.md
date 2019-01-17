@@ -6,8 +6,8 @@ This project applies the photometric classification technique from González-Gai
 ## Todo:
 - SNCosmo will raise occasional warnings about poor fits, bad S/N, and dropped bands. These warnings are currently being logged but otherwise ignored and need to be handled correctly.
 - If a redshift for a supernova is not available, SNCosmo is instructed to fit for the redshift. A prior needs to be provided for the redshift.
-- The num_points_<band> column in the fit summary tables contain the number of data points per observer frame band. We are interested in the number of points in the rest frame.
-- We are currently fitting data with SNCosmo's built-in 91bg model, but would like to (possibly) use our own custom model. This custom model is currently used to simulate SNANA light curves.
+- The `num_points_<band>` column in the fit summary tables contain the number of data points per observer frame band. We are interested in the number of points in the rest frame.
+- We are currently fitting data with SNCosmo's built-in 91bg model, but would like to use our own custom model. This custom model is currently used to simulate SNANA light curves.
 - Determine what K-correction was used in the published SDSS fit results and improve the quality of fits with large chi-squared compared to published results.
 
 
