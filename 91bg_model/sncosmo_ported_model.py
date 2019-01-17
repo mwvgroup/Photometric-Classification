@@ -10,7 +10,6 @@ import numpy as np
 import sncosmo
 from scipy.interpolate import interpn
 
-__file__ = './'
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 MODEL_DIR = os.path.join(FILE_DIR, 'sed_templates')
 
@@ -70,6 +69,7 @@ class SN91bgSource(sncosmo.Source):
     param_names_latex = ['x1', 'c', 'a']
 
     def __init__(self, model_path, name=None, version=None):
+        super(SN91bgSource, self).__init__()
         self.name = '91bg model'
         self.version = 'None'
 
@@ -96,3 +96,14 @@ model_path = 'complete_template.npy'
 if not os.path.exists(model_path):
     print('91bg template not found. Compiling a new template.')
     combine_sed_templates(model_path)
+
+if __name__ == '__main__':
+    # Test our custom source on the example data
+    # The example data aren't 91bg light curveys, but we are mostly looking for
+    # the code to execute
+
+    model = sncosmo.Model(source=SN91bgSource)
+    data = sncosmo.load_example_data()
+    result, fitted_model = sncosmo.fit_lc(data, model, ['x1', 'c', 'a'])
+
+    sncosmo.plot_lc(data, model=fitted_model, errors=result.errors)
