@@ -17,8 +17,8 @@ MODEL_DIR = os.path.join(FILE_DIR, 'sed_templates')
 def read_template_file(path):
     """Read a SED template text file and return data as a 2D array
 
-    The first index of the returned array selects the day untill maximum.
-    The second index selects the wavlength.
+    The first index of the returned array selects the day until maximum.
+    The second index selects the wavelength.
 
     Args:
         path (str): Path of the file to read
@@ -99,7 +99,7 @@ if not os.path.exists(model_path):
 
 if __name__ == '__main__':
     # Test our custom source on the example data
-    # The example data aren't 91bg light curveys, but we are mostly looking for
+    # The example data aren't 91bg light curves, but we are mostly looking for
     # the code to execute
 
     model = sncosmo.Model(source=SN91bgSource)
