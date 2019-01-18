@@ -101,6 +101,8 @@ def iter_sncosmo_input(bands=None, skip_types=()):
         # Keep only data flagged as "good"
         # Follows convention of Holtzman et al. 2008
         all_sn_data = all_sn_data[all_sn_data['FLAG'] < 1024]
+        if len(all_sn_data) == 0:
+            continue
 
         sncosmo_table = Table()
         sncosmo_table['time'] = all_sn_data['MJD']
@@ -240,6 +242,10 @@ def fit_sdss_data(out_path,
 
 
 if __name__ == '__main__':
+    print('Fitting type Ia model in all bands')
+    fit_sdss_data('./sncosmo_results/snia_ugriz.csv',
+                  skip_types=['Variable', 'AGN'])
+
     print('\n\nFitting type Ia model in ug')
     fit_sdss_data('./sncosmo_results/snia_ug.csv',
                   skip_types=['Variable', 'AGN'],
@@ -263,7 +269,3 @@ if __name__ == '__main__':
                   model_name='nugent-sn91bg',
                   bands=['sdssr', 'sdssi', 'sdssz'],
                   params_to_fit=['t0', 'amplitude'])
-
-    print('Fitting type Ia model in all bands')
-    fit_sdss_data('./sncosmo_results/snia_ugriz.csv',
-                  skip_types=['Variable', 'AGN'])
