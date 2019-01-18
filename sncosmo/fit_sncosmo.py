@@ -4,7 +4,6 @@
 """This module fits SDSS light curves using sncosmo"""
 
 import os
-import sys;
 
 import numpy as np
 import sncosmo
@@ -12,7 +11,7 @@ from astropy.table import Table
 from sncosmo.fitting import DataQualityError
 from tqdm import tqdm
 
-sys.path.append('../')
+import sys; sys.path.append('../')
 from parse_sn_data import get_cid_data, master_table
 
 SDSS_BANDS = ('sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz')
@@ -41,7 +40,8 @@ def band_index_mapping(i):
 
 
 def keep_restframe_bands(data_table, bands):
-    """Return select rest-frame bandpasses from an SNCsomo input table
+    """Return observations that fall within specified rest-frame bandpasses
+       from an SNCsomo input table
 
     Args:
         data_table (Table): An SNCosmo input table as given
@@ -77,9 +77,10 @@ def keep_restframe_bands(data_table, bands):
 
 
 def iter_sncosmo_input(bands=None, skip_types=()):
-    """Iterate through SDSS supernova and yield the SNCosmo input tables
+    """Iterate through SDSS supernova and yield SNCosmo input tables
 
-    To return a select collection of band passes, specify the band argument.
+    To return only select band passes, specify the bands argument. SDSS bands
+    are expected to be of the form `sdss<ugriz>`.
 
     Args:
         bands      (list): Optional list of bandpasses to return
@@ -96,6 +97,10 @@ def iter_sncosmo_input(bands=None, skip_types=()):
     # Yield an SNCosmo input table for each target
     for cid in tqdm(iter_data['CID']):
         all_sn_data = get_cid_data(cid)
+        
+        # Keep only data flagged as "good"
+        # Follows convention of Holtzman et al. 2008
+        all_sn_data = all_sn_data[all_sn_data['FLAG'] < 1024]
 
         sncosmo_table = Table()
         sncosmo_table['time'] = all_sn_data['MJD']
