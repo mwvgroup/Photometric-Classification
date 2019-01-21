@@ -1,7 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2.7
 # -*- coding: UTF-8 -*-
 
-"""This module defines a custom 91bg model for use with SNCosmo"""
+"""This module defines the SN91bgSource class, which acts as a custom SNCosmo
+source object for 91bg like supernovae.
+"""
 
 import os
 from glob import glob
@@ -84,12 +86,12 @@ class SN91bgSource(sncosmo.Source):
         self._parameters = np.array([0, 0, 1])
 
         # Create an array of xi points for self._flux_values
-        self.stretch_vals = np.arange(0.65, 1.26, .1)
-        self.color_vals = np.array([0.0, 0.25, 0.5, 0.75, 1])
+        self._stretch_vals = np.arange(0.65, 1.26, .1)
+        self._color_vals = np.array([0.0, 0.25, 0.5, 0.75, 1])
         self._phase = np.arange(-13, 101, 1)
         self._wave = np.arange(1000, 12001, 10)
-        self._flux_points = [self.stretch_vals,
-                             self.color_vals,
+        self._flux_points = [self._stretch_vals,
+                             self._color_vals,
                              self._phase,
                              self._wave]
 
@@ -109,7 +111,6 @@ class SN91bgSource(sncosmo.Source):
             combine_sed_templates()
             print('Done')
 
-        print(np.load(COMPILED_MODEL_PATH).shape)
         return np.load(COMPILED_MODEL_PATH)
 
     def _flux(self, phase, wave):
@@ -120,16 +121,3 @@ class SN91bgSource(sncosmo.Source):
                        xi=requested_xi)
 
         return amplitude * flux
-
-
-if __name__ == '__main__':
-    # Test our custom source on the example data
-    # The example data aren't 91bg light curves - we are only looking for
-    # the code to execute
-
-    model = sncosmo.Model(source=SN91bgSource())
-    data = sncosmo.load_example_data()
-    result, fitted_model = sncosmo.fit_lc(data, model,
-                                          ['stretch', 'color', 'amplitude'])
-
-    sncosmo.plot_lc(data, model=fitted_model, errors=result.errors)
