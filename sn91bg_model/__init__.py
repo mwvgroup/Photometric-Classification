@@ -6,4 +6,4 @@ model is based on Nugent's 91bg model but is extended to the UV with synthetic
 spectra from Hachinger et al. 2008.
 """
 
-from .sncosmo_ported_model import SN91bgSource
+from ._sncosmo_ported_model import SN91bgSource
