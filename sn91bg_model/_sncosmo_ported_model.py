@@ -83,7 +83,7 @@ class SN91bgSource(sncosmo.Source):
 
         # Model spectra and initial parameters
         self._flux_values = self._get_91bg_model()
-        self._parameters = np.array([0, 0, 1])
+        self._parameters = np.array([1, 0, 1])
 
         # Create an array of xi points for self._flux_values
         self._stretch_vals = np.arange(0.65, 1.26, .1)
@@ -114,8 +114,26 @@ class SN91bgSource(sncosmo.Source):
         return np.load(COMPILED_MODEL_PATH)
 
     def _flux(self, phase, wave):
+        """Interpolate template flux for stretch, color, time, and wavelength
+
+        Time and wavelength are given by arguments phase and wave. Stretch,
+        color, and amplitude are given by self._parameters/
+
+        Args:
+            phase (list): A list of days till maximum for the desired flux
+            wave  (list): A list of wavelengths for the desired flux
+
+        Returns:
+            A 2d array of flux with shape (<len(phase)>, <len(wave)>)
+        """
+
         stretch, color, amplitude = self._parameters
-        requested_xi = [stretch, color, phase, wave]
+        requested_xi = np.empty((len(phase), len(wave), 4))
+        for i, p in enumerate(phase):
+            for j, w in enumerate(wave):
+                requested_xi[i, j] = [stretch, color, p, w]
+
+        print('calling interpolation')
         flux = interpn(points=self._flux_points,
                        values=self._flux_values,
                        xi=requested_xi)
