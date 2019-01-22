@@ -22,3 +22,5 @@ class SN91bgModel(TestCase):
         data = sncosmo.load_example_data()
         result, fitted_model = sncosmo.fit_lc(
             data, self.model, ['stretch', 'color', 'amplitude'])
+
+        self.assertLessEqual(result.chisq / result.ndof, 12)
