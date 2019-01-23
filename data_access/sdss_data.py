@@ -1,26 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
-"""This document defines functions for parsing data from the SDSS-II SN Catalog
-Data Release.
+"""This module provides access to data from the SDSS-II SN Catalog Data
+Release.
 """
 
-import os
+from os import path as _path
 
 from astropy.table import Table
 
-from download_data import download_sdss_data
+from _download_data import download_data
 
-FILE_DIR = os.path.dirname(os.path.realpath(__file__))
-MASTER_PTH = os.path.join(FILE_DIR, 'data/master_table.txt')  # Master table path
-SMP_DIR = os.path.join(FILE_DIR, 'data/SMP_Data/')            # SMP data files
+SDSS_URL = 'https://data.sdss.org/sas/dr10/boss/papers/supernova/'
+DATA_DIR = _path.join(_path.dirname(_path.realpath(__file__)), 'sdss_data')
+MASTER_PTH = _path.join(DATA_DIR, 'master_table.txt')  # Master table path
+SMP_DIR = _path.join(DATA_DIR, 'SMP_Data/')  # SMP data files
 
-# Download data if not available
-for path in (MASTER_PTH, SMP_DIR):
-    if not os.path.exists(path):
-        print('SDSS data not found. Downloading it to ./data/')
-        data_dir = os.path.join(FILE_DIR, 'data/')
-        download_sdss_data(data_dir)
+# Download data if it does not exist
+download_data(SDSS_URL, DATA_DIR, ['master_data.txt',
+                                   'SMP_Data.tar.gz',
+                                   'SDSS_dataRelease-snana.tar.gz'])
 
 master_table = Table.read(MASTER_PTH, format='ascii')
 
@@ -37,7 +36,7 @@ def get_cid_data(cid, filter_name=None):
     """
 
     # Read in ascci data table for specified object
-    file_path = os.path.join(SMP_DIR, 'SMP_{:06d}.dat'.format(cid))
+    file_path = _path.join(SMP_DIR, 'SMP_{:06d}.dat'.format(cid))
     all_data = Table.read(file_path, format='ascii')
 
     # Rename columns using header data from file

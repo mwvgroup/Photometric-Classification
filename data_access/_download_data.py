@@ -5,12 +5,12 @@
 the directory ./data .
 """
 
-import os
+from __future__ import print_function
 
-import requests
+import os
 import tarfile
 
-SDSS_URL = 'https://data.sdss.org/sas/dr10/boss/papers/supernova/'
+import requests
 
 
 def _download_file(url, out_path):
@@ -52,27 +52,18 @@ def _download_file(url, out_path):
         os.rename(temp_path, out_path)
 
 
-def download_sdss_data(out_dir):
-    """Downloads supernova data from SDSS
+def download_data(base_url, out_dir, data_files):
+    """Downloads data files from a given url
 
-    Downloaded files include:
-        master_data.txt
-        SMP_Data.tar.gz
-        SDSS_dataRelease-snana.tar.gz
+    Args:
+        base_url         (str): Url to download files from
+        out_dir          (str): Director to save files into
+        data_files (list[str]): Name of files to download
     """
 
-    # Define file_names and output paths of files to download
-    master_path = os.path.join(out_dir, 'master_table.txt')  # Master table
-    data_files = [('master_data.txt', master_path),
-                  ('SMP_Data.tar.gz', out_dir),
-                  ('SDSS_dataRelease-snana.tar.gz', out_dir)]
-
-    # Download each file
-    for f_name, out_path in data_files:
-        print('downloading ' + f_name)
-        url = requests.compat.urljoin(SDSS_URL, f_name)
-        _download_file(url, out_path)
-
-
-if __name__ == '__main__':
-    download_sdss_data('./data')
+    for f_name in data_files:
+        out_path = os.path.join(out_dir, f_name)
+        if not os.path.exists(out_path):
+            print('downloading', f_name)
+            url = requests.compat.urljoin(base_url, f_name)
+            _download_file(url, out_path)

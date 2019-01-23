@@ -13,7 +13,7 @@ from sncosmo.fitting import DataQualityError
 from tqdm import tqdm
 
 sys.path.append('../')
-from parse_sn_data import get_cid_data, master_table
+from data_access.parse_sn_data import get_cid_data, master_table
 
 SDSS_BANDS = ('sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz')
 
