@@ -12,6 +12,7 @@ from astropy.table import Table
 from tqdm import tqdm
 
 from _download_data import download_data
+from _utils import keep_restframe_bands
 
 DES_URL = 'http://desdr-server.ncsa.illinois.edu/despublic/sn_files/y3/tar_files/'
 DATA_DIR = _path.join(_path.dirname(_path.realpath(__file__)), 'des_data')
@@ -68,6 +69,10 @@ def iter_sncosmo_input(bands=None, verbose=False):
         An astropy table formatted for use with SNCosmo
     """
 
+    # Todo: These effective wavelengths are wrong
+    des_bands = ('desg', 'desr', 'desi', 'desz', 'desy')
+    lambda_effective = np.array([3551, 4686, 6166, 7480, 8932])
+
     # Load list of all target ids
     file_path = _path.join(PHOT_DIR, 'DES-SN3YR_DES.LIST')
     file_list = np.genfromtxt(file_path, dtype=str)
@@ -88,8 +93,8 @@ def iter_sncosmo_input(bands=None, verbose=False):
         sncosmo_table.meta = all_sn_data.meta
         sncosmo_table.meta['obj_id'] = obj_id
 
-        # Todo: Keep only specified band-passes
         if bands is not None:
-            sncosmo_table = keep_restframe_bands(sncosmo_table, bands)
+            sncosmo_table = keep_restframe_bands(
+                sncosmo_table, bands, des_bands, lambda_effective)
 
         yield sncosmo_table

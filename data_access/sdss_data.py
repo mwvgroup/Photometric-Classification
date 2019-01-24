@@ -72,7 +72,10 @@ def iter_sncosmo_input(bands=None, skip_types=(), verbose=False):
         An astropy table formatted for use with SNCosmo
     """
 
+    # Effective wavelengths for SDSS filters ugriz in angstroms
+    # https://www.sdss.org/instruments/camera/#Filters
     sdss_bands = ('sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz')
+    lambda_effective = np.array([3551, 4686, 6166, 7480, 8932])
 
     # Create iterable without unwanted data
     skip_data_indx = np.isin(master_table['Classification'], skip_types)
@@ -95,6 +98,7 @@ def iter_sncosmo_input(bands=None, skip_types=(), verbose=False):
 
         # Keep only specified band-passes
         if bands is not None:
-            sncosmo_table = keep_restframe_bands(sncosmo_table, bands)
+            sncosmo_table = keep_restframe_bands(
+                sncosmo_table, bands, sdss_bands, lambda_effective)
 
         yield sncosmo_table

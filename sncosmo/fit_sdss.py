@@ -110,7 +110,7 @@ def fit_sdss_data(out_path,
         num_data_points = [count_dict.get(band, 0) for band in bands]
 
         # Create a new, incomplete row for the table
-        new_row = [input_table.meta['cid'], input_table.meta['classification']]
+        new_row = [input_table.meta['obj_id'], input_table.meta['classification']]
         new_row.extend(num_data_points)
         new_row.append(z_was_fit)
 
