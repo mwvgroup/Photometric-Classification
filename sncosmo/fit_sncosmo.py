@@ -4,114 +4,16 @@
 """This module fits SDSS light curves using sncosmo"""
 
 import os
-import sys;
 
 import numpy as np
 import sncosmo
 from astropy.table import Table
 from sncosmo.fitting import DataQualityError
-from tqdm import tqdm
 
-sys.path.append('../')
-from data_access.parse_sn_data import get_cid_data, master_table
+import sys; sys.path.insert(0, '../')
+from data_access.sdss_data import iter_sncosmo_input
 
 SDSS_BANDS = ('sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz')
-
-
-@np.vectorize
-def band_index_mapping(i):
-    """Vectorized mapping between index and filter name sdss<"ugriz"[i]>
-
-    Args:
-        i (int or str): Index of bandpass or bandpass name
-
-    Returns:
-        If the argument is an integer, return the filter name sdss<"ugriz"[i]>
-        If the argument is a filtername, return the index
-    """
-
-    if isinstance(i, int):  # If i is index return, band name
-        return SDSS_BANDS[i]
-
-    elif isinstance(i, str):  # If i is band name, return index
-        return SDSS_BANDS.index(i)
-
-    else:
-        raise ValueError('Argument must be int or str')
-
-
-def keep_restframe_bands(data_table, bands):
-    """Return select rest-frame bandpasses from an SNCsomo input table
-
-    Args:
-        data_table (Table): An SNCosmo input table as given
-                              by iter_sncosmo_input
-        bands       (list): List of rest-frame bandpasses to keep
-
-    Returns:
-        A new input table for SNCosmo only containing select rest frame bands
-    """
-
-    # Effective wavelengths for SDSS filters ugriz in angstroms
-    # https://www.sdss.org/instruments/camera/#Filters
-    effective_lambda = np.array([3551, 4686, 6166, 7480, 8932])
-
-    # Rest frame effective wavelengths for each observation
-    z = data_table.meta['redshift']
-    filter_indices = band_index_mapping(data_table['band'])
-    rest_frame_lambda = effective_lambda[filter_indices] / (1 + z)
-
-    # Get the name of the observer frame band with the smallest distance
-    # to each rest frame lambda
-    delta_lambda = np.array([np.abs(rest_frame_lambda - l_eff) for l_eff in effective_lambda])
-    min_indx = np.argmin(delta_lambda, axis=0)
-    rest_frame_filters = band_index_mapping(min_indx)
-
-    # Keep only the specified filters that are within 1000 Angstroms of the
-    # rest frame effective wavelength
-    is_ok_diff = delta_lambda[min_indx, np.arange(delta_lambda.shape[1])] < 1000
-    is_in_bands = np.isin(rest_frame_filters, bands)
-    indices = np.logical_and(is_in_bands, is_ok_diff)
-
-    return data_table[indices]
-
-
-def iter_sncosmo_input(bands=None, skip_types=()):
-    """Iterate through SDSS supernova and yield the SNCosmo input tables
-
-    To return a select collection of band passes, specify the band argument.
-
-    Args:
-        bands      (list): Optional list of bandpasses to return
-        skip_types (list): List of case sensitive classifications to skip
-
-    Yields:
-        An astropy table formatted for use with SNCosmo
-    """
-
-    # Create iterable without unwanted data
-    skip_data_indx = np.isin(master_table['Classification'], skip_types)
-    iter_data = master_table[np.logical_not(skip_data_indx)]
-
-    # Yield an SNCosmo input table for each target
-    for cid in tqdm(iter_data['CID']):
-        all_sn_data = get_cid_data(cid)
-
-        sncosmo_table = Table()
-        sncosmo_table['time'] = all_sn_data['MJD']
-        sncosmo_table['band'] = band_index_mapping(all_sn_data['FILT'])
-        sncosmo_table['flux'] = all_sn_data['FLUX']
-        sncosmo_table['fluxerr'] = all_sn_data['FLUXERR']
-        sncosmo_table['zp'] = np.full(len(all_sn_data), 25)
-        sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
-        sncosmo_table.meta = all_sn_data.meta
-        sncosmo_table.meta['cid'] = cid
-
-        # Keep only specified band-passes
-        if bands is not None:
-            sncosmo_table = keep_restframe_bands(sncosmo_table, bands)
-
-        yield sncosmo_table
 
 
 def run_fit_for_object(input_table, model_name, params_to_fit):
@@ -195,7 +97,9 @@ def fit_sdss_data(out_path,
 
     # Run fit for each target
     out_table = create_empty_summary_table(bands, params_to_fit)
-    for input_table in iter_sncosmo_input(bands=bands, skip_types=skip_types):
+    for input_table in iter_sncosmo_input(
+            bands=bands, skip_types=skip_types, verbose=True):
+
         # Determine if redshift is fit or given
         z = input_table.meta['redshift']
         z_was_fit = int(z == -9)
