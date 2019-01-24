@@ -1,5 +1,7 @@
 # SDSS-Classification
 
+[![Build Status](https://travis-ci.com/mwvgroup/SDSS-Classification.svg?token=MKWwaqNeMpyaNQ2HGxM7&branch=master)](https://travis-ci.com/mwvgroup/SDSS-Classification)
+
 This project applies the photometric classification technique from González-Gaitan 
 2014 on SDSS data to identify peculiar Type Ia Supernovae (SNe Ia).
 
