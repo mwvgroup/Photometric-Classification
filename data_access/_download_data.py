@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2.7
 # -*- coding: UTF-8 -*-
 
-"""This dscript downloads photometric data from the SDSS supernova survey to
+"""This module downloads photometric data from the SDSS supernova survey to
 the directory ./data .
 """
 

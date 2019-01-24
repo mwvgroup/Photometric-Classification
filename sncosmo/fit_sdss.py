@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2.7
 # -*- coding: UTF-8 -*-
 
 """This module fits SDSS light curves using sncosmo"""
