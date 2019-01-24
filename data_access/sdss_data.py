@@ -26,12 +26,11 @@ download_data(SDSS_URL, DATA_DIR, ['master_data.txt',
 master_table = Table.read(MASTER_PTH, format='ascii')
 
 
-def get_data_for_id(obj_id, filter_name=None):
+def get_data_for_id(obj_id):
     """Returns photometric data for a supernova candidate in a given filter
 
     Args:
-        obj_id      (int): The Candidate ID of the desired object
-        filter_name (str): Optionally return data only for a given filter ugriz
+        obj_id (int): The Candidate ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
@@ -45,11 +44,6 @@ def get_data_for_id(obj_id, filter_name=None):
     col_names = all_data.meta['comments'][-1].split()
     for i, name in enumerate(col_names):
         all_data['col{}'.format(i + 1)].name = name
-
-    if filter_name is not None:
-        filter_index = 'ugriz'.index(filter_name)
-        all_data = all_data[all_data['FILT'] == filter_index]
-        all_data.remove_column('FILT')
 
     meta_data = master_table[master_table['CID'] == obj_id]
     all_data.meta['redshift'] = meta_data['zspecHelio'][0]
@@ -130,6 +124,7 @@ def iter_sncosmo_input(bands=None, skip_types=(), verbose=False):
     Args:
         bands      (list): Optional list of bandpasses to return
         skip_types (list): List of case sensitive classifications to skip
+        verbose    (bool): Whether to display a progress bar while iterating
 
     Yields:
         An astropy table formatted for use with SNCosmo
@@ -152,7 +147,7 @@ def iter_sncosmo_input(bands=None, skip_types=(), verbose=False):
         sncosmo_table['zp'] = np.full(len(all_sn_data), 25)
         sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
         sncosmo_table.meta = all_sn_data.meta
-        sncosmo_table.meta['cid'] = cid
+        sncosmo_table.meta['obj_id'] = cid
 
         # Keep only specified band-passes
         if bands is not None:
