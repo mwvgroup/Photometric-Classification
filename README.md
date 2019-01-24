@@ -13,14 +13,26 @@ This project applies the photometric classification technique from González-Gai
 
 ## File List / Overview
 
-#### *./* 
+#### *data_access/* 
 
-General utilities
+A python 2.7 module for accessing SDSS and DES data. Data is downloaded
+automatically if it is not locally available. An example of accessing SDSS data
+is provided below. Note that the DES interface is the same, except that there
+is no DES master table.
 
- - **download_data.py:** This script downloads data from the SDSS supernova survey to a directory called *data/* .
- - **parse_sn_data.py:** This module parses SDSS data tables. Missing data is downloaded automatically.
+```python
+from data_access import sdss_data
 
+# Summary table of SDSS SN data
+print(sdss_data.master_table) 
 
+# Get data for a specific object
+print(sdss_data.get_data_for_id(685))
+
+# Iterable of SNCosmo input tables for each target
+for table in sdss_data.iter_sncosmo_input():
+    print(table)
+```
 
 #### snana/ 
 
@@ -36,6 +48,6 @@ Simulating 91bg light curves using the SNANA Fortran package
 
 Fitting SDSS data with the SNcosmo python package
 
-- **fit_sncosmo.py:** Uses SNCosmo to fit SDSSS light curves with a normal sn Ia model and the builtin 91bg model in the `ug`, `riz`, and `ugriz` rest frame bands.
+- **fit_sdss.py:** Uses SNCosmo to fit SDSSS light curves with a normal sn Ia model and the builtin 91bg model in the `ug`, `riz`, and `ugriz` rest frame bands.
 - **sncosmo_results.ipynb:** Compares fit results between the normal and 91bg models in different bands.
 - **sncosmo_vs_sdss.ipynb:** Compares fit results with published SDSS results.
