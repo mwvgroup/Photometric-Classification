@@ -19,9 +19,9 @@ FILT_DIR = _path.join(DATA_DIR, '01-FILTERS')
 PHOT_DIR = _path.join(DATA_DIR, '02-DATA_PHOTOMETRY/DES-SN3YR_DES')
 
 # Download data if it does not exist
-download_data(DES_URL, './des_data',
-              ['01-FILTERS.tar.gz', '02-DATA_PHOTOMETRY.tar.gz']
-              )
+download_data(DES_URL, DATA_DIR,
+              ['01-FILTERS.tar.gz', '02-DATA_PHOTOMETRY.tar.gz'],
+              [FILT_DIR, PHOT_DIR])
 
 
 def get_data_for_id(obj_id):

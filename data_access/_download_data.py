@@ -52,18 +52,26 @@ def _download_file(url, out_path):
         os.rename(temp_path, out_path)
 
 
-def download_data(base_url, out_dir, data_files):
-    """Downloads data files from a given url
+def download_data(base_url, out_dir, remote_name, check_local_name=None):
+    """Downloads data files from a given url and unzip if it is a .tar.gz
+
+    If check_local_names is provided, check if <out_dir>/<check_local_name[i]>
+    exists first and don't download the file if it does.
 
     Args:
-        base_url         (str): Url to download files from
-        out_dir          (str): Director to save files into
-        data_files (list[str]): Name of files to download
+        base_url               (str): Url to download files from
+        out_dir                (str): Directory to save files into
+        remote_name      (list[str]): Name of files to download
+        check_local_name (list[str]): Names of file to check for
     """
 
-    for f_name in data_files:
+    for i, f_name in enumerate(remote_name):
         out_path = os.path.join(out_dir, f_name)
-        if not os.path.exists(out_path):
-            print('downloading', f_name)
-            url = requests.compat.urljoin(base_url, f_name)
-            _download_file(url, out_path)
+        if check_local_name is not None:
+            check_path = os.path.join(out_dir, check_local_name[i])
+            if os.path.exists(check_path):
+                continue
+
+        print('downloading', f_name)
+        url = requests.compat.urljoin(base_url, f_name)
+        _download_file(url, out_path)
