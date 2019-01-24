@@ -38,18 +38,19 @@ def get_data_for_id(obj_id):
     file_path = _path.join(PHOT_DIR, 'des_{:08d}.dat'.format(obj_id))
     all_data = Table.read(
         file_path, format='ascii',
-        data_start=34, data_end=-1, comment='.*:\s\s',
+        data_start=34, data_end=-1,
         names=['VARLIST:', 'MJD', 'BAND', 'FIELD', 'FLUXCAL', 'FLUXCALERR',
                'ZPFLUX', 'PSF', 'SKYSIG', 'GAIN', 'PHOTFLAG', 'PHOTPROB'])
 
     # Add meta data to table
-    meta_data = all_data.meta['comments']
-    all_data.meta['ra'] = float(meta_data[7].split()[0])
-    all_data.meta['dec'] = float(meta_data[8].split()[0])
-    all_data.meta['PEAKMJD'] = float(meta_data[12])
-    all_data.meta['redshift'] = float(meta_data[13].split()[0])
-    all_data.meta['redshift_err'] = float(meta_data[13].split()[2])
-    del all_data.meta['comments']
+    with open(file_path) as ofile:
+        meta_data = ofile.readlines()
+        all_data.meta['ra'] = float(meta_data[7].split()[1])
+        all_data.meta['dec'] = float(meta_data[8].split()[1])
+        all_data.meta['PEAKMJD'] = float(meta_data[12].split()[1])
+        all_data.meta['redshift'] = float(meta_data[13].split()[1])
+        all_data.meta['redshift_err'] = float(meta_data[13].split()[3])
+        del all_data.meta['comments']
 
     return all_data
 
@@ -75,7 +76,6 @@ def iter_sncosmo_input(bands=None, verbose=False):
     iter_data = tqdm(file_list) if verbose else file_list
     for obj_id in iter_data:
         obj_id_int = int(obj_id.lstrip('des_').rstrip('.dat'))
-        print(obj_id)
         all_sn_data = get_data_for_id(obj_id_int)
 
         sncosmo_table = Table()
@@ -93,7 +93,3 @@ def iter_sncosmo_input(bands=None, verbose=False):
             sncosmo_table = keep_restframe_bands(sncosmo_table, bands)
 
         yield sncosmo_table
-
-
-if __name__ == '__main__':
-    for x in iter_sncosmo_input(): pass
