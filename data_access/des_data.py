@@ -69,9 +69,9 @@ def iter_sncosmo_input(bands=None, verbose=False):
         An astropy table formatted for use with SNCosmo
     """
 
-    # Todo: These effective wavelengths are wrong
+    # Effective wavelengths taken from http://www.mso.anu.edu.au/~brad/filters.html
     des_bands = ('desg', 'desr', 'desi', 'desz', 'desy')
-    lambda_effective = np.array([3551, 4686, 6166, 7480, 8932])
+    lambda_effective = np.array([5270, 6590, 7890, 9760, 10030])
 
     # Load list of all target ids
     file_path = _path.join(PHOT_DIR, 'DES-SN3YR_DES.LIST')
