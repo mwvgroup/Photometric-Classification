@@ -19,8 +19,8 @@ class SN91bgModel(TestCase):
         cls.model = sncosmo.Model(source=SN91bgSource())
 
     def test_model_runs(self):
-        data = sncosmo.load_example_data()
+        data = Table.read('sn91bg_50003.csv')
         result, fitted_model = sncosmo.fit_lc(
-            data, self.model, ['stretch', 'color', 'amplitude'])
+            data, self.model, ['z','t0','amplitude', 'stretch', 'color'], bounds={'z': (0.01, .1)})
 
         self.assertLessEqual(result.chisq / result.ndof, 12)
