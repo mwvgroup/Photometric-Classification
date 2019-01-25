@@ -11,18 +11,19 @@ import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
 
-from _download_data import download_data
-from _utils import keep_restframe_bands
+from ._download_data import download_data
+from ._utils import keep_restframe_bands
 
 DES_URL = 'http://desdr-server.ncsa.illinois.edu/despublic/sn_files/y3/tar_files/'
 DATA_DIR = _path.join(_path.dirname(_path.realpath(__file__)), 'des_data')
 FILT_DIR = _path.join(DATA_DIR, '01-FILTERS')
 PHOT_DIR = _path.join(DATA_DIR, '02-DATA_PHOTOMETRY/DES-SN3YR_DES')
+FITS_DIR = _path.join(DATA_DIR, '04-BBCFITS')
 
 # Download data if it does not exist
 download_data(DES_URL, DATA_DIR,
-              ['01-FILTERS.tar.gz', '02-DATA_PHOTOMETRY.tar.gz'],
-              [FILT_DIR, PHOT_DIR])
+              ['01-FILTERS.tar.gz', '02-DATA_PHOTOMETRY.tar.gz', '04-BBCFITS.tar.gz'],
+              [FILT_DIR, PHOT_DIR, FITS_DIR])
 
 
 def get_data_for_id(obj_id):
