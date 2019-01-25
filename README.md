@@ -3,8 +3,7 @@
 [![Build Status](https://travis-ci.com/mwvgroup/SDSS-Classification.svg?token=MKWwaqNeMpyaNQ2HGxM7&branch=master)](https://travis-ci.com/mwvgroup/SDSS-Classification)
 
 This project applies the photometric classification technique from González-Gaitan 
-2014 on SDSS data to identify peculiar Type Ia Supernovae (SNe Ia). DES data is also
-considered, but is not a primary objective.
+2014 on SDSS and DES data to identify peculiar Type Ia Supernovae (SNe Ia). 
 
 ## Todo:
 - SNCosmo will raise occasional warnings about poor fits, bad S/N, and dropped bands. These warnings are currently being logged but otherwise ignored and need to be handled correctly.
