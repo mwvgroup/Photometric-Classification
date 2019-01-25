@@ -22,8 +22,25 @@ FITS_DIR = _path.join(DATA_DIR, '04-BBCFITS')
 
 # Download data if it does not exist
 download_data(DES_URL, DATA_DIR,
-              ['01-FILTERS.tar.gz', '02-DATA_PHOTOMETRY.tar.gz', '04-BBCFITS.tar.gz'],
+              ['01-FILTERS.tar.gz', '02-DATA_PHOTOMETRY.tar.gz',
+               '04-BBCFITS.tar.gz'],
               [FILT_DIR, PHOT_DIR, FITS_DIR])
+
+master_table = Table.read(
+    _path.join(FITS_DIR, 'SALT2mu_DES+LOWZ_C11.FITRES'),
+    format='ascii',
+    data_start=4, comment='#', exclude_names=['dummy_col'],
+    names=['dummy_col', 'CID', 'CIDint', 'IDSURVEY', 'TYPE', 'FIELD',
+           'CUTFLAG_SNANA', 'zHEL', 'zHELERR', 'zCMB', 'zCMBERR',
+           'zHD', 'zHDERR', 'VPEC', 'VPECERR', 'HOST_LOGMASS',
+           'HOST_LOGMASS_ERR', 'SNRMAX1', 'SNRMAX2', 'SNRMAX3', 'PKMJD',
+           'PKMJDERR', 'x1', 'x1ERR', 'c', 'cERR', 'mB', 'mBERR', 'x0',
+           'x0ERR', 'COV_x1_c', 'COV_x1_x0', 'COV_c_x0', 'NDOF',
+           'FITCHI2', 'FITPROB', 'RA', 'DECL', 'TGAPMAX', 'TrestMIN',
+           'TrestMAX', 'MWEBV', 'm0obs_i', 'm0obs_r', 'em0obs_i', 'em0obs_r',
+           'MU', 'MUMODEL', 'MUERR', 'MUERR_RAW', 'MURES', 'MUPULL', 'M0DIF',
+           'ERRCODE', 'biasCor_mu', 'biasCorErr_mu', 'biasCor_mB',
+           'biasCor_x1', 'biasCor_c', 'biasScale_muCOV', 'IDSAMPLE'])
 
 
 def get_data_for_id(obj_id):
@@ -40,7 +57,7 @@ def get_data_for_id(obj_id):
     file_path = _path.join(PHOT_DIR, 'des_{:08d}.dat'.format(obj_id))
     all_data = Table.read(
         file_path, format='ascii',
-        data_start=34, data_end=-1,
+        data_start=27, data_end=-1,
         names=['VARLIST:', 'MJD', 'BAND', 'FIELD', 'FLUXCAL', 'FLUXCALERR',
                'ZPFLUX', 'PSF', 'SKYSIG', 'GAIN', 'PHOTFLAG', 'PHOTPROB'])
 
@@ -80,8 +97,8 @@ def iter_sncosmo_input(bands=None, verbose=False):
 
     # Yield an SNCosmo input table for each target
     iter_data = tqdm(file_list) if verbose else file_list
-    for obj_id in iter_data:
-        obj_id_int = int(obj_id.lstrip('des_').rstrip('.dat'))
+    for file_name in iter_data:
+        obj_id_int = int(file_name.lstrip('des_').rstrip('.dat'))
         all_sn_data = get_data_for_id(obj_id_int)
 
         sncosmo_table = Table()
@@ -92,7 +109,7 @@ def iter_sncosmo_input(bands=None, verbose=False):
         sncosmo_table['zp'] = all_sn_data['ZPFLUX']
         sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
         sncosmo_table.meta = all_sn_data.meta
-        sncosmo_table.meta['obj_id'] = obj_id
+        sncosmo_table.meta['obj_id'] = obj_id_int
 
         if bands is not None:
             sncosmo_table = keep_restframe_bands(

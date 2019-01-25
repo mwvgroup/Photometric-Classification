@@ -10,9 +10,7 @@ import sncosmo
 from astropy.table import Table
 from sncosmo.fitting import DataQualityError
 
-import sys;
-
-sys.path.insert(0, '../')
+import sys; sys.path.insert(0, '../')
 from data_access.des_data import iter_sncosmo_input
 
 DES_BANDS = ('desg', 'desr', 'desi', 'desz', 'desy')
