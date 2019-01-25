@@ -12,7 +12,8 @@ import sncosmo
 from scipy.interpolate import RectBivariateSpline,interpn
 import matplotlib.pyplot as plt
 
-COMPILED_MODEL_PATH = 'complete_template.npy'
+FILE_DIR = os.path.abspath(os.path.dirname(__file__))
+COMPILED_MODEL_PATH = os.path.join(FILE_DIR, 'complete_template.npy')
 
 def bi_search(a,x):
     """
