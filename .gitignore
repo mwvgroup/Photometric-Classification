@@ -9,8 +9,8 @@
 *.pyc
 
 # SDSS Data
-data/
-light_curves/
+data_access/sdss_data
+data_access/des_data
 
 # Jupyter Checkpoints
 *.ipynb_checkpoints
