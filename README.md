@@ -1,33 +1,41 @@
 # SDSS-Classification
 
+[![Build Status](https://travis-ci.com/mwvgroup/SDSS-Classification.svg?token=MKWwaqNeMpyaNQ2HGxM7&branch=master)](https://travis-ci.com/mwvgroup/SDSS-Classification)
+
 This project applies the photometric classification technique from González-Gaitan 
-2014 on SDSS data to identify peculiar Type Ia Supernovae (SNe Ia).
+2014 on SDSS data to identify peculiar Type Ia Supernovae (SNe Ia). DES data is also
+considered, but is not a primary objective.
 
 ## Todo:
 - SNCosmo will raise occasional warnings about poor fits, bad S/N, and dropped bands. These warnings are currently being logged but otherwise ignored and need to be handled correctly.
 - If a redshift for a supernova is not available, SNCosmo is instructed to fit for the redshift. A prior needs to be provided for the redshift.
 - The `num_points_<band>` column in the fit summary tables contain the number of data points per observer frame band. We are interested in the number of points in the rest frame.
-- We are currently fitting data with SNCosmo's built-in 91bg model, but would like to use our own custom model. This custom model is currently used to simulate SNANA light curves.
+- We are currently fitting data with SNCosmo's built-in 91bg model, but want to use our own custom model. This custom model is currently used to simulate SNANA light curves.
 - Determine what K-correction was used in the published SDSS fit results and improve the quality of fits with large chi-squared compared to published results.
 
 
 ## File List / Overview
 
-#### *./* 
+#### data_access/ 
 
-General utilities
+A python 2.7 module for accessing SDSS and DES supernova data. Data is downloaded
+automatically if it is not locally available. An example of accessing SDSS data
+is provided below. Note that the DES interface is the same, except you would
+import `des_data` instead of `sdss_data`.
 
- - **download_data.py:** This script downloads data from the SDSS supernova survey to a directory called *data/* .
- - **parse_sn_data.py:** This module parses SDSS data tables. Missing data is downloaded automatically.
+```python
+from data_access import sdss_data
 
+# Summary table of SDSS SN data
+print(sdss_data.master_table) 
 
-#### 91bg_model/
+# Get data for a specific object
+print(sdss_data.get_data_for_id(685))
 
-A spectrophotometric template for 91bg like supernovae. Based on Nugent's 91bg model but extendied to the UV with synthetic spectra from Hachinger et al. 2008.
-
-- **sncosmo_ported_model.py:** Version of the 91bg model compatible with SNCosmo.
-- **sed_templates/SED.INFO:** Summary file of template spectra
-- **sed_templates/<filename>.SED:** Template spectra with date to maximum, wavelength, and flux values
+# Iterable of SNCosmo input tables for each target
+for table in sdss_data.iter_sncosmo_input():
+    print(table)
+```
 
 #### snana/ 
 
@@ -41,16 +49,9 @@ Simulating 91bg light curves using the SNANA Fortran package
 
 #### SNCosmo/
 
-Fitting SDSS data with the SNcosmo python package
+Fitting SDSS and DES data with the SNCosmo python package
 
-- **fit_sncosmo.py:** Uses SNCosmo to fit SDSSS light curves with a normal sn Ia model and the builtin 91bg model in the `ug`, `riz`, and `ugriz` rest frame bands.
+- **fit_sdss.py:** Uses SNCosmo to fit SDSSS light curves with a normal sn Ia model and the builtin 91bg model in the `ug`, `riz`, and `ugriz` rest frame bands.
+- **fit_des.py:** The same as *fit_sdss.py* except for DES data.
 - **sncosmo_results.ipynb:** Compares fit results between the normal and 91bg models in different bands.
-- **sncosmo_vs_sdss.ipynb:** Compares fit results with published SDSS results.
-
-
-
-#### snoopy/
-
-Fitting SDSS data with the Snoopy (`snpy`) python package. Development here is unfinished and abandoned after the SNCsomo package was found to be more user friendly.
-
-- **fit_snoopy.py:** Uses Snoopy to fit SDSSS light curves with a normal sn Ia model.
+- **compare_to_published.ipynb:** Compares fit results with published results.
