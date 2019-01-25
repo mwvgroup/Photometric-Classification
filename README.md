@@ -21,7 +21,7 @@ considered, but is not a primary objective.
 A python 2.7 module for accessing SDSS and DES supernova data. Data is downloaded
 automatically if it is not locally available. An example of accessing SDSS data
 is provided below. Note that the DES interface is the same, except you would
-import `des_data`.
+import `des_data` instead of `sdss_data`.
 
 ```python
 from data_access import sdss_data
