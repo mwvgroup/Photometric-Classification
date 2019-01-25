@@ -53,8 +53,9 @@ def bilinear_interp(x1, x2, y1, y2, f, x, y):
                              (x1,y1), (x1,y2), (x2,y1), (x2,y2)
 
     Returns:
-        the interpolating value
+        The interpolated value
     """
+
     f11 = f[0]
     f12 = f[1]
     f21 = f[2]
