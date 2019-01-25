@@ -1,0 +1,8 @@
+astropy
+bokeh
+matplotlib
+numpy
+requests
+scipy
+sncosmo
+tqdm
