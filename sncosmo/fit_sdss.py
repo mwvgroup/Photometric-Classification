@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: UTF-8 -*-
 
-"""This module fits SDSS light curves using sncosmo"""
+"""This script fits SDSS light curves using sncosmo"""
 
 import os
 
@@ -139,30 +139,30 @@ def fit_sdss_data(out_path,
 
 
 if __name__ == '__main__':
-    print('\n\nFitting type Ia model in ug')
-    fit_sdss_data('./sncosmo_results/snia_ug.csv',
+    print('Fitting type Ia model in ug')
+    fit_sdss_data('./sdss_results/snia_ug.csv',
                   skip_types=['Variable', 'AGN'],
                   bands=['sdssu', 'sdssg'])
 
     print('\n\nFitting type Ia model in riz')
-    fit_sdss_data('./sncosmo_results/snia_riz.csv',
+    fit_sdss_data('./sdss_results/snia_riz.csv',
                   skip_types=['Variable', 'AGN'],
                   bands=['sdssr', 'sdssi', 'sdssz'])
 
     print('\n\nFitting 91bg model in ug')
-    fit_sdss_data('./sncosmo_results/91bg_ug.csv',
+    fit_sdss_data('./sdss_results/91bg_ug.csv',
                   skip_types=['Variable', 'AGN'],
                   model_name='nugent-sn91bg',
                   bands=['sdssu', 'sdssg'],
                   params_to_fit=['t0', 'amplitude'])
 
     print('\n\nFitting 91bg model in riz')
-    fit_sdss_data('./sncosmo_results/91bg_riz.csv',
+    fit_sdss_data('./sdss_results/91bg_riz.csv',
                   skip_types=['Variable', 'AGN'],
                   model_name='nugent-sn91bg',
                   bands=['sdssr', 'sdssi', 'sdssz'],
                   params_to_fit=['t0', 'amplitude'])
 
-    print('Fitting type Ia model in all bands')
-    fit_sdss_data('./sncosmo_results/snia_ugriz.csv',
+    print('\n\nFitting type Ia model in all bands')
+    fit_sdss_data('./sdss_results/snia_ugriz.csv',
                   skip_types=['Variable', 'AGN'])

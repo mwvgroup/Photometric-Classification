@@ -3,7 +3,8 @@
 [![Build Status](https://travis-ci.com/mwvgroup/SDSS-Classification.svg?token=MKWwaqNeMpyaNQ2HGxM7&branch=master)](https://travis-ci.com/mwvgroup/SDSS-Classification)
 
 This project applies the photometric classification technique from González-Gaitan 
-2014 on SDSS data to identify peculiar Type Ia Supernovae (SNe Ia).
+2014 on SDSS data to identify peculiar Type Ia Supernovae (SNe Ia). DES data is also
+considered, but is not a primary objective.
 
 ## Todo:
 - SNCosmo will raise occasional warnings about poor fits, bad S/N, and dropped bands. These warnings are currently being logged but otherwise ignored and need to be handled correctly.
@@ -20,7 +21,7 @@ This project applies the photometric classification technique from González-Gai
 A python 2.7 module for accessing SDSS and DES supernova data. Data is downloaded
 automatically if it is not locally available. An example of accessing SDSS data
 is provided below. Note that the DES interface is the same, except you would
-import `des_data` and there is no `des_data.master_table`.
+import `des_data`.
 
 ```python
 from data_access import sdss_data
@@ -48,8 +49,9 @@ Simulating 91bg light curves using the SNANA Fortran package
 
 #### SNCosmo/
 
-Fitting SDSS data with the SNcosmo python package
+Fitting SDSS and DES data with the SNCosmo python package
 
 - **fit_sdss.py:** Uses SNCosmo to fit SDSSS light curves with a normal sn Ia model and the builtin 91bg model in the `ug`, `riz`, and `ugriz` rest frame bands.
+- **fit_des.py:** The same as *fit_sdss.py* except for DES data.
 - **sncosmo_results.ipynb:** Compares fit results between the normal and 91bg models in different bands.
-- **sncosmo_vs_sdss.ipynb:** Compares fit results with published SDSS results.
+- **compare_to_published.ipynb:** Compares fit results with published results.
