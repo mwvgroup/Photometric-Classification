@@ -1,5 +1,6 @@
 astropy
 bokeh
+iminuit
 matplotlib
 numpy
 requests
