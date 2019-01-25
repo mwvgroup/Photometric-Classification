@@ -6,11 +6,15 @@ for use with SNCosmo.
 """
 
 from unittest import TestCase
+from os import path
 
 import sncosmo
 from astropy.table import Table
 
 from sn91bg_model import SN91bgSource
+
+TEST_FILE = path.join(path.dirname(path.realpath(__file__)),
+                      'sn91bg_50003.csv')
 
 
 class SN91bgModel(TestCase):
@@ -20,7 +24,7 @@ class SN91bgModel(TestCase):
         cls.model = sncosmo.Model(source=SN91bgSource())
 
     def test_model_runs(self):
-        data = Table.read('sn91bg_50003.csv')
+        data = Table.read(TEST_FILE)
         result, fitted_model = sncosmo.fit_lc(
             data,
             self.model,
