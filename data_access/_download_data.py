@@ -1,16 +1,16 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2.7
 # -*- coding: UTF-8 -*-
 
-"""This dscript downloads photometric data from the SDSS supernova survey to
+"""This module downloads photometric data from the SDSS supernova survey to
 the directory ./data .
 """
 
-import os
+from __future__ import print_function
 
-import requests
+import os
 import tarfile
 
-SDSS_URL = 'https://data.sdss.org/sas/dr10/boss/papers/supernova/'
+import requests
 
 
 def _download_file(url, out_path):
@@ -52,27 +52,26 @@ def _download_file(url, out_path):
         os.rename(temp_path, out_path)
 
 
-def download_sdss_data(out_dir):
-    """Downloads supernova data from SDSS
+def download_data(base_url, out_dir, remote_name, check_local_name=None):
+    """Downloads data files from a given url and unzip if it is a .tar.gz
 
-    Downloaded files include:
-        master_data.txt
-        SMP_Data.tar.gz
-        SDSS_dataRelease-snana.tar.gz
+    If check_local_names is provided, check if <out_dir>/<check_local_name[i]>
+    exists first and don't download the file if it does.
+
+    Args:
+        base_url               (str): Url to download files from
+        out_dir                (str): Directory to save files into
+        remote_name      (list[str]): Name of files to download
+        check_local_name (list[str]): Names of file to check for
     """
 
-    # Define file_names and output paths of files to download
-    master_path = os.path.join(out_dir, 'master_table.txt')  # Master table
-    data_files = [('master_data.txt', master_path),
-                  ('SMP_Data.tar.gz', out_dir),
-                  ('SDSS_dataRelease-snana.tar.gz', out_dir)]
+    for i, f_name in enumerate(remote_name):
+        out_path = os.path.join(out_dir, f_name)
+        if check_local_name is not None:
+            check_path = os.path.join(out_dir, check_local_name[i])
+            if os.path.exists(check_path):
+                continue
 
-    # Download each file
-    for f_name, out_path in data_files:
-        print('downloading ' + f_name)
-        url = requests.compat.urljoin(SDSS_URL, f_name)
+        print('downloading', f_name)
+        url = requests.compat.urljoin(base_url, f_name)
         _download_file(url, out_path)
-
-
-if __name__ == '__main__':
-    download_sdss_data('./data')
