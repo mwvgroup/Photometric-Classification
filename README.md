@@ -1,4 +1,4 @@
-- # SDSS-Classification
+# SDSS-Classification
 
   [![Build Status](https://travis-ci.com/mwvgroup/SDSS-Classification.svg?token=MKWwaqNeMpyaNQ2HGxM7&branch=master)](https://travis-ci.com/mwvgroup/SDSS-Classification)
 
@@ -7,10 +7,6 @@
   considered, but is not a primary objective.
 
   ## Todo:
-
-- 
-
-- 
 
 - SNCosmo will raise occasional warnings about poor fits, bad S/N, and dropped bands. These warnings are currently being logged but otherwise ignored and need to be handled correctly.
 
