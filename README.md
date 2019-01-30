@@ -71,9 +71,10 @@
   - **Unknown:** The light curve was too sparse and/or noisy to make a useful classification
   - **Variable:** The source was observed in more than one observing season
   - **AGN:** An optical spectrum was identified as having features associated with an active galaxy
-  - **SNII, SNIbc (either Ib or Ic), SNIa:** SN classifications without prefixes are based on a spectrum (including a few non-SDSS spectra)
-  - A prefix “p” indicates the redshift is unknown and that the identification was made with photometric data only
-  - A prefix “z” indicates that a redshift is measured from its candidate host galaxy and the classification uses that redshift as a prior. 
+  - **SNII, SNIbc (either Ib or Ic), SNIa:** 
+    - SN classifications without prefixes are based on a spectrum (including a few non-SDSS spectra)
+    - A prefix “p” indicates the redshift is unknown and that the identification was made with photometric data only
+    - A prefix “z” indicates that a redshift is measured from its candidate host galaxy and the classification uses that redshift as a prior. 
   - **SN Ia?:** classification is based on a spectrum that suggests a SN Ia but is inconclusive.
 - Some SN candidates have associated notes indicating candidates that may have peculiar features or candidates where the typing spectrum was obtained by other groups. Quoting the data release: "We did not search for these peculiar features in a systematic way, but we have noted the likely peculiar features that were found." Note flags are as follows:
   - 1  SN typing based on spectra obtained by groups outside SDSS. The spectra used for typing are not included in the data release. 
