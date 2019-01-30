@@ -3,10 +3,13 @@
   [![Build Status](https://travis-ci.com/mwvgroup/SDSS-Classification.svg?token=MKWwaqNeMpyaNQ2HGxM7&branch=master)](https://travis-ci.com/mwvgroup/SDSS-Classification)
 
   This project applies the photometric classification technique from González-Gaitan 
-  2014 on SDSS data to identify peculiar Type Ia Supernovae (SNe Ia). DES data is also
-  considered, but is not a primary objective.
+  2014 on SDSS and DES data to identify peculiar Type Ia Supernovae (SNe Ia). 
+  
+1. [Project Todo List](#todo)
+1. [Directory Overview and File Lists](#directory-overview-and-file-lists)
+1. [Notes on SDSS Data](#notes-on-the-sdss-ii-sn-survey-data-seiko-et-al-2018)
 
-  ## Todo:
+## Todo:
 
 - SNCosmo will raise occasional warnings about poor fits, bad S/N, and dropped bands. These warnings are currently being logged but otherwise ignored and need to be handled correctly.
 
@@ -18,7 +21,7 @@
 
 - Determine what K-correction was used in the published SDSS fit results and improve the quality of fits with large chi-squared compared to published results.
 
-## Directory Overviews / File Lists
+## Directory Overview and File Lists
 
 #### *data_access/* 
 
