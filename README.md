@@ -7,14 +7,14 @@ This project applies the photometric classification technique from González-Gai
 considered, but is not a primary objective.
 
 ## Todo:
+
 - SNCosmo will raise occasional warnings about poor fits, bad S/N, and dropped bands. These warnings are currently being logged but otherwise ignored and need to be handled correctly.
 - If a redshift for a supernova is not available, SNCosmo is instructed to fit for the redshift. A prior needs to be provided for the redshift.
 - The `num_points_<band>` column in the fit summary tables contain the number of data points per observer frame band. We are interested in the number of points in the rest frame.
 - We are currently fitting data with SNCosmo's built-in 91bg model, but want to use our own custom model. This custom model is currently used to simulate SNANA light curves.
 - Determine what K-correction was used in the published SDSS fit results and improve the quality of fits with large chi-squared compared to published results.
 
-
-## File List / Overview
+## Directory Overviews / File Lists
 
 #### *data_access/* 
 
@@ -55,3 +55,26 @@ Fitting SDSS and DES data with the SNCosmo python package
 - **fit_des.py:** The same as *fit_sdss.py* except for DES data.
 - **sncosmo_results.ipynb:** Compares fit results between the normal and 91bg models in different bands.
 - **compare_to_published.ipynb:** Compares fit results with published results.
+
+## Notes on the SDSS-II SN Survey Data (Seiko et al. 2018)
+
+- Observed during three-month campains in Fall 2005, 2006, and 2007
+- Redshift range 0.05 < z < 0.4 (Frieman et al. 2008)
+- 10,258 Included sources. 3225 Variable, 499 classified as SN Ia, and 86 as Core collapse.
+- All objects were observed in two or more filters and visually inspected for artifacts.
+- *ugriz* Filters spaning 350 - 1000 nm (Fukugita et al. 1996)
+- Classification schemes:
+  - **Unknown:** The light curve was too sparse and/or noisy to make a useful classification
+  - **Variable:** The source was observed in more than one observing season
+  - **AGN:** An optical spectrum was identified as having features associated with an active galaxy
+  - **SNII, SNIbc (either Ib or Ic), SNIa:** SN classifications without prefixes are based on a spectrum (including a few non-SDSS spectra)
+  - A prefix “p” indicates the redshift is unknown and that the identification was made with photometric data only
+  - A prefix “z” indicates that a redshift is measured from its candidate host galaxy and the classification uses that redshift as a prior. 
+  - **SN Ia?:** classification is based on a spectrum that suggests a SN Ia but is inconclusive.
+
+- Some SN candidates have associated notes indicating candidates that may have peculiar features or candidates where the typing spectrum was obtained by other groups. Quoting the data release: "We did not search for these peculiar features in a systematic way, but we have noted the likely peculiar features that were found." Note flags are as follows:
+  - 1  SN typing based on spectra obtained by groups outside SDSS. The spectra used for typing are not included in the data release. 
+  - 2  Peculiar type Ia SN possibly similar to sn91bg 
+  - 3  Peculiar type Ia SN possibly similar to sn00cx 
+  - 4  Peculiar type Ia SN possibly similar to sn02ci 
+  - 5  Peculiar type Ia SN possibly similar to sn02cx 
