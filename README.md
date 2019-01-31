@@ -23,7 +23,7 @@
 
 - Determine what K-correction was used in the published SDSS fit results and improve the quality of fits with large chi-squared compared to published results.
 
-- SDSS did not perform didicated work to identify peculiar outliers and only flagged 10, 4 of which are flagged as 91bg like. This is not enough information to perform a figure of merit calculation. Furthermore, there was no such effort performed for DES. This means an external list or study must be identified.
+- Perform a figure of merit calculation to identify classification boundaries.
 
 ## Directory Overview and File Lists
 
