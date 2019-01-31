@@ -4,7 +4,7 @@
 
   This repository applies the photometric classification technique from González-Gaitan 
   2014 on SDSS and DES data to identify peculiar Type Ia Supernovae (SNe Ia). 
-  Work on the accompanying paper can be found [here](https://github.com/mwvgroup/91bg_paper)
+  Work on the accompanying paper can be found [here](https://github.com/mwvgroup/91bg_paper).
   
 1. [Project Todo List](#todo)
 1. [Directory Overview and File Lists](#directory-overview-and-file-lists)
