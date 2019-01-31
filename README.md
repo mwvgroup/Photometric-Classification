@@ -2,13 +2,14 @@
 
   [![Build Status](https://travis-ci.com/mwvgroup/SDSS-Classification.svg?token=MKWwaqNeMpyaNQ2HGxM7&branch=master)](https://travis-ci.com/mwvgroup/SDSS-Classification)
 
-  This project applies the photometric classification technique from González-Gaitan 
+  This repository applies the photometric classification technique from González-Gaitan 
   2014 on SDSS and DES data to identify peculiar Type Ia Supernovae (SNe Ia). 
+  Work on the accompanying paper can be found [here](https://github.com/mwvgroup/91bg_paper)
   
 1. [Project Todo List](#todo)
 1. [Directory Overview and File Lists](#directory-overview-and-file-lists)
 1. [Notes on SDSS Data](#notes-on-the-sdss-ii-sn-survey-data-seiko-et-al-2018)
-1. [Notes on DES Data](#notes-on-the--des-year-3-cosmology-data-brout-et-al-2019)
+1. [Notes on DES Data](#notes-on-the-des-year-3-cosmology-data-brout-et-al-2019)
 
 ## Todo:
 
@@ -26,7 +27,7 @@
 
 #### *data_access/* 
 
-  A python 2.7 module for accessing SDSS and DES supernova data. Data is downloaded
+  A Python 2.7 module for accessing SDSS and DES supernova data. Data is downloaded
   automatically if it is not locally available. An example of accessing SDSS data
   is provided below. Note that the DES interface is the same, except you would
   import `des_data` instead of `sdss_data`.
@@ -66,11 +67,11 @@
 
 ## Notes on the SDSS-II SN Survey Data (Seiko et al. 2018)
 
-- Observed during three-month campains in Fall 2005, 2006, and 2007
+- Observed during three-month campaigns in Fall 2005, 2006, and 2007
 - Redshift range 0.05 < z < 0.4 (Frieman et al. 2008)
 - 10,258 Included sources. 3225 Variable, 499 classified as SN Ia, and 86 as Core collapse.
 - All objects were observed in two or more filters and visually inspected for artifacts.
-- *ugriz* Filters spaning 350 - 1000 nm (Fukugita et al. 1996)
+- *ugriz* Filters spanning 350 - 1000 nm (Fukugita et al. 1996)
 - Classification schemes:
   - **Unknown:** The light curve was too sparse and/or noisy to make a useful classification
   - **Variable:** The source was observed in more than one observing season
@@ -86,11 +87,11 @@
   - 3  Peculiar type Ia SN possibly similar to sn00cx 
   - 4  Peculiar type Ia SN possibly similar to sn02ci 
   - 5  Peculiar type Ia SN possibly similar to sn02cx 
-- Light curve fits are perfromed using PSNID, SLAT2, and MLCS2k2
+- Light curve fits are performed using PSNID, SLAT2, and MLCS2k2
   - SALT2 fits are performed both without and with providing a spectroscopic redshift (where available)
   - Only fit data with a photometric flag less than 1024 (Holtzman et al. 2008)
 
-- Quoting section7.2 of the data release:  "The results of the SALT2 fits depend on the version of the code used, the spectral templates, and the color law. Our fits use the SALT2 model as implemented in SNANA version 10.31b and the spectral templates and color law reported in Guy et al. (2010, G10).... For the SDSS data, the largest differences in the fitted param- eters arises from the difference in the color law between G07 and G10. The SDSS-II- SNLS joint light curve anal- ysis paper on cosmology (Betoule et al. 2014) releases a new version of the SALT2 model that is based on adding the full SDSS-II spectroscopically confirmed SN sample to the SALT2 training set." The relationship between the fit color parameters is shown to be linear. The G07 color law results in a value of the *c* parameter that is 20% higher than G10 on average.
+- Quoting section7.2 of the data release:  "The results of the SALT2 fits depend on the version of the code used, the spectral templates, and the color law. Our fits use the SALT2 model as implemented in SNANA version 10.31b and the spectral templates and color law reported in Guy et al. (2010, G10).... For the SDSS data, the largest differences in the fitted parameters arises from the difference in the color law between G07 and G10. The SDSS-II- SNLS joint light curve analysis paper on cosmology (Betoule et al. 2014) releases a new version of the SALT2 model that is based on adding the full SDSS-II spectroscopically confirmed SN sample to the SALT2 training set." The relationship between the fit color parameters is shown to be linear. The G07 color law results in a value of the *c* parameter that is 20% higher than G10 on average.
 
 ## Notes on the DES Year 3 Cosmology Data (Brout et al. 2019)
 
