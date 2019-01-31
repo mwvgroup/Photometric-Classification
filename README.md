@@ -8,7 +8,7 @@
   
 1. [Project Todo List](#todo)
 1. [Directory Overview and File Lists](#directory-overview-and-file-lists)
-1. [Notes on SDSS Data](#notes-on-the-sdss-ii-sn-survey-data-seiko-et-al-2018)
+1. [Notes on SDSS Data](#notes-on-the-sdss-ii-sn-survey-data-sako-et-al-2018)
 1. [Notes on DES Data](#notes-on-the-des-year-3-cosmology-data-brout-et-al-2019)
 
 ## Todo:
@@ -67,7 +67,7 @@
 - **sncosmo_results.ipynb:** Compares fit results between the normal and 91bg models in different bands.
 - **compare_to_published.ipynb:** Compares fit results with published results.
 
-## Notes on the SDSS-II SN Survey Data (Seiko et al. 2018)
+## Notes on the SDSS-II SN Survey Data (Sako et al. 2018)
 
 - Observed during three-month campaigns in Fall 2005, 2006, and 2007
 - Redshift range 0.05 < z < 0.4 (Frieman et al. 2008)
