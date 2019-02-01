@@ -95,9 +95,12 @@
 
 - Quoting section7.2 of the data release:  "The results of the SALT2 fits depend on the version of the code used, the spectral templates, and the color law. Our fits use the SALT2 model as implemented in SNANA version 10.31b and the spectral templates and color law reported in Guy et al. (2010, G10).... For the SDSS data, the largest differences in the fitted parameters arises from the difference in the color law between G07 and G10. The SDSS-II- SNLS joint light curve analysis paper on cosmology (Betoule et al. 2014) releases a new version of the SALT2 model that is based on adding the full SDSS-II spectroscopically confirmed SN sample to the SALT2 training set." The relationship between the fit color parameters is shown to be linear. The G07 color law results in a value of the *c* parameter that is 20% higher than G10 on average.
 
-## Notes on the DES Year 3 Cosmology Data (Brout et al. 2019)
+## Notes on the DES Year 3 Cosmology Data (Brout, Sako et al. 2019 and Brout, Scolnic et al. 2019) 
 
-- Five year survey from 2013 - 2018 within 0.017 < z < 0.849
-- Initial year 3 cosmology paper only presents 251 spectroscopically confirmed SN Ia. (The paper also considers external data sets that we do not use here)
-- *ugriz* filters
-- This paper presents fit results. Light curves provided by Brout et al. 2018.
+- Five year survey from 2013 - 2018 in *ugriz* within 0.017 < z < 0.849
+-  Average cadence of 7 days per filter
+- These results contain the first three years of DES from Sept. 2013 to Feb. 2016
+  - Discovered ∼12,000 transients
+  - ∼3,000 identified as likely SNe Ia based on their light curves and out of 533 targeted for spectroscopic classification 251 were confirmed (D’Andrea et al. 2018).
+  
+- The 31.00 zero point is for internal DES use. The ZP in the public data files is 27.5.
