@@ -9,7 +9,7 @@
 1. [Project Todo List](#todo)
 1. [Directory Overview and File Lists](#directory-overview-and-file-lists)
 1. [Notes on SDSS Data](#notes-on-the-sdss-ii-sn-survey-data-sako-et-al-2018)
-1. [Notes on DES Data](#notes-on-the-des-year-3-cosmology-data-brout-et-al-2019)
+1. [Notes on DES Data](#notes-on-the-des-year-3-cosmology-data-brout-sako-et-al-2019-and-brout-scolnic-et-al-2019)
 
 ## Todo:
 
