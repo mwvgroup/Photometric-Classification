@@ -8,6 +8,7 @@ import os
 import numpy as np
 import sncosmo
 from astropy.table import Table
+from matplotlib import pyplot as plt
 from sncosmo.fitting import DataQualityError
 
 import sys; sys.path.insert(0, '../')
@@ -43,10 +44,7 @@ def run_fit_for_object(input_table, model_name, params_to_fit):
         bounds = None
 
     # Run fit
-    result, fitted_model = sncosmo.fit_lc(
-        input_table, model, params_to_fit, bounds=bounds)
-
-    return result
+    return sncosmo.fit_lc(input_table, model, params_to_fit, bounds=bounds)
 
 
 def create_empty_summary_table(bands, params_to_fit):
@@ -92,8 +90,10 @@ def fit_sdss_data(out_path,
     """
 
     out_dir = os.path.dirname(out_path)
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
+    out_fname = os.path.splitext(os.path.basename(out_path))[0]
+    fig_dir = os.path.join(out_dir, out_fname + '_figs')
+    if not os.path.exists(fig_dir):
+        os.makedirs(fig_dir)
 
     # Run fit for each target
     out_table = create_empty_summary_table(bands, params_to_fit)
@@ -115,7 +115,12 @@ def fit_sdss_data(out_path,
         new_row.append(z_was_fit)
 
         try:
-            result = run_fit_for_object(input_table, model_name, params_to_fit)
+            result, fitted_model = run_fit_for_object(input_table, model_name, params_to_fit)
+
+            sncosmo.plot_lc(input_table, model=fitted_model, errors=result.errors)
+            f_name = '{}.pdf'.format(input_table.meta['obj_id'])
+            fig_path = os.path.join(fig_dir, f_name)
+            plt.savefig(fig_path)
 
         except (DataQualityError, RuntimeError, ValueError) as e:
             mask_length = len(out_table.colnames) - len(new_row) - 2
