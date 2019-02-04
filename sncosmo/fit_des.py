@@ -42,8 +42,7 @@ def create_empty_summary_table(bands, params_to_fit):
 def fit_des_data(out_path,
                  model_name='salt2',
                  bands=DES_BANDS,
-                 params_to_fit=('t0', 'x0', 'x1', 'c'),
-                 save_figs=False):
+                 params_to_fit=('t0', 'x0', 'x1', 'c')):
     """Fit DES light curves with SNCosmo
 
     Files are named as <out_dir>/<target cid>.txt
@@ -52,7 +51,6 @@ def fit_des_data(out_path,
         out_path       (str): Where to write fit results
         model_name     (str): Model to use for fitting. Default = salt2
         params_to_fit (list): List of parameters to fit
-        skip_types    (list): List of case sensitive classifications to skip
         bands         (list): Optional list of bandpasses to fit
     """
 
@@ -86,7 +84,7 @@ def fit_des_data(out_path,
                 input_table, model, list(params_to_fit), bounds=None)
 
             sncosmo.plot_lc(input_table, model=fitted_model,
-                                   errors=result.errors)
+                            errors=result.errors)
 
             f_name = '{}.pdf'.format(input_table.meta['obj_id'])
             fig_path = os.path.join(fig_dir, f_name)
@@ -110,6 +108,9 @@ def fit_des_data(out_path,
 
 
 if __name__ == '__main__':
+    print('\n\nFitting type Ia model in all bands')
+    fit_des_data('./des_results/snia_ugriz.csv')
+
     print('Fitting type Ia model in ug')
     fit_des_data('./des_results/snia_ug.csv',
                  bands=['desu', 'desg'])
@@ -129,6 +130,3 @@ if __name__ == '__main__':
                  model_name='nugent-sn91bg',
                  bands=['desr', 'desi', 'desz'],
                  params_to_fit=['t0', 'amplitude'])
-
-    print('\n\nFitting type Ia model in all bands')
-    fit_des_data('./des_results/snia_ugriz.csv', save_figs=True)
