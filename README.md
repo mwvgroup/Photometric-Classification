@@ -66,7 +66,7 @@
 
 - **fit_sdss.py:** Uses SNCosmo to fit SDSSS light curves with a normal sn Ia model and the builtin 91bg model in the `ug`, `riz`, and `ugriz` rest frame bands.
 - **fit_des.py:** The same as *fit_sdss.py* except for DES data.
-- **sncosmo_results.ipynb:** Compares fit results between the normal and 91bg models in different bands.
+- **apply_classification.ipynb:** Compares fit results between the normal and 91bg models in different bands and classifies peculiar SN.
 - **compare_to_published.ipynb:** Compares fit results with published results.
 
 ## Notes on the SDSS-II SN Survey Data (Sako et al. 2018)
