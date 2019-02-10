@@ -31,9 +31,9 @@
 
 #### *data_access/* 
 
-  A Python 2.7 - 3.7 module for accessing SDSS and DES supernova data. Data is
-  downloaded automatically if it is not locally available. An example of
-  accessing SDSS data is provided below. Note that the DES interface is the
+  A Python 2.7 through 3.7 module for accessing SDSS and DES supernova data.
+  Data is downloaded automatically if it is not locally available. An example
+  of accessing SDSS data is provided below. Note that the DES interface is the
   same, except you would import `des_data` instead of `sdss_data`.
 
 ```python
