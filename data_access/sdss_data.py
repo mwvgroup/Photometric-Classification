@@ -29,18 +29,18 @@ download_data(
 master_table = Table.read(MASTER_PTH, format='ascii')
 
 
-def get_data_for_id(obj_id):
+def get_data_for_id(cid):
     """Returns photometric data for a supernova candidate in a given filter
 
     Args:
-        obj_id (int): The Candidate ID of the desired object
+        cid (int): The Candidate ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
     """
 
     # Read in ascci data table for specified object
-    file_path = _path.join(SMP_DIR, 'SMP_{:06d}.dat'.format(obj_id))
+    file_path = _path.join(SMP_DIR, 'SMP_{:06d}.dat'.format(cid))
     all_data = Table.read(file_path, format='ascii')
 
     # Rename columns using header data from file
@@ -48,7 +48,7 @@ def get_data_for_id(obj_id):
     for i, name in enumerate(col_names):
         all_data['col{}'.format(i + 1)].name = name
 
-    meta_data = master_table[master_table['CID'] == obj_id]
+    meta_data = master_table[master_table['CID'] == cid]
     all_data.meta['redshift'] = meta_data['zspecHelio'][0]
     all_data.meta['ra'] = meta_data['RA'][0]
     all_data.meta['dec'] = meta_data['DEC'][0]
@@ -62,8 +62,8 @@ def get_input_for_id(cid, bands):
     """Returns an SNCosmo input table a given SDSS object ID
 
     Args:
-        obj_id       (int): The ID of the desired object
-        bands  (list[str]): Optionaly only return select bands (eg. 'desg')
+        cid         (int): The ID of the desired object
+        bands (list[str]): Optionally only return select bands (eg. 'desg')
 
     Returns:
         An astropy table of photometric data formatted for use with SNCosmo
@@ -84,7 +84,7 @@ def get_input_for_id(cid, bands):
     sncosmo_table['zp'] = np.full(len(all_sn_data), 25)
     sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
     sncosmo_table.meta = all_sn_data.meta
-    sncosmo_table.meta['obj_id'] = cid
+    sncosmo_table.meta['cid'] = cid
 
     # Keep only specified band-passes
     if bands is not None:
