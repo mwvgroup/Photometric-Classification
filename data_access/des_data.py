@@ -44,10 +44,10 @@ master_table = Table.read(
 
 
 def get_data_for_id(obj_id):
-    """Returns photometric data for a supernova candidate in a given filter
+    """Returns DES photometric data for a given object ID
 
     Args:
-        obj_id (int): The Candidate ID of the desired object
+        obj_id (int): The ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
@@ -74,6 +74,40 @@ def get_data_for_id(obj_id):
     return all_data
 
 
+def get_input_for_id(obj_id, bands=None):
+    """Returns an SNCosmo input table a given DES object ID
+
+    Args:
+        obj_id       (int): The ID of the desired object
+        bands  (list[str]): Optionaly only return select bands (eg. 'desg')
+
+    Returns:
+        An astropy table of photometric data formatted for use with SNCosmo
+    """
+
+    # Effective wavelengths taken from
+    # http://www.mso.anu.edu.au/~brad/filters.html
+    des_bands = ('desg', 'desr', 'desi', 'desz', 'desy')
+    lambda_effective = np.array([5270, 6590, 7890, 9760, 10030])
+
+    all_sn_data = get_data_for_id(obj_id)
+    sncosmo_table = Table()
+    sncosmo_table['time'] = all_sn_data['MJD']
+    sncosmo_table['band'] = ['des' + s for s in all_sn_data['BAND']]
+    sncosmo_table['flux'] = all_sn_data['FLUXCAL']
+    sncosmo_table['fluxerr'] = all_sn_data['FLUXCALERR']
+    sncosmo_table['zp'] = np.full(len(all_sn_data), 27.5)
+    sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
+    sncosmo_table.meta = all_sn_data.meta
+    sncosmo_table.meta['obj_id'] = obj_id
+
+    if bands is not None:
+        sncosmo_table = keep_restframe_bands(
+            sncosmo_table, bands, des_bands, lambda_effective)
+
+    return sncosmo_table
+
+
 def iter_sncosmo_input(bands=None, verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
@@ -87,10 +121,6 @@ def iter_sncosmo_input(bands=None, verbose=False):
         An astropy table formatted for use with SNCosmo
     """
 
-    # Effective wavelengths taken from http://www.mso.anu.edu.au/~brad/filters.html
-    des_bands = ('desg', 'desr', 'desi', 'desz', 'desy')
-    lambda_effective = np.array([5270, 6590, 7890, 9760, 10030])
-
     # Load list of all target ids
     file_path = _path.join(PHOT_DIR, 'DES-SN3YR_DES.LIST')
     file_list = np.genfromtxt(file_path, dtype=str)
@@ -99,20 +129,5 @@ def iter_sncosmo_input(bands=None, verbose=False):
     iter_data = tqdm(file_list) if verbose else file_list
     for file_name in iter_data:
         obj_id_int = int(file_name.lstrip('des_').rstrip('.dat'))
-        all_sn_data = get_data_for_id(obj_id_int)
-
-        sncosmo_table = Table()
-        sncosmo_table['time'] = all_sn_data['MJD']
-        sncosmo_table['band'] = ['des' + s for s in all_sn_data['BAND']]
-        sncosmo_table['flux'] = all_sn_data['FLUXCAL']
-        sncosmo_table['fluxerr'] = all_sn_data['FLUXCALERR']
-        sncosmo_table['zp'] = all_sn_data['ZPFLUX']
-        sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
-        sncosmo_table.meta = all_sn_data.meta
-        sncosmo_table.meta['obj_id'] = obj_id_int
-
-        if bands is not None:
-            sncosmo_table = keep_restframe_bands(
-                sncosmo_table, bands, des_bands, lambda_effective)
-
+        sncosmo_table = get_input_for_id(obj_id_int, bands)
         yield sncosmo_table
