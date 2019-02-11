@@ -1,5 +1,6 @@
-tqdm
-sncosmo
 astropy
 matplotlib
 numpy
+requests
+sncosmo
+tqdm
