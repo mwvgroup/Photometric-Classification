@@ -28,8 +28,7 @@ download_data(DES_URL, DATA_DIR,
 
 master_table = Table.read(
     _path.join(FITS_DIR, 'SALT2mu_DES+LOWZ_C11.FITRES'),
-    format='ascii',
-    data_start=4, comment='#', exclude_names=['dummy_col'],
+    format='ascii', data_start=4, comment='#', exclude_names=['dummy_col'],
     names=['dummy_col', 'CID', 'CIDint', 'IDSURVEY', 'TYPE', 'FIELD',
            'CUTFLAG_SNANA', 'zHEL', 'zHELERR', 'zCMB', 'zCMBERR',
            'zHD', 'zHDERR', 'VPEC', 'VPECERR', 'HOST_LOGMASS',
@@ -130,4 +129,5 @@ def iter_sncosmo_input(bands=None, verbose=False):
     for file_name in iter_data:
         cid_int = int(file_name.lstrip('des_').rstrip('.dat'))
         sncosmo_table = get_input_for_id(cid_int, bands)
-        yield sncosmo_table
+        if sncosmo_table:
+            yield sncosmo_table

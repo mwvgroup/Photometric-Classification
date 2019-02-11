@@ -116,4 +116,5 @@ def iter_sncosmo_input(bands=None, skip_types=(), verbose=False):
     iter_data = tqdm(cut_data['CID']) if verbose else cut_data['CID']
     for cid in iter_data:
         sncosmo_table = get_input_for_id(cid, bands)
-        yield sncosmo_table
+        if sncosmo_table:
+            yield sncosmo_table
