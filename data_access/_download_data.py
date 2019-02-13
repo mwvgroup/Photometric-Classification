@@ -42,7 +42,7 @@ def _download_file(url, out_path):
         ofile.write(response.content)
 
     # Unzip file if its an archive
-    if url.endswith(".tar.gz"):
+    if url.endswith(".tar.gz") or url.endswith(".tgz"):
         with tarfile.open(temp_path, "r:gz") as data:
             data.extractall(out_dir)
 

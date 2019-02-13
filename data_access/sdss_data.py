@@ -14,17 +14,19 @@ from tqdm import tqdm
 from ._download_data import download_data
 from ._utils import keep_restframe_bands
 
-SDSS_URL = 'https://data.sdss.org/sas/dr10/boss/papers/supernova/'
+# Define local paths of SDSS data
 DATA_DIR = _path.join(_path.dirname(_path.realpath(__file__)), 'sdss_data')
 SNANA_FILES = _path.join(DATA_DIR, 'SDSS_dataRelease-snana/')  # SNANA files
 MASTER_PTH = _path.join(DATA_DIR, 'master_data.txt')           # Master table
 SMP_DIR = _path.join(DATA_DIR, 'SMP_Data/')                    # SMP data files
 
 # Download data if it does not exist
+SDSS_URL = 'https://data.sdss.org/sas/dr10/boss/papers/supernova/'
 download_data(
-    SDSS_URL, DATA_DIR,
-    ['master_data.txt', 'SMP_Data.tar.gz', 'SDSS_dataRelease-snana.tar.gz'],
-    [MASTER_PTH, SMP_DIR, SNANA_FILES])
+    base_url=SDSS_URL,
+    out_dir=DATA_DIR,
+    remote_name=['master_data.txt', 'SMP_Data.tar.gz', 'SDSS_dataRelease-snana.tar.gz'],
+    check_local_name=[MASTER_PTH, SMP_DIR, SNANA_FILES])
 
 master_table = Table.read(MASTER_PTH, format='ascii')
 

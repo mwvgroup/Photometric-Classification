@@ -6,6 +6,7 @@ observations by rest frame wavelength.
 """
 
 import numpy as np
+from astropy.table import Table
 
 
 def keep_restframe_bands(data_table, bands, band_names, effective_lambda):
@@ -50,3 +51,36 @@ def keep_restframe_bands(data_table, bands, band_names, effective_lambda):
     indices = np.logical_and(is_in_bands, is_ok_diff)
 
     return data_table[indices]
+
+
+def parse_snoopy_data(path):
+    """Return data from a snoopy file as an astropy table
+
+    Args:
+        path (str): The file path of a snoopy input file
+
+    Returns:
+        An astropy table with columns 'time', 'band', 'mag', and 'mag_err'
+    """
+
+    out_table = Table(names=['time', 'band', 'mag', 'mag_err'])
+    with open(path) as ofile:
+        # Get meta data from first line
+        name, z, ra, dec = ofile.readline().split()
+        out_table.meta['name'] = name
+        out_table.meta['redshift'] = float(z)
+        out_table.meta['ra'] = float(ra)
+        out_table.meta['dec'] = float(dec)
+
+        # Read photometric data from the rest of the file
+        band = None
+        for line in ofile.readlines():
+            line_list = line.split()
+            if line.startswith('filter'):
+                band = line_list[1]
+                continue
+
+            time, mag, mag_err = line_list
+            out_table.add_row([time, band, mag, mag_err])
+
+    return out_table

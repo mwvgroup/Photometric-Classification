@@ -14,17 +14,19 @@ from tqdm import tqdm
 from ._download_data import download_data
 from ._utils import keep_restframe_bands
 
-DES_URL = 'http://desdr-server.ncsa.illinois.edu/despublic/sn_files/y3/tar_files/'
+# Define local paths of DES data
 DATA_DIR = _path.join(_path.dirname(_path.realpath(__file__)), 'des_data')
 FILT_DIR = _path.join(DATA_DIR, '01-FILTERS')
 PHOT_DIR = _path.join(DATA_DIR, '02-DATA_PHOTOMETRY/DES-SN3YR_DES')
 FITS_DIR = _path.join(DATA_DIR, '04-BBCFITS')
 
 # Download data if it does not exist
-download_data(DES_URL, DATA_DIR,
-              ['01-FILTERS.tar.gz', '02-DATA_PHOTOMETRY.tar.gz',
-               '04-BBCFITS.tar.gz'],
-              [FILT_DIR, PHOT_DIR, FITS_DIR])
+DES_URL = 'http://desdr-server.ncsa.illinois.edu/despublic/sn_files/y3/tar_files/'
+download_data(
+    base_url=DES_URL,
+    out_dir=DATA_DIR,
+    remote_name=['01-FILTERS.tar.gz', '02-DATA_PHOTOMETRY.tar.gz', '04-BBCFITS.tar.gz'],
+    check_local_name=[FILT_DIR, PHOT_DIR, FITS_DIR])
 
 master_table = Table.read(
     _path.join(FITS_DIR, 'SALT2mu_DES+LOWZ_C11.FITRES'),
