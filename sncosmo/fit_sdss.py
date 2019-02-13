@@ -144,11 +144,11 @@ def fit_sdss_data(out_path,
 
 
 if __name__ == '__main__':
-    print('\n\nFitting type Ia model in all bands')
+    print('Fitting type Ia model in all bands')
     fit_sdss_data('./sdss_results/snia_ugriz.csv',
                   skip_types=['Variable', 'AGN'],)
 
-    print('Fitting type Ia model in ug')
+    print('\n\nFitting type Ia model in ug')
     fit_sdss_data('./sdss_results/snia_ug.csv',
                   skip_types=['Variable', 'AGN'],
                   bands=['sdssu', 'sdssg'])
