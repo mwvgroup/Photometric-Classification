@@ -60,7 +60,7 @@ def get_data_for_id(cid):
     return all_data
 
 
-def get_input_for_id(cid, bands):
+def get_input_for_id(cid, bands=None):
     """Returns an SNCosmo input table a given SDSS object ID
 
     Args:
