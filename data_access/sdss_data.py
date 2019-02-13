@@ -57,7 +57,7 @@ def get_data_for_id(cid):
     all_data.meta['classification'] = meta_data['Classification'][0]
     all_data.meta['name'] = meta_data['IAUName'][0]
 
-    return all_data
+    return all_data[all_data['FLAG'] < 1024]
 
 
 def get_input_for_id(cid, bands=None):
