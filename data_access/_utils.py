@@ -14,9 +14,9 @@ def keep_restframe_bands(data_table, bands, band_names, effective_lambda):
 
     Args:
         data_table      (Table): An SNCosmo input table with column 'band'
-        bands            (list): List of rest-frame bandpasses to keep
-        band_names       (list): List of all bands available in the survey
-        effective_lambda (list): The effective wavelength of each band in band_names
+        bands            (iter): List of rest-frame band passes to keep
+        band_names       (iter): List of all bands available in the survey
+        effective_lambda (iter): The effective wavelength of each band in band_names
 
     Returns:
         A new input table for SNCosmo only containing select rest frame bands
