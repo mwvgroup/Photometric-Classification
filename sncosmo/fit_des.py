@@ -29,7 +29,7 @@ def create_empty_summary_table(bands, params_to_fit):
         params_to_fit (list): List of fit parameters
     """
 
-    names = ['obj_id', 'z', 'z_err']
+    names = ['cid', 'z', 'z_err']
     names.extend(['num_points_' + band for band in bands])
     names.extend(params_to_fit)
     names.extend((p + '_err' for p in params_to_fit))
@@ -71,7 +71,7 @@ def fit_des_data(out_path,
         num_data_points = [count_dict.get(band, 0) for band in bands]
 
         # Create a new, incomplete row for the table
-        new_row = [input_table.meta['obj_id'],
+        new_row = [input_table.meta['cid'],
                    input_table.meta['redshift'],
                    input_table.meta['redshift_err']]
 
@@ -86,7 +86,7 @@ def fit_des_data(out_path,
             sncosmo.plot_lc(input_table, model=fitted_model,
                             errors=result.errors)
 
-            f_name = '{}.pdf'.format(input_table.meta['obj_id'])
+            f_name = '{}.pdf'.format(input_table.meta['cid'])
             fig_path = os.path.join(fig_dir, f_name)
             plt.savefig(fig_path)
 

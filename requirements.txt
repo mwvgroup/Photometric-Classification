@@ -1,0 +1,6 @@
+astropy
+matplotlib
+numpy
+requests
+sncosmo
+tqdm

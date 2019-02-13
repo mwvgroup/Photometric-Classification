@@ -28,8 +28,7 @@ download_data(DES_URL, DATA_DIR,
 
 master_table = Table.read(
     _path.join(FITS_DIR, 'SALT2mu_DES+LOWZ_C11.FITRES'),
-    format='ascii',
-    data_start=4, comment='#', exclude_names=['dummy_col'],
+    format='ascii', data_start=4, comment='#', exclude_names=['dummy_col'],
     names=['dummy_col', 'CID', 'CIDint', 'IDSURVEY', 'TYPE', 'FIELD',
            'CUTFLAG_SNANA', 'zHEL', 'zHELERR', 'zCMB', 'zCMBERR',
            'zHD', 'zHDERR', 'VPEC', 'VPECERR', 'HOST_LOGMASS',
@@ -43,18 +42,18 @@ master_table = Table.read(
            'biasCor_x1', 'biasCor_c', 'biasScale_muCOV', 'IDSAMPLE'])
 
 
-def get_data_for_id(obj_id):
+def get_data_for_id(cid):
     """Returns DES photometric data for a given object ID
 
     Args:
-        obj_id (int): The ID of the desired object
+        cid (int): The ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
     """
 
     # Read in ascci data table for specified object
-    file_path = _path.join(PHOT_DIR, 'des_{:08d}.dat'.format(obj_id))
+    file_path = _path.join(PHOT_DIR, 'des_{:08d}.dat'.format(cid))
     all_data = Table.read(
         file_path, format='ascii',
         data_start=27, data_end=-1,
@@ -74,12 +73,12 @@ def get_data_for_id(obj_id):
     return all_data
 
 
-def get_input_for_id(obj_id, bands=None):
+def get_input_for_id(cid, bands=None):
     """Returns an SNCosmo input table a given DES object ID
 
     Args:
-        obj_id       (int): The ID of the desired object
-        bands  (list[str]): Optionaly only return select bands (eg. 'desg')
+        cid         (int): The ID of the desired object
+        bands (list[str]): Optionally only return select bands (eg. 'desg')
 
     Returns:
         An astropy table of photometric data formatted for use with SNCosmo
@@ -90,7 +89,7 @@ def get_input_for_id(obj_id, bands=None):
     des_bands = ('desg', 'desr', 'desi', 'desz', 'desy')
     lambda_effective = np.array([5270, 6590, 7890, 9760, 10030])
 
-    all_sn_data = get_data_for_id(obj_id)
+    all_sn_data = get_data_for_id(cid)
     sncosmo_table = Table()
     sncosmo_table['time'] = all_sn_data['MJD']
     sncosmo_table['band'] = ['des' + s for s in all_sn_data['BAND']]
@@ -99,7 +98,7 @@ def get_input_for_id(obj_id, bands=None):
     sncosmo_table['zp'] = np.full(len(all_sn_data), 27.5)
     sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
     sncosmo_table.meta = all_sn_data.meta
-    sncosmo_table.meta['obj_id'] = obj_id
+    sncosmo_table.meta['cid'] = cid
 
     if bands is not None:
         sncosmo_table = keep_restframe_bands(
@@ -128,6 +127,7 @@ def iter_sncosmo_input(bands=None, verbose=False):
     # Yield an SNCosmo input table for each target
     iter_data = tqdm(file_list) if verbose else file_list
     for file_name in iter_data:
-        obj_id_int = int(file_name.lstrip('des_').rstrip('.dat'))
-        sncosmo_table = get_input_for_id(obj_id_int, bands)
-        yield sncosmo_table
+        cid_int = int(file_name.lstrip('des_').rstrip('.dat'))
+        sncosmo_table = get_input_for_id(cid_int, bands)
+        if sncosmo_table:
+            yield sncosmo_table

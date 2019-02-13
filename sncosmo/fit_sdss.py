@@ -110,7 +110,7 @@ def fit_sdss_data(out_path,
         num_data_points = [count_dict.get(band, 0) for band in bands]
 
         # Create a new, incomplete row for the table
-        new_row = [input_table.meta['obj_id'], input_table.meta['classification']]
+        new_row = [input_table.meta['cid'], input_table.meta['classification']]
         new_row.extend(num_data_points)
         new_row.append(z_was_fit)
 
@@ -118,7 +118,7 @@ def fit_sdss_data(out_path,
             result, fitted_model = run_fit_for_object(input_table, model_name, params_to_fit)
 
             sncosmo.plot_lc(input_table, model=fitted_model, errors=result.errors)
-            f_name = '{}.pdf'.format(input_table.meta['obj_id'])
+            f_name = '{}.pdf'.format(input_table.meta['cid'])
             fig_path = os.path.join(fig_dir, f_name)
             plt.savefig(fig_path)
 
@@ -144,11 +144,11 @@ def fit_sdss_data(out_path,
 
 
 if __name__ == '__main__':
-    print('\n\nFitting type Ia model in all bands')
+    print('Fitting type Ia model in all bands')
     fit_sdss_data('./sdss_results/snia_ugriz.csv',
                   skip_types=['Variable', 'AGN'],)
 
-    print('Fitting type Ia model in ug')
+    print('\n\nFitting type Ia model in ug')
     fit_sdss_data('./sdss_results/snia_ug.csv',
                   skip_types=['Variable', 'AGN'],
                   bands=['sdssu', 'sdssg'])
