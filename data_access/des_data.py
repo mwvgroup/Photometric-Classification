@@ -123,8 +123,8 @@ def iter_sncosmo_input(bands=None, verbose=False):
     """
 
     # Load list of all target ids
-    file_path = _path.join(PHOT_DIR, 'DES-SN3YR_DES.LIST')
-    file_list = np.genfromtxt(file_path, dtype=str)
+    target_list_path = _path.join(PHOT_DIR, 'DES-SN3YR_DES.LIST')
+    file_list = np.genfromtxt(target_list_path, dtype=str)
 
     # Yield an SNCosmo input table for each target
     iter_data = tqdm(file_list) if verbose else file_list
