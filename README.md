@@ -5,7 +5,7 @@
   This repository applies the photometric classification technique from González-Gaitan 
   2014 on SDSS and DES data to identify peculiar Type Ia Supernovae (SNe Ia). 
   Work on the accompanying paper can be found [here](https://github.com/mwvgroup/91bg_paper).
-  
+
 1. [Project Todo List](#todo)
 1. [Directory Overview and File Lists](#directory-overview-and-file-lists)
 1. [Notes on SDSS Data](#notes-on-the-sdss-ii-sn-survey-data-sako-et-al-2018)
@@ -76,37 +76,38 @@
 #### analysis
 
   A collection of notebooks performing data analysis on the light curve fit results.
-  
+
 - **apply_classification.ipynb:** Compares fit results between the normal and 91bg models in different bands and classifies peculiar SN.
 - **compare_to_published.ipynb:** Compares fit results with published results.
 
 ## Notes on the SDSS-II SN Survey Data (Sako et al. 2018)
 
-- Observed during three-month campaigns in Fall 2005, 2006, and 2007
-- Redshift range 0.05 < z < 0.4 (Frieman et al. 2008)
+- Observed during three-month campaigns in Fall 2005, 2006, and 2007 as part of an extension to the original SDSS.
+- SN span redshift range 0.05 < z < 0.4 (Frieman et al. 2008). 
 - 10,258 Included sources. 3225 Variable, 499 classified as SN Ia, and 86 as Core collapse.
-- All objects were observed in two or more filters and visually inspected for artifacts.
-- *ugriz* Filters spanning 350 - 1000 nm (Fukugita et al. 1996)
+- All objects were observed in two or more filters and visually inspected to ensure they were not artifacts.
 - Classification schemes:
-  - **Unknown:** The light curve was too sparse and/or noisy to make a useful classification
-  - **Variable:** The source was observed in more than one observing season
-  - **AGN:** An optical spectrum was identified as having features associated with an active galaxy
+  - **Unknown:** The light curve was too sparse and/or noisy to make a useful classification.
+  - **Variable:** The source was observed in more than one observing season (and hence is not a supernova).
+  - **AGN:** An optical spectrum was identified as having features associated with an active galaxy.
   - **SNII, SNIbc (either Ib or Ic), SNIa:** 
     - SN classifications without prefixes are based on a spectrum (including a few non-SDSS spectra)
     - A prefix “p” indicates the redshift is unknown and that the identification was made with photometric data only
     - A prefix “z” indicates that a redshift is measured from its candidate host galaxy and the classification uses that redshift as a prior. 
   - **SN Ia?:** classification is based on a spectrum that suggests a SN Ia but is inconclusive.
-- Some SN candidates have associated notes indicating candidates that may have peculiar features or candidates where the typing spectrum was obtained by other groups. Quoting the data release: "We did not search for these peculiar features in a systematic way, but we have noted the likely peculiar features that were found." Note flags are as follows:
-  - 1  SN typing based on spectra obtained by groups outside SDSS. The spectra used for typing are not included in the data release. 
-  - 2  Peculiar type Ia SN possibly similar to sn91bg 
-  - 3  Peculiar type Ia SN possibly similar to sn00cx 
-  - 4  Peculiar type Ia SN possibly similar to sn02ci 
-  - 5  Peculiar type Ia SN possibly similar to sn02cx 
-- Light curve fits are performed using PSNID, SLAT2, and MLCS2k2
-  - SALT2 fits are performed both without and with providing a spectroscopic redshift (where available)
-  - Only fit data with a photometric flag less than 1024 (Holtzman et al. 2008)
-
-- Quoting section 7.2 of the data release:  "The results of the SALT2 fits depend on the version of the code used, the spectral templates, and the color law. Our fits use the SALT2 model as implemented in SNANA version 10.31b and the spectral templates and color law reported in Guy et al. (2010, G10).... For the SDSS data, the largest differences in the fitted parameters arises from the difference in the color law between G07 and G10. The SDSS-II- SNLS joint light curve analysis paper on cosmology (Betoule et al. 2014) releases a new version of the SALT2 model that is based on adding the full SDSS-II spectroscopically confirmed SN sample to the SALT2 training set." The relationship between the fit color parameters is shown to be linear. The G07 color law results in a value of the *c* parameter that is 20% higher than G10 on average.
+- Some SN candidates have associated notes indicating candidates that may have peculiar features or candidates where the typing spectrum was obtained by other groups. Quoting the data release: "We did not search for these peculiar features in a systematic way, but we have noted the likely peculiar features that were found." The flags are given in Table 4 and are as follows:
+  - **1**  SN typing based on spectra obtained by groups outside SDSS. The spectra used for typing are not included in the data release. 
+  - **2**  Peculiar type Ia SN possibly similar to sn91bg 
+  - **3**  Peculiar type Ia SN possibly similar to sn00cx 
+  - **4**  Peculiar type Ia SN possibly similar to sn02ci 
+  - **5**  Peculiar type Ia SN possibly similar to sn02cx 
+- Light curve fits are performed using PSNID, SALT2, and MLCS2k2
+  - SALT2 fits are performed both with and without providing a spectroscopic redshift (where available). When fitting for redshift a flat prior is used.
+  - Only data with a photometric flag less than 1024 is used for the fit. A full overview of the flag values is provided in Holtzman et al. 2008.
+  - Epochs earlier than 15 days or later than 45 days in the rest frame are ignored. 152 epochs in 105 SN were also ignored after being visually classified as outliers.
+  - Published fits use the SALT2 model as implemented in SNANA version 10.31b and the spectral templates and color law reported in Guy et al. (2010, G10)
+  - Fits are performed using the "recently published" SDSS filter response curves.
+- The magnitudes in the online data release use the SDSS inverse hyperbolic sine magnitude system. These different from the standard AB system by an additive constant found in Table 7. The fluxes in the online files have already been converted to to the AB system and are given in Micro-Janskies.
 
 ## Notes on the DES Year 3 Cosmology Data (Brout, Sako et al. 2019 and Brout, Scolnic et al. 2019) 
 
