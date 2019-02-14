@@ -13,7 +13,7 @@ from astropy.table import Table
 from tqdm import tqdm
 
 from ._download_data import download_data
-from ._utils import keep_restframe_bands
+from ._utils import keep_restframe_bands, register_filter
 
 # Define local paths of SDSS data
 DATA_DIR = _path.join(_path.dirname(_path.realpath(__file__)), 'sdss_data')
@@ -38,6 +38,10 @@ download_data(
     remote_name=FILT_FILE_LIST,
     check_local_name=FILT_FILE_LIST
 )
+
+for filt in FILT_FILE_LIST:
+    fpath = _path.join(FILT_DIR, filt)
+    register_filter(fpath, 'doi_2010_' + filt[:2])
 
 master_table = Table.read(MASTER_PTH, format='ascii')
 

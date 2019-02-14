@@ -7,6 +7,7 @@ observations by rest frame wavelength.
 
 import numpy as np
 from astropy.table import Table
+import sncosmo
 
 
 def keep_restframe_bands(data_table, bands, band_names, effective_lambda):
@@ -84,3 +85,21 @@ def parse_snoopy_data(path):
             out_table.add_row([time, band, mag, mag_err])
 
     return out_table
+
+
+@np.vectorize
+def register_filter(file_path, filt_name):
+    """Registers filter profiles with sncosmo if not already registered
+
+    Args:
+        file_path (str): Path of an ascii table with wavelength (Angstrom)
+                          and transmission columns
+        filt_name (str): The name of the registered filter.
+    """
+
+    available_bands = set(k[0] for k in sncosmo.bandpasses._BANDPASSES._loaders.keys())
+    if filt_name not in available_bands:
+        print('Registering band "{}" with sncosmo.'.format(filt_name))
+        filt_data = np.genfromtxt(file_path).T
+        band = sncosmo.Bandpass(filt_data[0], filt_data[1])
+        sncosmo.register(band, filt_name, force=True)
