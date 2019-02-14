@@ -106,7 +106,7 @@
   - Only data with a photometric flag less than 1024 is used for the fit. A full overview of the flag values is provided in Holtzman et al. 2008.
   - Epochs earlier than 15 days or later than 45 days in the rest frame are ignored. 152 epochs in 105 SN were also ignored after being visually classified as outliers.
   - Published fits use the SALT2 model as implemented in SNANA version 10.31b and the spectral templates and color law reported in Guy et al. (2010, G10)
-  - Fits are performed using the "recently published" SDSS filter response curves.
+  - Fits are performed using the Doi et al. 2010 SDSS filter response curves. These are available online [here](http://www.ioa.s.u-tokyo.ac.jp/~doi/sdss/SDSSresponse.html).
 - The magnitudes in the online data release use the SDSS inverse hyperbolic sine magnitude system. These different from the standard AB system by an additive constant found in Table 7. The fluxes in the online files have already been converted to to the AB system and are given in Micro-Janskies.
 
 ## Notes on the DES Year 3 Cosmology Data (Brout, Sako et al. 2019 and Brout, Scolnic et al. 2019) 
