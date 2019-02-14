@@ -5,6 +5,7 @@
 Release.
 """
 
+from itertools import product
 from os import path as _path
 
 import numpy as np
@@ -16,6 +17,7 @@ from ._utils import keep_restframe_bands
 
 # Define local paths of SDSS data
 DATA_DIR = _path.join(_path.dirname(_path.realpath(__file__)), 'sdss_data')
+FILT_DIR = _path.join(DATA_DIR, 'doi_2010_filters/')           # SDSS filters
 SNANA_FILES = _path.join(DATA_DIR, 'SDSS_dataRelease-snana/')  # SNANA files
 MASTER_PTH = _path.join(DATA_DIR, 'master_data.txt')           # Master table
 SMP_DIR = _path.join(DATA_DIR, 'SMP_Data/')                    # SMP data files
@@ -27,6 +29,15 @@ download_data(
     out_dir=DATA_DIR,
     remote_name=['master_data.txt', 'SMP_Data.tar.gz', 'SDSS_dataRelease-snana.tar.gz'],
     check_local_name=[MASTER_PTH, SMP_DIR, SNANA_FILES])
+
+FILT_URL = 'http://www.ioa.s.u-tokyo.ac.jp/~doi/sdss/'
+FILT_FILE_LIST = ['{}{}.dat'.format(a, b) for a, b in product('ugriz', '123456')]
+download_data(
+    base_url=FILT_URL,
+    out_dir=FILT_DIR,
+    remote_name=FILT_FILE_LIST,
+    check_local_name=FILT_FILE_LIST
+)
 
 master_table = Table.read(MASTER_PTH, format='ascii')
 
