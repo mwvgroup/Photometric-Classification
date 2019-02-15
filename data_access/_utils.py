@@ -1,9 +1,7 @@
 #!/usr/bin/env python2.7
 # -*- coding: UTF-8 -*-
 
-"""This module provides utilities for selecting a subset of photometric
-observations by rest frame wavelength.
-"""
+"""This module provides utilities used by various sub modules."""
 
 from __future__ import print_function
 
@@ -103,12 +101,15 @@ def register_filter(file_path, filt_name):
         filt_name (str): The name of the registered filter.
     """
 
-    available_bands = set(k[0] for k in sncosmo.bandpasses._BANDPASSES._loaders.keys())
+    # Get set of registered builtin and custom bandpasses
+    available_bands = set(k[0] for k in sncosmo.bandpasses._BANDPASSES._loaders)
+    available_bands.update(k[0] for k in sncosmo.bandpasses._BANDPASSES._instances)
+
+    # Register the new bandpass
     if filt_name not in available_bands:
-        print('Registering band "{}" with sncosmo.'.format(filt_name))
         filt_data = np.genfromtxt(file_path).T
         band = sncosmo.Bandpass(filt_data[0], filt_data[1])
-        sncosmo.register(band, filt_name, force=True)
+        sncosmo.register(band, filt_name, force=False)
 
 
 def _download_file(url, out_path):

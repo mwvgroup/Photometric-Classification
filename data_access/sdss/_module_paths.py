@@ -43,6 +43,7 @@ download_data(
     check_local_name=_local_filt_names
 )
 
+# Register filters if not already registered
 for _filter_path in _local_filt_names:
     fpath = os.path.join(filter_dir, _filter_path)
     register_filter(fpath, 'doi_2010_' + _filter_path[:2])
