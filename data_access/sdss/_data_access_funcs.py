@@ -16,7 +16,9 @@ master_table = Table.read(paths.master_table_path, format='ascii')
 
 
 def get_data_for_id(cid):
-    """Returns photometric data for a supernova candidate in a given filter
+    """Returns published photometric data for a SDSS observed object
+
+    No data cuts are applied to the returned data.
 
     Args:
         cid (int): The Candidate ID of the desired object
@@ -41,11 +43,76 @@ def get_data_for_id(cid):
     all_data.meta['classification'] = meta_data['Classification'][0]
     all_data.meta['name'] = meta_data['IAUName'][0]
 
-    return all_data[all_data['FLAG'] < 1024]
+    return all_data
+
+
+@np.vectorize
+def sdss_mag_to_ab_flux(mag, band):
+    """For a given sdss magnitude return the AB flux
+
+    Args:
+        mag (float): An SDSS asinh magnitude
+        band  (str): The band of the magnitude doi_2010_<ugriz><123456>
+
+    Return:
+        The equivalent AB magnitude
+    """
+
+    if band[-2] == 'u':
+        offset = -0.679
+
+    elif band[-2] == 'g':
+        offset = 0.0203
+
+    elif band[-2] == 'r':
+        offset = 0.0049
+
+    elif band[-2] == 'i':
+        offset = 0.0178
+
+    elif band[-2] == 'z':
+        offset = 0.0102
+
+    else:
+        ValueError('Unknown band {}'.format(band))
+
+    return 3631 * 10 ** ((mag + offset) / -2.5)
+
+
+def calc_err(sigma_sdss_mag, flux_ab):
+    """Calculate the error of the AB magnitude equivilent for an SDSS asinh mag
+
+    Args:
+        sigma_sdss_mag (float): Error in the SDSS magnitude
+        flux_ab        (float): AB flux of the measurement
+
+    Returns:
+        The error in the equivalent AB flux
+    """
+
+    return sigma_sdss_mag * flux_ab * np.log(10) / 2.5
+
+
+@np.vectorize
+def band_name(filt, idccd):
+    """Return the sncosmo band name given filter and CCD id
+
+    Args:
+        filt  (str): Filter name <ugriz>
+        idccd (int): Column number 1 through 6
+
+    Args:
+        The name of the filter registered with sncosmo
+    """
+
+    return 'doi_2010_{}{}'.format('ugriz'[filt], idccd)
 
 
 def get_input_for_id(cid, bands=None):
     """Returns an SNCosmo input table a given SDSS object ID
+
+    Only data points with a published photometric quality flag < 1024 are
+    included in the returned table.
 
     Args:
         cid         (int): The ID of the desired object
@@ -61,15 +128,17 @@ def get_input_for_id(cid, bands=None):
     lambda_effective = np.array([3551, 4686, 6166, 7480, 8932])
 
     # Format table
-    all_sn_data = get_data_for_id(cid)
+    phot_data = get_data_for_id(cid)
+    phot_data = phot_data[phot_data['FLAG'] < 1024]
+
     sncosmo_table = Table()
-    sncosmo_table['time'] = all_sn_data['MJD']
-    sncosmo_table['band'] = [sdss_bands[i] for i in all_sn_data['FILT']]
-    sncosmo_table['flux'] = all_sn_data['FLUX']
-    sncosmo_table['fluxerr'] = all_sn_data['FLUXERR']
-    sncosmo_table['zp'] = np.full(len(all_sn_data), 25)
-    sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
-    sncosmo_table.meta = all_sn_data.meta
+    sncosmo_table.meta = phot_data.meta
+    sncosmo_table['time'] = phot_data['MJD']
+    sncosmo_table['band'] = band_name(phot_data['FILT'], phot_data['IDCCD'])
+    sncosmo_table['zp'] = np.full(len(phot_data), 2.5 * np.log10(3631))
+    sncosmo_table['flux'] = sdss_mag_to_ab_flux(phot_data['MAG'], sncosmo_table['band'])
+    sncosmo_table['fluxerr'] = calc_err(phot_data['MERR'], sncosmo_table['flux'])
+    sncosmo_table['zpsys'] = np.full(len(phot_data), 'ab')
     sncosmo_table.meta['cid'] = cid
 
     # Keep only specified band-passes
@@ -84,6 +153,8 @@ def iter_sncosmo_input(bands=None, skip_types=(), verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
     To return a select collection of band-passes, specify the band argument.
+    Only data points with a published photometric quality flag < 1024 are
+    included in the returned tables.
 
     Args:
         bands      (iter[str]): Optional list of band-passes to return
