@@ -9,9 +9,13 @@ import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
 
+import _module_paths as paths
 from data_access._utils import keep_restframe_bands
 
-import _module_paths as paths
+# Effective wavelengths taken from
+# http://www.mso.anu.edu.au/~brad/filters.html
+band_names = ('desg', 'desr', 'desi', 'desz', 'desy')
+lambda_effective = (5270, 6590, 7890, 9760, 10030)
 
 master_table = Table.read(
     paths.master_table_path,
@@ -74,11 +78,6 @@ def get_input_for_id(cid, bands=None):
         An astropy table of photometric data formatted for use with SNCosmo
     """
 
-    # Effective wavelengths taken from
-    # http://www.mso.anu.edu.au/~brad/filters.html
-    des_bands = ('desg', 'desr', 'desi', 'desz', 'desy')
-    lambda_effective = np.array([5270, 6590, 7890, 9760, 10030])
-
     all_sn_data = get_data_for_id(cid)
     sncosmo_table = Table()
     sncosmo_table['time'] = all_sn_data['MJD']
@@ -92,7 +91,7 @@ def get_input_for_id(cid, bands=None):
 
     if bands is not None:
         sncosmo_table = keep_restframe_bands(
-            sncosmo_table, bands, des_bands, lambda_effective)
+            sncosmo_table, bands, band_names, lambda_effective)
 
     return sncosmo_table
 

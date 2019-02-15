@@ -8,13 +8,10 @@ import os
 import numpy as np
 import sncosmo
 from astropy.table import Table
-from matplotlib import pyplot as plt
 from sncosmo.fitting import DataQualityError
 
 import sys; sys.path.insert(0, '../')
 from data_access.des import iter_sncosmo_input
-
-DES_BANDS = ('desg', 'desr', 'desi', 'desz', 'desy')
 
 
 def create_empty_summary_table(bands, params_to_fit):
@@ -41,7 +38,7 @@ def create_empty_summary_table(bands, params_to_fit):
 
 def fit_des_data(out_path,
                  model_name='salt2',
-                 bands=DES_BANDS,
+                 bands=None,
                  params_to_fit=('t0', 'x0', 'x1', 'c')):
     """Fit DES light curves with SNCosmo
 
@@ -55,10 +52,8 @@ def fit_des_data(out_path,
     """
 
     out_dir = os.path.dirname(out_path)
-    out_fname = os.path.splitext(os.path.basename(out_path))[0]
-    fig_dir = os.path.join(out_dir, out_fname + '_figs')
-    if not os.path.exists(fig_dir):
-        os.makedirs(fig_dir)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
 
     # Run fit for each target
     out_table = create_empty_summary_table(bands, params_to_fit)
@@ -82,13 +77,6 @@ def fit_des_data(out_path,
             model.set(z=input_table.meta['redshift'])
             result, fitted_model = sncosmo.fit_lc(
                 input_table, model, list(params_to_fit), bounds=None)
-
-            sncosmo.plot_lc(input_table, model=fitted_model,
-                            errors=result.errors)
-
-            f_name = '{}.pdf'.format(input_table.meta['cid'])
-            fig_path = os.path.join(fig_dir, f_name)
-            plt.savefig(fig_path)
 
         except (DataQualityError, RuntimeError, ValueError) as e:
             mask_length = len(out_table.colnames) - len(new_row) - 1

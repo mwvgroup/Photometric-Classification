@@ -8,61 +8,23 @@ import os
 import numpy as np
 import sncosmo
 from astropy.table import Table
-from matplotlib import pyplot as plt
 from sncosmo.fitting import DataQualityError
 
 import sys; sys.path.insert(0, '../')
-from data_access.sdss import iter_sncosmo_input
-
-SDSS_BANDS = ('sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz')
+from data_access import sdss
 
 
-def run_fit_for_object(input_table, model_name, params_to_fit):
-    """Fit a single light curve with SNCosmo
-
-    Args:
-        input_table  (Table): An SNCosmo input table
-        model_name     (str): The name of the SNCosmo model to use
-        params_to_fit (list): List of parameters to fit
-
-    Returns:
-        The output dictionary from SNCosmo with fitting results
-    """
-
-    # Configure model for fitting
-    model = sncosmo.Model(source=model_name)
-    z = input_table.meta['redshift']
-    params_to_fit = list(params_to_fit)
-
-    # Tell SNCosmo to fit for the redshift if it is not given
-    if z == -9.:
-        params_to_fit.insert(0, 'z')
-        bounds = {'z': (0.002, 1)}
-
-    else:
-        model.set(z=z)
-        bounds = None
-
-    # Run fit
-    return sncosmo.fit_lc(input_table, model, params_to_fit, bounds=bounds)
-
-
-def create_empty_summary_table(bands, params_to_fit):
+def create_empty_summary_table(params_to_fit):
     """Returns a table with columns:
 
-         cid, class, num_points_ + *bands, fit_z, z,
-         *params_to_fit, z_err, *params_to_fit + _err,
-         chi, dof, message
+         cid, class, z, *params_to_fit, z_err, *params_to_fit + _err,
+         chi, dof, message.
 
     Args:
-        bands         (list): List of SDSS band-passes sdss<ugriz>
         params_to_fit (list): List of fit parameters
     """
 
-    names = ['cid', 'class']
-    names.extend(['num_points_' + band for band in bands])
-    names.append('fit_z')
-    names.append('z')
+    names = ['cid', 'class', 'z']
     names.extend(params_to_fit)
     names.append('z_err')
     names.extend((v + '_err' for v in params_to_fit))
@@ -73,54 +35,43 @@ def create_empty_summary_table(bands, params_to_fit):
 
 
 def fit_sdss_data(out_path,
-                  model_name='salt2',
-                  bands=SDSS_BANDS,
+                  model,
+                  bands=None,
                   params_to_fit=('t0', 'x0', 'x1', 'c'),
-                  skip_types=()):
+                  fit_types=()):
     """Fit SDSS light curves with SNCosmo
 
     Files are named as <out_dir>/<target cid>.txt
 
     Args:
         out_path       (str): Where to write fit results
-        model_name     (str): Model to use for fitting. Default = salt2
+        model        (model): Model to use for fitting. Default = salt2
         params_to_fit (list): List of parameters to fit
-        skip_types    (list): List of case sensitive classifications to skip
+        fit_types    (list): List of case sensitive classifications to skip
         bands         (list): Optional list of band-passes to fit
     """
 
     out_dir = os.path.dirname(out_path)
-    out_fname = os.path.splitext(os.path.basename(out_path))[0]
-    fig_dir = os.path.join(out_dir, out_fname + '_figs')
-    if not os.path.exists(fig_dir):
-        os.makedirs(fig_dir)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
 
     # Run fit for each target
-    out_table = create_empty_summary_table(bands, params_to_fit)
-    for input_table in iter_sncosmo_input(
-            bands=bands, skip_types=skip_types, verbose=True):
+    out_table = create_empty_summary_table(params_to_fit)
+    for input_table in sdss.iter_sncosmo_input(
+            bands=bands, keep_types=fit_types, verbose=True):
 
-        # Determine if redshift is fit or given
+        # Only fit target with published redshift
         z = input_table.meta['redshift']
-        z_was_fit = int(z == -9)
-
-        # Determine number of data points per band
-        band_names, band_counts = np.unique(input_table['band'], return_counts=True)
-        count_dict = dict(zip(band_names, band_counts))
-        num_data_points = [count_dict.get(band, 0) for band in bands]
+        if z < 0:
+            continue
 
         # Create a new, incomplete row for the table
         new_row = [input_table.meta['cid'], input_table.meta['classification']]
-        new_row.extend(num_data_points)
-        new_row.append(z_was_fit)
 
         try:
-            result, fitted_model = run_fit_for_object(input_table, model_name, params_to_fit)
-
-            sncosmo.plot_lc(input_table, model=fitted_model, errors=result.errors)
-            f_name = '{}.pdf'.format(input_table.meta['cid'])
-            fig_path = os.path.join(fig_dir, f_name)
-            plt.savefig(fig_path)
+            model.set(z=z)
+            result, fitted_model = sncosmo.fit_lc(
+                input_table, model, params_to_fit, bounds=None)
 
         except (DataQualityError, RuntimeError, ValueError) as e:
             mask_length = len(out_table.colnames) - len(new_row) - 2
@@ -144,30 +95,11 @@ def fit_sdss_data(out_path,
 
 
 if __name__ == '__main__':
+    classifications_to_fit = ['zSNIa', 'pSNIa', 'SNIa', 'SNIa?']
+
+    source = sncosmo.get_source('salt2', version='2.0')
+    fitting_model = sncosmo.Model(source=source)
     print('Fitting type Ia model in all bands')
     fit_sdss_data('./sdss_results/snia_ugriz.csv',
-                  skip_types=['Variable', 'AGN'],)
-
-    print('\n\nFitting type Ia model in ug')
-    fit_sdss_data('./sdss_results/snia_ug.csv',
-                  skip_types=['Variable', 'AGN'],
-                  bands=['sdssu', 'sdssg'])
-
-    print('\n\nFitting type Ia model in riz')
-    fit_sdss_data('./sdss_results/snia_riz.csv',
-                  skip_types=['Variable', 'AGN'],
-                  bands=['sdssr', 'sdssi', 'sdssz'])
-
-    print('\n\nFitting 91bg model in ug')
-    fit_sdss_data('./sdss_results/91bg_ug.csv',
-                  skip_types=['Variable', 'AGN'],
-                  model_name='nugent-sn91bg',
-                  bands=['sdssu', 'sdssg'],
-                  params_to_fit=['t0', 'amplitude'])
-
-    print('\n\nFitting 91bg model in riz')
-    fit_sdss_data('./sdss_results/91bg_riz.csv',
-                  skip_types=['Variable', 'AGN'],
-                  model_name='nugent-sn91bg',
-                  bands=['sdssr', 'sdssi', 'sdssz'],
-                  params_to_fit=['t0', 'amplitude'])
+                  model=fitting_model,
+                  fit_types=classifications_to_fit)
