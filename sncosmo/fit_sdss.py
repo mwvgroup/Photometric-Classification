@@ -55,7 +55,7 @@ def create_empty_summary_table(bands, params_to_fit):
          chi, dof, message
 
     Args:
-        bands         (list): List of SDSS bandpasses sdss<ugriz>
+        bands         (list): List of SDSS band-passes sdss<ugriz>
         params_to_fit (list): List of fit parameters
     """
 
@@ -86,7 +86,7 @@ def fit_sdss_data(out_path,
         model_name     (str): Model to use for fitting. Default = salt2
         params_to_fit (list): List of parameters to fit
         skip_types    (list): List of case sensitive classifications to skip
-        bands         (list): Optional list of bandpasses to fit
+        bands         (list): Optional list of band-passes to fit
     """
 
     out_dir = os.path.dirname(out_path)

@@ -9,8 +9,8 @@ from unittest import TestCase
 import numpy as np
 from astropy.table import Table
 
-from data_access import des_data
-from data_access.sdss import sdss_data
+from data_access import des
+from data_access import sdss
 from data_access._utils import keep_restframe_bands
 
 
@@ -62,7 +62,7 @@ class EmptyInputTables(TestCase):
 
         Args:
             input_iterable (iter): An iterable of SNCosmo input tables
-            band_cut       (list): The bands included in the input table
+            band_cut  (iter[str]): The bands included in the input table
         """
 
         msg = 'Empty table for cid {} with bands {}'
@@ -77,7 +77,7 @@ class EmptyInputTables(TestCase):
         band_cuts = (band_names[0: 2], band_names[2:], band_names)
 
         for band_cut in band_cuts:
-            input_tables = des_data.iter_sncosmo_input(band_cut)
+            input_tables = des.iter_sncosmo_input(band_cut)
             self.check_no_empty_tables(input_tables, band_cut)
 
     def test_empty_sdss_inputs(self):
@@ -87,7 +87,7 @@ class EmptyInputTables(TestCase):
         band_cuts = (band_names[0: 2], band_names[2:], band_names)
 
         for band_cut in band_cuts:
-            input_tables = sdss_data.iter_sncosmo_input(band_cut)
+            input_tables = sdss.iter_sncosmo_input(band_cut)
             self.check_no_empty_tables(input_tables, band_cut)
 
 
@@ -101,7 +101,7 @@ class ZeroPoint(TestCase):
 
         Args:
             input_iterable (iter): An iterable of SNCosmo input tables
-            expected_zero  (list): The expected zero point
+            expected_zero  (float): The expected zero point
         """
 
         generic_msg = 'Incorrect zero point for cid {}. Found {}, expected {}'
@@ -119,11 +119,11 @@ class ZeroPoint(TestCase):
     def test_des_zero_point(self):
         """Test the first 20 DES inputs for a zero point of 27.5"""
 
-        input_iterable = des_data.iter_sncosmo_input()
+        input_iterable = des.iter_sncosmo_input()
         self.check_iterable(input_iterable, 27.5)
 
     def test_sdss_zero_point(self):
         """Test the first 20 SDSS inputs for a zero point of 25"""
 
-        input_iterable = sdss_data.iter_sncosmo_input()
+        input_iterable = sdss.iter_sncosmo_input()
         self.check_iterable(input_iterable, 25)

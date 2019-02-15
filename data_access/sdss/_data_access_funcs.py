@@ -49,7 +49,7 @@ def get_input_for_id(cid, bands=None):
 
     Args:
         cid         (int): The ID of the desired object
-        bands (list[str]): Optionally only return select bands (eg. 'desg')
+        bands (iter[str]): Optionally only return select bands (eg. 'desg')
 
     Returns:
         An astropy table of photometric data formatted for use with SNCosmo
@@ -83,12 +83,12 @@ def get_input_for_id(cid, bands=None):
 def iter_sncosmo_input(bands=None, skip_types=(), verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
-    To return a select collection of band passes, specify the band argument.
+    To return a select collection of band-passes, specify the band argument.
 
     Args:
-        bands      (list): Optional list of bandpasses to return
-        skip_types (list): List of case sensitive classifications to skip
-        verbose    (bool): Whether to display a progress bar while iterating
+        bands      (iter[str]): Optional list of band-passes to return
+        skip_types (iter[str]): List of case sensitive classifications to skip
+        verbose         (bool): Whether to a display progress bar while iterating
 
     Yields:
         An astropy table formatted for use with SNCosmo

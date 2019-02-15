@@ -17,11 +17,11 @@ from astropy.table import Table
 
 
 def keep_restframe_bands(data_table, bands, band_names, effective_lambda):
-    """Return select rest-frame bandpasses from a table of photometric data
+    """Return select rest-frame band-passes from a table of photometric data
 
     Args:
         data_table      (Table): An SNCosmo input table with column 'band'
-        bands            (iter): List of rest-frame band passes to keep
+        bands            (iter): List of rest-frame band-passes to keep
         band_names       (iter): List of all bands available in the survey
         effective_lambda (iter): The effective wavelength of each band in band_names
 

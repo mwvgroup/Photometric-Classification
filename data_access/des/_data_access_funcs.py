@@ -100,11 +100,11 @@ def get_input_for_id(cid, bands=None):
 def iter_sncosmo_input(bands=None, verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
-    To return a select collection of band passes, specify the band argument.
+    To return a select collection of band-passes, specify the band argument.
 
     Args:
-        bands   (list): Optional list of bandpasses to return
-        verbose (bool): Whether to display a progress bar while iterating
+        bands (iter[str]): Optional list of band-passes to return
+        verbose    (bool): Whether to display a progress bar while iterating
 
     Yields:
         An astropy table formatted for use with SNCosmo

@@ -9,10 +9,10 @@ import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
 
-from data_access._utils import keep_restframe_bands, parse_snoopy_data, download_data
+import _module_paths as paths
+from data_access._utils import keep_restframe_bands, parse_snoopy_data
 
-
-master_table = Table.read(MASTER_PTH, format='ascii')
+master_table = Table.read(paths.master_path, format='ascii')
 
 
 def get_data_for_id(cid):
@@ -25,7 +25,7 @@ def get_data_for_id(cid):
         An astropy table of photometric data for the given candidate ID
     """
 
-    file_path = _path.join(PHOT_DIR, '{}_snpy.txt'.format(cid))
+    file_path = _path.join(paths.photometry_dir, '{}_snpy.txt'.format(cid))
     return parse_snoopy_data(file_path)
 
 
@@ -61,11 +61,12 @@ def get_input_for_id(cid, bands=None):
 def iter_sncosmo_input(bands=None, verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
-    To return a select collection of band passes, specify the band argument.
+    To return a select collection of band-passes, specify the band argument.
 
     Args:
-        bands      (list): Optional list of band passes to return
+        bands (iter[str]): Optional list of band-passes to return
         verbose    (bool): Whether to display a progress bar while iterating
+
 
     Yields:
         An astropy table formatted for use with SNCosmo
