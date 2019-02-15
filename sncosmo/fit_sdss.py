@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 from sncosmo.fitting import DataQualityError
 
 import sys; sys.path.insert(0, '../')
-from data_access.sdss_data import iter_sncosmo_input
+from data_access.sdss import iter_sncosmo_input
 
 SDSS_BANDS = ('sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz')
 

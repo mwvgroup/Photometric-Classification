@@ -9,7 +9,8 @@ from unittest import TestCase
 import numpy as np
 from astropy.table import Table
 
-from data_access import des_data, sdss_data
+from data_access import des_data
+from data_access.sdss import sdss_data
 from data_access._utils import keep_restframe_bands
 
 

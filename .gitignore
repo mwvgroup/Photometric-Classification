@@ -9,9 +9,7 @@
 *.pyc
 
 # Light Curve Data
-data_access/sdss_data
-data_access/des_data
-data_access/csp_data
+data_access/*/data
 
 # Jupyter Checkpoints
 *.ipynb_checkpoints
