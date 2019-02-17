@@ -26,39 +26,6 @@ lambda_effective = tuple((3551, 3551, 3551, 3551, 3551, 3551,
 
 
 @np.vectorize
-def sdss_mag_to_ab_flux(mag, band):
-    """For a given sdss magnitude return the AB flux
-
-    Args:
-        mag (float): An SDSS asinh magnitude
-        band  (str): The band of the magnitude doi_2010_<ugriz><123456>
-
-    Return:
-        The equivalent AB magnitude
-    """
-
-    if band[-2] == 'u':
-        offset = -0.679
-
-    elif band[-2] == 'g':
-        offset = 0.0203
-
-    elif band[-2] == 'r':
-        offset = 0.0049
-
-    elif band[-2] == 'i':
-        offset = 0.0178
-
-    elif band[-2] == 'z':
-        offset = 0.0102
-
-    else:
-        ValueError('Unknown band {}'.format(band))
-
-    return 3631 * 10 ** ((mag + offset) / -2.5)
-
-
-@np.vectorize
 def construct_band_name(filter_id, ccd_id):
     """Return the sncosmo band name given filter and CCD id
 
@@ -125,17 +92,14 @@ def get_input_for_id(cid, bands=None):
     phot_data = phot_data[phot_data['FLAG'] < 1024]
     phot_data = phot_data[phot_data['MJD'] < peak_mjd + 45]
     phot_data = phot_data[phot_data['MJD'] > peak_mjd - 15]
-    if not phot_data:
-        print(cid)
-        return Table()
 
     sncosmo_table = Table()
     sncosmo_table.meta = phot_data.meta
     sncosmo_table['time'] = phot_data['MJD']
     sncosmo_table['band'] = construct_band_name(phot_data['FILT'], phot_data['IDCCD'])
     sncosmo_table['zp'] = np.full(len(phot_data), 2.5 * np.log10(3631))
-    sncosmo_table['flux'] = sdss_mag_to_ab_flux(phot_data['MAG'], sncosmo_table['band'])
-    sncosmo_table['fluxerr'] = phot_data['MERR'] * sncosmo_table['flux'] * np.log(10) / 2.5
+    sncosmo_table['flux'] = phot_data['FLUX'] * 1E-6
+    sncosmo_table['fluxerr'] = phot_data['FLUXERR'] * 1E-6
     sncosmo_table['zpsys'] = np.full(len(phot_data), 'ab')
     sncosmo_table.meta['cid'] = cid
 
