@@ -44,7 +44,7 @@ def get_data_for_id(cid):
     """
 
     # Read in ascii data table for specified object
-    file_path = os.path.join(meta_data.paths.smp_dir, f'SMP_{cid:06d}.dat')
+    file_path = os.path.join(meta_data.smp_dir, f'SMP_{cid:06d}.dat')
     all_data = Table.read(file_path, format='ascii')
 
     # Rename columns using header data from file
@@ -52,12 +52,12 @@ def get_data_for_id(cid):
     for i, name in enumerate(col_names):
         all_data[f'col{i + 1}'].name = name
 
-    meta_data = master_table[master_table['CID'] == cid]
-    all_data.meta['redshift'] = meta_data['zCMB'][0]
-    all_data.meta['ra'] = meta_data['RA'][0]
-    all_data.meta['dec'] = meta_data['DEC'][0]
-    all_data.meta['classification'] = meta_data['Classification'][0]
-    all_data.meta['name'] = meta_data['IAUName'][0]
+    table_meta_data = master_table[master_table['CID'] == cid]
+    all_data.meta['redshift'] = table_meta_data['zCMB'][0]
+    all_data.meta['ra'] = table_meta_data['RA'][0]
+    all_data.meta['dec'] = table_meta_data['DEC'][0]
+    all_data.meta['classification'] = table_meta_data['Classification'][0]
+    all_data.meta['name'] = table_meta_data['IAUName'][0]
 
     return all_data
 

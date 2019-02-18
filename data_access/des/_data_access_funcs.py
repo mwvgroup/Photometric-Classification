@@ -51,12 +51,12 @@ def get_data_for_id(cid):
 
     # Add meta data to table
     with open(file_path) as ofile:
-        meta_data = ofile.readlines()
-        all_data.meta['ra'] = float(meta_data[7].split()[1])
-        all_data.meta['dec'] = float(meta_data[8].split()[1])
-        all_data.meta['PEAKMJD'] = float(meta_data[12].split()[1])
-        all_data.meta['redshift'] = float(meta_data[13].split()[1])
-        all_data.meta['redshift_err'] = float(meta_data[13].split()[3])
+        table_meta_data = ofile.readlines()
+        all_data.meta['ra'] = float(table_meta_data[7].split()[1])
+        all_data.meta['dec'] = float(table_meta_data[8].split()[1])
+        all_data.meta['PEAKMJD'] = float(table_meta_data[12].split()[1])
+        all_data.meta['redshift'] = float(table_meta_data[13].split()[1])
+        all_data.meta['redshift_err'] = float(table_meta_data[13].split()[3])
         del all_data.meta['comments']
 
     return all_data
