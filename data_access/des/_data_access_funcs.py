@@ -9,8 +9,8 @@ import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
 
-import _module_paths as paths
-from data_access._utils import keep_restframe_bands
+from . import _module_paths as paths
+from .._utils import keep_restframe_bands
 
 # Effective wavelengths taken from
 # http://www.mso.anu.edu.au/~brad/filters.html
@@ -47,7 +47,7 @@ def get_data_for_id(cid):
     """
 
     # Read in ascci data table for specified object
-    file_path = _path.join(paths.photometry_dir, 'des_{:08d}.dat'.format(cid))
+    file_path = _path.join(paths.photometry_dir, f'des_{cid:08d}.dat')
     all_data = Table.read(
         file_path, format='ascii',
         data_start=27, data_end=-1,

@@ -10,14 +10,14 @@ import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
 
-import _module_paths as paths
-from data_access._utils import keep_restframe_bands
+from . import _module_paths as paths
+from .._utils import keep_restframe_bands
 
 master_table = Table.read(paths.master_table_path, format='ascii')
 
 # Effective wavelengths for SDSS filters ugriz in angstroms
 # are available at https://www.sdss.org/instruments/camera/#Filters
-band_names = tuple(('doi_2010_{}{}'.format(*f) for f in product('ugriz', '123456')))
+band_names = tuple((f'doi_2010_{band}{column}' for band, column in product('ugriz', '123456')))
 lambda_effective = tuple((3551, 3551, 3551, 3551, 3551, 3551,
                           4686, 4686, 4686, 4686, 4686, 4686,
                           6166, 6166, 6166, 6166, 6166, 6166,
@@ -37,7 +37,7 @@ def construct_band_name(filter_id, ccd_id):
         The name of the filter registered with sncosmo
     """
 
-    return 'doi_2010_{}{}'.format('ugriz'[filter_id], ccd_id)
+    return f'doi_2010_{"ugriz"[filter_id]}{ccd_id}'
 
 
 def get_data_for_id(cid):
@@ -53,13 +53,13 @@ def get_data_for_id(cid):
     """
 
     # Read in ascii data table for specified object
-    file_path = os.path.join(paths.smp_dir, 'SMP_{:06d}.dat'.format(cid))
+    file_path = os.path.join(paths.smp_dir, f'SMP_{cid:06d}.dat')
     all_data = Table.read(file_path, format='ascii')
 
     # Rename columns using header data from file
     col_names = all_data.meta['comments'][-1].split()
     for i, name in enumerate(col_names):
-        all_data['col{}'.format(i + 1)].name = name
+        all_data[f'col{i + 1}'].name = name
 
     meta_data = master_table[master_table['CID'] == cid]
     all_data.meta['redshift'] = meta_data['zCMB'][0]

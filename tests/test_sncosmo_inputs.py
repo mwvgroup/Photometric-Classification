@@ -35,21 +35,21 @@ class BandSelection(TestCase):
         cut_data = keep_restframe_bands(
             self.test_data, ['u', 'g'], self.band_names, self.lambda_effective)
 
-        self.assertItemsEqual(cut_data['band'], ['u', 'g'])
+        self.assertCountEqual(cut_data['band'], ['u', 'g'])
 
         # At a redshift .3 observer frame ug is rest frame gr
         self.test_data.meta['redshift'] = .3
         cut_data = keep_restframe_bands(
             self.test_data, ['u', 'g'], self.band_names, self.lambda_effective)
 
-        self.assertItemsEqual(cut_data['band'], ['g', 'r'])
+        self.assertCountEqual(cut_data['band'], ['g', 'r'])
 
         # At a redshift .7 observer frame ug is rest frame riz
         self.test_data.meta['redshift'] = .7
         cut_data = keep_restframe_bands(
             self.test_data, ['u', 'g'], self.band_names, self.lambda_effective)
 
-        self.assertItemsEqual(cut_data['band'], ['r', 'i', 'z'])
+        self.assertCountEqual(cut_data['band'], ['r', 'i', 'z'])
 
 
 class EmptyInputTables(TestCase):

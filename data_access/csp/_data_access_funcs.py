@@ -9,8 +9,8 @@ import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
 
-import _module_paths as paths
-from data_access._utils import keep_restframe_bands, parse_snoopy_data
+from . import _module_paths as paths
+from .._utils import keep_restframe_bands, parse_snoopy_data
 
 master_table = Table.read(paths.master_path, format='ascii')
 
@@ -25,7 +25,7 @@ def get_data_for_id(cid):
         An astropy table of photometric data for the given candidate ID
     """
 
-    file_path = _path.join(paths.photometry_dir, '{}_snpy.txt'.format(cid))
+    file_path = _path.join(paths.photometry_dir, f'{cid}_snpy.txt')
     return parse_snoopy_data(file_path)
 
 

@@ -34,8 +34,7 @@ download_data(
 
 # Download light curve data if it does not exist locally
 _filt_url = 'http://www.ioa.s.u-tokyo.ac.jp/~doi/sdss/'
-_local_filt_names = ['{}{}.dat'.format(a, b) for a, b in
-                     product('ugriz', '123456')]
+_local_filt_names = [f'{band}{column}.dat' for band, column in product('ugriz', '123456')]
 download_data(
     base_url=_filt_url,
     out_dir=filter_dir,

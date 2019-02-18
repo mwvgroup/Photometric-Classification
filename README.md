@@ -31,7 +31,7 @@
 
 #### *data_access/* 
 
-  A Python 2.7 through 3.7 module for accessing SDSS, DES, and CSP supernova
+  A Python 3.7 module for accessing SDSS, DES, and CSP supernova
   data. Data is downloaded automatically if it is not locally available. An
   example of accessing SDSS data is provided below. The interface for DES or
   CSP is the same, except you would import `des` or `csp` instead of

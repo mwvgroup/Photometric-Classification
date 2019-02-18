@@ -3,8 +3,6 @@
 
 """This module provides utilities used by various sub modules."""
 
-from __future__ import print_function
-
 import os
 import tarfile
 
