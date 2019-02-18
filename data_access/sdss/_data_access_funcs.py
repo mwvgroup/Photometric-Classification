@@ -92,6 +92,8 @@ def get_input_for_id(cid, bands=None):
     phot_data = phot_data[phot_data['FLAG'] < 1024]
     phot_data = phot_data[phot_data['MJD'] < peak_mjd + 45]
     phot_data = phot_data[phot_data['MJD'] > peak_mjd - 15]
+    if not phot_data:
+        return Table(names=['time', 'band', 'zp', 'flux', 'fluxerr', 'zpsys'])
 
     sncosmo_table = Table()
     sncosmo_table.meta = phot_data.meta
