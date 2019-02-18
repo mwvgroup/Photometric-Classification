@@ -18,8 +18,8 @@ master_path = os.path.join(photometry_dir, 'tab1.dat')  # Master table
 
 # Download published data if it does not exist locally
 _csp_url = 'https://csp.obs.carnegiescience.edu/data/'
-_local_file_names = [photometry_dir, filter_dir]
-_remote_file_names = ['CSP_Photometry_DR3.tgz', 'CSP_filter_package.tgz']
+_local_file_names = [photometry_dir]
+_remote_file_names = ['CSP_Photometry_DR3.tgz']
 
 download_data(
     base_url=_csp_url,
