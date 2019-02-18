@@ -28,3 +28,10 @@ download_data(
     out_dir=data_dir,
     remote_name=_remote_file_names,
     check_local_name=_local_file_names)
+
+# Effective wavelengths taken from
+# http://www.mso.anu.edu.au/~brad/filters.html
+band_names = ('desg', 'desr', 'desi', 'desz', 'desy')
+lambda_effective = (5270, 6590, 7890, 9760, 10030)
+
+# Todo: Register filter profiles

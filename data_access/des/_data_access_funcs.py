@@ -9,16 +9,11 @@ import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
 
-from . import _module_paths as paths
+from . import _module_meta_data as meta_data
 from .._utils import keep_restframe_bands
 
-# Effective wavelengths taken from
-# http://www.mso.anu.edu.au/~brad/filters.html
-band_names = ('desg', 'desr', 'desi', 'desz', 'desy')
-lambda_effective = (5270, 6590, 7890, 9760, 10030)
-
 master_table = Table.read(
-    paths.master_table_path,
+    meta_data.master_table_path,
     format='ascii',
     data_start=4,
     comment='#',
@@ -47,7 +42,7 @@ def get_data_for_id(cid):
     """
 
     # Read in ascci data table for specified object
-    file_path = _path.join(paths.photometry_dir, f'des_{cid:08d}.dat')
+    file_path = _path.join(meta_data.photometry_dir, f'des_{cid:08d}.dat')
     all_data = Table.read(
         file_path, format='ascii',
         data_start=27, data_end=-1,
@@ -91,7 +86,10 @@ def get_input_for_id(cid, bands=None):
 
     if bands is not None:
         sncosmo_table = keep_restframe_bands(
-            sncosmo_table, bands, band_names, lambda_effective)
+            sncosmo_table,
+            bands,
+            meta_data.band_names,
+            meta_data.lambda_effective)
 
     return sncosmo_table
 
@@ -110,7 +108,7 @@ def iter_sncosmo_input(bands=None, verbose=False):
     """
 
     # Load list of all target ids
-    target_list_path = _path.join(paths.photometry_dir, 'DES-SN3YR_DES.LIST')
+    target_list_path = _path.join(meta_data.photometry_dir, 'DES-SN3YR_DES.LIST')
     file_list = np.genfromtxt(target_list_path, dtype=str)
 
     # Yield an SNCosmo input table for each target

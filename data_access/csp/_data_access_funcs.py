@@ -9,10 +9,10 @@ import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
 
-from . import _module_paths as paths
+from . import _module_meta_data as meta_data
 from .._utils import keep_restframe_bands, parse_snoopy_data
 
-master_table = Table.read(paths.master_path, format='ascii')
+master_table = Table.read(meta_data.master_path, format='ascii')
 
 
 def get_data_for_id(cid):
@@ -25,7 +25,7 @@ def get_data_for_id(cid):
         An astropy table of photometric data for the given candidate ID
     """
 
-    file_path = _path.join(paths.photometry_dir, f'{cid}_snpy.txt')
+    file_path = _path.join(meta_data.photometry_dir, f'{cid}_snpy.txt')
     return parse_snoopy_data(file_path)
 
 
@@ -40,10 +40,6 @@ def get_input_for_id(cid, bands=None):
         An astropy table of photometric data formatted for use with SNCosmo
     """
 
-    # Todo: Add and register CSP bands
-    csp_bands = []
-    lambda_effective = []
-
     sn_data = get_data_for_id(cid)
     sn_data['flux'] = sn_data['mag']
     sn_data['fluxerr'] = sn_data['mag_err']
@@ -53,7 +49,7 @@ def get_input_for_id(cid, bands=None):
 
     if bands is not None:
         sn_data = keep_restframe_bands(
-            sn_data, bands, csp_bands, lambda_effective)
+            sn_data, bands, meta_data.band_names, meta_data.lambda_effective)
 
     return sn_data
 

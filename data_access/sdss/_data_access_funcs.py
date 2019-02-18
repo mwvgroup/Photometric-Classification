@@ -4,25 +4,16 @@
 """This module defines functions for accessing locally available data files."""
 
 import os
-from itertools import product
+
 
 import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
 
-from . import _module_paths as paths
+from . import _module_meta_data as meta_data
 from .._utils import keep_restframe_bands
 
-master_table = Table.read(paths.master_table_path, format='ascii')
-
-# Effective wavelengths for SDSS filters ugriz in angstroms
-# are available at https://www.sdss.org/instruments/camera/#Filters
-band_names = tuple((f'doi_2010_{band}{column}' for band, column in product('ugriz', '123456')))
-lambda_effective = tuple((3551, 3551, 3551, 3551, 3551, 3551,
-                          4686, 4686, 4686, 4686, 4686, 4686,
-                          6166, 6166, 6166, 6166, 6166, 6166,
-                          7480, 7480, 7480, 7480, 7480, 7480,
-                          8932, 8932, 8932, 8932, 8932, 8932))
+master_table = Table.read(meta_data.master_table_path, format='ascii')
 
 
 @np.vectorize
@@ -53,7 +44,7 @@ def get_data_for_id(cid):
     """
 
     # Read in ascii data table for specified object
-    file_path = os.path.join(paths.smp_dir, f'SMP_{cid:06d}.dat')
+    file_path = os.path.join(meta_data.paths.smp_dir, f'SMP_{cid:06d}.dat')
     all_data = Table.read(file_path, format='ascii')
 
     # Rename columns using header data from file
@@ -108,7 +99,10 @@ def get_input_for_id(cid, bands=None):
     # Keep only specified band-passes
     if bands is not None:
         sncosmo_table = keep_restframe_bands(
-            sncosmo_table, bands, band_names, lambda_effective)
+            sncosmo_table,
+            bands,
+            meta_data.band_names,
+            meta_data.lambda_effective)
 
     return sncosmo_table
 
