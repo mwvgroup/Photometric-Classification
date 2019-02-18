@@ -13,3 +13,6 @@ data_access/*/data
 
 # Jupyter Checkpoints
 *.ipynb_checkpoints
+
+# Testing cache files
+.pytest_cache/
