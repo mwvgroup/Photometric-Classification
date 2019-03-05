@@ -28,7 +28,7 @@ def construct_band_name(filter_id, ccd_id):
         The name of the filter registered with sncosmo
     """
 
-    return f'doi_2010_{"ugriz"[filter_id]}{ccd_id}'
+    return f'91bg_proj_sdss_{"ugriz"[filter_id]}{ccd_id}'
 
 
 def get_data_for_id(cid):
@@ -66,12 +66,13 @@ def get_input_for_id(cid, bands=None):
     """Returns an SNCosmo input table a given SDSS object ID
 
     Only data points with a published photometric quality flag < 1024 are
-    included in the returned table. Data is dropped for epochs not between
-    -15 and 45 days.
+    included in the returned table. Data points flagged in the SDSS II release
+    as outliers are also removed.
 
     Args:
         cid         (int): The ID of the desired object
-        bands (iter[str]): Optionally only return select bands (eg. 'desg')
+        bands (iter[str]): Optionally only return select rest frame
+                             bands (eg. '91bg_proj_sdss_u1')
 
     Returns:
         An astropy table of photometric data formatted for use with SNCosmo
@@ -79,10 +80,7 @@ def get_input_for_id(cid, bands=None):
 
     # Format table
     phot_data = get_data_for_id(cid)
-    peak_mjd = master_table[master_table['CID'] == cid]['MJDatPeakrmag'][0]
     phot_data = phot_data[phot_data['FLAG'] < 1024]
-    phot_data = phot_data[phot_data['MJD'] < peak_mjd + 45]
-    phot_data = phot_data[phot_data['MJD'] > peak_mjd - 15]
     if not phot_data:
         return Table(names=['time', 'band', 'zp', 'flux', 'fluxerr', 'zpsys'])
 
@@ -112,8 +110,7 @@ def iter_sncosmo_input(bands=None, keep_types=(), verbose=False):
 
     To return a select collection of band-passes, specify the band argument.
     Only data points with a published photometric quality flag < 1024 are
-    included in the returned tables. Data is dropped for epochs not between
-    -15 and 45 days.
+    included in the returned tables.
 
     Args:
         bands      (iter[str]): Optional list of band-passes to return
@@ -125,11 +122,15 @@ def iter_sncosmo_input(bands=None, keep_types=(), verbose=False):
     """
 
     # Create iterable without unwanted data
-    skip_data_indx = np.isin(master_table['Classification'], keep_types)
-    cut_data = master_table[skip_data_indx]
+    if keep_types:
+        skip_data_indx = np.isin(master_table['Classification'], keep_types)
+        data = master_table[skip_data_indx]
+
+    else:
+        data = master_table
 
     # Yield an SNCosmo input table for each target
-    iter_data = tqdm(cut_data['CID']) if verbose else cut_data['CID']
+    iter_data = tqdm(data['CID']) if verbose else data['CID']
     for cid in iter_data:
         sncosmo_table = get_input_for_id(cid, bands)
         if sncosmo_table:

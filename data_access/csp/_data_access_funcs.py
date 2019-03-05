@@ -34,7 +34,8 @@ def get_input_for_id(cid, bands=None):
 
     Args:
         cid         (int): The ID of the desired object
-        bands (list[str]): Optionally only return select bands (eg. 'desg')
+        bands (list[str]): Optionally only return select bands
+                             (eg. '91bg_proj_csp_V0')
 
     Returns:
         An astropy table of photometric data formatted for use with SNCosmo

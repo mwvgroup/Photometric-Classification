@@ -4,13 +4,15 @@
 """This script fits SDSS light curves using sncosmo"""
 
 import os
+import sys
+from itertools import product
 
 import numpy as np
 import sncosmo
 from astropy.table import Table
 from sncosmo.fitting import DataQualityError
 
-import sys; sys.path.insert(0, '../')
+sys.path.insert(0, '../')
 from data_access import sdss
 
 
@@ -34,21 +36,19 @@ def create_empty_summary_table(params_to_fit):
     return out_table
 
 
-def fit_sdss_data(out_path,
-                  model,
-                  bands=None,
-                  params_to_fit=('t0', 'x0', 'x1', 'c'),
-                  fit_types=()):
+def fit_sdss_data(out_path, model, vparam_names, bands=None, fit_types=(),
+                  **kwargs):
     """Fit SDSS light curves with SNCosmo
 
-    Files are named as <out_dir>/<target cid>.txt
-
     Args:
-        out_path       (str): Where to write fit results
-        model        (model): Model to use for fitting. Default = salt2
-        params_to_fit (list): List of parameters to fit
-        fit_types    (list): List of case sensitive classifications to skip
-        bands         (list): Optional list of band-passes to fit
+        out_path      (str): Where to write fit results
+        model       (model): Model to use for fitting
+        vparam_names (list): List of parameters to fit
+        bands        (list): Optional list of rest frame band-passes to fit
+        fit_types    (list): Optional include only certain SDSS II target
+                               classifications (case sensitive)
+
+        Additionally any arguments for sncosmo.fit_lc
     """
 
     out_dir = os.path.dirname(out_path)
@@ -56,7 +56,7 @@ def fit_sdss_data(out_path,
         os.makedirs(out_dir)
 
     # Run fit for each target
-    out_table = create_empty_summary_table(params_to_fit)
+    out_table = create_empty_summary_table(vparam_names)
     for input_table in sdss.iter_sncosmo_input(
             bands=bands, keep_types=fit_types, verbose=True):
 
@@ -71,7 +71,7 @@ def fit_sdss_data(out_path,
         try:
             model.set(z=z)
             result, fitted_model = sncosmo.fit_lc(
-                input_table, model, params_to_fit, bounds=None)
+                input_table, model, ['t0', 'x0', 'x1', 'c'], **kwargs)
 
         except (DataQualityError, RuntimeError, ValueError) as e:
             mask_length = len(out_table.colnames) - len(new_row) - 2
@@ -95,11 +95,50 @@ def fit_sdss_data(out_path,
 
 
 if __name__ == '__main__':
-    classifications_to_fit = ['zSNIa', 'pSNIa', 'SNIa', 'SNIa?']
+    salt_2_0 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0'))
+    salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
+    blue_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('ug', '123456')]
+    red_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('riz', '123456')]
 
-    source = sncosmo.get_source('salt2', version='2.0')
-    fitting_model = sncosmo.Model(source=source)
-    print('Fitting type Ia model in all bands')
+    print('Fitting type Ia targets in all bands (Salt 2.0)')
     fit_sdss_data('./sdss_results/snia_ugriz.csv',
-                  model=fitting_model,
-                  fit_types=classifications_to_fit)
+                  model=salt_2_0,
+                  vparam_names=['t0', 'x0', 'x1', 'c'],
+                  fit_types=['zSNIa', 'pSNIa', 'SNIa', 'SNIa?'],
+                  bounds=None,
+                  modelcov=True,
+                  phase_range=[-15, 45],
+                  minsnr=5,
+                  warn=False)
+
+    print('\nFitting all targets in all bands (Salt 2.4)')
+    fit_sdss_data('./sdss_results/all_ugriz.csv',
+                  model=salt_2_4,
+                  vparam_names=['t0', 'x0', 'x1', 'c'],
+                  bounds=None,
+                  modelcov=True,
+                  phase_range=[-15, 45],
+                  minsnr=5,
+                  warn=False)
+
+    print('\nFitting all targets in ug (Salt 2.4)')
+    fit_sdss_data('./sdss_results/all_ug.csv',
+                  model=salt_2_4,
+                  vparam_names=['t0', 'x0', 'x1', 'c'],
+                  bands=blue_bands,
+                  bounds=None,
+                  modelcov=True,
+                  phase_range=[-15, 45],
+                  minsnr=5,
+                  warn=False)
+
+    print('\nFitting all targets in riz (Salt 2.4)')
+    fit_sdss_data('./sdss_results/all_riz.csv',
+                  model=salt_2_4,
+                  vparam_names=['t0', 'x0', 'x1', 'c'],
+                  bands=red_bands,
+                  bounds=None,
+                  modelcov=True,
+                  phase_range=[-15, 45],
+                  minsnr=5,
+                  warn=False)

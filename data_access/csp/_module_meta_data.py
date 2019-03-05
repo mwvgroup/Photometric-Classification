@@ -63,5 +63,5 @@ download_data(
 for _filter_path in _local_filt_names:
     fpath = os.path.join(filter_dir, _filter_path)
     filter_name = _filter_path.split('_')[0]
-    register_filter(fpath, '91bg_proj_csp' + filter_name)
+    register_filter(fpath, f'91bg_proj_csp_{filter_name}')
 
