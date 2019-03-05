@@ -77,6 +77,7 @@ def get_data_for_id(cid):
 
     table_meta_data = master_table[master_table['CID'] == cid]
     all_data.meta['redshift'] = table_meta_data['zCMB'][0]
+    all_data.meta['redshift_err'] = table_meta_data['zerrCMB'][0]
     all_data.meta['ra'] = table_meta_data['RA'][0]
     all_data.meta['dec'] = table_meta_data['DEC'][0]
     all_data.meta['classification'] = table_meta_data['Classification'][0]

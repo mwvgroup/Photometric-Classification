@@ -4,51 +4,52 @@
 """This script fits DES light curves using sncosmo"""
 
 import os
+import sys
 
 import numpy as np
 import sncosmo
 from astropy.table import Table
 from sncosmo.fitting import DataQualityError
 
-import sys; sys.path.insert(0, '../')
-from data_access.des import iter_sncosmo_input
+sys.path.insert(0, '../')
+from data_access import des
 
 
-def create_empty_summary_table(bands, params_to_fit):
+def create_empty_summary_table():
     """Returns a table with columns:
 
-         cid, class, num_points_ + *bands, fit_z, z,
-         *params_to_fit, z_err, *params_to_fit + _err,
-         chi, dof, message
-
-    Args:
-        bands         (list): List of SDSS band-passes sdss<ugriz>
-        params_to_fit (list): List of fit parameters
+         cid, z, t0, x0, x1, z_err, t0_err, x0_err, x1_err, c_err,
+         chi, dof, message.
     """
 
-    names = ['cid', 'z', 'z_err']
-    names.extend(['num_points_' + band for band in bands])
-    names.extend(params_to_fit)
-    names.extend((p + '_err' for p in params_to_fit))
+    names = ['cid']
+    names.extend(['num_points_' + band for band in des.band_names])
+
+    param_names = ['z', 't0', 'x0', 'x1', 'c']
+    names.extend(param_names)
+    names.extend((p + '_err' for p in param_names))
     names.extend(('chi', 'dof', 'message'))
     out_table = Table(names=names, dtype=[object for _ in names])
 
     return out_table
 
 
-def fit_des_data(out_path,
-                 model_name='salt2',
-                 bands=None,
-                 params_to_fit=('t0', 'x0', 'x1', 'c')):
+def count_data_points_per_band(band_list):
+    # Determine number of data points per band
+    band_names, band_counts = np.unique(band_list, return_counts=True)
+    count_dict = dict(zip(band_names, band_counts))
+    return [count_dict.get(band, 0) for band in des.band_names]
+
+
+def fit_des_data(out_path, model, bands=None, **kwargs):
     """Fit DES light curves with SNCosmo
 
-    Files are named as <out_dir>/<target cid>.txt
-
     Args:
-        out_path       (str): Where to write fit results
-        model_name     (str): Model to use for fitting. Default = salt2
-        params_to_fit (list): List of parameters to fit
-        bands         (list): Optional list of band-passes to fit
+        out_path      (str): Where to write fit results
+        model       (model): Model to use for fitting
+        bands        (list): Optional list of rest frame band-passes to fit
+
+        Additionally any arguments for sncosmo.fit_lc
     """
 
     out_dir = os.path.dirname(out_path)
@@ -56,36 +57,31 @@ def fit_des_data(out_path,
         os.makedirs(out_dir)
 
     # Run fit for each target
-    out_table = create_empty_summary_table(bands, params_to_fit)
-    for input_table in iter_sncosmo_input(bands=bands, verbose=True):
-
-        # Determine number of data points per band
-        band_names, band_counts = np.unique(input_table['band'],
-                                            return_counts=True)
-        count_dict = dict(zip(band_names, band_counts))
-        num_data_points = [count_dict.get(band, 0) for band in bands]
+    out_table = create_empty_summary_table()
+    for input_table in des.iter_sncosmo_input(bands=bands, verbose=True):
 
         # Create a new, incomplete row for the table
-        new_row = [input_table.meta['cid'],
-                   input_table.meta['redshift'],
-                   input_table.meta['redshift_err']]
-
-        new_row.extend(num_data_points)
+        new_row = [input_table.meta['cid']]
+        new_row.extend(count_data_points_per_band(input_table['band']))
 
         try:
-            model = sncosmo.Model(source=model_name)
             model.set(z=input_table.meta['redshift'])
             result, fitted_model = sncosmo.fit_lc(
-                input_table, model, list(params_to_fit), bounds=None)
+                data=input_table,
+                model=model,
+                vparam_names=['t0', 'x0', 'x1', 'c'],
+                **kwargs)
 
         except (DataQualityError, RuntimeError, ValueError) as e:
-            mask_length = len(out_table.colnames) - len(new_row) - 1
-            mask = np.full(mask_length, np.NAN).tolist()
-            new_row.extend(mask)
+            new_row.append(input_table.meta['redshift_err'])
+            new_row.extend(np.full(4, np.NAN).tolist())
+            new_row.append(input_table.meta['redshift_err'])
+            new_row.extend(np.full(6, np.NAN).tolist())
             new_row.append(str(e))
 
         else:
-            new_row.extend(result.parameters[1:])  # Slice to remove redshift
+            new_row.extend(result.parameters)
+            new_row.append(input_table.meta['redshift_err'])
             new_row.extend(result.errors.values())
             new_row.append(result.chisq)
             new_row.append(result.ndof)
@@ -96,25 +92,33 @@ def fit_des_data(out_path,
 
 
 if __name__ == '__main__':
-    print('\n\nFitting type Ia model in all bands')
-    fit_des_data('./des_results/snia_ugriz.csv')
+    salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
 
-    print('Fitting type Ia model in ug')
+    print('Fitting type Ia model in all bands')
+    fit_des_data('./des_results/snia_ugriz.csv',
+                 model=salt_2_4,
+                 bounds=None,
+                 modelcov=True,
+                 phase_range=[-15, 45],
+                 minsnr=5,
+                 warn=False)
+
+    print('\n\nFitting type Ia model in ug')
     fit_des_data('./des_results/snia_ug.csv',
-                 bands=['desu', 'desg'])
+                 model=salt_2_4,
+                 bands=['desu', 'desg'],
+                 bounds=None,
+                 modelcov=True,
+                 phase_range=[-15, 45],
+                 minsnr=5,
+                 warn=False)
 
     print('\n\nFitting type Ia model in riz')
     fit_des_data('./des_results/snia_riz.csv',
-                 bands=['desr', 'desi', 'desz'])
-
-    print('\n\nFitting 91bg model in ug')
-    fit_des_data('./des_results/91bg_ug.csv',
-                 model_name='nugent-sn91bg',
+                 model=salt_2_4,
                  bands=['desu', 'desg'],
-                 params_to_fit=['t0', 'amplitude'])
-
-    print('\n\nFitting 91bg model in riz')
-    fit_des_data('./des_results/91bg_riz.csv',
-                 model_name='nugent-sn91bg',
-                 bands=['desr', 'desi', 'desz'],
-                 params_to_fit=['t0', 'amplitude'])
+                 bounds=None,
+                 modelcov=True,
+                 phase_range=[-15, 45],
+                 minsnr=5,
+                 warn=False)
