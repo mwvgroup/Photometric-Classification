@@ -5,7 +5,6 @@
 
 import os
 
-
 import numpy as np
 from astropy.table import Table
 from tqdm import tqdm
@@ -14,6 +13,30 @@ from . import _module_meta_data as meta_data
 from .._utils import keep_restframe_bands
 
 master_table = Table.read(meta_data.master_table_path, format='ascii')
+
+
+def _get_outliers():
+    """Return a dictionary of data points marked by SDSS II as outliers
+
+    Returns:
+        A dictionary {<cid>: [<MJD of bad data point>, ...], ...}
+    """
+
+    out_dict = dict()
+    with open(meta_data.outlier_path) as ofile:
+        for line in ofile.readlines():
+            if line.startswith('IGNORE:'):
+                line_list = line.split()
+                cid, mjd, band = line_list[1], line_list[2], line_list[3]
+                if cid not in out_dict:
+                    out_dict[int(cid)] = []
+
+                out_dict[int(cid)].append(mjd)
+
+    return out_dict
+
+
+outlier_mjd = _get_outliers()
 
 
 @np.vectorize
@@ -81,6 +104,12 @@ def get_input_for_id(cid, bands=None):
     # Format table
     phot_data = get_data_for_id(cid)
     phot_data = phot_data[phot_data['FLAG'] < 1024]
+
+    outlier_list = outlier_mjd.get(cid, [])
+    if outlier_list:
+        keep_indices = ~np.isin(phot_data['MJD'], outlier_list)
+        phot_data = phot_data[keep_indices]
+
     if not phot_data:
         return Table(names=['time', 'band', 'zp', 'flux', 'fluxerr', 'zpsys'])
 
