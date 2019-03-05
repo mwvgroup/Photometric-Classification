@@ -2,9 +2,11 @@
 # -*- coding: UTF-8 -*-
 
 """This module provides access to data from the third data release of the
-Carnegie Supernova Project (CSP).
+Carnegie Supernova Project (CSP). See the package level docstring for usage
+instructions.
 
-For more information on CSP see: https://csp.obs.carnegiescience.edu
+For more information on CSP data products, see:
+    https://csp.obs.carnegiescience.edu
 """
 
 from ._data_access_funcs import get_data_for_id

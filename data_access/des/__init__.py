@@ -2,7 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 """This module provides access to data from the year three DES supernova
-cosmology paper.
+cosmology paper. See the package level docstring for usage instructions.
+
+For more information on DES data products, see:
+    https://des.ncsa.illinois.edu/releases/dr1
 """
 
 from ._data_access_funcs import get_data_for_id

@@ -2,7 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 """This module provides access to data from the SDSS-II SN Catalog Data
-Release.
+Release. See the package level docstring for usage instructions.
+
+For more information on SDSS data products, see:
+    https://data.sdss.org/sas/dr10/boss/papers/supernova/
 """
 
 from ._data_access_funcs import get_data_for_id

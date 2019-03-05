@@ -34,6 +34,8 @@ master_table = Table.read(
 def get_data_for_id(cid):
     """Returns DES photometric data for a given object ID
 
+    No data cuts are applied to the returned data.
+
     Args:
         cid (int): The ID of the desired object
 
@@ -64,6 +66,8 @@ def get_data_for_id(cid):
 
 def get_input_for_id(cid, bands=None):
     """Returns an SNCosmo input table a given DES object ID
+
+    No data cuts are applied to the returned data.
 
     Args:
         cid         (int): The ID of the desired object
@@ -98,6 +102,7 @@ def iter_sncosmo_input(bands=None, verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
     To return a select collection of band-passes, specify the band argument.
+    No data cuts are applied to the returned data.
 
     Args:
         bands (iter[str]): Optional list of band-passes to return
