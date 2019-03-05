@@ -59,6 +59,7 @@ def get_data_for_id(cid):
         all_data.meta['PEAKMJD'] = float(table_meta_data[12].split()[1])
         all_data.meta['redshift'] = float(table_meta_data[13].split()[1])
         all_data.meta['redshift_err'] = float(table_meta_data[13].split()[3])
+        all_data.meta['cid'] = cid
         del all_data.meta['comments']
 
     return all_data
@@ -86,7 +87,7 @@ def get_input_for_id(cid, bands=None):
     sncosmo_table['zp'] = np.full(len(all_sn_data), 27.5)
     sncosmo_table['zpsys'] = np.full(len(all_sn_data), 'ab')
     sncosmo_table.meta = all_sn_data.meta
-    sncosmo_table.meta['cid'] = cid
+
 
     if bands is not None:
         sncosmo_table = keep_restframe_bands(

@@ -59,7 +59,7 @@ def fit_sdss_data(out_path, model, rest_bands=None, fit_types=(), **kwargs):
         except (DataQualityError, RuntimeError, ValueError) as e:
             new_row.append(z)
             new_row.extend(np.full(4, np.NAN).tolist())
-            new_row.append(input_table.meta['redshift_err'])
+            new_row.append(input_table.meta['redshift'])
             new_row.extend(np.full(6, np.NAN).tolist())
             new_row.append(str(e))
 
@@ -90,25 +90,25 @@ if __name__ == '__main__':
                         minsnr=5,
                         warn=False)
 
-    print('Fitting type Ia targets in all bands (Salt 2.0)')
+    print('Fitting type Ia targets in all bands (Salt 2.0)', flush=True)
     fit_sdss_data('./sdss_results/snia_ugriz_2_0.csv',
                   model=salt_2_0,
                   fit_types=classifications_to_fit,
                   **sncosmo_args)
 
-    print('\n\nFitting all targets in all bands (Salt 2.4)')
+    print('\n\nFitting all targets in all bands (Salt 2.4)', flush=True)
     fit_sdss_data('./sdss_results/snia_ugriz.csv',
                   model=salt_2_4,
                   fit_types=classifications_to_fit,
                   **sncosmo_args)
 
-    print('\n\nFitting all targets in ug (Salt 2.4)')
+    print('\n\nFitting all targets in ug (Salt 2.4)', flush=True)
     fit_sdss_data('./sdss_results/snia_ug.csv',
                   model=salt_2_4,
                   rest_bands=blue_bands,
                   **sncosmo_args)
 
-    print('\n\nFitting all targets in riz (Salt 2.4)')
+    print('\n\nFitting all targets in riz (Salt 2.4)', flush=True)
     fit_sdss_data('./sdss_results/snia_riz.csv',
                   model=salt_2_4,
                   rest_bands=red_bands,

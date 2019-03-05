@@ -48,7 +48,7 @@ def fit_des_data(out_path, model, rest_bands=None, **kwargs):
                 **kwargs)
 
         except (DataQualityError, RuntimeError, ValueError) as e:
-            new_row.append(input_table.meta['redshift_err'])
+            new_row.append(input_table.meta['redshift'])
             new_row.extend(np.full(4, np.NAN).tolist())
             new_row.append(input_table.meta['redshift_err'])
             new_row.extend(np.full(6, np.NAN).tolist())
@@ -68,24 +68,23 @@ def fit_des_data(out_path, model, rest_bands=None, **kwargs):
 
 if __name__ == '__main__':
     salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
-
     sncosmo_args = dict(bounds=None,
                         modelcov=True,
                         minsnr=5,
                         warn=False)
 
-    print('Fitting type Ia model in all bands')
+    print('Fitting type Ia model in all bands', flush=True)
     fit_des_data('./des_results/snia_ugriz.csv',
                  model=salt_2_4,
                  **sncosmo_args)
 
-    print('\n\nFitting type Ia model in ug')
+    print('\n\nFitting type Ia model in ug', flush=True)
     fit_des_data('./des_results/snia_ug.csv',
                  model=salt_2_4,
                  rest_bands=['desu', 'desg'],
                  **sncosmo_args)
 
-    print('\n\nFitting type Ia model in riz')
+    print('\n\nFitting type Ia model in riz', flush=True)
     fit_des_data('./des_results/snia_riz.csv',
                  model=salt_2_4,
                  rest_bands=['desu', 'desg'],

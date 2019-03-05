@@ -66,7 +66,11 @@ def parse_snoopy_data(path):
         An astropy table with columns 'time', 'band', 'mag', and 'mag_err'
     """
 
-    out_table = Table(names=['time', 'band', 'mag', 'mag_err'])
+    out_table = Table(
+        names=['time', 'band', 'mag', 'mag_err'],
+        dtype=[float, object, float, float]
+    )
+
     with open(path) as ofile:
         # Get meta data from first line
         name, z, ra, dec = ofile.readline().split()
@@ -89,7 +93,6 @@ def parse_snoopy_data(path):
     return out_table
 
 
-@np.vectorize
 def register_filter(file_path, filt_name):
     """Registers filter profiles with sncosmo if not already registered
 
