@@ -47,8 +47,10 @@ _local_filt_names = [
 ]
 
 # Register filters if not already registered
-band_names = ['u', 'g', 'r', 'i', 'B', 'V0', 'V1', 'V',
-              'Y', 'H', 'J', 'Jrc2', 'Ydw', 'Jdw', 'Hdw']
+_band_names = ['u', 'g', 'r', 'i', 'B', 'V0', 'V1', 'V',
+               'Y', 'H', 'J', 'Jrc2', 'Ydw', 'Jdw', 'Hdw']
+
+band_names = [f'91bg_proj_csp_{f}' for f in _band_names]
 lambda_effective = [3639.3, 4765.1, 6223.3, 7609.2, 4350.6, 5369.6, 5401.4,
                     5375.2, 10350.8, 16297.7, 12386.5, 12356.3, 10439.8,
                     12383.2, 16282.8]
@@ -60,8 +62,8 @@ download_data(
     check_local_name=_local_filt_names
 )
 
-for _filter_path in _local_filt_names:
+for _filter_path, _filter_name in zip(_local_filt_names, band_names):
     fpath = os.path.join(filter_dir, _filter_path)
     filter_name = _filter_path.split('_')[0]
-    register_filter(fpath, f'91bg_proj_csp_{filter_name}')
+    register_filter(fpath, _filter_name)
 

@@ -58,8 +58,6 @@ lambda_effective = tuple((3551, 3551, 3551, 3551, 3551, 3551,
                           7480, 7480, 7480, 7480, 7480, 7480,
                           8932, 8932, 8932, 8932, 8932, 8932))
 
-print('registering filters')
 for _filter_file, _filter_name in zip(_local_filt_file_names, band_names):
     fpath = os.path.join(filter_dir, _filter_file)
     register_filter(fpath, _filter_name)
-    print(_filter_name)
