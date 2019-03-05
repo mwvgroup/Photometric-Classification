@@ -9,55 +9,20 @@ from itertools import product
 
 import numpy as np
 import sncosmo
-from astropy.table import Table
 from sncosmo.fitting import DataQualityError
 
 sys.path.insert(0, '../')
 from data_access import sdss
+from _utils import create_empty_summary_table, count_points_per_band
 
 
-def create_empty_summary_table():
-    """Returns a table with columns:
-
-         cid, class, *num_points_<sdss band names>, z, t0, x0, x1, c, z_err,
-         t0_err, x0_err, x1_err, c_err, chi, dof, message.
-    """
-
-    names = ['cid', 'class']
-    names.extend(['num_points_' + band for band in sdss.band_names])
-
-    param_names = ['z', 't0', 'x0', 'x1', 'c']
-    names.extend(param_names)
-    names.extend((p + '_err' for p in param_names))
-    names.extend(('chi', 'dof', 'message'))
-    out_table = Table(names=names, dtype=[object for _ in names])
-
-    return out_table
-
-
-def count_data_points_per_band(band_list):
-    """Return the number of data points per band
-
-    Args:
-        band_list (list[str]): A list of band names (see sdss.band_names)
-
-    Returns:
-        The
-    """
-
-    band_names, band_counts = np.unique(band_list, return_counts=True)
-    count_dict = dict(zip(band_names, band_counts))
-    return [count_dict.get(band, 0) for band in sdss.band_names]
-
-
-def fit_sdss_data(out_path, model, bands=None, fit_types=(),
-                  **kwargs):
+def fit_sdss_data(out_path, model, rest_bands=None, fit_types=(), **kwargs):
     """Fit SDSS light curves with SNCosmo
 
     Args:
         out_path      (str): Where to write fit results
         model       (model): Model to use for fitting
-        bands        (list): Optional list of rest frame band-passes to fit
+        rest_bands   (list): Optional list of rest frame band-passes to fit
         fit_types    (list): Optional include only certain SDSS II target
                                classifications (case sensitive)
 
@@ -69,9 +34,9 @@ def fit_sdss_data(out_path, model, bands=None, fit_types=(),
         os.makedirs(out_dir)
 
     # Run fit for each target
-    out_table = create_empty_summary_table()
+    out_table = create_empty_summary_table(sdss.band_names, ['class'])
     for input_table in sdss.iter_sncosmo_input(
-            bands=bands, keep_types=fit_types, verbose=True):
+            bands=rest_bands, keep_types=fit_types, verbose=True):
 
         # Only fit target with published redshift
         z = input_table.meta['redshift']
@@ -79,8 +44,9 @@ def fit_sdss_data(out_path, model, bands=None, fit_types=(),
             continue
 
         # Create a new, incomplete row for the table
-        new_row = [input_table.meta['cid'], input_table.meta['classification']]
-        new_row.extend(count_data_points_per_band(input_table['band']))
+        new_row = [input_table.meta['classification'], input_table.meta['cid']]
+        band_count = count_points_per_band(input_table['band'], sdss.band_names)
+        new_row.extend(band_count)
 
         try:
             model.set(z=z)
@@ -113,6 +79,7 @@ if __name__ == '__main__':
     salt_2_0 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0'))
     salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
 
+    classifications_to_fit = ['zSNIa', 'pSNIa', 'SNIa', 'SNIa?']
     all_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('ugriz', '123456')]
     blue_bands = all_bands[:12]
     red_bands = all_bands[12:]
@@ -124,25 +91,26 @@ if __name__ == '__main__':
                         warn=False)
 
     print('Fitting type Ia targets in all bands (Salt 2.0)')
-    fit_sdss_data('./sdss_results/snia_ugriz.csv',
+    fit_sdss_data('./sdss_results/snia_ugriz_2_0.csv',
                   model=salt_2_0,
-                  bands=all_bands,
+                  fit_types=classifications_to_fit,
                   **sncosmo_args)
 
     print('\n\nFitting all targets in all bands (Salt 2.4)')
-    fit_sdss_data('./sdss_results/all_ugriz.csv',
+    fit_sdss_data('./sdss_results/snia_ugriz.csv',
                   model=salt_2_4,
-                  bands=all_bands,
+                  fit_types=classifications_to_fit,
                   **sncosmo_args)
 
     print('\n\nFitting all targets in ug (Salt 2.4)')
-    fit_sdss_data('./sdss_results/all_ug.csv',
+    fit_sdss_data('./sdss_results/snia_ug.csv',
                   model=salt_2_4,
-                  bands=blue_bands,
+                  rest_bands=blue_bands,
                   **sncosmo_args)
 
     print('\n\nFitting all targets in riz (Salt 2.4)')
-    fit_sdss_data('./sdss_results/all_riz.csv',
+    fit_sdss_data('./sdss_results/snia_riz.csv',
                   model=salt_2_4,
-                  bands=red_bands,
+                  rest_bands=red_bands,
+                  fit_types=classifications_to_fit,
                   **sncosmo_args)
