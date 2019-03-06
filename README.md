@@ -130,3 +130,8 @@ for table in sdss.iter_sncosmo_input():
   - These papers include a low-z SN sample from CfA3, CfA4, and CSP1. It's not clear if the the numbers above include the low-z sample.
   
 - The 31.00 zero point is for internal DES use. The ZP in the public data files is 27.5.
+
+## Notes on the CSP data
+
+- The official CSP webpage for DR3 is [here](https://csp.obs.carnegiescience.edu/news-items/csp-dr3-photometry-released).
+- Spectroscopic classification can be found in [Folatelli et al. (2013)](https://arxiv.org/abs/1305.6997). Data tables are available from [Vizier](http://cdsarc.u-strasbg.fr/viz-bin/cat/J/ApJ/773/53)
