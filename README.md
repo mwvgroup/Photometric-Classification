@@ -25,13 +25,21 @@
 
 ## Directory Overview and File List
 
+#### analysis
+
+  A collection of notebooks performing data analysis on the light curve fit results.
+
+- **apply_classification.ipynb:** Compares fit results between the normal and 91bg models in different bands and classifies peculiar SN.
+- **compare_to_published.ipynb:** Compares fit results with published results.
+
+
 #### *data_access/* 
 
-  A Python 3.7 module for accessing SDSS, DES, and CSP supernova
-  data. Data is downloaded automatically if it is not locally available. An
-  example of accessing SDSS data is provided below. The interface for DES or
-  CSP is the same, except you would import `des` or `csp` instead of
-  `sdss`.
+A Python 3.7 module for accessing SDSS, DES, and CSP supernova
+data. Data is downloaded automatically if it is not locally available. An
+example of accessing SDSS data is provided below. The interface for DES or
+CSP is the same, except you would import `des` or `csp` instead of
+`sdss`.
 
 This module provides access to supernova light-curve data from DES, SDSS,
 and CSP. Data is downloaded automatically if it is not locally available,
@@ -60,10 +68,6 @@ for table in sdss.iter_sncosmo_input():
     print(table)
 ```
 
-#### tests/
-
-  A test suite for the *data_access/* module.
-
 #### snana_sims/ 
 
   Simulating 91bg light curves using the SNANA Fortran package
@@ -76,15 +80,15 @@ for table in sdss.iter_sncosmo_input():
 
   Fitting SDSS and DES data with the SNCosmo python package
 
-- **fit_sdss.py:** Uses SNCosmo to fit SDSSS light curves with a normal sn Ia model and the builtin 91bg model in the `ug`, `riz`, and `ugriz` rest frame bands.
-- **fit_des.py:** The same as *fit_sdss.py* except for DES data.
+- **_utils.py:** A collection of functions used by other scripts in this directory.
+- **fit_<survey name>.py:** Uses SNCosmo to fit light curves with a normal sn Ia model.
+- **<curvey name>_results/**: Fit results for a given survey.
 
-#### analysis
 
-  A collection of notebooks performing data analysis on the light curve fit results.
+#### tests/
 
-- **apply_classification.ipynb:** Compares fit results between the normal and 91bg models in different bands and classifies peculiar SN.
-- **compare_to_published.ipynb:** Compares fit results with published results.
+  A test suite for the *data_access/* module.
+
 
 ## Notes on the SDSS-II SN Survey Data (Sako et al. 2018)
 
@@ -114,6 +118,7 @@ for table in sdss.iter_sncosmo_input():
   - Published fits use the SALT2 model as implemented in SNANA version 10.31b and the spectral templates and color law reported in Guy et al. (2010, G10)
   - Fits are performed using the Doi et al. 2010 SDSS filter response curves. These are available online [here](http://www.ioa.s.u-tokyo.ac.jp/~doi/sdss/SDSSresponse.html).
 - The magnitudes in the online data release use the SDSS inverse hyperbolic sine magnitude system. These different from the standard AB system by an additive constant found in Table 7. The fluxes in the online files have already been converted to to the AB system and are given in Micro-Janskies.
+
 
 ## Notes on the DES Year 3 Cosmology Data (Brout, Sako et al. 2019 and Brout, Scolnic et al. 2019) 
 
