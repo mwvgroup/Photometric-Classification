@@ -17,8 +17,8 @@ filter_dir = os.path.join(data_dir, 'doi_2010_filters/')  # SDSS filters
 snana_dir = os.path.join(data_dir, 'SDSS_dataRelease-snana/')  # SNANA files
 master_table_path = os.path.join(data_dir, 'master_data.txt')  # Master table
 smp_dir = os.path.join(data_dir, 'SMP_Data/')  # SMP data files
-outlier_path = os.path.join(  # Outlier data
-    snana_dir, 'SDSS_allCandidates+BOSS/SDSS_allCandidates+BOSS.IGNORE')
+outlier_path = os.path.join(
+    snana_dir, 'SDSS_allCandidates+BOSS.IGNORE')  # Outlier data
 
 # Download light curve data if it does not exist locally
 _sdss_url = 'https://data.sdss.org/sas/dr10/boss/papers/supernova/'

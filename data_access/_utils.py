@@ -147,6 +147,12 @@ def _download_file(url, out_path):
             data.extractall(out_dir)
 
         os.remove(temp_path)
+        for (dirpath, dirnames, filenames) in os.walk(out_dir):
+            for file in filenames:
+                if file.endswith(".tar.gz") or file.endswith(".tgz"):
+                    path = os.path.join(dirpath, file)
+                    with tarfile.open(path, "r:gz") as data:
+                        data.extractall(dirpath)
 
     else:
         os.rename(temp_path, out_path)
