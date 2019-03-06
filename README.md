@@ -15,13 +15,9 @@
 
 - SNCosmo will raise occasional warnings about poor fits, bad S/N, and dropped bands. These warnings are currently being logged but otherwise ignored and need to be considered more in depth.
 
-- If a redshift for a supernova is not available, SNCosmo is instructed to fit for the redshift. A prior needs to be provided for the redshift.
-
 - The `num_points_<band>` column in the fit summary tables contain the number of data points per observer frame band. We are interested in the number of points in the rest frame.
 
 - We are currently fitting data with SNCosmo's built-in 91bg model, but want to use our own custom model. This custom model is currently used to simulate SNANA light curves.
-
-- Determine what K-correction was used in the published SDSS / DES fit results and improve the quality of fits with large chi-squared compared to published results.
 
 - Perform a figure of merit calculation to identify classification boundaries.
 
@@ -37,21 +33,31 @@
   CSP is the same, except you would import `des` or `csp` instead of
   `sdss`.
 
+This module provides access to supernova light-curve data from DES, SDSS,
+and CSP. Data is downloaded automatically if it is not locally available,
+including filter transmission curves. This package will temporarily register
+filter transmission curves with SNCosmo using the naming scheme
+`91bg_proj_<survey name>_<filter name>`.
+
 ```python
-  from data_access import sdss
-  
-  # Summary table of SDSS SN data
-  print(sdss.master_table) 
-  
-  # Get SDSS data for a specific object
-  print(sdss.get_data_for_id(685))
-  
-  # Get SNCosmo input table for a specific object
-  print(sdss.get_input_for_id(685))
-  
-  # Iterable of SNCosmo input tables for each target
-  for table in sdss_data.iter_sncosmo_input():
-      print(table)
+from data_access import sdss
+
+# Summary table of SDSS SN data
+print(sdss.master_table)
+
+# Print data about the survey's band-passes
+print(sdss.band_names)
+print(sdss.lambda_effective)
+
+# Get SDSS data for a specific object (No data cuts applied)
+print(sdss.get_data_for_id(685))
+
+# Get SNCosmo input table for specific object (Possible data cuts applied)
+print(sdss.get_input_for_id(685))
+
+# Iterable of SNCosmo input tables for each target
+for table in sdss.iter_sncosmo_input():
+    print(table)
 ```
 
 #### tests/
