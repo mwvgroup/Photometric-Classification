@@ -1,5 +1,6 @@
 astropy
 matplotlib
+iminuit
 numpy
 requests
 sncosmo
