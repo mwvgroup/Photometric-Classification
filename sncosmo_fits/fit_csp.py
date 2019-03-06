@@ -68,6 +68,13 @@ def fit_des_data(out_path, model, rest_bands=None, **kwargs):
 
 if __name__ == '__main__':
     salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
+
+    blue_bands = ['u', 'g', 'B', 'V0', 'V', 'Y']
+    blue_bands = [f'91bg_proj_csp_{f}' for f in blue_bands]
+
+    red_bands = ['r', 'i', 'H', 'J', 'Jrc2', 'Ydw', 'Jdw', 'Hdw']
+    red_bands = [f'91bg_proj_csp_{f}' for f in red_bands]
+
     sncosmo_args = dict(bounds=None,
                         modelcov=True,
                         minsnr=5,
@@ -81,11 +88,11 @@ if __name__ == '__main__':
     print('\n\nFitting type Ia model in ug', flush=True)
     fit_des_data('./csp_results/snia_ug.csv',
                  model=salt_2_4,
-                 rest_bands=['desu', 'desg'],
+                 rest_bands=blue_bands,
                  **sncosmo_args)
 
     print('\n\nFitting type Ia model in riz', flush=True)
     fit_des_data('./csp_results/snia_riz.csv',
                  model=salt_2_4,
-                 rest_bands=['desu', 'desg'],
+                 rest_bands=red_bands,
                  **sncosmo_args)
