@@ -3,14 +3,13 @@
 
 """Test input data used for fitting light-curves with SNCosmo."""
 
-import itertools
+from itertools import islice, product
 from unittest import TestCase
 
 import numpy as np
 from astropy.table import Table
 
-from data_access import des
-from data_access import sdss
+from data_access import des, sdss
 from data_access._utils import keep_restframe_bands
 
 
@@ -66,7 +65,7 @@ class EmptyInputTables(TestCase):
         """
 
         msg = 'Empty table for cid {} with bands {}'
-        for input_table in itertools.islice(input_iterable, 20):
+        for input_table in islice(input_iterable, 20):
             cid = input_table.meta['cid']
             self.assertTrue(input_table, msg=msg.format(cid, band_cut))
 
@@ -74,7 +73,7 @@ class EmptyInputTables(TestCase):
         """Test the first 20 DES inputs aren't empty for various band cuts"""
 
         band_names = ('desg', 'desr', 'desi', 'desz', 'desy')
-        band_cuts = (band_names[0: 2], band_names[2:], band_names)
+        band_cuts = (band_names[0: 2], band_names[2:], None)
 
         for band_cut in band_cuts:
             input_tables = des.iter_sncosmo_input(band_cut)
@@ -83,8 +82,9 @@ class EmptyInputTables(TestCase):
     def test_empty_sdss_inputs(self):
         """Test the first 20 SDSS inputs aren't empty for various band cuts"""
 
-        band_names = ('sdssu', 'sdssg', 'sdssr', 'sdssi', 'sdssz')
-        band_cuts = (band_names[0: 2], band_names[2:], band_names)
+        blue = [f'91bg_proj_sdss_{b}{c}' for b, c in product('ug', '123456')]
+        red = [f'91bg_proj_sdss_{b}{c}' for b, c in product('riz', '123456')]
+        band_cuts = (blue, red, None)
 
         for band_cut in band_cuts:
             input_tables = sdss.iter_sncosmo_input(band_cut)
@@ -105,7 +105,7 @@ class ZeroPoint(TestCase):
         """
 
         generic_msg = 'Incorrect zero point for cid {}. Found {}, expected {}'
-        for table in itertools.islice(input_iterable, 20):
+        for table in islice(input_iterable, 20):
             cid = table.meta['cid']
             correct_zero = table['zp'] == expected_zero
 
@@ -126,4 +126,4 @@ class ZeroPoint(TestCase):
         """Test the first 20 SDSS inputs for a zero point of 25"""
 
         input_iterable = sdss.iter_sncosmo_input()
-        self.check_iterable(input_iterable, 25)
+        self.check_iterable(input_iterable, 2.5 * np.log10(3631))
