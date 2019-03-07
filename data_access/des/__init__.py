@@ -2,10 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 """This module provides access to data from the year three DES supernova
-cosmology paper. See the package level docstring for usage instructions.
+cosmology paper. Light curve data is provided from Brout et al. 2018-SMP. The
+master_table object provides light curve fit parameters from
+Brout et al. 2018-SYS.
+
+No data cuts are applied by this module or its functions.
 
 For more information on DES data products, see:
-    https://des.ncsa.illinois.edu/releases/dr1
+    https://des.ncsa.illinois.edu/releases/sn
 """
 
 from ._data_access_funcs import get_data_for_id

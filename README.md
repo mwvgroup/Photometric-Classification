@@ -50,6 +50,9 @@ filter transmission curves with SNCosmo using the naming scheme
 ```python
 from data_access import sdss
 
+# Description of data cuts and where the data comes from
+help(sdss.master_table) 
+
 # Summary table of SDSS SN data
 print(sdss.master_table)
 

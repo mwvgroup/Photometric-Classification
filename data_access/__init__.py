@@ -9,6 +9,9 @@ CSP is the same, except you would import `des` or `csp` instead of `sdss`.
 
 >>> from data_access import sdss
 >>>
+>>> # Description of data cuts and where the data comes from
+>>> help(sdss.master_table)
+>>>
 >>> # Summary table of SDSS SN data
 >>> print(sdss.master_table)
 >>>
@@ -27,11 +30,6 @@ CSP is the same, except you would import `des` or `csp` instead of `sdss`.
 >>>     print(table)
 >>>
 
-Any data cuts applied by a given function are described in that fiunction's
-docstring. Data cuts are only applied when calling the `iter_sncosmo_input`
-function, and are survey dependent. They include and are limited to:
-
-1. SDSS observations flagged in the data release as outlier points
-2. SDSS observations with a photometric quality flag >= 1024
-     (As applied in the data release paper)
+Any data cuts applied by a given module or function are described in that
+module and function's docstring.
 """
