@@ -78,6 +78,7 @@ def fit_sdss_data(out_path, model, rest_bands=None, fit_types=(), **kwargs):
 if __name__ == '__main__':
     salt_2_0 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0'))
     salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
+    nugent_91bg = sncosmo.Model(source=sncosmo.get_source('nugent-sn91bg'))
 
     classifications_to_fit = ['zSNIa', 'pSNIa', 'SNIa', 'SNIa?']
     all_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('ugriz', '123456')]
@@ -90,27 +91,46 @@ if __name__ == '__main__':
                         minsnr=5,
                         warn=False)
 
-    print('Fitting type Ia targets in all bands (Salt 2.0)', flush=True)
-    fit_sdss_data('./sdss_results/snia_ugriz_2_0.csv',
+    print('Fitting Salt 2.0 in all bands', flush=True)
+    fit_sdss_data('./sdss_results/salt_2_0_all.csv',
                   model=salt_2_0,
                   fit_types=classifications_to_fit,
                   **sncosmo_args)
 
-    print('\n\nFitting all targets in all bands (Salt 2.4)', flush=True)
-    fit_sdss_data('./sdss_results/snia_ugriz.csv',
+    print('\n\nFitting Salt 2.4 in all bands', flush=True)
+    fit_sdss_data('./sdss_results/salt_2_4_all.csv',
                   model=salt_2_4,
                   fit_types=classifications_to_fit,
                   **sncosmo_args)
 
-    print('\n\nFitting all targets in ug (Salt 2.4)', flush=True)
-    fit_sdss_data('./sdss_results/snia_ug.csv',
+    print(f'\n\nFitting Salt 2.4 in {blue_bands}', flush=True)
+    fit_sdss_data('./sdss_results/salt_2_4_blue.csv',
                   model=salt_2_4,
                   rest_bands=blue_bands,
                   **sncosmo_args)
 
-    print('\n\nFitting all targets in riz (Salt 2.4)', flush=True)
-    fit_sdss_data('./sdss_results/snia_riz.csv',
+    print(f'\n\nFitting Salt 2.4 in {red_bands}', flush=True)
+    fit_sdss_data('./sdss_results/salt_2_4_red.csv',
                   model=salt_2_4,
+                  rest_bands=red_bands,
+                  fit_types=classifications_to_fit,
+                  **sncosmo_args)
+
+    print('\n\nFitting nugent-sn91bg in all bands', flush=True)
+    fit_sdss_data('./sdss_results/nugent_all.csv',
+                  model=nugent_91bg,
+                  fit_types=classifications_to_fit,
+                  **sncosmo_args)
+
+    print(f'\n\nFitting nugent-sn91bg in {blue_bands}', flush=True)
+    fit_sdss_data('./sdss_results/nugent_blue.csv',
+                  model=nugent_91bg,
+                  rest_bands=blue_bands,
+                  **sncosmo_args)
+
+    print(f'\n\nFitting nugent-sn91bg in {red_bands}', flush=True)
+    fit_sdss_data('./sdss_results/nugent_red.csv',
+                  model=nugent_91bg,
                   rest_bands=red_bands,
                   fit_types=classifications_to_fit,
                   **sncosmo_args)

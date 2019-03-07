@@ -68,24 +68,46 @@ def fit_des_data(out_path, model, rest_bands=None, **kwargs):
 
 if __name__ == '__main__':
     salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
+    nugent_91bg = sncosmo.Model(source=sncosmo.get_source('nugent-sn91bg'))
+
+    blue_bands = ['desg', 'desr']
+    red_bands = ['desi', 'desz', 'desy']
+
     sncosmo_args = dict(bounds=None,
                         modelcov=True,
                         minsnr=5,
                         warn=False)
 
-    print('Fitting type Ia model in all bands', flush=True)
-    fit_des_data('./des_results/snia_ugriz.csv',
+    print('Fitting Salt 2.4 in all bands', flush=True)
+    fit_des_data('./des_results/salt_2_4_all.csv',
                  model=salt_2_4,
                  **sncosmo_args)
 
-    print('\n\nFitting type Ia model in ug', flush=True)
-    fit_des_data('./des_results/snia_ug.csv',
+    print(f'\n\nFitting Salt 2.4 in {blue_bands}', flush=True)
+    fit_des_data('./des_results/snia_blue.csv',
                  model=salt_2_4,
-                 rest_bands=['desu', 'desg'],
+                 rest_bands=blue_bands,
                  **sncosmo_args)
 
-    print('\n\nFitting type Ia model in riz', flush=True)
-    fit_des_data('./des_results/snia_riz.csv',
+    print(f'\n\nFitting Salt 2.4 in {red_bands}', flush=True)
+    fit_des_data('./des_results/snia_red.csv',
                  model=salt_2_4,
-                 rest_bands=['desu', 'desg'],
+                 rest_bands=red_bands,
+                 **sncosmo_args)
+
+    print('\n\nFitting nugent-sn91bg in all bands', flush=True)
+    fit_des_data('./des_results/nugent_sn91bg_all.csv',
+                 model=nugent_91bg,
+                 **sncosmo_args)
+
+    print(f'\n\nFitting nugent-sn91bg in {blue_bands}', flush=True)
+    fit_des_data('./des_results/nugent_sn91bg_blue.csv',
+                 model=nugent_91bg,
+                 rest_bands=blue_bands,
+                 **sncosmo_args)
+
+    print(f'\n\nFitting nugent-sn91bg in {red_bands}', flush=True)
+    fit_des_data('./des_results/nugent_sn91bg_red.csv',
+                 model=nugent_91bg,
+                 rest_bands=red_bands,
                  **sncosmo_args)
