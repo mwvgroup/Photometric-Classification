@@ -9,8 +9,8 @@ from unittest import TestCase
 import numpy as np
 from astropy.table import Table
 
-from data_access import des, sdss
-from data_access._utils import keep_restframe_bands
+from analysis_pipeline.data_access import des, sdss, csp
+from analysis_pipeline.data_access._utils import keep_restframe_bands
 
 
 class BandSelection(TestCase):
