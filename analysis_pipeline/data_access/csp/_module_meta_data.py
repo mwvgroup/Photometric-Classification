@@ -14,18 +14,23 @@ _file_dir = os.path.dirname(os.path.realpath(__file__))
 data_dir = os.path.join(_file_dir, 'data')
 photometry_dir = os.path.join(data_dir, 'DR3')  # DR3 Light Curves
 filter_dir = os.path.join(data_dir, 'filters')  # DR3 Light Curves
-master_path = os.path.join(photometry_dir, 'tab1.dat')  # Master table
+master_path = os.path.join(data_dir, 'table1.dat')  # Master table
 
-# Download published data if it does not exist locally
+
+# Download published DR1 data if it does not exist locally
+download_data(
+    base_url='http://cdsarc.u-strasbg.fr/ftp/J/ApJ/773/53/',
+    out_dir=data_dir,
+    remote_name=['table1.dat'],
+    check_local_name=[master_path])
+
+# Download published DR3 data if it does not exist locally
 _csp_url = 'https://csp.obs.carnegiescience.edu/data/'
-_local_file_names = [photometry_dir]
-_remote_file_names = ['CSP_Photometry_DR3.tgz']
-
 download_data(
     base_url=_csp_url,
     out_dir=data_dir,
-    remote_name=_remote_file_names,
-    check_local_name=_local_file_names)
+    remote_name=['CSP_Photometry_DR3.tgz'],
+    check_local_name=[photometry_dir])
 
 # Download DR3 filter profiles if they does not exist locally
 _local_filt_names = [
