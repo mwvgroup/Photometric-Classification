@@ -9,7 +9,7 @@
 *.pyc
 
 # Light Curve Data
-data_access/*/data
+analysis_pipeline/data_access/*/data
 
 # Jupyter Checkpoints
 *.ipynb_checkpoints
