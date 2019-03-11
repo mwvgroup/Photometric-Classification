@@ -124,7 +124,7 @@ class SN91bgSource(sncosmo.Source):
 
         #Linearly interpolate template flux by color
         if c in self._color:
-            f = self._model_flux[self._color.index(c)](phase/(st/0.65), wave)
+            f = self._model_flux[self._color.tolist().index(c)](phase/(st/0.65), wave)
         else:
             c1, c2 = bi_search(self._color, c)
             y = [self._model_flux[c1](phase/(st/0.65), wave), self._model_flux[c2](phase/(st/0.65), wave)]
