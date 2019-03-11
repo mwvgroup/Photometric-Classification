@@ -1,0 +1,124 @@
+SURVEY: SDSS   
+SNID:   50573   
+IAUC:    NULL 
+PHOTOMETRY_VERSION: 91bg 
+SNTYPE:  100 
+FILTERS: gri 
+RA:      -38.334625  deg 
+DECL:    -0.302542  deg 
+PIXSIZE:  0.4000  arcsec 
+CCDNUM: 0  
+FAKE:    2   (=> simulated LC with snlc_sim.exe) 
+MWEBV:       0.0430    MW E(B-V) 
+MWEBV_ERR:   0.0069    error on MWEBV 
+REDSHIFT_HELIO:   0.079562 +- 0.000500  (Helio, z_best) 
+REDSHIFT_FINAL:   0.078376 +- 0.000500  (CMB) 
+REDSHIFT_STATUS:  from Host Galaxy (Unconfirmed SN)
+
+VPEC:         0.00  # v_pec correction
+VPEC_ERR:     0.00  # error on above  
+PEAKMJD:   53629.586 
+
+HOSTGAL_OBJID:    -9  
+HOSTGAL_PHOTOZ:   -9.0000  +- -9.0000 
+HOSTGAL_SPECZ:    0.0000  +- 0.0000 
+HOSTGAL_SNSEP:    -9.000    # arcsec 
+ 
+
+SIM_MODEL_NAME:  SIMSED.91bg 
+SIM_MODEL_INDEX:  7 
+SIM_TYPE_INDEX:   0 
+SIM_TYPE_NAME:    UNKNOWN 
+SIM_NON1a:      0   (NONIA index) 
+SIM_COMMENT:  SN Type = UNKNOWN , MODEL = SIMSED.91bg  
+SIM_LIBID:  595  
+SIM_NGEN_LIBID:  1  
+SIM_NOBS_UNDEFINED:  0  
+SIM_REDSHIFT_HELIO:  0.08008  
+SIM_REDSHIFT_CMB:    0.07889  
+SIM_REDSHIFT_HOST:   0.08008  
+SIM_VPEC:  0.0 (km/sec) 
+SIM_HOSTLIB_NPAR: 0 
+SIM_DLMU:      37.7716  mag   [ -5*log10(10pc/dL) ]
+SIM_LENSDMU:   0.0000  mag 
+SIM_RA:        -38.334625 deg  
+SIM_DECL:      -0.302542 deg  
+SIM_MWRV:    3.100   (MilkyWay RV) 
+SIM_MWEBV:   0.0434   (MilkyWay E(B-V)) 
+SIMOPT_MWCOLORLAW:  94   (MW color-law option) 
+SIMOPT_MWEBV:       1   (modify MWEBV_SFD)
+SIM_MAGSMEAR_COH:    0.000  
+SIM_GALFRAC:  -9.000 -9.000 -9.000  (gri F_gal/F_SNpeak for PSF=1'')
+SIM_PEAKMAG:   20.44  19.51  19.32  (gri obs)
+SIM_EXPOSURE:     1.0    1.0    1.0  (gri obs)
+SIM_PEAKMJD:   53629.304688  days 
+SIM_SALT2x0:   7.7869e-16   
+SIM_SEARCHEFF_MASK:  5  (bits 1,2=> found by software,spec) 
+SIM_SEARCHEFF_SPEC:  0.5340  (spectro-search efficiency (ignores pipelines)) 
+SIM_TRESTMIN:    -6.56   days 
+SIM_TRESTMAX:    65.57   days 
+SIM_RISETIME_SHIFT:   0.0 days 
+SIM_FALLTIME_SHIFT:   0.0 days 
+
+SIMSED_NPAR: 2 
+SIMSED_PARAM(stretch):  0.928400 
+SIMSED_param(color):  0.473000 
+
+
+
+# ============================================ 
+# TERSE LIGHT CURVE OUTPUT: 
+#
+NOBS: 48 
+NVAR: 9 
+VARLIST:  MJD  FLT FIELD   FLUXCAL   FLUXCALERR PHOTFLAG   ZPT  PSF  SIM_MAGOBS
+OBS:  53622.215  g  82S   3.2220e+02   2.107e+01    0  28.470    1.84  21.3448 
+OBS:  53622.215  r  82S   5.8461e+02   3.198e+01    0  28.200    1.76  20.5961 
+OBS:  53622.215  i  82S   6.3949e+02   4.715e+01    0  27.920    1.59  20.4208 
+OBS:  53625.211  g  82S   5.2343e+02   1.793e+01    0  28.530    0.89  20.7056 
+OBS:  53625.211  r  82S   1.0722e+03   2.313e+01    0  28.240    0.78  19.9285 
+OBS:  53625.211  i  82S   1.2889e+03   3.247e+01    0  27.940    0.71  19.7488 
+OBS:  53627.172  g  82S   6.2157e+02   3.106e+01    0  28.510    1.15  20.5263 
+OBS:  53627.172  r  82S   1.3570e+03   3.156e+01    0  28.240    0.99  19.6800 
+OBS:  53627.172  i  82S   1.5773e+03   3.951e+01    0  27.930    0.87  19.5013 
+DETECTION:  3 obs satisfy gr+ri+gi  at MJD_TRIGGER=53627.1720 
+OBS:  53634.164  g  82S   4.0354e+02   4.505e+01    0  28.580    1.98  20.7907 
+OBS:  53634.164  r  82S   1.5888e+03   5.210e+01    0  28.260    2.00  19.4910 
+OBS:  53634.164  i  82S   1.9980e+03   6.594e+01    0  27.980    1.91  19.2633 
+OBS:  53636.172  g  82S   3.8281e+02   1.617e+01    0  28.490    1.04  21.1060 
+OBS:  53636.172  r  82S   1.4647e+03   2.399e+01    0  28.210    0.92  19.6086 
+OBS:  53636.172  i  82S   1.8160e+03   3.462e+01    0  27.920    0.82  19.3562 
+OBS:  53655.145  g  82S   8.8565e+01   3.181e+01    0  28.560    1.47  22.7604 
+OBS:  53655.145  r  82S   3.5297e+02   3.658e+01    0  28.260    1.34  21.0843 
+OBS:  53655.145  i  82S   5.5243e+02   4.593e+01    0  27.970    1.23  20.6391 
+OBS:  53664.168  g  82S   5.2907e+00   2.612e+01    0  28.550    1.41  23.1906 
+OBS:  53664.168  r  82S   2.4062e+02   2.828e+01    0  28.250    1.09  21.5420 
+OBS:  53664.168  i  82S   3.2011e+02   3.752e+01    0  27.960    1.06  21.2025 
+OBS:  53666.133  g  82S   5.5694e+01   1.221e+01    0  28.570    0.89  23.2392 
+OBS:  53666.133  r  82S   2.7139e+02   2.012e+01    0  28.260    0.78  21.6186 
+OBS:  53666.133  i  82S   2.5451e+02   3.031e+01    0  27.970    0.73  21.2969 
+OBS:  53669.129  g  82S   5.7357e+01   1.274e+01    0  28.570    1.02  23.3033 
+OBS:  53669.129  r  82S   1.9503e+02   1.966e+01    0  28.260    0.81  21.7284 
+OBS:  53669.129  i  82S   2.8886e+02   2.941e+01    0  27.990    0.74  21.4649 
+OBS:  53674.113  g  82S   4.0706e+01   1.280e+01    0  28.520    1.02  23.4461 
+OBS:  53674.113  r  82S   1.5858e+02   2.102e+01    0  28.230    0.94  21.8889 
+OBS:  53674.113  i  82S   2.1030e+02   3.114e+01    0  27.950    0.89  21.7281 
+OBS:  53676.203  g  82S   5.3463e+01   1.358e+01    0  28.450    1.02  23.5095 
+OBS:  53676.203  r  82S   1.7278e+02   2.060e+01    0  28.220    0.83  21.9384 
+OBS:  53676.203  i  82S   2.0159e+02   3.031e+01    0  27.950    0.81  21.8119 
+OBS:  53679.172  g  82S   5.7808e+01   1.938e+01    0  28.520    1.94  23.5676 
+OBS:  53679.172  r  82S   1.3339e+02   2.989e+01    0  28.230    1.76  22.0215 
+OBS:  53679.172  i  82S   7.4953e+01   4.174e+01    0  27.950    1.69  21.8939 
+OBS:  53681.164  g  82S   4.6948e+01   1.624e+01    0  28.520    1.05  23.6112 
+OBS:  53681.164  r  82S   1.6440e+02   2.235e+01    0  28.230    0.95  22.0766 
+OBS:  53681.164  i  82S   1.7214e+02   3.238e+01    0  27.950    0.87  21.9516 
+OBS:  53687.164  g  82S   2.4177e+01   4.083e+01    0  28.510    1.33  23.7319 
+OBS:  53687.164  r  82S   6.6209e+01   4.600e+01    0  28.220    1.36  22.2427 
+OBS:  53687.164  i  82S   1.6928e+02   4.403e+01    0  27.950    1.06  22.1220 
+OBS:  53697.121  g  82S   3.6779e+01   1.585e+01    0  28.520    1.40  23.9331 
+OBS:  53697.121  r  82S   8.0678e+01   3.043e+01    0  28.230    1.35  22.5194 
+OBS:  53697.121  i  82S   9.0151e+01   3.521e+01    0  27.950    1.02  22.4049 
+OBS:  53700.121  g  82S   6.1413e+00   1.801e+01    0  28.320    1.57  23.9944 
+OBS:  53700.121  r  82S   9.1881e+01   3.590e+01    0  28.030    1.62  22.6028 
+OBS:  53700.121  i  82S   9.4954e+01   4.448e+01    0  27.910    1.50  22.4891 
+END_PHOTOMETRY: 
