@@ -1,6 +1,6 @@
  USER COMMENT: BLANK 
 
- BRIEF_DESCRIPTION: simulate RANDOM SNe with GENMODEL = SIMSED.91bg 
+ BRIEF_DESCRIPTION: simulate RANDOM SNe with GENMODEL = SIMSED.91BG 
 
   HOST MACHINE: (null) 
   USERNAME:  yiz143 
@@ -16,11 +16,11 @@
 	 NEWMJD_DIF       : 10.08  minutes (defines trigger epoch)
 	 Generation VERSION: 91bg 
 	 Generation source : RANDOM 
-	 Generation FILTERS: gri 
+	 Generation FILTERS: ugriz 
 	 KCOR lookup tables: SDSS/SNCOSM09+fitsFormat/kcor_SDSS_Bessell90_BD17.fits 
 	 Flux-smearing is ON 
 	 Reported flux-uncertainty includes SKY+GALAXY+SOURCE
-	 Zeropt-smearing is OFF 
+	 Zeropt-smearing is ON 
 	 Host-galaxy shot-noise  is OFF 
 	 Host-galaxy image-noise  is OFF 
 	 MilkyWay extinction  is ON  
@@ -38,27 +38,28 @@ o/users/yiz143/snana/sndata_root/models/searcheff/SEARCHEFF_PIPELINE_SDSS.DAT
    Fetch SOFTWARE SEARCH-LOGIC from : 
 
 	 Survey Volume  = 1.4230e+08  sr*(MPc/h70)^3 
-	 Survey Time    =  0.2192  years/season 
-	 Co-moving Time =  0.1649  years/season  [ T/(1+<z>) ] 
-	 Co-moving V*T  = 2.3466e+07  sr*(MPc/h70)^3 * yr / season 
+	 Survey Time    =  0.2603  years/season 
+	 Co-moving Time =  0.1958  years/season  [ T/(1+<z>) ] 
+	 Co-moving V*T  = 2.7866e+07  sr*(MPc/h70)^3 * yr / season 
 
 
   GENERATION RANGES: 
 	 Generate Redshift :  0.020 to  0.450  using  HUBBLE distribution. 
 	 REDSHIFT_FINAL is ZCMB_GEN smeared by :  0.00050 
 	 Peculiar Velocity Gaussian sigma: 0.0 km/sec
-	 gri   ZP   offsets :  0.024  0.005  0.018 
-	 gri  MODEL offsets :  0.000  0.000  0.000 
-	 gri  exposure times: 1.0000 1.0000 1.0000 
+	 ugriz   ZP   offsets : -0.037  0.024  0.005  0.018  0.016 
+	 ugriz  MODEL offsets :  0.000  0.000  0.000  0.000  0.000 
+	 ugriz  exposure times: 1.0000 1.0000 1.0000 1.0000 1.0000 
 	 RA       : -50.00 to  59.00  deg
-	 PEAKMJD  :  53615.0 to  53695.0   
+	 PEAKMJD  :  53615.0 to  53710.0   
 	 sigma-smear(SEARCH_PEAKMJD)  :  1.00 days 
-	 Trest    :   -20.00 to   100.00  days 
+	 Trest    :   -15.00 to   100.00  days 
 	 RISETIME-SHIFT(days) SIGMA(lo,hi) : 0.0 , 0.0  (Mean= 0.0) 
 	 FALLTIME-SHIFT(days) SIGMA(lo,hi) : 0.0 , 0.0  (Mean= 0.0) 
 
-   SIMSED.91bg model parameters: 
-    stretch(contin.): Peak=1.00  SIG-+= 0.100,0.100  SKEW=0.00,0.00  BND=0.75,1.25
+   SIMSED.91BG model parameters: 
+    stretch(contin.): Peak=0.97  SIG-+= 0.096,0.096  SKEW=0.00,0.00  BND=0.65,1.25
+    color(contin.): Peak=0.56  SIG-+= 0.175,0.175  SKEW=0.00,0.00  BND=0.00,1.00
 
   Z-dependent SN-parameter shifts:  None. 
 
@@ -108,21 +109,21 @@ o/users/yiz143/snana/sndata_root/models/searcheff/SEARCHEFF_PIPELINE_SDSS.DAT
 
   Random Number Sync: 
 	 RANDOM SEED: 689541   (RANLIST_START_GENSMEAR: 1)
-	 FIRST/LAST Random Number (List=1): 0.483324 0.650583  
-	 FIRST/LAST Random Number (List=2): 0.612414 0.194598  
-	 FIRST/LAST Random Number (List=3): 0.054392 0.576261  
+	 FIRST/LAST Random Number (List=1): 0.483324 0.500381  
+	 FIRST/LAST Random Number (List=2): 0.612414 0.599298  
+	 FIRST/LAST Random Number (List=3): 0.054392 0.041083  
 
-  Generation Statistics (total CPU=2.0 minutes): 
-	 Generated  2550 simulated light curves (21/sec) 
-	 Wrote      1000 simulated light curves to SNDATA files (8/sec). 
-  Spectroscopic-type: 490 -> 490 (before -> after cuts)
-  Photometric-type:   510 -> 510 (before -> after cuts)
+  Generation Statistics (total CPU=3.0 minutes): 
+	 Generated  2644 simulated light curves (15/sec) 
+	 Wrote      1000 simulated light curves to SNDATA files (5/sec). 
+  Spectroscopic-type: 511 -> 511 (before -> after cuts)
+  Photometric-type:   489 -> 489 (before -> after cuts)
   Rejection Statistics: 
 	     0 rejected by NEPOCH<1 
 	     0 rejected by GENRANGEs 
-	  1550 rejected by SEARCH-TRIGGER 
+	  1644 rejected by SEARCH-TRIGGER 
 	     0 rejected by CUTWIN-SELECTION 
-  SEARCH+CUTS Efficiency:  0.3922 +-  0.0097 
+  SEARCH+CUTS Efficiency:  0.3782 +-  0.0094 
 
   Number of SNe per season AFTER CUTS :      0 +-     0 
 
