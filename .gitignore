@@ -8,9 +8,11 @@
 *__pycache__*
 *.pyc
 
-# SDSS Data
-data_access/sdss_data
-data_access/des_data
+# Light Curve Data
+analysis_pipeline/data_access/*/data
 
 # Jupyter Checkpoints
 *.ipynb_checkpoints
+
+# Testing cache files
+.pytest_cache/
