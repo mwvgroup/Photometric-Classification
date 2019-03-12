@@ -1,9 +1,7 @@
 astropy
-bokeh
-iminuit
 matplotlib
+iminuit
 numpy
 requests
-scipy
 sncosmo
 tqdm
