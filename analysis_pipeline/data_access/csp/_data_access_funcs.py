@@ -3,6 +3,7 @@
 
 """This module defines functions for accessing locally available data files."""
 
+from glob import glob
 from os import path as _path
 
 import numpy as np
@@ -85,8 +86,12 @@ def iter_sncosmo_input(bands=None, verbose=True):
         An astropy table formatted for use with SNCosmo
     """
 
+    # Get target ids
+    files = glob(_path.join(meta_data.photometry_dir, '*.txt'))
+    cid_vals = [_path.basename(f).split('_')[0].lstrip('SN') for f in files]
+
     # Yield an SNCosmo input table for each target
-    iter_data = tqdm(master_table['SN']) if verbose else master_table['SN']
+    iter_data = tqdm(cid_vals) if verbose else cid_vals
     for target_name in iter_data:
         sncosmo_table = get_input_for_id(target_name, bands)
         if sncosmo_table:
