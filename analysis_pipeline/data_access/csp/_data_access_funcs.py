@@ -36,6 +36,7 @@ def get_data_for_id(cid):
     file_path = _path.join(meta_data.photometry_dir, f'SN{cid}_snpy.txt')
     data_table = parse_snoopy_data(file_path)
     data_table['band'] = '91bg_proj_csp_' + data_table['band']
+    data_table.meta['redshift_err'] = 0
     data_table.meta['cid'] = cid
 
     return data_table
@@ -69,7 +70,7 @@ def get_input_for_id(cid, bands=None):
     return sn_data
 
 
-def iter_sncosmo_input(bands=None, verbose=False):
+def iter_sncosmo_input(bands=None, verbose=True):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
     To return a select collection of band-passes, specify the band argument.
@@ -77,7 +78,7 @@ def iter_sncosmo_input(bands=None, verbose=False):
 
     Args:
         bands (iter[str]): Optional list of band-passes to return
-        verbose    (bool): Whether to display a progress bar while iterating
+        verbose    (bool): Optionally display progress bar while iterating
 
 
     Yields:
