@@ -1,10 +1,14 @@
+
+"""
+This module generates light curves using SNcosmo and write simulation results to csv files
+"""
+
 import os
 import numpy as np
 from astropy.table import Table
 import sncosmo
 from numpy.random import uniform, multivariate_normal
 from _sncosmo_91bgmodel import SN91bgSource
-import os
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 if not os.path.exists(os.path.join(FILE_DIR, 'sim_lcs')):
@@ -74,4 +78,4 @@ def generate_lc(num,model):
 
 if __name__=='__main__':
 	model = sncosmo.Model(source=SN91bgSource())
-	generate_lc(500,model)
+	generate_lc(1000,model)
