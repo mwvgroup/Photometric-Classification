@@ -133,8 +133,9 @@ For instructions on accessing data, use `help(data_access)`. Published data is d
 
 
 
-## About the 91bg model
+## About the [91bg model](https://github.com/mwvgroup/SDSS-Classification/blob/issues/3/port_model/sncosmo_91bgmodel/_sncosmo_91bgmodel.py)
 
-- The 91bg model is based on the 35 SED templates which form a 7*5 grid with 7 different stretches and 5 different colors. The     7 SEDs with different stretches are generated from one single SED by stretching the phase (or time) axis: flux = template(t, &lambda;) &rArr; flux = template(t / stretch, &lambda;).
+- The 91bg model is based on 35 [SED templates](https://github.com/mwvgroup/SDSS-Classification/tree/issues/3/port_model/snana_sims/91BG_SED) provided by S. Gonzalez-Gaitan. These SEDs are based on [Nugent's](https://iopscience.iop.org/article/10.1086/341707) 91bg but extending a bit to the UV. They form a 7\*5 grid with 7 different stretches and 5 different colors. The ranges and relations of colors and stretch to generate the different SNANA templates were obtained by fitting with [SiFTO](https://iopscience.iop.org/article/10.1086/588518/meta) this template to all 91bg at low-z.
+- The 7 SEDs with different stretches can be generated from one single SED by stretching the phase (or time) axis: flux = template(t, &lambda;) &rArr; flux = template(t / stretch, &lambda;).
 - Our approach is picking 5 SEDs with same stretch (st = 0.65) and different colors (c = [0, 0.25, 0.5, 1.0]), using template(t / (stretch/0.65), &lambda;) to fit for stretch and linearly interpolating over 5 SEDs to fit for color.
 - For now, this model works well on recovering stretches and colors of snana simulated light curves but the fitted redshifts are slightly larger than the simulated value. We'll keep trying to further optimize this model.
