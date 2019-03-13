@@ -30,9 +30,8 @@ def bi_search(a, x):
     if x in a:
         try:
             return a.index(x)
-        except:
-            l=a.tolist()
-            return l.index(x)
+        except AttributeError:
+            return a.tolist().index(x)
 
     l, r = 0, len(a)
     while abs(r - l) > 1:
