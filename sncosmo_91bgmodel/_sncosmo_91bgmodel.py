@@ -34,7 +34,7 @@ def bi_search(a, x):
             return a.tolist().index(x)
 
     if x < a[0] or x > a[-1]:
-        return ValueError('x is out of range')
+        raise ValueError('x is out of range')
 
     left, right = 0, len(a)
     while abs(right - left) > 1:
