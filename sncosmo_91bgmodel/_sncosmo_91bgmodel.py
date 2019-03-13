@@ -86,7 +86,8 @@ class SN91bgSource(sncosmo.Source):
         self._phase = np.arange(-18, 101, 1)
         self._wave = np.arange(1000, 12001, 10)
 
-        # Creat bi-cubic spline for phase and wavelength using 5 templates (stretch: 0.65, color: [0,0.25,0.5,0.75,1.])
+        # Creat bi-cubic spline for phase and wavelength using 5 templates
+        # (stretch: 0.65, color: [0,0.25,0.5,0.75,1.])
         self._model_flux = np.full(len(self._color), None)
         for i in range(len(self._color)):
             self._model_flux[i] = RectBivariateSpline(
@@ -127,10 +128,13 @@ class SN91bgSource(sncosmo.Source):
 
         # Linearly interpolate template flux by color
         if c in self._color:
-            f = self._model_flux[self._color.tolist().index(c)](phase/(st/0.65), wave)
+            f = self._model_flux[self._color.tolist().index(c)](phase / (st / 0.65), wave)
+
         else:
             c1, c2 = bi_search(self._color, c)
-            y = [self._model_flux[c1](phase/(st/0.65), wave), self._model_flux[c2](phase/(st/0.65), wave)]
+            y = [self._model_flux[c1](phase / (st / 0.65), wave),
+                 self._model_flux[c2](phase / (st / 0.65), wave)]
+
             f = linear_interp(self._color[c1], self._color[c2], y, c)
 
         return A * f
