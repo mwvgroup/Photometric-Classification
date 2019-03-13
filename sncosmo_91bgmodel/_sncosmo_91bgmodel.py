@@ -20,7 +20,7 @@ def bi_search(a, x):
     Binary search
 
     Args:
-        a (list): The list in which the number x will be searched
+        a (list): The sorted list in which the number x will be searched
         x  (num): The number to be searched
 
     Returns:
@@ -33,18 +33,22 @@ def bi_search(a, x):
         except AttributeError:
             return a.tolist().index(x)
 
-    l, r = 0, len(a)
-    while abs(r - l) > 1:
-        m = (l + r) // 2
+    if x < a[0] or x > a[-1]:
+        return ValueError('x is out of range')
+
+    left, right = 0, len(a)
+    while abs(right - left) > 1:
+        m = (left + right) // 2
         if a[m] > x:
-            r = m
+            right = m
 
         if a[m] < x:
-            l = m
+            left = m
 
-    return l, r
+    return left, right
 
-def linear_interp(x0,x1,f,x):
+
+def linear_interp(x0, x1, f, x):
     """
     Linear interpolation
 
@@ -88,7 +92,7 @@ class SN91bgSource(sncosmo.Source):
             self._model_flux[i] = RectBivariateSpline(
                 self._phase,
                 self._wave,
-                self._flux_values[i], 
+                self._flux_values[i],
                 kx=3, ky=3)
 
     @staticmethod
@@ -108,7 +112,7 @@ class SN91bgSource(sncosmo.Source):
         """
         Return the flux at given phase and wave
 
-        Time and wavelength are given by arguments phase and wave. 
+        Time and wavelength are given by arguments phase and wave.
         Stretch, color, and amplitude are given by self._parameters
 
         Args:
@@ -121,7 +125,7 @@ class SN91bgSource(sncosmo.Source):
 
         A, st, c = self._parameters
 
-        #Linearly interpolate template flux by color
+        # Linearly interpolate template flux by color
         if c in self._color:
             f = self._model_flux[self._color.tolist().index(c)](phase/(st/0.65), wave)
         else:
