@@ -41,8 +41,14 @@ def get_data_for_id(cid):
     return data_table
 
 
+def _get_zp_for_band(band):
+    sorter = np.argsort(meta_data.band_names)
+    indices = sorter[np.searchsorted(meta_data.band_names, band, sorter=sorter)]
+    return np.array(meta_data.zero_point)[indices]
+
+
 def get_input_for_id(cid, bands=None):
-    """Returns an SNCosmo input table a given SDSS object ID
+    """Returns an SNCosmo input table a given CSP object ID
 
     No data cuts are applied to the returned data.
 
@@ -56,10 +62,10 @@ def get_input_for_id(cid, bands=None):
     """
 
     sn_data = get_data_for_id(cid)
-    sn_data['flux'] = sn_data['mag']
-    sn_data['fluxerr'] = sn_data['mag_err']
-    sn_data['zp'] = np.full(len(sn_data), 27.5)
+    sn_data['zp'] = _get_zp_for_band(sn_data['band'])
     sn_data['zpsys'] = np.full(len(sn_data), 'ab')
+    sn_data['flux'] = 10 ** ((sn_data['mag'] - sn_data['zp']) / -2.5)
+    sn_data['fluxerr'] = np.log(10) * sn_data['flux'] * sn_data['mag_err'] / 2.5
     sn_data.remove_columns(['mag', 'mag_err'])
 
     if bands is not None:
@@ -70,7 +76,7 @@ def get_input_for_id(cid, bands=None):
 
 
 def iter_sncosmo_input(bands=None, verbose=False):
-    """Iterate through SDSS supernova and yield the SNCosmo input tables
+    """Iterate through CSP supernova and yield the SNCosmo input tables
 
     To return a select collection of band-passes, specify the band argument.
     No data cuts are applied to the returned data.
