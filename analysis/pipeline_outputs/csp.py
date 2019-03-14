@@ -52,7 +52,7 @@ fit_4_param('./csp_salt24_4param_red.csv',
 # Update sncosmo params for 5 parameter fit
 sncosmo_args['bounds'] = {'z': (0.1, 0.8)}
 
-tqdm.write('Fitting Salt 2.4 - 5 param in all bands')
+tqdm.write('\n\nFitting Salt 2.4 - 5 param in all bands')
 fit_5_param('./csp_salt24_5param_all.csv',
             csp.iter_sncosmo_input(),
             csp.band_names,

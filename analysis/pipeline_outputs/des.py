@@ -50,7 +50,7 @@ fit_4_param('./des_salt24_4param_red.csv',
 # Update sncosmo params for 5 parameter fit
 sncosmo_args['bounds'] = {'z': (0.01, 0.9)}
 
-tqdm.write('Fitting Salt 2.4 - 5 param in all bands')
+tqdm.write('\n\nFitting Salt 2.4 - 5 param in all bands')
 fit_5_param('./des_salt24_5param_all.csv',
             des.iter_sncosmo_input(),
             des.band_names,

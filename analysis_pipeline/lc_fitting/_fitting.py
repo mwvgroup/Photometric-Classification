@@ -75,7 +75,7 @@ def _run_fit(input_table, model, params, **kwargs):
 
         else:
             z = input_table.meta['redshift']
-            z_err = input_table.meta['redshift_err']
+            z_err = input_table.meta.get('redshift_err', 0)
 
             out_data.append(z)
             out_data.extend(np.full(4, np.NAN).tolist())
