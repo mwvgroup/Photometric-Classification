@@ -20,7 +20,10 @@ blue_bands = ['desg', 'desr']
 red_bands = ['desi', 'desz', 'desy']
 
 # Define arguments for SNCosmo
-sncosmo_args = dict(bounds=None,
+sncosmo_args = dict(bounds={'t0': (51900, 57420),
+                            'x0': (0, 0.05),
+                            'x1': (-5, 5),
+                            'c': (-.5, 1)},
                     modelcov=True,
                     minsnr=5,
                     warn=False)

@@ -22,7 +22,9 @@ red_bands = ['r', 'i', 'H', 'J', 'Jrc2', 'Ydw', 'Jdw', 'Hdw']
 red_bands = [f'91bg_proj_csp_{f}' for f in red_bands]
 
 # Define arguments for SNCosmo
-sncosmo_args = dict(bounds=None,
+sncosmo_args = dict(bounds={'x0': (0, 0.05),
+                            'x1': (-5, 5),
+                            'c': (-.5, 1)},
                     modelcov=True,
                     minsnr=5,
                     warn=False)

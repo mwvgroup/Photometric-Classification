@@ -45,15 +45,11 @@ def _count_points_per_band(band_list, all_band_names):
     return [count_dict.get(band, 0) for band in all_band_names]
 
 
-def _run_fit(input_table, model, params, **kwargs):
+def _run_fit(data, model, vparam_names, **kwargs):
     """Run a light curve fit
 
     Args:
-        input_table (Table): An input table formatted for use with SNCosmo
-        model       (model): SNCosmo model to use for fitting
-        params  (list[str]): Parameters to vary while fitting
-
-        Additionally any arguments for sncosmo.fit_lc not mentioned above
+        Any arguments for sncosmo.fit_lc
 
     Returns:
         A list of values for 'z', 't0', 'x0', 'x1', 'c', their respective
@@ -63,19 +59,16 @@ def _run_fit(input_table, model, params, **kwargs):
     out_data = []
     try:
         result, fitted_model = sncosmo.fit_lc(
-            data=input_table,
-            model=model,
-            vparam_names=params,
-            **kwargs)
+            data=data, model=model, vparam_names=vparam_names, **kwargs)
 
     except (DataQualityError, RuntimeError, ValueError) as e:
-        if 'z' in params:
+        if 'z' in vparam_names:
             out_data.extend(np.full(12, np.NAN).tolist())
             out_data.append(str(e))
 
         else:
-            z = input_table.meta['redshift']
-            z_err = input_table.meta.get('redshift_err', 0)
+            z = data.meta['redshift']
+            z_err = data.meta.get('redshift_err', 0)
 
             out_data.append(z)
             out_data.extend(np.full(4, np.NAN).tolist())
@@ -119,9 +112,9 @@ def fit_5_param(out_path, inputs, bands, model, **kwargs):
     for input_table in inputs:
         band_count = _count_points_per_band(input_table['band'], bands)
         fit_results = _run_fit(
-            input_table=input_table,
+            data=input_table,
             model=model,
-            params=['z', 't0', 'x0', 'x1', 'c'],
+            vparam_names=['z', 't0', 'x0', 'x1', 'c'],
             **kwargs)
 
         new_row = [input_table.meta['cid']]
@@ -161,9 +154,9 @@ def fit_4_param(out_path, inputs, bands, model, **kwargs):
         model.set(z=z)
         band_count = _count_points_per_band(input_table['band'], bands)
         fit_results = _run_fit(
-            input_table=input_table,
+            data=input_table,
             model=model,
-            params=['t0', 'x0', 'x1', 'c'],
+            vparam_names=['t0', 'x0', 'x1', 'c'],
             **kwargs)
 
         new_row = [input_table.meta['cid']]

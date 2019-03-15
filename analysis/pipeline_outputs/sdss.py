@@ -20,19 +20,20 @@ all_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('ugriz', '123456')]
 blue_bands = all_bands[:12]
 red_bands = all_bands[12:]
 
-vlaidation_classes = ['zSNIa', 'pSNIa', 'SNIa', 'SNIa?']
+validation_classes = ['zSNIa', 'pSNIa', 'SNIa', 'SNIa?']
 classes_to_skip = ['AGN', 'SLSN', 'SNII', 'Variable', 'pSNII', 'zSNII']
 
-validation_data = sdss.iter_sncosmo_input(keep_types=vlaidation_classes)
+validation_data = sdss.iter_sncosmo_input(keep_types=validation_classes)
 all_band_data = sdss.iter_sncosmo_input(skip_types=classes_to_skip)
-blue_band_data = sdss.iter_sncosmo_input(skip_types=classes_to_skip,
-                                         bands=blue_bands)
-red_band_data = sdss.iter_sncosmo_input(skip_types=classes_to_skip,
-                                        bands=red_bands)
+blue_band_data = sdss.iter_sncosmo_input(skip_types=classes_to_skip, bands=blue_bands)
+red_band_data = sdss.iter_sncosmo_input(skip_types=classes_to_skip, bands=red_bands)
 
-sncosmo_args = dict(bounds=None,
+sncosmo_args = dict(bounds={'t0': (53600, 54500),
+                            'x0': (0, 0.015),
+                            'x1': (-5, 5),
+                            'c': (-.5, 1)},
+
                     modelcov=True,
-                    phase_range=[-15, 45],
                     minsnr=5,
                     warn=False)
 
@@ -65,7 +66,7 @@ fit_4_param('./sdss_salt24_4param_red.csv',
             **sncosmo_args)
 
 # Update sncosmo params for 5 parameter fit
-sncosmo_args['bounds'] = {'z': (0.1, 0.8)}
+sncosmo_args['bounds']['z'] = (0.00001, 6.5)
 
 tqdm.write('\n\nFitting Salt 2.4 - 5 param in all bands')
 fit_5_param('./sdss_salt24_5param_all.csv',
