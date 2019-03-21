@@ -4,6 +4,7 @@
 """This module provides functions for fitting light curves using sncosmo."""
 
 import os
+from copy import deepcopy
 
 import numpy as np
 import sncosmo
@@ -111,11 +112,16 @@ def fit_5_param(out_path, inputs, bands, model, **kwargs):
     out_table = _create_empty_summary_table(bands)
     for input_table in inputs:
         band_count = _count_points_per_band(input_table['band'], bands)
+
+        # Protect against mutating input args
+        model_this = deepcopy(model)
+        kwargs_this = deepcopy(kwargs)
+
         fit_results = _run_fit(
             data=input_table,
-            model=model,
+            model=model_this,
             vparam_names=['z', 't0', 'x0', 'x1', 'c'],
-            **kwargs)
+            **kwargs_this)
 
         new_row = [input_table.meta['cid']]
         new_row.extend(band_count)
@@ -151,13 +157,17 @@ def fit_4_param(out_path, inputs, bands, model, **kwargs):
         if z < 0 or not z:
             continue
 
-        model.set(z=z)
+        # Protect against mutating input args
+        model_this = deepcopy(model)
+        kwargs_this = deepcopy(kwargs)
+
+        model_this.set(z=z)
         band_count = _count_points_per_band(input_table['band'], bands)
         fit_results = _run_fit(
             data=input_table,
-            model=model,
+            model=model_this,
             vparam_names=['t0', 'x0', 'x1', 'c'],
-            **kwargs)
+            **kwargs_this)
 
         new_row = [input_table.meta['cid']]
         new_row.extend(band_count)
