@@ -2,6 +2,7 @@ astropy
 matplotlib
 iminuit
 numpy
+pandas
 requests
 sncosmo
 tqdm

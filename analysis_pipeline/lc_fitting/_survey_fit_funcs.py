@@ -6,6 +6,7 @@ SALT2 and 91bg model in all bands, the red bands, and the blue bands.
 """
 
 import os
+import time
 from itertools import product
 
 import sncosmo
@@ -32,14 +33,15 @@ def run_fit_set(survey_name, out_dir, blue_bands, red_bands, modeling_data):
             Iterable of sncosmo models and their arguments
     """
 
+    tqdm.write(f'Running fits for {survey_name}')
     path_pattern = '{}_{}_{}param_{}.csv'
     bands = zip(('all', 'blue', 'red'), (None, blue_bands, red_bands))
     for model_args, model in modeling_data:
         for num_param in (4, 5):
             for bands_str, bands in bands:
                 model_name = model.source.name
-                tqdm.write(f'Fitting {model_name} - '
-                           f'{num_param} params in {bands_str}')
+                tqdm.write(f'Fitting {model_name} - {num_param} params in {bands_str}')
+                time.sleep(0.5)  # Give output time to flush
 
                 fname = path_pattern.format(survey_name, model_name, num_param, bands_str)
                 out_path = os.path.join(out_dir, fname)
@@ -49,6 +51,8 @@ def run_fit_set(survey_name, out_dir, blue_bands, red_bands, modeling_data):
                              bands=csp.band_names,
                              model=model,
                              **model_args)
+
+                tqdm.write('\n\n')
 
 
 def fit_csp(out_dir):
@@ -124,9 +128,8 @@ def fit_sdss(out_dir):
     """
 
     # Define red and blue bandpasses
-    all_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('ugriz', '123456')]
-    blue_bands = all_bands[:12]
-    red_bands = all_bands[12:]
+    blue_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('ug', '123456')]
+    red_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('riz', '123456')]
 
     # Define model specific arguments for fitting
     salt24_4param = dict(bounds={'t0': (53600, 54500),
