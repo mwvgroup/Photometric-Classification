@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
 """This package provides a custom SNCosmo source for modeling 91bg-like
