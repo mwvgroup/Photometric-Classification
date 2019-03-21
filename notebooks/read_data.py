@@ -18,24 +18,12 @@ def get_fit_results(survey, model, params):
     index_col = 0
     path_pattern = f'./pipeline_outputs/{survey}_{model}_{params}param_{{}}.csv'
 
-    try:
-        all_data = _pd.read_csv(path_pattern.format('all'), index_col=index_col)
+    all_data = _pd.read_csv(path_pattern.format('all'), index_col=index_col)
 
-    except FileNotFoundError:
-        all_data = None
+    blue_data = _pd.read_csv(path_pattern.format('blue'),
+                             index_col=index_col)
 
-    try:
-        blue_data = _pd.read_csv(path_pattern.format('blue'),
-                                 index_col=index_col)
-
-    except FileNotFoundError:
-        blue_data = None
-
-    try:
-        red_data = _pd.read_csv(path_pattern.format('red'),
-                                index_col=index_col)
-
-    except FileNotFoundError:
-        red_data = None
+    red_data = _pd.read_csv(path_pattern.format('red'),
+                            index_col=index_col)
 
     return all_data, blue_data, red_data
