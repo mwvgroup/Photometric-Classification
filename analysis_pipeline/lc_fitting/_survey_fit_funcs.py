@@ -13,7 +13,7 @@ import sncosmo
 from tqdm import tqdm
 
 from . import fit_n_params
-from ..data_access import csp
+from ..data_access import csp, sdss, des
 from ..sn91bg_model import SN91bgSource
 
 # Get models for fitting
@@ -21,38 +21,37 @@ salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
 sn_91bg = sncosmo.Model(source=SN91bgSource())
 
 
-def run_fit_set(survey_name, out_dir, blue_bands, red_bands, modeling_data):
-    """
+def _run_fit_set(iter_inputs_func, out_dir, blue_bands, red_bands, modeling_data):
+    """Run a four and five parameter fit using the Salt2 and 91bg model in
+        all bands, the rest frame blue, and the rest frame red.
 
-    Args:
-        survey_name      (str): Name of the survey being processed
-        out_dir          (str): Directory where results are saved
-        blue_bands (list[str]): List of blue band-passes
-        red_bands  (list[str]): List of blue band-passes
-        modeling_data (iter[tuple[dict, Model]]):
-            Iterable of sncosmo models and their arguments
-    """
+        Args:
+            iter_inputs_func                  (func): Function returning an iterable of SNCosmo input tables
+            out_dir                            (str): Directory where results are saved
+            blue_bands                   (list[str]): List of blue band-passes
+            red_bands                    (list[str]): List of blue band-passes
+            modeling_data (iter[tuple[dict, Model]]): Iterable of sncosmo models and their arguments
+        """
 
-    tqdm.write(f'Running fits for {survey_name}')
-    path_pattern = '{}_{}_{}param_{}.csv'
-    bands = zip(('all', 'blue', 'red'), (None, blue_bands, red_bands))
+    path_pattern = '{}_{}param_{}.csv'
+    band_data = zip(('all', 'blue', 'red'), (None, blue_bands, red_bands))
     for model_args, model in modeling_data:
         for num_param in (4, 5):
-            for bands_str, bands in bands:
+            for bands_str, bands in band_data:
                 model_name = model.source.name
-                tqdm.write(f'Fitting {model_name} - {num_param} params in {bands_str}')
+                tqdm.write(f'Fitting {num_param} params in {bands_str}')
                 time.sleep(0.5)  # Give output time to flush
 
-                fname = path_pattern.format(survey_name, model_name, num_param, bands_str)
+                fname = path_pattern.format(model_name, num_param, bands_str)
                 out_path = os.path.join(out_dir, fname)
                 fit_n_params(out_path,
                              num_params=num_param,
-                             inputs=csp.iter_sncosmo_input(bands),
+                             inputs=iter_inputs_func(bands),
                              bands=csp.band_names,
                              model=model,
                              **model_args)
 
-                tqdm.write('\n\n')
+                tqdm.write('\n')
 
 
 def fit_csp(out_dir):
@@ -83,7 +82,11 @@ def fit_csp(out_dir):
         (salt_2_4, salt_2_4, sn_91bg, sn_91bg)
     )
 
-    run_fit_set('csp', out_dir, blue_bands, red_bands, modeling_data)
+    _run_fit_set(csp.iter_sncosmo_input,
+                 out_dir,
+                 blue_bands,
+                 red_bands,
+                 modeling_data)
 
 
 def fit_des(out_dir):
@@ -117,7 +120,11 @@ def fit_des(out_dir):
         (salt_2_4, salt_2_4, sn_91bg, sn_91bg)
     )
 
-    run_fit_set('des', out_dir, blue_bands, red_bands, modeling_data)
+    _run_fit_set(des.iter_sncosmo_input,
+                 out_dir,
+                 blue_bands,
+                 red_bands,
+                 modeling_data)
 
 
 def fit_sdss(out_dir):
@@ -151,4 +158,8 @@ def fit_sdss(out_dir):
         (salt_2_4, salt_2_4, sn_91bg, sn_91bg)
     )
 
-    run_fit_set('sdss', out_dir, blue_bands, red_bands, modeling_data)
+    _run_fit_set(sdss.iter_sncosmo_input,
+                 out_dir,
+                 blue_bands,
+                 red_bands,
+                 modeling_data)
