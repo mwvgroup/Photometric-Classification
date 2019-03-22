@@ -79,7 +79,7 @@ def _run_fit(data, model, vparam_names, **kwargs):
             out_data.extend(np.full(4, np.NAN).tolist())
             out_data.append(z_err)
             out_data.extend(np.full(6, np.NAN).tolist())
-            out_data.append(str(e))
+            out_data.append(str(e).replace('\n', ' '))
 
     else:
         for param in ['z', 't0', 'x0', 'x1', 'c']:

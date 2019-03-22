@@ -8,7 +8,9 @@
 import os
 import tqdm
 
-from analysis_pipeline.lc_fitting import fit_csp, fit_des, fit_sdss
+from analysis_pipeline.lc_fitting import LCFitting
+
+lc_fitting = LCFitting('./fitting_params.yml')
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
 csp_dir = os.path.join(file_dir, 'pipeline_outputs/csp')
@@ -20,10 +22,10 @@ for path in (csp_dir, des_dir, sdss_dir):
         os.makedirs(path, exist_ok=True)
 
 tqdm.tqdm.write('Fitting CSP')
-fit_csp(csp_dir)
+lc_fitting.fit_csp(csp_dir)
 
 tqdm.tqdm.write('Fitting DES')
-fit_des(des_dir)
+lc_fitting.fit_des(des_dir)
 
 tqdm.tqdm.write('Fitting SDSS')
-fit_sdss(sdss_dir)
+lc_fitting.fit_sdss(sdss_dir)
