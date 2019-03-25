@@ -19,49 +19,46 @@ from ..sn91bg_model import SN91bgSource
 
 # Get models for fitting
 salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
+salt_2_0 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0'))
 sn_91bg = sncosmo.Model(source=SN91bgSource())
+models_dict = dict(salt_2_4=salt_2_4, salt_2_0=salt_2_0, sn_91bg=sn_91bg)
 
 
-def _run_fit_set(iter_inputs_func, out_dir, blue_bands, red_bands, params):
-    """Run a four and five parameter fit using the Salt2 and 91bg model in
-        all bands, the rest frame blue, and the rest frame red.
+def _run_fit_set(data, out_dir, models, num_params, bands_to_fit, params, **kwargs):
+    """
+    Iterate over a set of light-curve fits using different models, number of
+    parameters, and rest frame bands
 
-        Args:
-            iter_inputs_func (func): Function returning iterable of SNCosmo input tables
-            out_dir           (str): Directory where results are saved
-            blue_bands  (list[str]): List of blue band-passes
-            red_bands   (list[str]): List of blue band-passes
-            params           (dict): SNCosmo fitting arguments per fit
-        """
+    Args:
+        data       (module): A submodule of the data_access module (eg. csp)
+        out_dir       (str): Directory where results are saved
+        num_params   (List): List of SNCosmo models to fit
+        bands_to_fit (dict): A dictionary of bands for fit (eg. {'blue': 'ugriz'})
+        params       (dict): Dictionary of SNCosmo fitting arguments
+    """
 
-    modeling_data = zip(
-        (4, 5, 4, 5),  # Number of fitting params
-        (salt_2_4, salt_2_4, sn_91bg, sn_91bg),  # Models
-        (params['salt24_4param'], params['salt24_5param'],  # Fitting arguments
-         params['sn91bg_4param'], params['sn91bg_5param'])
-    )
+    modeling_data = product(models, num_params, bands_to_fit.items())
 
-    path_pattern = '{}_{}param_{}.csv'
-    for num_param, model, model_args in modeling_data:
-        band_data = zip(('all', 'blue', 'red'), (None, blue_bands, red_bands))
-        for bands_str, bands in band_data:
-            model_name = model.source.name
-            tqdm.write(f'{num_param} param {model_name} in {bands_str} bands:')
-            time.sleep(0.5)  # Give output time to flush
+    path_pattern = '{}_{}param_{}.ecsv'
+    for model, num_param, (band_name, band_lists) in modeling_data:
+        model_name = model.source.name + '_' + model.source.version
+        tqdm.write(f'{num_param} param {model_name} in {band_name} bands')
+        time.sleep(0.5)  # Give output time to flush
 
-            fname = path_pattern.format(model_name, num_param, bands_str)
-            out_path = os.path.join(out_dir, fname)
-            fit_n_params(out_path,
-                         num_params=num_param,
-                         inputs=iter_inputs_func(bands),
-                         bands=csp.band_names,
-                         model=model,
-                         **model_args)
+        model_args = params[model_name][num_param]
+        fname = path_pattern.format(model_name, num_param, band_name)
+        out_path = os.path.join(out_dir, fname)
+        fit_n_params(out_path,
+                     num_params=num_param,
+                     inputs=data.iter_sncosmo_input(band_lists, **kwargs),
+                     bands=data.band_names,
+                     model=model,
+                     **model_args)
 
-            tqdm.write('\n')
+        tqdm.write('\n')
 
 
-class LCFitting():
+class LCFitting:
 
     def __init__(self, params_file=None):
         self.fitting_params = None
@@ -78,7 +75,7 @@ class LCFitting():
         with open(params_file) as ofile:
             self.fitting_params = yaml.load(ofile)
 
-    def fit_csp(self, out_dir):
+    def fit_csp(self, out_dir, models, num_params, bands, **kwargs):
         """Fit CSP data and save result to file
 
         Args:
@@ -90,15 +87,25 @@ class LCFitting():
         blue_bands = [f'91bg_proj_csp_{f}' for f in blue_bands]
         red_bands = ['r', 'i', 'H', 'J', 'Jrc2', 'Ydw', 'Jdw', 'Hdw']
         red_bands = [f'91bg_proj_csp_{f}' for f in red_bands]
+        bands_dict = dict(blue=blue_bands,
+                          red=red_bands,
+                          all=blue_bands + red_bands)
 
+        # Create dictionary of only user specified bands
+        bands_to_fit = {b_name: bands_dict[b_name] for b_name in bands}
+        models = [models_dict[model] for model in models]
+
+        # Run fit
         params = self.fitting_params['csp']
-        _run_fit_set(csp.iter_sncosmo_input,
+        _run_fit_set(csp,
                      out_dir,
-                     blue_bands,
-                     red_bands,
-                     params)
+                     models,
+                     num_params,
+                     bands_to_fit,
+                     params,
+                     **kwargs)
 
-    def fit_des(self, out_dir):
+    def fit_des(self, out_dir, models, num_params, bands, **kwargs):
         """Fit DES data and save result to file
 
         Args:
@@ -108,15 +115,24 @@ class LCFitting():
         # Define red and blue bandpasses
         blue_bands = ['desg', 'desr']
         red_bands = ['desi', 'desz', 'desy']
+        bands_dict = dict(blue=blue_bands, red=red_bands,
+                          all=blue_bands + red_bands)
 
+        # Create dictionary of only user specified bands
+        bands_to_fit = {b_name: bands_dict[b_name] for b_name in bands}
+        models = [models_dict[model] for model in models]
+
+        # Run fit
         params = self.fitting_params['des']
-        _run_fit_set(des.iter_sncosmo_input,
+        _run_fit_set(des,
                      out_dir,
-                     blue_bands,
-                     red_bands,
-                     params)
+                     models,
+                     num_params,
+                     bands_to_fit,
+                     params,
+                     **kwargs)
 
-    def fit_sdss(self, out_dir):
+    def fit_sdss(self, out_dir, models, num_params, bands, **kwargs):
         """Fit SDSS data and save result to file
 
         Args:
@@ -126,10 +142,20 @@ class LCFitting():
         # Define red and blue bandpasses
         blue_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('ug', '123456')]
         red_bands = [f'91bg_proj_sdss_{b}{c}' for b, c in product('riz', '123456')]
+        bands_dict = dict(blue=blue_bands,
+                          red=red_bands,
+                          all=blue_bands + red_bands)
 
+        # Create dictionary of only user specified bands
+        bands_to_fit = {b_name: bands_dict[b_name] for b_name in bands}
+        models = [models_dict[model] for model in models]
+
+        # Run fit
         params = self.fitting_params['sdss']
-        _run_fit_set(sdss.iter_sncosmo_input,
+        _run_fit_set(sdss,
                      out_dir,
-                     blue_bands,
-                     red_bands,
-                     params)
+                     models,
+                     num_params,
+                     bands_to_fit,
+                     params,
+                     **kwargs)

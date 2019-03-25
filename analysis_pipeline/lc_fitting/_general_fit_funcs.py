@@ -50,8 +50,11 @@ def _count_points_per_band(band_list, all_band_names):
     return [count_dict.get(band, 0) for band in all_band_names]
 
 
-def _run_fit(data, model, vparam_names, **kwargs):
-    """Run a light curve fit
+def fit_lc(data, model, vparam_names, **kwargs):
+    """A wrapper for sncosmo.fit_lc that returns results as a list
+
+    Exceptions raised by sncosmo.fit_lc are caught and stored as the exit
+    message.
 
     Args:
         Any arguments for sncosmo.fit_lc
@@ -123,6 +126,7 @@ def fit_n_params(out_path, num_params, inputs, bands, model, warn=False, **kwarg
 
     kwargs['warn'] = warn
     out_table = _create_empty_summary_table(bands)
+    out_table.meta = kwargs
 
     # Run fit for each target
     for input_table in inputs:
@@ -139,7 +143,7 @@ def fit_n_params(out_path, num_params, inputs, bands, model, warn=False, **kwarg
             model_this.set(z=z)
 
         band_count = _count_points_per_band(input_table['band'], bands)
-        fit_results = _run_fit(
+        fit_results = fit_lc(
             data=input_table,
             model=model_this,
             vparam_names=['t0', 'x0', 'x1', 'c'],

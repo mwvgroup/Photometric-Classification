@@ -73,8 +73,8 @@ class SN91bgSource(sncosmo.Source):
     def __init__(self):
         super(SN91bgSource, self).__init__()
 
-        self.name = '91bg model'
-        self.version = 'color interpolation'
+        self.name = 'sn91bg'
+        self.version = 'color_interpolation'
 
         # Model spectra and initial guess for stretch, color, and amplitude
         self._flux_values = self._get_91bg_model()[0]
