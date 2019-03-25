@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 from . import fit_n_params
 from ..data_access import csp, des, sdss
-from ..sn91bg_model import SN91bgSource
+from .._sn91bg_model._model import SN91bgSource
 
 # Get models for fitting
 salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
