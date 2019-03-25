@@ -136,17 +136,21 @@ def fit_n_params(out_path, num_params, inputs, bands, model, warn=False, **kwarg
 
         # Set redshift in model for 4 param fits
         if num_params == 4:
+            vparam_names = ['t0', 'x0', 'x1', 'c']
             z = input_table.meta.get('redshift', False)
             if z < 0 or not z:
                 continue
 
             model_this.set(z=z)
 
+        else:
+            vparam_names = ['z', 't0', 'x0', 'x1', 'c']
+
         band_count = _count_points_per_band(input_table['band'], bands)
         fit_results = fit_lc(
             data=input_table,
             model=model_this,
-            vparam_names=['t0', 'x0', 'x1', 'c'],
+            vparam_names=vparam_names,
             **kwargs_this)
 
         new_row = [input_table.meta['cid']]
