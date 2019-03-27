@@ -1,0 +1,957 @@
+# %ECSV 0.9
+# ---
+# datatype:
+# - {name: cid, datatype: object}
+# - {name: num_points_desg, datatype: object}
+# - {name: num_points_desr, datatype: object}
+# - {name: num_points_desi, datatype: object}
+# - {name: num_points_desz, datatype: object}
+# - {name: num_points_desy, datatype: object}
+# - {name: z, datatype: object}
+# - {name: t0, datatype: object}
+# - {name: x0, datatype: object}
+# - {name: x1, datatype: object}
+# - {name: c, datatype: object}
+# - {name: z_err, datatype: object}
+# - {name: t0_err, datatype: object}
+# - {name: x0_err, datatype: object}
+# - {name: x1_err, datatype: object}
+# - {name: c_err, datatype: object}
+# - {name: chi, datatype: object}
+# - {name: dof, datatype: object}
+# - {name: message, datatype: object}
+# meta: !!omap
+# - bounds:
+#     c: [0, 1]
+#     x1': [0.65, 1.25]
+#     z: [0.01, 0.9]
+# - {warn: false}
+# schema: astropy-2.0
+cid num_points_desg num_points_desr num_points_desi num_points_desz num_points_desy z t0 x0 x1 c z_err t0_err x0_err x1_err c_err chi dof message
+1248677 0 13 17 16 0 0.1714943705730729 56550.72746300506 7.580806231453527e-17 1.7244464287710217 1.274669814144147e-10 0.0004824440407707048 0.03287301258023945 3.778549953306463e-19 0.010385420310783221 1.6051722785959122e-06 1303.4679410606034 41 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1250017 0 16 15 0 0 0.46156405462118666 56555.39237779507 1.8647675334929625e-16 1.7775237947978655 3.7267822161624053e-10 0.00021201065335296754 0.03713364565555821 2.6210732732295465e-18 0.03427049840849205 2.0598247497671807e-06 3595.922077527716 26 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1253039 0 0 18 20 0 0.4007560770950687 56573.08938426692 3.344136122750189e-17 1.4662550542104904 8.023890611386086e-07 0.0019923084615827147 0.22933678629487986 6.465092721869982e-19 0.03146010010157075 3.420577410154224e-05 67.86758473327194 33 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1253101 0 0 18 17 0 0.39881664367949005 56574.369574149416 3.247184470785172e-17 1.6665661539326053 4.5505154822045313e-07 0.0026204429351234515 0.07399738259482547 7.840044153000275e-19 0.047277904524898634 5.952726218103055e-05 62.14453879833821 30 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1253920 0 15 14 0 0 0.46172402059499645 56584.055470324194 2.0177450221428272e-16 1.2681428296715191 1.090594765051911e-07 0.0002474429814424972 0.07738952247382258 3.827488267673286e-18 0.02187571607134043 4.959239783691727e-06 1167.7032296445495 24 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1255502 6 4 4 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.455000
+    t0 = +56581.218158
+    x0 = +0.000000
+    x1 = -0.240614
+     c = +0.550000
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1257366 0 8 10 0 0 0.4595696736372776 56611.812544081775 1.0571878364195466e-16 1.2987785139371109 1.6023373721751888e-06 0.0029616758447565117 0.0797369103456731 4.634132803211711e-18 0.07478947328678934 5.160947343280098e-05 68.58198141954762 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1257695 0 11 13 0 0 0.4613843054491176 56613.67609224468 2.0115951350476672e-16 1.4924887528720656 6.436648436469738e-10 0.0002647829647587363 0.07043289991270285 3.04369845475106e-18 0.023222440502296705 3.0357693395766105e-06 2656.8180582838468 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1258906 0 15 13 15 0 0.057460591399569085 56617.10235617966 8.414344382731566e-17 1.5209982689531751 0.5697729815376628 0.003767532233607509 0.01854285413355683 1.7642599004467473e-18 0.02129800097737691 0.027279522449477955 50.86907905922148 38 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1258940 0 18 17 18 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.589630
+    t0 = +56610.315949
+    x0 = +0.000000
+    x1 = -1.171597
+     c = +0.983348
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1259412 0 11 12 0 0 0.4593337702728372 56625.66193856952 8.81554384467779e-17 1.5375614718159294 5.794852930840477e-09 0.000488628220186138 0.15098587469765334 9.628766119822566e-19 0.018739877983362924 2.0376970596147626e-06 911.1917640927645 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1261579 0 10 10 0 0 0.46328654837162425 56640.429262005026 7.148643333444049e-17 1.729942803732041 2.307598556683388e-13 0.00011535605358620193 0.013127631616953295 5.8420124567066135e-19 0.019678604497741517 1.4081193008830262e-06 971.9791127221132 15 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1262214 0 0 23 0 0 0.43334253944485035 56652.79204617957 2.5795277463908823e-17 1.3917345059333137 0.5705564631644716 0.003892447149655698 0.02905019579338841 3.053371713974955e-19 0.008916860506171178 0.00949071012133118 39.400796553090146 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1262715 0 0 12 13 0 0.3993852189226967 56656.29689909142 1.7959625350992508e-17 1.6086345430430125 5.972182581803764e-09 0.0032536323747283658 0.11773772826927598 2.250900616803022e-19 0.024483501307638687 3.5307868888889704e-05 24.183832328976237 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1263369 0 9 9 0 0 0.462837655077004 56666.015860606436 8.185615207528302e-17 1.406025345148929 7.513549959980992e-08 0.00044198096327155434 0.11804758686048444 2.4742381434655112e-18 0.048376525799383015 1.2881670822972868e-05 167.8067524431582 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1263715 0 9 9 0 0 0.4625265273451586 56667.78591518937 9.060981358216584e-17 1.5307024997046976 8.724728384201796e-09 0.00028007053705875196 0.08236247418972198 1.9590086524017194e-18 0.03369398125223341 7.453383741889974e-06 374.88506259773106 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1275946 0 18 19 0 0 0.46313892977973414 57261.76060171696 1.4337847819038178e-16 2.1859417788633695 2.332402604388051e-10 0.00013931067505015826 0.10156424730303115 1.4261841876600094e-18 0.04362690299782377 1.1856784050690017e-06 3013.838001668618 32 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1279500 0 12 12 0 0 0.4629606554627068 57253.07686505418 1.3354566103936962e-16 1.3861125615505678 1.1457504611733782e-08 0.00036028049996045253 0.02121677608738537 1.565450668897559e-18 0.03641174684919846 2.4196800654241457e-06 1784.4951135995402 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1280217 0 16 16 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.537937
+    t0 = +57255.765906
+    x0 = +0.000000
+    x1 = -1.152673
+     c = +0.904096
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1281668 0 20 21 0 0 0.46328880287714025 57272.84518038204 8.460981603925326e-17 1.5442209455647986 2.49974874133585e-10 0.0005944530551759974 0.04899958594251075 2.3047668171102044e-18 0.05616250387439871 1.2427138322751441e-05 262.40100341238826 36 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1281886 0 18 18 19 0 0.13390142368769511 57264.39199303261 5.738777347883525e-17 1.6747375557287116 0.0045472900413689454 0.003640626156135973 0.05307333955352078 1.1812694066692867e-18 0.021502997517778503 0.0352819040115083 55.59794883609004 50 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1282736 0 19 16 20 0 0.17338663867739953 57263.50827762763 5.2513016291136114e-17 1.5137615061858047 0.3363392400602986 0.004412710862853289 0.0502582716580946 1.1581884773341952e-18 0.024739096854486897 0.025229433168981685 44.825711062873836 50 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1283373 0 13 15 0 0 0.46243536353568443 57273.29398561996 1.1151510114190415e-16 1.5201271956376743 7.20906667694976e-12 0.0005860057476001213 0.3897894474794157 3.0858114290416557e-18 0.0559899372171488 8.090844217434334e-06 521.9985427241156 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1283878 0 15 14 0 0 0.45806184288005625 57265.65655163623 5.830003726122352e-17 1.408476642118731 1.0519314542212221e-06 0.003452751755510103 0.19884924781581503 2.7623724409266773e-18 0.0688265015148433 8.083425951924128e-05 20.828144663652296 24 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1283936 0 21 21 23 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.472212
+    t0 = +57259.382496
+    x0 = +0.000000
+    x1 = -3.451421
+     c = +0.975448
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1285160 0 0 0 17 0 0.4741957334907159 57268.461507568114 1.5386055194454913e-17 1.4647331137980621 0.5127719897122854 0.0007352266990814926 0.019354549440322444 2.5132315842617327e-19 0.017779686578789287 0.022309939365060816 11.278807209557034 12 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1285317 0 0 23 24 0 0.39907597726306604 57265.793771647164 2.106195889604681e-17 1.5157595811710387 3.21626155763699e-07 0.0033139486862997225 0.11490479764324846 5.044191176036793e-19 0.05541643795287802 0.00010829611812920859 29.70136518496173 42 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1286398 12 14 13 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.061776
+    t0 = +57203.622851
+    x0 = +2698036509769920000.000000
+    x1 = -75.317358
+     c = +0.133058
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1287626 0 5 7 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.471553
+    t0 = +56678.876023
+    x0 = +0.000000
+    x1 = -2.514908
+     c = +0.789133
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1289288 0 19 21 0 0 0.46168022313116974 57274.19726025494 6.887167962598511e-17 1.2781456484461766 2.848682957856674e-06 0.0025245070632063382 0.18993528854116448 3.9176238474832354e-18 0.13074184345529355 8.835890901839893e-05 43.83905553498842 35 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1289555 0 0 20 21 0 0.39967554212613066 57272.904385074515 2.4388574351675165e-17 1.4816956508776262 2.605057292659474e-07 0.004244832892244199 0.30118017685890663 7.987919389980915e-19 0.06268588556262214 0.00015999021791934798 28.292630375564475 36 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1289600 0 17 17 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.483032
+    t0 = +57290.382629
+    x0 = +0.000000
+    x1 = -0.038583
+     c = +0.822804
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1289656 0 0 19 21 0 0.4014376218086902 57267.91930275729 2.0971385679918165e-17 1.4206325667805222 1.8878289392842973e-07 0.005860699580406581 0.21000278432256891 5.56498981343971e-19 0.04850436336952247 0.0005259406614175344 29.141778815729477 35 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1289664 0 17 17 0 0 0.46222754721791126 57279.46911913694 1.1299791154604505e-16 1.287985033523422 1.0929035454410041e-11 0.0007633099744693561 0.0629702865226136 1.8384183234894027e-18 0.03939283386723126 5.687829966738445e-06 476.6339580353984 29 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1290779 0 11 11 12 0 0.17097981209083976 56888.49895211197 4.644589561135366e-17 1.3535663868373078 2.5228788585907047e-05 0.00342249522450265 0.046675454344949685 9.003108291334364e-19 0.031372434213444725 0.038830972856324086 57.91797709684674 29 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1290816 0 10 10 0 0 0.46227724838479406 56892.284056708486 1.4241645066033306e-16 1.5279199618181363 3.5655228769471137e-10 0.0004595752925854457 0.028828592166973976 2.1400971763309194e-18 0.037329843004983605 3.0990071537284614e-06 1295.8379711278628 15 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1291080 0 0 13 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.880250
+    t0 = +56909.246816
+    x0 = -762392281391349120.000000
+    x1 = -40.915451
+     c = +0.052416
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1291090 0 13 11 0 0 0.46044925547475796 56906.70075434754 1.0462401733292179e-16 1.6809403475708309 5.576944905882897e-09 0.000567749924987343 0.05516147485104739 2.571691170422827e-18 0.0313789253940268 7.359363717790446e-06 399.62243864917855 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1291794 0 18 19 18 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.483350
+    t0 = +57283.876565
+    x0 = +0.000000
+    x1 = -0.179014
+     c = +0.896900
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1291957 0 15 14 15 0 0.09748424435633518 56901.31736333923 7.571609012021002e-17 1.5850167618455964 0.20428935031020373 0.0009381536624326753 0.02257625788115547 1.292841640002539e-18 0.01681746644476993 0.019958392652909718 81.23817740732082 39 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1292145 0 0 19 19 0 0.379081764720092 57271.24420001629 1.8854232410712618e-17 1.7310198394085872 0.20222794893942542 0.0016771131290658214 0.0507233640528284 5.355711122170213e-19 0.031850888931437504 0.03139639232354707 24.477795565016287 33 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1292195 0 0 0 19 0 0.6382547643379888 57279.19506545777 1.2844271000902949e-17 1.4005185383525374 0.6821639499182557 0.0021925407280403153 0.12069346108182799 3.0721408139246074e-19 0.020817106696962736 0.02306749255630025 18.652201742554098 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1292332 0 12 13 0 0 0.45906776208829836 56901.80759490721 1.2422372125496481e-16 1.4952026555816675 8.460371292429159e-11 0.000740123855792002 0.13239360287116142 4.3860326651026186e-18 0.059753376935885553 1.906348615068887e-05 149.01447839192102 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1292336 0 12 13 0 0 0.4580693408212401 56902.601614526706 1.1293801045945146e-16 1.3820730507344094 1.4327352010345962e-07 0.001449965987439794 0.07562690922350157 3.4039445811087245e-18 0.03911201311615591 1.8662330654284354e-05 153.8299890062087 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1292560 0 11 14 0 0 0.459229608603702 56905.523399477555 1.4922793382603933e-16 1.4626867682178117 2.123307085710735e-10 0.0007712498832744552 0.13794394221622497 2.7124965497022998e-18 0.02883027020294613 4.11673259040346e-06 1014.3185627127918 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1293319 0 14 14 0 0 0.46008503612833945 56915.09985280959 9.007903195764224e-17 1.7604555505413182 1.8714028660049564e-09 0.0008278242487819998 0.2111866721934348 1.5036236124906949e-18 0.03560668257670962 5.471713428212288e-06 443.3525136595001 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1293758 10 7 1 0 0 0.13353154402485862 56915.94853075257 4.344992112869593e-16 1.2682333339187217 2.420258049529167e-09 0.0016355071907261792 0.3090470155730145 1.4599381680832442e-17 0.038242957132769685 1.4529419519460074e-05 534.85027729472 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1294014 0 13 9 6 0 0.4584832863009695 56921.888415060486 5.968864580167705e-17 1.5205109557806935 8.011853902534227e-09 0.0010624205039872492 0.4281037347209349 1.6476355251131695e-18 0.037575830966827144 1.286107156400762e-05 131.84971677737994 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1294743 0 11 11 0 0 0.46016126996940776 56915.34222660484 4.010628547803135e-17 1.6085899229389449 1.1627175333650541e-09 0.0013702079599270667 0.319057165634149 7.459730372946695e-19 0.03211402007478286 1.1165762016623892e-05 44.458779855559 17 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1295027 0 18 17 19 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.462230
+    t0 = +56893.172584
+    x0 = +0.000000
+    x1 = -1.162117
+     c = +0.949323
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1295256 0 0 16 17 0 0.40014632921622595 56924.83297103267 2.9913399299720575e-17 1.40781987799942 6.707127109262245e-08 0.001293670507625716 0.10233667910506483 5.852188638179596e-19 0.03666491701443411 2.187708554679535e-05 98.30077904126219 28 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1295305 0 0 15 18 0 0.3983153528157129 56913.75466085665 1.606308548644995e-17 1.4948085945603902 2.7439911454152366e-10 0.0007333228632643296 0.1519945183681557 1.599016188431174e-19 0.016978812570069914 1.2349801575439745e-05 66.21338013384114 28 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1295921 0 0 14 13 0 0.4060685966691547 56907.765213880986 1.970908650889974e-17 1.7735917534841976 1.1308105413887493e-05 0.005488670743035828 0.4492431951366598 5.156286146064607e-19 0.0418211282322587 0.0005153787681655697 19.61982736787207 22 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1296273 0 16 15 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.464335
+    t0 = +56893.502925
+    x0 = +0.000000
+    x1 = -0.550523
+     c = +0.944356
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1296321 0 13 12 0 0 0.46058491124360224 56930.05982316396 1.2610022559147487e-16 1.485684231128162 2.4071233895028854e-10 0.0005923698463662086 0.05716333696182119 2.779650723134793e-18 0.06226916694379244 6.10422406327471e-06 691.7482066136199 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1296657 4 4 10 0 0 0.010000000976146353 56920.09683072838 3.8734075157406195e-16 1.6383538457360327 6.04791536296112e-08 9.022126655457846e-06 0.14505517471843632 1.784497663539017e-17 0.09603904794752702 7.315626857021251e-05 188.8592434105861 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1297026 0 13 13 0 0 0.46146882213908763 56928.755249414244 9.791314531014686e-17 1.3659022095471722 1.7912271665920798e-10 0.0009549528915421823 0.08752095588351949 2.5425233561001046e-18 0.06509047317997763 1.1679840430295352e-05 218.7288823040085 21 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1297465 0 14 16 0 0 0.46059308163981266 56939.72891508752 7.640175833547053e-17 1.6389196563578294 1.8969642523458674e-10 0.0003164457005238597 0.02131558947803569 7.627535492442823e-19 0.01674796202082791 2.0874211956734e-06 1015.8474648610297 25 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1298281 0 15 14 0 0 0.46099794164436936 56930.90048428162 9.528708546578821e-17 1.2359098888338624 1.3300180956576924e-09 0.0008840279607849055 0.16094464914203854 2.035718792064539e-18 0.04228435195243101 1.0443778115598601e-05 221.1107836009541 24 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1298893 0 4 5 0 0 0.4624437672854213 56942.20448009856 1.0742830724114233e-16 1.3084234301342248 2.347117837864232e-07 0.0016588423376438788 0.5632627838640474 5.534361270876331e-18 0.1139075515808797 3.8842424607249404e-05 99.4083076834507 4 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1299643 0 17 16 17 0 0.10922785904663636 56937.11229549284 6.634600249444508e-17 1.604600512557942 6.47619087706941e-06 0.0023332668257220954 0.08684818454275955 1.2278530355387427e-18 0.02922230739246017 0.05348742463660869 96.07711741363241 45 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1299775 0 6 9 0 0 0.45966422367982956 56940.717513408614 2.3591158627398974e-16 1.3114126841221552 9.032719017199042e-12 0.0015505117837356919 0.04554534400085686 1.4277313932815333e-17 0.08333818402594768 5.596428057580427e-05 179.98425410320908 10 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1299785 0 16 17 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.461192
+    t0 = +56935.861648
+    x0 = +0.000000
+    x1 = -0.186117
+     c = +0.930008
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1300516 0 17 18 0 0 0.4595798937449646 56950.64814077288 7.65602070855437e-17 1.608869024850338 3.870592735211176e-11 0.0017549922494448367 0.13415168780556996 1.7793803256541116e-18 0.048484062993028196 2.0330609816404666e-05 89.27257631132491 30 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1300912 0 15 17 0 0 0.46311207424268686 56946.75452030772 4.97750586902893e-17 1.4017539864156336 2.352144035100423e-10 0.00046558468570995215 0.010825997487700079 6.042321007969451e-19 0.021108234132402467 5.014928909641281e-06 207.98219671509037 27 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1301933 0 16 15 0 0 0.4622208412630074 56953.563655374164 7.504819130032064e-17 1.3304064024650188 2.4840879353504874e-10 0.00036055079516267297 0.02578044659094303 5.712430836326126e-19 0.01216641024938399 1.2399929506801133e-06 1314.5337129081706 26 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1302058 0 14 16 0 0 0.46323273546580845 56960.45412872401 2.4392641138434336e-16 1.4327342711158348 1.2543366345596496e-10 0.00024355292922101368 0.07198690567020094 5.106087840562452e-18 0.0319013050704419 5.578922448956636e-06 1370.3633537308979 25 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1302141 0 0 22 24 0 0.3981658026929497 57277.12094172755 2.214476142452515e-17 1.4482305447113228 0.15525724805598712 0.005403856794575251 0.07736401767397183 6.527122520375934e-19 0.022115052993784485 0.03174638371436164 51.1385128053649 41 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1302187 0 9 15 0 0 0.46313028001289813 56952.86717410497 1.192211779270296e-16 1.263589711406907 1.5709962220000762e-09 0.0007107962267995926 0.13383476032322505 5.1797133139584706e-18 0.06110942959067838 5.0613360903423166e-05 86.48339825931632 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1302523 0 15 13 15 0 0.17522601748600225 57284.600444202195 4.5154773737801044e-17 1.5034219134470426 1.856568154767757e-06 0.007994473994317547 0.035578103095758706 4.77093290567605e-19 0.010952226752965939 0.00016915845260248585 68.22651922770298 38 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1302648 0 13 15 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.471889
+    t0 = +56937.858455
+    x0 = +0.000000
+    x1 = -2.003413
+     c = +0.801841
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1303004 0 18 18 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.471204
+    t0 = +56961.285861
+    x0 = +0.000000
+    x1 = -0.033178
+     c = +0.737219
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1303279 0 8 9 0 0 0.46352999580023296 56965.7786492556 3.0487203796541796e-16 1.4239852869837797 3.9673019314179214e-09 0.0005417403777543128 0.22635925786744338 1.3288182696938697e-17 0.0988697594417977 1.9902394721715844e-05 573.9628278057485 12 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1303496 0 10 9 0 0 0.46212113418471185 56970.02882857996 1.6098534240413568e-16 1.6614604251455685 5.652485146612207e-10 0.000547474109587609 0.3078723434700805 5.0294118561655304e-18 0.06145095302650512 1.0486367981482614e-05 617.0921907424727 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1303883 0 17 18 0 0 0.4637873958700807 57287.40811960155 1.2188905175755936e-16 1.6117003616797536 4.577089857127348e-08 0.0003214719316078085 0.15166201660395018 2.8784089530505256e-18 0.05354957056065114 8.82950776154301e-06 298.56560454115396 30 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1303952 0 0 21 21 0 0.400987474959538 57284.45179558282 2.5554224366636775e-17 1.202660784577631 1.2381139701811428e-06 0.002893450766530914 0.12771751216132543 9.181910893678843e-19 0.04138183302686911 0.00011148972694360881 40.674656736367524 37 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1304127 0 0 0 21 0 0.3653815055523536 57279.414279517216 1.422212533796221e-17 2.0077568201022964 0.31591261656258823 0.005632653463942705 0.11811810322615202 5.6726326097972275e-19 0.052303663616186866 0.05628628524839621 20.209514967206495 16 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1304442 0 2 2 0 0 0.45500850785611857 56990.287179131046 2.0484084694847457e-16 1.0561243067776012 0.5500109222828774 0.024830337140651776 7.235949598521984 1.517489911006177e-17 0.053297838335442174 0.026027795153429012 1681.8025938211522 -1 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1304678 0 10 13 0 0 0.46117117289607845 56964.923152760064 1.0767054299340772e-16 1.3585223884599473 1.7065523105763702e-08 0.002468613334990627 0.19870980397899984 8.041661332038827e-18 0.09890812942544201 0.0001031306913069352 39.62362211623102 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1305504 0 0 14 16 0 0.3984512083591867 56971.59038920127 2.2079740746673025e-17 1.513075884874258 8.367424531030565e-09 0.001016956272489461 0.11196939538422157 2.2378767068596575e-19 0.019889524005943123 1.137773171716594e-05 67.51612377860599 25 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1305626 0 15 13 0 0 0.4627047222480819 56976.59064337227 7.169680527912328e-17 1.4871861385980847 5.887171861118645e-10 0.0002471961066696504 0.09147687885342748 6.367021651034349e-19 0.020517751625998032 1.2451384491241058e-06 1346.8183611950249 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306029 0 19 19 20 0 0.12602307217168507 57275.403471095044 4.4300263747505654e-17 1.7088141108705344 0.17143938963258626 0.001785386471567979 0.05538820916626719 8.548575428495861e-19 0.0238197601131512 0.02490429777373032 69.17569477905748 53 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306073 0 15 13 0 0 0.4632080920400451 56973.78685423651 5.468483075304974e-17 1.3915161601099666 3.129244208754933e-07 0.000590132421183498 0.20128729376301635 1.0817407960764841e-18 0.03415329222082692 7.480010674271176e-06 151.8176770091026 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306141 0 15 17 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.473155
+    t0 = +56977.962991
+    x0 = +0.000000
+    x1 = -0.065665
+     c = +0.783678
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1306360 0 0 19 21 0 0.3981663813784805 57277.01969032572 2.5365747670439757e-17 1.4372658915176422 5.7225858385301365e-08 0.005263117607481577 0.4302701548294863 1.3045833170918607e-18 0.09179990116089552 0.00024495162232349155 18.27200380162087 35 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306390 0 17 17 17 0 0.17012667617665492 57276.61055466467 4.257952285571546e-17 1.409761369885013 0.4958704214577133 0.006685329045729188 0.3990542814935907 1.5931546316232751e-18 0.0397191362110691 0.03633008830522785 15.99233091565106 46 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306537 0 0 19 20 0 0.4011591464317131 57284.981336612625 3.0556623761800455e-17 1.656626402867332 6.642944055945676e-08 0.0021491434837274948 0.04705882037887932 7.453079425876752e-19 0.047604124966134004 5.052862207960418e-05 51.612901757371134 34 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306626 0 18 18 20 0 0.12113525007517897 57280.00946391944 5.589907898405216e-17 1.5440967018982557 0.007220517409375626 0.0014643284691359254 0.07542122497034143 9.502092945818501e-19 0.020088241286009716 0.02167106293980639 68.9380321511195 51 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306785 0 0 11 12 0 0.3945620518889181 57278.57068128204 2.024917590079286e-17 1.630028166444543 3.779358083044748e-06 0.024112572697542772 0.6643972067213326 9.928692282128125e-19 0.09591204537647803 0.0051035631620006405 10.116677428843827 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306980 0 0 22 24 0 0.3801256065233737 57278.374273931106 2.5071428639776834e-17 1.2397646798493276 0.2588345615006663 0.003185465732004289 0.09679639220848912 1.128255845953131e-18 0.03726815165488002 0.056863702723745 25.264256775220634 41 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306991 0 18 17 20 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.474418
+    t0 = +57281.592728
+    x0 = +0.000000
+    x1 = -0.514249
+     c = +0.948320
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1307277 0 18 18 19 0 0.30044446578714834 57281.052656498716 3.2461456505564603e-17 1.495510329845599 8.040624266791863e-06 0.006412721708723118 0.22209981656124 1.2121526867289542e-18 0.07899792478337467 0.0017069518464803979 24.86597937968669 50 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1307830 0 15 16 15 0 0.16966763661397685 57283.49664820885 4.7350697777313906e-17 1.2486862223641704 2.1766025747327333e-06 0.003994920358184842 0.04240886104889796 6.219645432645957e-19 0.016805705366767627 0.0007797262000335814 100.23447801121468 41 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1308314 0 18 19 19 0 0.16799167483537708 56974.08493555122 4.528972977093129e-17 1.5106412476330464 5.723081625275128e-08 0.0034482815236693276 0.022956656419410137 7.245241222913105e-19 0.026813241863927136 6.824925317694408e-05 101.96181414192623 51 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1308326 0 16 16 0 0 0.46258428317113964 56977.552728061426 7.711476763462835e-17 1.49867969782886 3.5464448600031062e-09 0.0006515830965594105 0.15562169454642572 1.589101715757137e-18 0.04340676597880747 7.820909445455104e-06 271.00120998866464 27 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1308568 0 0 19 21 0 0.4308633291894672 57286.492169709425 1.8697819512088315e-17 1.9110042840889834 0.1371245975136336 0.0016086603224343687 0.03986140639608493 5.737597529198355e-19 0.04289414647636617 0.031739220874200946 37.14837439376569 35 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1308582 0 14 15 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.476380
+    t0 = +57292.306442
+    x0 = +0.000000
+    x1 = -4.530907
+     c = +0.955791
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1308884 10 13 0 0 0 0.33133449326393355 57296.675037351924 8.79616075668437e-16 1.4418683047349545 1.796435111778294e-09 0.0016451495819128081 0.021395069892605534 1.1623913217812144e-17 0.01659640722407464 2.8060328112755606e-06 7586.953386052242 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1308957 0 0 19 18 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.598577
+    t0 = +57259.594575
+    x0 = +0.000000
+    x1 = -0.052838
+     c = +0.900348
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1309288 0 6 13 0 0 0.5257616600217501 56990.93927231017 1.1012143564140199e-16 1.4884805337693476 2.489772104596888e-07 0.015201272239668606 0.18089227163727628 7.976113199574569e-18 0.11327352520506075 0.0002685973411316045 20.699829126258884 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1309492 0 15 15 0 0 0.4635184252420097 56993.52068855639 7.956540872426968e-17 1.4791666617552521 1.4694662153758031e-10 0.00010791506797866446 0.023532721435913118 6.378953383679158e-19 0.012201482335852314 1.168007255830661e-06 1539.0828033039093 25 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1309749 0 0 0 19 0 0.5537319670712733 56982.35647872352 1.6669143263828535e-17 1.5567439643611052 0.5230455985921493 0.005083310906079552 0.06496245260132127 2.4017027794670375e-19 0.012716640881798259 0.014457305345136229 9.005008543368154 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1310338 0 17 9 19 0 0.12016255856608508 56973.26872137085 5.501020950504697e-17 1.5250373951009815 0.1634103293708266 0.0003844073216694374 0.10669611265620915 8.23386702194376e-19 0.018594979928486247 0.018342448520789728 44.09338475461608 40 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1310395 0 18 17 0 0 0.4627737209978722 56981.70387301705 6.54410496216965e-17 1.444896946284017 3.4217073618947325e-13 0.0004585906802107853 0.02103518126750714 1.232556771503203e-18 0.04787371971762652 8.914741465193554e-06 135.5132014614077 30 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1312274 0 16 16 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.479734
+    t0 = +56983.717151
+    x0 = +0.000000
+    x1 = -0.884961
+     c = +0.855305
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1313594 0 12 14 0 0 0.46252794213146625 57003.304571419125 1.0083696735500391e-16 1.5535081168798948 4.948831899831418e-10 0.00047421006223385964 0.03482504389467067 2.051585164196564e-18 0.04169459412121882 6.762163188928083e-06 464.34972491963254 21 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1314897 0 11 14 0 0 0.4677508022189044 57302.239888548385 7.915292112069097e-17 1.5213435679635832 1.8416701497159238e-10 0.0006926186163831172 0.04213569188505062 2.765250676087923e-18 0.051150895810577766 3.345327947004706e-05 34.522757914576495 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1315192 0 7 12 0 0 0.45525976063598356 57011.53861150509 1.2404933037629603e-16 1.6765588523776702 1.993027964886096e-11 0.003374027412717584 0.04344732030222076 3.1646394027191585e-18 0.039161132951499006 1.4866647518430032e-05 389.15462112784775 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1315259 0 10 11 0 0 0.46216092350032767 57005.51150758414 1.1134478721133077e-16 1.3492871903966097 2.512486654837609e-07 0.0006417666850315473 0.10035074632105534 2.5806672811126855e-18 0.0466308327108125 9.485416591292761e-06 373.57217493708197 16 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1315296 0 14 13 14 0 0.2521963465996189 57001.31303220454 2.885485816512801e-17 1.7308687032984278 1.1910405954829173e-06 0.00914776541444981 0.08708651912093046 7.578434580263236e-19 0.0534541314849792 0.00011809032527082541 28.307551328542424 36 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1316385 8 3 8 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.477049
+    t0 = +57027.521557
+    x0 = +0.000000
+    x1 = -1.122338
+     c = +0.984041
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1316431 0 10 10 0 0 0.46253209889813285 57019.31839259669 1.9035609982630748e-16 1.5205075701301465 2.2482365968912177e-09 0.0001942311202325353 0.027685263095918344 2.582370528602539e-18 0.02604666452491954 2.0285999862978965e-06 3520.140027178395 15 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1316437 0 0 13 11 0 0.40114987313986844 57007.78303994623 2.115256832206649e-17 1.4281260788582004 1.2819869293911879e-07 0.0023903321636965513 0.03701448091305792 6.90418368453353e-19 0.06813094246803353 6.250534768814653e-05 50.43318580923125 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1316465 0 11 10 0 0 0.4624749111043881 57023.26796113013 6.832212874097961e-17 1.6998795824522823 4.876099524153688e-13 0.00016000098191298884 0.013021060840401333 4.706805352206201e-19 0.013294847757857236 8.557507752415816e-07 1816.5885314032066 16 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1317164 0 5 6 0 0 0.16690219780339452 57299.730317547255 2.411883404239608e-16 0.8538895832506902 6.832722428962157e-07 0.018095257156009778 0.42925563680182677 1.4822664506107934e-17 0.02769868108518576 0.001338911618693206 9.138338542402312 6 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1317277 0 12 13 0 0 0.4624562299967971 57008.80252141095 1.0464410931453897e-16 1.2393941196486884 4.5983320151599116e-08 0.0006324492876824683 0.15333269413167727 3.726846541336497e-18 0.07133866098371916 2.0493825313966374e-05 138.24723648301148 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1317286 0 14 13 0 0 0.4633545796997764 57015.88777644891 1.1612425506603843e-16 1.5614398481841079 6.588340983881835e-11 0.00019896446642991839 0.09033653966980637 1.6810600094361184e-18 0.03264713109416184 3.3921731167618763e-06 937.2435719516151 22 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1317454 0 0 10 10 0 0.5714362857045591 57013.462192035615 2.000338954786324e-17 1.5200736147000506 2.2418695566628344e-08 0.0034279771444383766 0.3089634672469401 4.960179342681488e-19 0.05470217553264735 6.519401512608547e-05 23.86963216003393 15 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1317666 10 12 12 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.480022
+    t0 = +57326.954607
+    x0 = +0.000000
+    x1 = -0.059744
+     c = +0.999947
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1319366 0 17 17 0 0 0.46260261494173316 57306.649520023966 1.48887260210609e-16 1.6628452848834425 9.994799432533341e-11 0.0005687555135367173 0.09402513285021996 3.3430185585341248e-18 0.05440620408946694 7.618854532626118e-06 662.2090094802167 29 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1319821 0 10 13 0 0 0.45853745732062956 57023.30366537333 6.299241960276405e-17 1.7487249056471807 1.169258578848087e-10 0.001263588967121948 0.16197289021511097 1.2995146509530842e-18 0.042348515155488944 8.245325338246401e-06 243.73272307259015 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1320166 0 0 10 9 0 0.3895321689897642 57018.45346919702 2.7140667141638233e-17 1.4371930226856882 9.473636097823146e-09 0.003539597045197157 0.14171158639510395 6.850530099664829e-19 0.0481261086858662 0.00023183740026166966 23.668494498004996 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1322229 0 0 7 7 0 0.3134869819005882 57028.94706488667 3.882400774508018e-17 1.4744249274908448 0.619923802660826 0.002311329121323147 0.026963692802382866 7.627931094032219e-19 0.017861552091667204 0.023654501391687233 5.427463550230538 9 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1322979 0 0 9 10 0 0.3990608995335657 57035.340591729895 2.2640558116356634e-17 1.4229619538084297 1.285874996093117e-06 0.001649589194211959 0.022095752698078286 2.0951132660029917e-19 0.02193509615832119 1.8549088804137304e-05 73.46921564148926 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1324542 0 0 9 10 0 0.39775756425916164 57040.22490275183 1.9337105506167652e-17 1.48215171806676 1.733339360932007e-09 0.004731965869574778 0.315261767780612 5.569060096825975e-19 0.06366270573188494 0.00011936342584836779 16.06806599686341 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1325358 0 0 0 7 0 0.3809119245521392 57039.85500860484 1.8609773500236033e-17 1.5786921754378853 0.5481134230305521 0.015828719958327936 0.19891994248246192 7.500837926393436e-19 0.01671519876074724 0.04933041847597766 6.936309703106582 2 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1327978 0 10 13 0 0 0.463929589749143 57306.89737036455 1.6831293681790787e-16 1.1748482410691874 2.5803152503556248e-08 0.001836186778845339 0.11038291801378364 1.674249090441878e-17 0.15802190034149488 0.00017760887623594068 29.491867920939306 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1328066 0 0 20 22 0 0.39809887096694146 57296.98054069591 2.948931353514287e-17 1.8389885893554336 1.4203421627723145e-06 0.0017619222248307642 0.36429181899802643 9.602416881086679e-19 0.0612492596189621 6.943133517975375e-05 40.59891257276057 37 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1328105 0 21 21 23 0 0.054896263371007635 57296.48180412869 8.082160754808098e-17 1.5789280942971198 0.6289210515129355 0.003761525381531655 0.21336253622575896 2.1039215851172804e-18 0.02435592707234001 0.03100792684987247 62.922876076495406 60 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1329166 0 0 0 17 0 0.6744288953855677 57306.3113858898 1.6225586883441333e-17 1.7038863425108755 0.5557946447615455 0.005266220221033346 0.10588705195550574 2.9825346036558106e-19 0.018949527083948564 0.014333340077521683 13.593307433605464 12 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1329196 0 0 0 20 0 0.540369801950024 57305.8825184296 1.5183901743486842e-17 1.701353699756762 0.6057292099235847 0.006491947408122922 0.09134709685895359 2.1774776219381523e-19 0.012537053333088445 0.012963498993276978 11.50459098282866 15 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1329312 0 15 16 0 0 0.4648813933494603 57311.78287551295 5.177002722777254e-17 1.2981624342629714 1.606071009518928e-08 0.0020638490713028035 0.1386543566841283 1.9229470267813965e-18 0.06436539920828672 3.476369949706459e-05 40.75288731037419 26 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1329615 0 17 17 16 0 0.18510073600295976 57301.04360075251 4.1868888551384447e-17 1.4992473149506287 0.016560544868017668 0.003597113691614459 0.16232206976565067 9.593662233868739e-19 0.022576523487408233 0.026338096891851098 31.934550110376314 45 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1330031 13 13 13 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.528329
+    t0 = +57310.637120
+    x0 = +0.000000
+    x1 = -2.569360
+     c = +0.315672
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1330426 0 16 17 0 0 0.4620624305661365 57316.95402361142 1.3109960457066324e-16 1.7863331829931945 1.4868905551246314e-09 0.00026262177270794385 0.03135752248999779 1.3607626607290936e-18 0.027007411924739922 1.5515167144097841e-06 2208.88373309735 28 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1330642 0 0 17 17 0 0.4009475018581888 57313.299749444646 2.1086494514176034e-17 1.6126824789249363 7.492834969147211e-07 0.0017117061901873454 0.06741954276731121 2.5798744554325137e-19 0.02344143210721213 2.575801607465622e-05 57.50885533814629 29 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1330903 0 0 20 21 0 0.3996977116757763 57303.02716969563 1.8574977207158407e-17 1.5055541931427503 1.4633295883914599e-06 0.0022276707702229004 0.23962852818294778 5.861412771727233e-19 0.06888337767297331 9.453555915023282e-05 46.85204588754324 36 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1331123 0 17 17 0 0 0.46151317049413565 57319.24915193477 9.946134340898904e-17 1.3746675734230454 1.1487861328873805e-08 0.0005118489462937192 0.13836110077318153 2.0594726000681664e-18 0.04001780338195155 5.714178653137836e-06 443.6069266521264 29 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1331993 0 0 16 14 0 0.39812496532337005 57322.51919667623 1.2587025229603428e-17 1.5235313274108002 1.881661632952003e-06 0.00438496032225652 0.015691953823989024 1.927653325502069e-19 0.021299538129161032 0.00024394082119572058 31.0102576944444 25 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1332059 0 0 18 19 0 0.3978064676860963 57321.01605334084 2.0380736256026143e-17 1.5073956581609473 6.993672658661687e-06 0.00575663304770363 0.12480678079009522 5.554129649520659e-19 0.038968223682666295 0.0006178787277166253 37.817127673254504 32 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1332413 0 0 17 17 0 0.4022164713985216 57321.983977209056 2.0384591398312546e-17 1.686126511774411 2.694943419534468e-07 0.006071930794852104 0.07356031091330806 4.592755525331223e-19 0.04100814227660278 0.00020791432918951247 47.713091280578794 29 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1333246 0 16 14 16 0 0.24188446609155748 57322.29244676611 3.121519927873416e-17 1.7563910066124324 2.3232000138817543e-05 0.02033511042162156 0.053484368123463355 9.265524600120901e-19 0.02953805314882504 0.0010227933401585343 16.059350813148434 41 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1333438 0 15 16 9 0 0.45551864080359594 57327.239611151075 3.5758598058574134e-17 1.5902168999596675 1.594035375918068e-08 0.003686545327771268 0.028438395620469237 1.1146598593153622e-18 0.050929586472061555 2.5166382425056977e-05 38.42818171411513 35 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334084 6 8 11 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.455000
+    t0 = +57347.320158
+    x0 = +0.000000
+    x1 = -0.284076
+     c = +0.550000
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1334087 0 4 3 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.474090
+    t0 = +57362.810879
+    x0 = +0.000000
+    x1 = -0.442502
+     c = +0.611651
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1334302 0 0 17 19 0 0.39889218305522167 57329.624125717644 2.6860774556447363e-17 1.3807653558649244 3.932248432425567e-07 0.00487233624365821 0.20612901959975716 9.985799776631274e-19 0.06756218211019781 0.00016193259853594655 17.41729542665209 31 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334423 0 14 14 14 0 0.06074909432954727 57331.15487643684 8.175906595341291e-17 1.7092774036325333 0.6022824314616834 0.004946689091587773 0.06369786376308184 1.8443884230344906e-18 0.02933676468138416 0.03084183616792957 31.087842224488817 37 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334448 0 0 16 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "No data points with S/N > 5.0. Initial guessing failed."
+1334470 0 0 15 15 0 0.4005182288238317 57330.75516137073 2.3744649230605658e-17 1.5724106864237153 8.378917987772461e-07 0.0036412201009082823 0.11552958200263674 6.348661496217084e-19 0.04918924112572591 0.00016032476598396017 21.011397458343474 25 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334597 0 12 12 0 0 0.46074705279850453 57344.25581137144 9.523664320232203e-17 1.6685147358682104 8.912937055072234e-11 0.00016702306977550707 0.00727038786499179 7.659618141868427e-19 0.015571279890981535 1.0715603520061734e-06 2221.8347905511846 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334620 0 15 14 0 0 0.45987722380843066 57336.805463772485 1.1013941258600284e-16 1.5036202282378828 4.0565889536381405e-10 0.001247491544310586 0.07968031649215845 3.9407574785492656e-18 0.06719397767539949 2.1806018272618743e-05 141.18577475019453 24 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334644 0 15 13 0 0 0.46355360666483336 57333.14051687405 8.5269641874137e-17 1.106377331092977 2.6271077313566593e-08 0.0007766753842226581 0.0619589475390967 2.6507926258483287e-18 0.04627635951458394 1.949805591910936e-05 99.37531873427281 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334645 0 12 14 0 0 0.4613287145737768 57336.02342660679 1.276901671571963e-16 1.3291256580206747 2.5777251444480953e-09 0.0005329621892989911 0.017743597258231603 2.524004508691012e-18 0.039779227007137936 6.285204151856849e-06 503.83960873445835 21 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334707 0 0 15 16 0 0.39975171940048776 57335.983390627785 1.8919206685659694e-17 1.4263096843758714 1.0383421406023885e-07 0.002002749270043541 0.022978106051596114 2.2854066088474354e-19 0.0213811199555099 2.2535990772121206e-05 58.60016555198837 26 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334879 0 0 16 17 0 0.4036715139880716 57332.50642045067 1.3256249839377238e-17 1.548266920879133 4.796215409497151e-05 0.0016051163873880836 0.014365959832502995 1.278829699881761e-19 0.014792634107475987 0.04886088929786864 71.41551929676422 28 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1335472 0 0 14 15 0 0.4027381787865367 57341.527708130496 2.4425496484548636e-17 1.6028338220907683 6.547528253131318e-06 0.005205647294548116 0.09130862642996362 5.912755844188643e-19 0.05146446991537864 0.0004143553886278295 17.589541166144386 24 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1335564 0 0 15 14 0 0.39641722218364867 57340.75389038506 1.8248995776192415e-17 1.4584137067855085 7.462015480519391e-07 0.005386794154104063 0.1158112108023488 5.897011774199456e-19 0.0527012208146132 0.00023017989571871844 27.149473530673184 24 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1335694 0 11 8 0 0 0.4599939386226114 57348.28373917811 1.1971362805191876e-16 1.545996662269941 1.633824742164336e-10 0.00038426765250651473 0.054487099885591306 1.806422434229173e-18 0.023769113467439394 2.7518319019592674e-06 1309.253471459923 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1335717 0 13 12 0 0 0.46088049473767123 57347.48066310413 5.707997579983449e-17 1.4957866256113466 3.1770863717639486e-10 0.0003127623203108554 0.05529222614131868 4.717460154584201e-19 0.014332105191480052 1.2720957738854288e-06 898.3896662319055 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1335718 0 0 14 15 0 0.400246201558809 57346.60282916198 1.4276664055232003e-17 1.5788084734317829 9.231822604705009e-07 0.0015674893404741541 0.032137449612491764 1.4437244106632973e-19 0.017520308052466325 1.7548104306847057e-05 62.794016358048935 24 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1335868 0 0 17 16 0 0.4060760546847127 57344.182703024555 2.020385533942606e-17 1.7258366833274412 0.1719898129906295 0.0020233364758676653 0.051459090780554106 4.363412331044404e-19 0.026716889099804075 0.02196537211763258 30.865499661905606 28 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1336008 0 13 11 13 0 0.17093887351601852 57343.76109062315 5.692362836017759e-17 1.575955978430568 1.2576661478913564e-06 0.003300911109948443 0.11706654502268066 1.1067241678135188e-18 0.0326780982026367 0.0001296857148030961 56.49175263977933 32 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1336009 0 13 12 0 0 0.4642913817428387 57345.078493323315 4.083983426402045e-17 1.4595273092567274 7.408558877486371e-08 0.0006351849166065793 0.12590526241547195 1.0168880739043028e-18 0.04580422372641135 1.6785857745615917e-05 44.74972609383769 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1336453 0 9 10 0 0 0.4594122210078631 57355.51104290533 1.7263152747256983e-16 1.7046021572601149 1.147290595859829e-10 0.000616588810445573 0.05719889460306149 3.432012316793348e-18 0.046012072541433684 4.645043941126081e-06 1676.0050357424204 14 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1336480 0 7 10 0 0 0.4619147344544849 57351.397032712724 8.412635376089542e-17 1.5363926537845087 1.4652528634861994e-09 0.0006108953884367829 0.14210224401540472 2.5876640807388717e-18 0.056045837475810406 1.4237345107276367e-05 131.9716619263961 12 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1336687 0 12 11 0 0 0.46121330545527855 57353.05978962797 1.027505049112434e-16 1.6051234504501921 8.012777663601867e-10 0.0004464752346926837 0.06542460358832614 1.6565257187415195e-18 0.03302699838308958 4.110117384714673e-06 682.1081591013838 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337117 0 0 11 12 0 0.39835261515208487 57358.750551520796 3.0026800474021274e-17 1.60148592603023 1.6729350205135773e-07 0.0037289589989857597 0.18196949463163037 6.85110093269784e-19 0.04041178960866674 8.490440824679424e-05 29.019742594624446 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337221 0 0 14 14 0 0.3980655505674216 57354.93441191359 1.8765513880112932e-17 1.3238424084758529 4.4305311178161055e-06 0.009357649621540204 0.057923475476854946 5.291145771919972e-19 0.04083369047419754 0.0009276561397126848 17.367943951191002 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337228 0 0 14 14 0 0.291306354916631 57354.10366574489 3.0444462829917555e-17 1.4694838428523636 0.9506653523982277 0.002648883997741963 0.03577611876971787 1.2285986955253138e-18 0.04094005720530606 0.04907133281112652 12.408660713210468 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337272 0 0 12 12 0 0.39760343714320356 57354.14029964041 2.213867036265751e-17 1.3330974120819639 7.328664938799356e-07 0.0022555550043596717 0.09512095781610697 6.7989881644263e-19 0.058336690251227306 7.27268169090356e-05 28.127223876948133 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337325 0 0 12 12 0 0.39994217607454896 57354.10553376153 1.7978569308580984e-17 1.311129786342097 1.5946499343222342e-08 0.0022805579144806742 0.11190252280721324 5.122710584204349e-19 0.052271266730514895 9.278862065154048e-05 27.43922934909644 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337649 0 9 9 0 0 0.4613127832551429 57365.574964617655 1.0190014611352313e-16 1.6613170285874799 1.8511629451545275e-09 0.0007485129838104565 0.07365162231508293 1.6990301096738211e-18 0.042210337860316124 5.3218946191591066e-06 509.225284325153 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337655 0 0 0 10 0 0.4760946251021534 57358.248755814675 1.5183658680271495e-17 1.4984045019212964 0.5023174902954044 0.0010280613958353335 0.03404787477120408 2.685022765832277e-19 0.01926677923186128 0.02426024816965458 7.135774060459648 5 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337687 0 12 12 0 0 0.4614460012967123 57362.80690059372 8.518503933810322e-17 1.6332031873659563 1.3130990739185222e-10 0.0005730106690340353 0.12161794856001507 1.3305225771850681e-18 0.03537613976649869 3.900216901442377e-06 593.6950945656997 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337703 0 0 15 14 0 0.3924485062113471 57356.90282395541 2.5868952355461484e-17 1.5196369830836218 2.36722244806864e-05 0.0156363813142448 0.2998896582357702 9.459737514708322e-19 0.06403145324528617 0.009167030003396859 16.940799851292752 24 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337838 0 11 10 0 0 0.46290904678519224 57365.18563614457 8.35318162732913e-17 1.6190303058721467 1.6807666369800245e-11 0.00028318501907093063 0.04218376577409799 1.2400559927401471e-18 0.0353615277118378 4.136370553464719e-06 514.3098385128967 16 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1338128 0 11 11 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.475392
+    t0 = +57370.518002
+    x0 = +0.000000
+    x1 = -4.898219
+     c = +0.931577
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1338170 0 11 11 11 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.463557
+    t0 = +57355.379112
+    x0 = +0.000000
+    x1 = -0.021484
+     c = +0.955911
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1338233 0 0 13 13 0 0.3956599032756273 57354.00188129587 1.3905528782393518e-17 1.2577319652855128 5.958999425403899e-06 0.005551073796255468 0.19334506347149727 6.714560773604742e-19 0.08426535289861228 0.0005004817401845496 7.785483417487596 21 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1338266 0 0 19 21 0 0.48876745397396637 57364.11271989681 1.2744264739762233e-17 1.4076390436904793 1.6023673679588235e-06 0.004013105563879432 0.20524392023435212 3.8450031139521614e-19 0.061817813125206525 9.09163463566065e-05 37.545590719987985 35 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1338278 0 0 10 10 0 0.40037416531642894 57363.9699501183 2.2006625665798333e-17 1.5340384771598838 3.079497218339e-08 0.006071483914799725 0.28356139939205605 7.784827167122569e-19 0.0793579132307358 0.0001817801260700913 12.872545640841198 15 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1338387 0 0 10 10 0 0.2534847246999336 57359.94946602054 4.1326850206959364e-17 1.6946774804813882 0.7759252674661788 0.002534826573338256 0.07758583747636294 1.0149371252205418e-18 0.03335116620498915 0.037388593203455944 24.94494988345344 15 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1338430 0 0 9 9 0 0.3988796353594516 57359.80625298788 2.794112796394559e-17 1.5078136450059372 2.566646449153609e-06 0.006473258556111139 0.20737462938996032 8.363916357619792e-19 0.06625293926486898 0.00034810071877505733 9.429937924323617 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1338471 0 0 11 12 0 0.3952559538632341 57348.87300699986 1.3743063167993168e-17 1.5383970668046794 1.978882561115558e-05 0.004090148757218359 0.43810544878579094 5.35490249044579e-19 0.06715423445582697 0.0005014300228954605 8.512169974975105 18 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1338675 0 8 9 0 0 0.46218946720931625 57372.53660633377 5.491244434423184e-17 1.6008572592303165 6.8220613602676394e-09 0.0003112407381863913 0.04777217488663155 6.428148715319688e-19 0.028336569470495898 3.0343413189859447e-06 366.18981240438944 12 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1339002 0 9 9 0 0 0.46163934050688743 57371.63667872468 6.017728484721208e-17 1.4250319778630933 5.174734529767022e-10 0.0007761716240853034 0.1515740619470307 2.5264258933161517e-18 0.06603370128460778 6.207016692011402e-05 25.74944504303977 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1339149 0 0 9 9 0 0.39765402689666424 57371.01502569989 2.803931747976463e-17 1.4574263427213527 3.091675687683093e-07 0.0032148767431352254 0.10234424133523135 8.512544885727619e-19 0.05236382448248808 8.603668076073712e-05 25.02125553212772 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1339392 0 6 7 0 0 0.4435502453798238 57378.85573792816 6.887152073861948e-16 0.3018245996688485 0.5323135831146172 0.02328416995640606 0.022830500991403824 7.783630212714754e-17 0.016742539024176804 0.0674663861968112 123.47989841314691 8 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1339450 0 0 13 13 0 0.399156460529208 57366.36057177089 1.617996476505606e-17 1.3370837371685458 1.4692527150472756e-06 0.005272016562733073 0.3446458578837337 7.280899768547967e-19 0.07666657630795624 0.00032483777482472664 23.560809710583698 21 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1340454 0 11 11 10 0 0.2650226308891433 57371.96768151387 3.99455946973746e-17 1.8307529276789716 1.5417688975505328e-06 0.004977897884447108 0.040899509185692295 6.502340648933546e-19 0.044470380170913766 0.0015847017958958987 23.82745663562565 27 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1341370 0 8 8 8 0 0.17048459857939613 57372.17611680952 4.529727759850342e-17 1.6435014767520366 3.867444411054244e-06 0.004429997377867395 0.0167406866348756 8.182356239465789e-19 0.02909683725582761 0.00014464917984316483 41.745638923662966 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1341894 0 7 7 0 0 0.46282657183435444 57391.72997710735 6.754985274635575e-17 1.5533258276465487 7.323940343084701e-10 0.0008465412461655664 0.10551657018004335 2.7209802015606036e-18 0.09070525477576233 2.95108980383485e-05 71.45237627542673 9 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1342255 0 6 6 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.455000
+    t0 = +57389.196088
+    x0 = +0.000000
+    x1 = -0.358055
+     c = +0.550000
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1343208 0 0 6 10 0 0.3960220802564671 57386.967129075405 2.4262255292881562e-17 1.2692836904950116 8.146325354840833e-07 0.009626830551749344 0.05576925177956582 4.744512173558234e-19 0.03228601715558221 0.0006405123540945412 5.680650872860037 11 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1343337 0 8 8 0 0 0.4646015936923552 57394.60561623141 5.113073205864043e-17 1.6165802917385697 7.059646983664791e-08 0.0007515271600889717 0.08938808308448642 1.7114586540651967e-18 0.09619697304828614 7.00235132395366e-05 12.27132906010263 11 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1343401 0 6 6 6 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.465772
+    t0 = +57390.165653
+    x0 = +0.000000
+    x1 = -0.753688
+     c = +0.872144
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1343533 0 8 8 8 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.471489
+    t0 = +57395.249491
+    x0 = +0.000000
+    x1 = -1.620683
+     c = +0.894912
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1343759 0 0 7 8 0 0.3988066809344334 57391.35705893966 2.7745007097835025e-17 1.3601339782859299 9.829102833314174e-07 0.0018583674781847692 0.057678192602907075 2.893844312566266e-19 0.024781341955755248 1.9934804915827664e-05 43.10774617568569 10 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1343871 0 0 7 7 0 0.4027297011916626 57387.63531129191 1.5802469498898504e-17 1.7882948431762458 6.566618579562089e-06 0.007679171077590974 0.311209047169541 4.912872779935753e-19 0.06051662721340346 0.0012378234797784382 6.449497688556864 9 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1344692 0 7 7 7 0 0.20051617772362976 57391.48642204969 4.1706657603533564e-17 1.1913109931373296 0.4926857369768644 0.006082615507911157 0.21535234854673035 1.8165798906192934e-18 0.08708121353423463 0.03575436725708639 5.922778557305536 16 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1345553 0 6 6 0 0 0.4640057128444767 57395.77564220524 7.853715234970166e-17 1.5752809633954483 4.43891079449088e-09 0.00044690058786420184 0.32924858132901136 2.83082447207335e-18 0.09931632358805179 2.3013917223702052e-05 123.3487845921252 7 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1345582 0 0 7 7 0 0.3998574842409748 57394.70892362927 2.976672439435875e-17 1.427744812926313 4.86168645341678e-08 0.00472232701649708 0.33190528558407095 1.1206899957276077e-18 0.10062633605192595 0.00016252754138096348 12.991869400584477 9 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1345594 0 5 6 6 0 0.09752354053311219 57404.77493879418 1.0783484705414004e-16 0.5533030778364196 0.15682202079610097 0.010526042334759282 0.14968303866044153 8.384202089785168e-18 0.024015228098158505 0.09048841936130861 287.87103052415983 12 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1346137 0 7 7 7 0 0.39094439364696654 57402.930257205495 5.107731571466159e-17 1.6747932124580585 3.0572191445088492e-09 0.002553190504160363 0.4866823038282746 1.766291071875318e-18 0.04547592409785581 1.8408245263640266e-05 69.89355652488959 16 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1346387 0 7 6 0 0 0.46556091747471495 57396.04835269014 4.094447608863752e-17 1.4726962995521162 3.023797323642441e-09 0.00026648889530608844 0.0926652825983183 3.971826554766056e-19 0.025265313836509536 2.322154514206032e-06 271.6471084183138 8 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1346956 0 5 5 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
+User function arguments:
+     z = +0.473389
+    t0 = +57412.904790
+    x0 = +0.000000
+    x1 = -0.055081
+     c = +0.754854
+Original python exception in user function:
+ValueError: Error code returned by bispev: 10
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/fitting.py"", line 46, in chisq
+    zp=data.zp, zpsys=data.zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1400, in bandflux
+    raise e
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1397, in bandflux
+    return _bandflux(self, band, time, zp, zpsys)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 154, in _bandflux
+    fsum = _bandflux_single(model, b, time_or_phase[mask])
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 116, in _bandflux_single
+    f = model._flux(time_or_phase, wave)
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/sncosmo/models.py"", line 1272, in _flux
+    f = a * self._source._flux(phase, restwave)
+  File ""/Users/daniel/Github/SDSS-Classification/analysis_pipeline/_sn91bg_model/_model.py"", line 135, in _flux
+    y = [self._model_flux[c1](phase / (st / 0.65), wave),
+  File ""/anaconda3/envs/sdss_classification_3.7/lib/python3.7/site-packages/scipy/interpolate/fitpack2.py"", line 848, in __call__
+    raise ValueError(""Error code returned by bispev: %s"" % ier)"
+1346966 0 7 7 0 0 0.46966958920391016 57407.8609956913 9.311493554807299e-17 1.482266802645706 9.282697943646667e-10 0.0016460057256843519 0.3396171512940782 2.3812262712234876e-18 0.031322516603390776 1.6729793320402475e-05 67.2414857138362 9 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."

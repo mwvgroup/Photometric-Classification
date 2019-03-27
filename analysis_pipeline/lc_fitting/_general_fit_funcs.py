@@ -94,7 +94,7 @@ def fit_lc(data, model, vparam_names, **kwargs):
 
         out_data.append(result.chisq)
         out_data.append(result.ndof)
-        out_data.append(result.message)
+        out_data.append(result.message.replace('\n', ' '))
 
     return out_data
 

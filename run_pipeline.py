@@ -22,6 +22,13 @@ for path in (csp_dir, des_dir, sdss_dir):
     if not os.path.exists(path):
         os.makedirs(path, exist_ok=True)
 
+tqdm.tqdm.write('Fitting SDSS for comparison with published values.')
+classes_to_skip = ['AGN', 'SLSN', 'SNII', 'Variable', 'pSNII', 'zSNII']
+lc_fitting.fit_sdss(sdss_dir, models=['salt_2_0'],
+                    num_params=[4],
+                    bands=['all'],
+                    skip_types=classes_to_skip)
+
 tqdm.tqdm.write('Fitting CSP')
 lc_fitting.fit_csp(csp_dir,
                    models=['salt_2_4', 'sn_91bg'],
@@ -35,14 +42,8 @@ lc_fitting.fit_des(des_dir,
                    bands=['all', 'blue', 'red'])
 
 tqdm.tqdm.write('Fitting SDSS')
-classes_to_skip = ['AGN', 'SLSN', 'SNII', 'Variable', 'pSNII', 'zSNII']
 lc_fitting.fit_sdss(sdss_dir,
                     models=['salt_2_4', 'sn_91bg'],
                     num_params=[4, 5],
                     bands=['all', 'blue', 'red'],
-                    skip_types=classes_to_skip)
-
-lc_fitting.fit_sdss(sdss_dir, models=['salt_2_0'],
-                    num_params=[4],
-                    bands=['all'],
                     skip_types=classes_to_skip)
