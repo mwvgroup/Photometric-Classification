@@ -68,7 +68,7 @@ def get_data_for_id(cid):
     """
 
     # Read in ascii data table for specified object
-    file_path = os.path.join(meta_data.smp_dir, f'SMP_{cid:06d}.dat')
+    file_path = os.path.join(meta_data.smp_dir, f'SMP_{int(cid):06d}.dat')
     all_data = Table.read(file_path, format='ascii')
 
     # Rename columns using header data from file
