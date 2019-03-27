@@ -37,14 +37,14 @@ def get_data_for_id(cid):
     No data cuts are applied to the returned data.
 
     Args:
-        cid (int): The ID of the desired object
+        cid (str): The ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
     """
 
     # Read in ascci data table for specified object
-    file_path = _path.join(meta_data.photometry_dir, f'des_{cid:08d}.dat')
+    file_path = _path.join(meta_data.photometry_dir, f'des_{int(cid):08d}.dat')
     all_data = Table.read(
         file_path, format='ascii',
         data_start=27, data_end=-1,

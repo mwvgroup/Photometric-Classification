@@ -28,7 +28,7 @@ def get_data_for_id(cid):
     No data cuts are applied to the returned data.
 
     Args:
-        cid (int): The Candidate ID of the desired object
+        cid (str): The Candidate ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
