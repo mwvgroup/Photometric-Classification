@@ -6,8 +6,6 @@
 import os
 
 from astropy.table import Table
-import pandas as _pd
-
 
 
 def get_fit_results(survey, model, params, out_dir='./'):

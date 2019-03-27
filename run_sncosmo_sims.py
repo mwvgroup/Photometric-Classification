@@ -1,9 +1,9 @@
 # !/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""
-This module generates light curves using SNcosmo and write simulation results
-to csv files
+"""This script simulates SN1991bg-like light curves using SNCosmo and writes
+simulation results to csv files. A summary of results is written to
+sncosmo_sims/sn91bg_dump.csv.
 """
 
 import os
@@ -47,7 +47,7 @@ def generate_lc(num, model):
     redshifts = redshifts[0:num]
 
     # randomly generate peakmjd
-    peakmjd = [uniform(tmin, tmax) for i in range(num)]
+    peakmjd = [uniform(tmin, tmax) for _ in range(num)]
 
     # randomly generate stretch and color in 2D normal distribution
     # (covariance matrix included)
