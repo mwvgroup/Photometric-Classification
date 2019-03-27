@@ -1,35 +1,35 @@
 # %ECSV 0.9
 # ---
 # datatype:
-# - {name: cid, datatype: object}
-# - {name: num_points_91bg_proj_csp_u, datatype: object}
-# - {name: num_points_91bg_proj_csp_g, datatype: object}
-# - {name: num_points_91bg_proj_csp_r, datatype: object}
-# - {name: num_points_91bg_proj_csp_i, datatype: object}
-# - {name: num_points_91bg_proj_csp_B, datatype: object}
-# - {name: num_points_91bg_proj_csp_V0, datatype: object}
-# - {name: num_points_91bg_proj_csp_V1, datatype: object}
-# - {name: num_points_91bg_proj_csp_V, datatype: object}
-# - {name: num_points_91bg_proj_csp_Y, datatype: object}
-# - {name: num_points_91bg_proj_csp_H, datatype: object}
-# - {name: num_points_91bg_proj_csp_J, datatype: object}
-# - {name: num_points_91bg_proj_csp_Jrc2, datatype: object}
-# - {name: num_points_91bg_proj_csp_Ydw, datatype: object}
-# - {name: num_points_91bg_proj_csp_Jdw, datatype: object}
-# - {name: num_points_91bg_proj_csp_Hdw, datatype: object}
-# - {name: z, datatype: object}
-# - {name: t0, datatype: object}
-# - {name: x0, datatype: object}
-# - {name: x1, datatype: object}
-# - {name: c, datatype: object}
-# - {name: z_err, datatype: object}
-# - {name: t0_err, datatype: object}
-# - {name: x0_err, datatype: object}
-# - {name: x1_err, datatype: object}
-# - {name: c_err, datatype: object}
-# - {name: chi, datatype: object}
-# - {name: dof, datatype: object}
-# - {name: message, datatype: object}
+# - {name: cid, datatype: string}
+# - {name: num_points_91bg_proj_csp_u, datatype: float64}
+# - {name: num_points_91bg_proj_csp_g, datatype: float64}
+# - {name: num_points_91bg_proj_csp_r, datatype: float64}
+# - {name: num_points_91bg_proj_csp_i, datatype: float64}
+# - {name: num_points_91bg_proj_csp_B, datatype: float64}
+# - {name: num_points_91bg_proj_csp_V0, datatype: float64}
+# - {name: num_points_91bg_proj_csp_V1, datatype: float64}
+# - {name: num_points_91bg_proj_csp_V, datatype: float64}
+# - {name: num_points_91bg_proj_csp_Y, datatype: float64}
+# - {name: num_points_91bg_proj_csp_H, datatype: float64}
+# - {name: num_points_91bg_proj_csp_J, datatype: float64}
+# - {name: num_points_91bg_proj_csp_Jrc2, datatype: float64}
+# - {name: num_points_91bg_proj_csp_Ydw, datatype: float64}
+# - {name: num_points_91bg_proj_csp_Jdw, datatype: float64}
+# - {name: num_points_91bg_proj_csp_Hdw, datatype: float64}
+# - {name: z, datatype: float64}
+# - {name: t0, datatype: float64}
+# - {name: x0, datatype: float64}
+# - {name: x1, datatype: float64}
+# - {name: c, datatype: float64}
+# - {name: z_err, datatype: float64}
+# - {name: t0_err, datatype: float64}
+# - {name: x0_err, datatype: float64}
+# - {name: x1_err, datatype: float64}
+# - {name: c_err, datatype: float64}
+# - {name: chi, datatype: float64}
+# - {name: dof, datatype: float64}
+# - {name: message, datatype: string}
 # meta: !!omap
 # - bounds:
 #     z: [0.002, 0.085]

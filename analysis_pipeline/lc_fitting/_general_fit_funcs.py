@@ -30,7 +30,8 @@ def _create_empty_summary_table(band_names):
     names.extend(param_names)
     names.extend((p + '_err' for p in param_names))
     names.extend(('chi', 'dof', 'message'))
-    out_table = Table(names=names, dtype=[object for _ in names])
+    out_table = Table(names=names,
+                      dtype=['U20'] + [float for _ in names[2:]] + ['U20'])
 
     return out_table
 

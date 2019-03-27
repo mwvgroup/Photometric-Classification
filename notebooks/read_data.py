@@ -26,21 +26,29 @@ def get_fit_results(survey, model, params, out_dir='./'):
         A DataFrame of fits in red bands
     """
 
-    index_col = 0
     model_name = model.source.name + '_' + model.source.version
     fname = f'{survey}/{model_name}_{params}param_{{}}.ecsv'
     path_pattern = os.path.join(out_dir, fname)
 
-    all_data = Table.read(path_pattern.format('all'))
-    all_data = all_data.to_pandas()
-    all_data.set_index('cid', inplace=True)
+    all_data = None
+    all_data_path = path_pattern.format('all')
+    if os.path.exists(all_data_path):
+        all_data = Table.read(path_pattern.format('all'))
+        all_data = all_data.to_pandas()
+        all_data.set_index('cid', inplace=True)
 
-    blue_data = Table.read(path_pattern.format('blue'))
-    blue_data = blue_data.to_pandas()
-    blue_data.set_index('cid', inplace=True)
+    blue_data = None
+    blue_data_path = path_pattern.format('blue')
+    if os.path.exists(blue_data_path):
+        blue_data = Table.read(path_pattern.format('blue'))
+        blue_data = blue_data.to_pandas()
+        blue_data.set_index('cid', inplace=True)
 
-    red_data = Table.read(path_pattern.format('red'))
-    red_data = red_data.to_pandas()
-    red_data.set_index('cid', inplace=True)
+    red_data = None
+    red_data_path = path_pattern.format('red')
+    if os.path.exists(red_data_path):
+        red_data = Table.read(path_pattern.format('red'))
+        red_data = red_data.to_pandas()
+        red_data.set_index('cid', inplace=True)
 
     return all_data, blue_data, red_data

@@ -6,13 +6,14 @@
 import os
 
 import numpy as np
-from astropy.table import Table
+from astropy.table import Column, Table
 from tqdm import tqdm
 
 from . import _module_meta_data as meta_data
 from .._utils import keep_restframe_bands
 
 master_table = Table.read(meta_data.master_table_path, format='ascii')
+master_table['CID'] = Column(master_table['CID'], dtype=str)
 
 
 def _get_outliers():
