@@ -44,14 +44,14 @@ class LCFitting:
 
     @staticmethod
     def split_bands(bands, lambda_eff):
-        """Split band-passes into blue (< 5400 A) and red (>= 5400 A) bands
+        """Split band-passes into blue (< 5500 A) and red (>= 5500 A) bands
 
         Args:
             bands        (array[str]): Name of band-passes
             lambda_eff (array[float]): Effective wavelength of band-passes
         """
 
-        is_blue = np.array(lambda_eff) < 5400
+        is_blue = np.array(lambda_eff) < 5500
         b_array = np.array(bands)
         return b_array[is_blue], b_array[~is_blue]
 
