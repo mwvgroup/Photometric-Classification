@@ -55,51 +55,13 @@ class LCFitting:
         b_array = np.array(bands)
         return b_array[is_blue], b_array[~is_blue]
 
-    @staticmethod
-    def _run_fit_set(
-            data, out_dir, models, num_params, bands_to_fit, params, **kwargs):
-        """
-        Iterate over a set of light-curve fits using different models, number of
-        parameters, and rest frame bands
+    def _generic_fit(
+            self, module, out_dir, models, num_params, bands, **kwargs):
+        """Iterate over a set of light-curve fits using different models,
+        number of parameters, and rest frame bands
 
         Args:
-            data       (module): A submodule of the data_access module (eg. csp)
-            out_dir       (str): Directory where results are saved
-            num_params   (List): List of SNCosmo models to fit
-            bands_to_fit (dict): A dictionary of bands for fit (eg. {'blue': 'ug'})
-            params       (dict): Dictionary of SNCosmo fitting arguments
-        """
-
-        modeling_data = product(models, num_params, bands_to_fit.items())
-
-        path_pattern = '{}_{}param_{}.ecsv'
-        for model, num_param, (band_name, band_lists) in modeling_data:
-            model_name = model.source.name + '_' + model.source.version
-            tqdm.write(f'{num_param} param {model_name} in {band_name} bands')
-            time.sleep(0.5)  # Give output time to flush
-
-            model_args = params[model_name][num_param]
-            fname = path_pattern.format(model_name, num_param, band_name)
-            out_path = os.path.join(out_dir, fname)
-            fit_n_params(out_path,
-                         num_params=num_param,
-                         inputs=data.iter_sncosmo_input(band_lists, **kwargs),
-                         bands=data.band_names,
-                         model=model,
-                         **model_args)
-
-            tqdm.write('\n')
-
-    def _generic_fit(self, module, out_dir, models, num_params, bands,
-                     **kwargs):
-        """Fit data and save result to file
-
-        Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
-        Acceptable number of fit params are 4 and 5.
-        Acceptable bands are 'all', 'blue', and 'red'.
-
-        Args:
-            module        (module): A submodule of the data_access module (eg. csp)
+            module        (module): A submodule of the data_access module
             out_dir          (str): Directory where results are saved
             models     (list[str]): Names of models to fit
             num_params (list[int]): Number of params to fit
@@ -116,15 +78,29 @@ class LCFitting:
         bands_to_fit = {b_name: bands_dict[b_name] for b_name in bands}
         models = [models_dict[model] for model in models]
 
+        # Define data for running fits
+        params = self.fitting_params[module.__name__.split('.')[-1]]
+        path_pattern = '{}_{}param_{}.ecsv'
+        modeling_data = product(models, num_params, bands_to_fit.items())
+
         # Run fit
-        params = self.fitting_params['sdss']
-        self._run_fit_set(module,
-                          out_dir,
-                          models,
-                          num_params,
-                          bands_to_fit,
-                          params,
-                          **kwargs)
+        for model, num_param, (band_name, band_lists) in modeling_data:
+            model_name = model.source.name + '_' + model.source.version
+            tqdm.write(f'{num_param} param {model_name} in {band_name} bands')
+            time.sleep(0.5)  # Give output time to flush
+
+            model_args = params[model_name][num_param]
+            fname = path_pattern.format(model_name, num_param, band_name)
+            out_path = os.path.join(out_dir, fname)
+            fit_n_params(
+                out_path,
+                num_params=num_param,
+                inputs=module.iter_sncosmo_input(band_lists, **kwargs),
+                bands=module.band_names,
+                model=model,
+                **model_args)
+
+            tqdm.write('\n')
 
     def fit_csp(self, out_dir, models, num_params, bands, **kwargs):
         """Fit CSP data and save result to file
