@@ -23,7 +23,7 @@ for path in (csp_dir, des_dir, sdss_dir):
         os.makedirs(path, exist_ok=True)
 
 tqdm.tqdm.write('Fitting SDSS for comparison with published values.')
-classes_to_skip = ['AGN', 'SLSN', 'SNII', 'Variable', 'pSNII', 'zSNII']
+classes_to_skip = ['AGN', 'SLSN', 'SNII', 'Variable']
 lc_fitting.fit_sdss(sdss_dir, models=['salt_2_0'],
                     num_params=[4],
                     bands=['all'],
