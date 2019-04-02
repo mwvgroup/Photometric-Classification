@@ -3,6 +3,7 @@ matplotlib
 iminuit
 numpy
 pandas
+pyyaml
 requests
 sncosmo
 tqdm
