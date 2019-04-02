@@ -30,9 +30,9 @@ def _get_outliers():
                 line_list = line.split()
                 cid, mjd, band = line_list[1], line_list[2], line_list[3]
                 if cid not in out_dict:
-                    out_dict[int(cid)] = []
+                    out_dict[str(cid)] = []
 
-                out_dict[int(cid)].append(mjd)
+                out_dict[str(cid)].append(mjd)
 
     return out_dict
 
