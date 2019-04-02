@@ -24,16 +24,21 @@ def _create_empty_summary_table(band_names):
     """
 
     names = ['cid']
-    names.extend(['num_points_' + band for band in band_names])
+    dtype = ['U20']
+
+    for band in band_names:
+        names.append(f'num_points_{band}')
+        dtype.append(int)
 
     param_names = ['z', 't0', 'x0', 'x1', 'c']
     names.extend(param_names)
     names.extend((p + '_err' for p in param_names))
-    names.extend(('chi', 'dof', 'message'))
-    out_table = Table(names=names,
-                      dtype=['U20'] + [float for _ in names[2:]] + ['U20'])
+    dtype.extend([float for _ in range(2 * len(param_names))])
 
-    return out_table
+    names.extend(('chi', 'dof', 'message'))
+    dtype.extend([float, float, 'U100'])
+
+    return Table(names=names, dtype=dtype)
 
 
 def _count_points_per_band(band_list, all_band_names):
@@ -49,6 +54,7 @@ def _count_points_per_band(band_list, all_band_names):
     band_names, band_counts = np.unique(band_list, return_counts=True)
     count_dict = dict(zip(band_names, band_counts))
     return [count_dict.get(band, 0) for band in all_band_names]
+    # Todo: also count points pre and post max
 
 
 def fit_lc(data, model, vparam_names, **kwargs):

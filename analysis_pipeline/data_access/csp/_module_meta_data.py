@@ -18,6 +18,7 @@ master_path = os.path.join(data_dir, 'table1.dat')  # Master table
 
 
 # Download published DR1 data if it does not exist locally
+# Todo: Use table 2 from DR3
 download_data(
     base_url='http://cdsarc.u-strasbg.fr/ftp/J/ApJ/773/53/',
     out_dir=data_dir,
