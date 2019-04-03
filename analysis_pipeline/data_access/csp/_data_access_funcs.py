@@ -51,7 +51,6 @@ def _get_zp_for_bands(band):
     Returns:
         An array of zero points
     """
-
     sorter = np.argsort(meta_data.band_names)
     indices = sorter[np.searchsorted(meta_data.band_names, band, sorter=sorter)]
     return np.array(meta_data.zero_point)[indices]
