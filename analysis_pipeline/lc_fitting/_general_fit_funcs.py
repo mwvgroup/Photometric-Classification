@@ -35,8 +35,8 @@ def _create_empty_summary_table(band_names):
     names.extend((p + '_err' for p in param_names))
     dtype.extend([float for _ in range(2 * len(param_names))])
 
-    names.extend(('chi', 'dof', 'message'))
-    dtype.extend([float, float, 'U100'])
+    names.extend(('chi', 'dof', 'pre_max', 'post_max', 'message'))
+    dtype.extend([float, float, int, int, 'U100'])
 
     return Table(names=names, dtype=dtype)
 
@@ -51,10 +51,28 @@ def _count_points_per_band(band_list, all_band_names):
         A list with the number of counts for each element in <all_band_names>
     """
 
+    # Todo: These calculations should be in the rest frame
     band_names, band_counts = np.unique(band_list, return_counts=True)
     count_dict = dict(zip(band_names, band_counts))
     return [count_dict.get(band, 0) for band in all_band_names]
-    # Todo: also count points pre and post max
+
+
+def _count_pre_and_post_max(obs_times, t_max):
+    """Count the number of light-curve data points pre and post maximum
+
+    Args:
+        obs_times (list[float]): Times of observations
+        t_max (float): Time of maximum
+
+    Returns:
+        The number of data points before maximum
+        The number of data points after maximum
+    """
+
+    times_arr = np.array(obs_times)
+    pre_max = sum(times_arr < t_max)
+    post_max = sum(times_arr > t_max)
+    return pre_max, post_max
 
 
 def fit_lc(data, model, vparam_names, **kwargs):
@@ -89,18 +107,25 @@ def fit_lc(data, model, vparam_names, **kwargs):
             out_data.extend(np.full(4, np.NAN).tolist())
             out_data.append(z_err)
             out_data.extend(np.full(6, np.NAN).tolist())
+            out_data.extend((0, 0))
             out_data.append(str(e).replace('\n', ' '))
 
     else:
+        tmax = None
         for param in ['z', 't0', 'x0', 'x1', 'c']:
             i = result.param_names.index(param)
-            out_data.append(result.parameters[i])
+            value = result.parameters[i]
+            out_data.append(value)
+
+            if param == 't0':
+                tmax = value
 
         for param in ['z', 't0', 'x0', 'x1', 'c']:
             out_data.append(result.errors.get(param, 0))
 
         out_data.append(result.chisq)
         out_data.append(result.ndof)
+        out_data.extend(_count_pre_and_post_max(data['time'], tmax))
         out_data.append(result.message.replace('\n', ' '))
 
     return out_data
