@@ -6,13 +6,14 @@
 import os
 
 import numpy as np
-from astropy.table import Table
+from astropy.table import Column, Table
 from tqdm import tqdm
 
 from . import _module_meta_data as meta_data
 from .._utils import keep_restframe_bands
 
 master_table = Table.read(meta_data.master_table_path, format='ascii')
+master_table['CID'] = Column(master_table['CID'], dtype=str)
 
 
 def _get_outliers():
@@ -29,9 +30,9 @@ def _get_outliers():
                 line_list = line.split()
                 cid, mjd, band = line_list[1], line_list[2], line_list[3]
                 if cid not in out_dict:
-                    out_dict[int(cid)] = []
+                    out_dict[str(cid)] = []
 
-                out_dict[int(cid)].append(mjd)
+                out_dict[str(cid)].append(mjd)
 
     return out_dict
 
@@ -60,14 +61,14 @@ def get_data_for_id(cid):
     No data cuts are applied to the returned data.
 
     Args:
-        cid (int): The Candidate ID of the desired object
+        cid (str): The Candidate ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
     """
 
     # Read in ascii data table for specified object
-    file_path = os.path.join(meta_data.smp_dir, f'SMP_{cid:06d}.dat')
+    file_path = os.path.join(meta_data.smp_dir, f'SMP_{int(cid):06d}.dat')
     all_data = Table.read(file_path, format='ascii')
 
     # Rename columns using header data from file
@@ -146,7 +147,7 @@ def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=False):
         bands      (iter[str]): Optional list of band-passes to return
         keep_types (iter[str]): Optional case sensitive classifications to keep
         skip_types (iter[str]): Optional case sensitive classifications to skip
-        verbose         (bool): Whether to a display progress bar while iterating
+        verbose         (bool): Optionally display progress bar while iterating
 
     Yields:
         An astropy table formatted for use with SNCosmo

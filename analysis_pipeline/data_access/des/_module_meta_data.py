@@ -20,7 +20,8 @@ master_table_path = os.path.join(fits_dir, 'SALT2mu_DES+LOWZ_C11.FITRES')
 # Download data if it does not exist
 _des_url = 'http://desdr-server.ncsa.illinois.edu/despublic/sn_files/y3/tar_files/'
 _local_file_names = [filter_dir, photometry_dir, fits_dir]
-_remote_file_names = ['01-FILTERS.tar.gz', '02-DATA_PHOTOMETRY.tar.gz',
+_remote_file_names = ['01-FILTERS.tar.gz',
+                      '02-DATA_PHOTOMETRY.tar.gz',
                       '04-BBCFITS.tar.gz']
 
 download_data(

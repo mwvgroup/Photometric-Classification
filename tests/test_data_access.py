@@ -1,15 +1,15 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
 """Test input data used for fitting light-curves with SNCosmo."""
 
-from itertools import islice, product
+from itertools import islice
 from unittest import TestCase
 
 import numpy as np
 from astropy.table import Table
 
-from analysis_pipeline.data_access import des, sdss, csp
+from analysis_pipeline.data_access import des, sdss
 from analysis_pipeline.data_access._utils import keep_restframe_bands
 
 
@@ -72,8 +72,7 @@ class EmptyInputTables(TestCase):
     def test_empty_des_inputs(self):
         """Test the first 20 DES inputs aren't empty for various band cuts"""
 
-        band_names = ('desg', 'desr', 'desi', 'desz', 'desy')
-        band_cuts = (band_names[0: 2], band_names[2:], None)
+        band_cuts = (des.band_names[0: 1], des.band_names[1:], None)
 
         for band_cut in band_cuts:
             input_tables = des.iter_sncosmo_input(band_cut)
@@ -82,9 +81,7 @@ class EmptyInputTables(TestCase):
     def test_empty_sdss_inputs(self):
         """Test the first 20 SDSS inputs aren't empty for various band cuts"""
 
-        blue = [f'91bg_proj_sdss_{b}{c}' for b, c in product('ug', '123456')]
-        red = [f'91bg_proj_sdss_{b}{c}' for b, c in product('riz', '123456')]
-        band_cuts = (blue, red, None)
+        band_cuts = (sdss.band_names[:12], sdss.band_names[12:], None)
 
         for band_cut in band_cuts:
             input_tables = sdss.iter_sncosmo_input(band_cut)

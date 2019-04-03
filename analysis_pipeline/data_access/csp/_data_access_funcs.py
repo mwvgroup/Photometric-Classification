@@ -3,6 +3,7 @@
 
 """This module defines functions for accessing locally available data files."""
 
+from glob import glob
 from os import path as _path
 
 import numpy as np
@@ -27,7 +28,7 @@ def get_data_for_id(cid):
     No data cuts are applied to the returned data.
 
     Args:
-        cid (int): The Candidate ID of the desired object
+        cid (str): The Candidate ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
@@ -41,7 +42,15 @@ def get_data_for_id(cid):
     return data_table
 
 
-def _get_zp_for_band(band):
+def _get_zp_for_bands(band):
+    """Returns the zero point coresponding to any band in meta_data.band_names
+
+    Args:
+        band (list[str]): The name of a band
+
+    Returns:
+        An array of zero points
+    """
     sorter = np.argsort(meta_data.band_names)
     indices = sorter[np.searchsorted(meta_data.band_names, band, sorter=sorter)]
     return np.array(meta_data.zero_point)[indices]
@@ -62,7 +71,7 @@ def get_input_for_id(cid, bands=None):
     """
 
     sn_data = get_data_for_id(cid)
-    sn_data['zp'] = _get_zp_for_band(sn_data['band'])
+    sn_data['zp'] = _get_zp_for_bands(sn_data['band'])
     sn_data['zpsys'] = np.full(len(sn_data), 'ab')
     sn_data['flux'] = 10 ** ((sn_data['mag'] - sn_data['zp']) / -2.5)
     sn_data['fluxerr'] = np.log(10) * sn_data['flux'] * sn_data['mag_err'] / 2.5
@@ -83,15 +92,19 @@ def iter_sncosmo_input(bands=None, verbose=False):
 
     Args:
         bands (iter[str]): Optional list of band-passes to return
-        verbose    (bool): Whether to display a progress bar while iterating
+        verbose    (bool): Optionally display progress bar while iterating
 
 
     Yields:
         An astropy table formatted for use with SNCosmo
     """
 
+    # Get target ids
+    files = glob(_path.join(meta_data.photometry_dir, '*.txt'))
+    cid_vals = [_path.basename(f).split('_')[0].lstrip('SN') for f in files]
+
     # Yield an SNCosmo input table for each target
-    iter_data = tqdm(master_table['SN']) if verbose else master_table['SN']
+    iter_data = tqdm(cid_vals) if verbose else cid_vals
     for target_name in iter_data:
         sncosmo_table = get_input_for_id(target_name, bands)
         if sncosmo_table:
