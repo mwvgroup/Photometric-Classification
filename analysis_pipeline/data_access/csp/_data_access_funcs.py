@@ -13,13 +13,10 @@ from tqdm import tqdm
 from . import _module_meta_data as meta_data
 from .._utils import keep_restframe_bands, parse_snoopy_data
 
-master_table = Table.read(
-    meta_data.master_path,
-    names=['SN', 'N', 'epoch_range', 'SNID', 'Wang', 'Branch',
-           'zHelio', 'zCMB', 'T0', 'Bmag', 'e_Bmag', 'Dm15',
-           'eDm15', 'E(B-V)', 'B-V', 'e_B-V', 'low_reddening',
-           'DBMag', 'e_DBMag'],
-    format='ascii')
+master_table = Table.read(meta_data.master_path)
+master_table.remove_columns(['RAJ2000', 'DEJ2000'])
+master_table.rename_column('_RAJ2000', 'RAJ2000')
+master_table.rename_column('_DEJ2000', 'DECJ2000')
 
 
 def get_data_for_id(cid):
