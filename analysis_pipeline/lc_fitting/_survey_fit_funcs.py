@@ -55,8 +55,8 @@ class LCFitting:
         b_array = np.array(bands)
         return b_array[is_blue], b_array[~is_blue]
 
-    def _generic_fit(
-            self, module, out_dir, models, num_params, bands, **kwargs):
+    def _generic_fit(self, module, out_dir, models, num_params, bands,
+                     verbose=True, **kwargs):
         """Iterate over a set of light-curve fits using different models,
         number of parameters, and rest frame bands
 
@@ -65,7 +65,8 @@ class LCFitting:
             out_dir          (str): Directory where results are saved
             models     (list[str]): Names of models to fit
             num_params (list[int]): Number of params to fit
-            bands      (list[str]): List of strings specifying bandpass collections
+            bands      (list[str]): List specifying bandpass collections
+            verbose         (bool): Whether to show progress bar
             Any other arguments for module.iter_sncosmo_input
         """
 
@@ -95,7 +96,8 @@ class LCFitting:
             fit_n_params(
                 out_path,
                 num_params=num_param,
-                inputs=module.iter_sncosmo_input(band_lists, **kwargs),
+                inputs=module.iter_sncosmo_input(
+                    band_lists, verbose=verbose, **kwargs),
                 bands=module.band_names,
                 model=model,
                 **model_args)
@@ -113,7 +115,7 @@ class LCFitting:
             out_dir          (str): Directory where results are saved
             models     (list[str]): Names of models to fit
             num_params (list[int]): Number of params to fit
-            bands      (list[str]): List of strings specifying bandpass collections
+            bands      (list[str]): List specifying bandpass collections
             Any other arguments for csp.iter_sncosmo_input
         """
 
@@ -130,7 +132,7 @@ class LCFitting:
             out_dir          (str): Directory where results are saved
             models     (list[str]): Names of models to fit
             num_params (list[int]): Number of params to fit
-            bands      (list[str]): List of strings specifying bandpass collections
+            bands      (list[str]): List specifying bandpass collections
             Any other arguments for des.iter_sncosmo_input
         """
 
@@ -147,7 +149,7 @@ class LCFitting:
             out_dir          (str): Directory where results are saved
             models     (list[str]): Names of models to fit
             num_params (list[int]): Number of params to fit
-            bands      (list[str]): List of strings specifying bandpass collections
+            bands      (list[str]): List specifying bandpass collections
             Any other arguments for sdss.iter_sncosmo_input
         """
 

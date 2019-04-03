@@ -136,7 +136,7 @@ def get_input_for_id(cid, bands=None):
     return sncosmo_table
 
 
-def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=True):
+def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
     To return a select collection of band-passes, specify the band argument.
