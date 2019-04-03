@@ -35,8 +35,8 @@ def _create_empty_summary_table(band_names):
     names.extend((p + '_err' for p in param_names))
     dtype.extend([float for _ in range(2 * len(param_names))])
 
-    names.extend(('chi', 'dof', 'pre_max', 'post_max', 'message'))
-    dtype.extend([float, float, int, int, 'U100'])
+    names.extend(('chi', 'dof', 'tmin', 'tmax', 'pre_max', 'post_max', 'message'))
+    dtype.extend([float, float, float, float, int, int, 'U100'])
 
     return Table(names=names, dtype=dtype)
 
@@ -65,6 +65,8 @@ def _count_pre_and_post_max(obs_times, t_max):
         t_max (float): Time of maximum
 
     Returns:
+        The minimum time value
+        The maximum time value
         The number of data points before maximum
         The number of data points after maximum
     """
@@ -72,7 +74,7 @@ def _count_pre_and_post_max(obs_times, t_max):
     times_arr = np.array(obs_times)
     pre_max = sum(times_arr < t_max)
     post_max = sum(times_arr > t_max)
-    return pre_max, post_max
+    return min(times_arr), max(times_arr), pre_max, post_max
 
 
 def fit_lc(data, model, vparam_names, **kwargs):
@@ -106,7 +108,7 @@ def fit_lc(data, model, vparam_names, **kwargs):
             out_data.append(z)
             out_data.extend(np.full(4, np.NAN).tolist())
             out_data.append(z_err)
-            out_data.extend(np.full(6, np.NAN).tolist())
+            out_data.extend(np.full(8, np.NAN).tolist())
             out_data.extend((0, 0))
             out_data.append(str(e).replace('\n', ' '))
 
