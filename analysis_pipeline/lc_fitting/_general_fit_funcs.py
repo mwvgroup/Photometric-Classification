@@ -20,7 +20,7 @@ def _create_empty_summary_table(band_names):
     """Returns a table with columns:
 
          cid, *num_points_<band_names>, z, t0, x0, x1, z_err, t0_err, x0_err,
-         x1_err, c_err, chi, dof, message.
+         x1_err, c_err, chi, dof, tmin, tmax, pre_max, post_max, message
     """
 
     names = ['cid']
