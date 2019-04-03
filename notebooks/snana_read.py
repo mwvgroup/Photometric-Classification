@@ -60,7 +60,7 @@ def read_lc(number, DATA_DIR):
                 meta_data['x0'] = line.split()[1]
 
             if line[13:20] == 'stretch':
-                meta_data['st'] = line.split()[1]
+                meta_data['x1'] = line.split()[1]
 
             if line[13:18] == 'color':
                 meta_data['c'] = line.split()[1]
@@ -139,11 +139,11 @@ def write_lc(num, DATA_DIR, path):
             meta[par].append(table.meta[par])
 
         cid.append(i + 1)
-        path = os.path.join(path, 'sn91bg_{:05d}.csv'.format(i + 1))
-        table.write(path, overwrite=True)
+        path_this = os.path.join(path, 'sn91bg_{:05d}.csv'.format(i + 1))
+        table.write(path_this, overwrite=True)
 
     metadata = Table(
-        [cid, meta['z'], meta['t0'], meta['x0'], meta['st'], meta['c']],
-        names=['cid', 'z', 't0', 'x0', 'st', 'c'])
+        [cid, meta['z'], meta['t0'], meta['x0'], meta['x1'], meta['c']],
+        names=['cid', 'z', 't0', 'x0', 'x1', 'c'])
 
     metadata.write(os.path.join(path, 'meta.csv'), overwrite=True)
