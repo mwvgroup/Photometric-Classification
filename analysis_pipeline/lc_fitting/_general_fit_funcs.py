@@ -19,16 +19,12 @@ from sncosmo.fitting import DataQualityError
 def _create_empty_summary_table(band_names):
     """Returns a table with columns:
 
-         cid, *num_points_<band_names>, z, t0, x0, x1, z_err, t0_err, x0_err,
+         cid, num_points, z, t0, x0, x1, z_err, t0_err, x0_err,
          x1_err, c_err, chi, dof, tmin, tmax, pre_max, post_max, message
     """
 
-    names = ['cid']
-    dtype = ['U20']
-
-    for band in band_names:
-        names.append(f'num_points_{band}')
-        dtype.append(int)
+    names = ['cid', 'num_points']
+    dtype = ['U20', int]
 
     param_names = ['z', 't0', 'x0', 'x1', 'c']
     names.extend(param_names)
@@ -39,22 +35,6 @@ def _create_empty_summary_table(band_names):
     dtype.extend([float, float, float, float, int, int, 'U100'])
 
     return Table(names=names, dtype=dtype)
-
-
-def _count_points_per_band(band_list, all_band_names):
-    """Determine number of data points per band
-
-    count the number of times each element in <all_band_names> appears in
-    <band_list>.
-
-    Returns:
-        A list with the number of counts for each element in <all_band_names>
-    """
-
-    # Todo: These calculations should be in the rest frame
-    band_names, band_counts = np.unique(band_list, return_counts=True)
-    count_dict = dict(zip(band_names, band_counts))
-    return [count_dict.get(band, 0) for band in all_band_names]
 
 
 def _count_pre_and_post_max(obs_times, t_max):
@@ -180,15 +160,13 @@ def fit_n_params(out_path, num_params, inputs, bands, model, warn=False, **kwarg
         else:
             vparam_names = ['z', 't0', 'x0', 'x1', 'c']
 
-        band_count = _count_points_per_band(input_table['band'], bands)
         fit_results = fit_lc(
             data=input_table,
             model=model_this,
             vparam_names=vparam_names,
             **kwargs_this)
 
-        new_row = [input_table.meta['cid']]
-        new_row.extend(band_count)
+        new_row = [input_table.meta['cid'], len(input_table)]
         new_row.extend(fit_results)
         out_table.add_row(new_row)
         out_table.write(out_path, overwrite=True)
