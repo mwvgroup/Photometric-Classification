@@ -16,7 +16,7 @@ from astropy.table import Table
 from sncosmo.fitting import DataQualityError
 
 
-def _create_empty_summary_table(band_names):
+def _create_empty_summary_table():
     """Returns a table with columns:
 
          cid, num_points, z, t0, x0, x1, z_err, t0_err, x0_err,
@@ -31,8 +31,10 @@ def _create_empty_summary_table(band_names):
     names.extend((p + '_err' for p in param_names))
     dtype.extend([float for _ in range(2 * len(param_names))])
 
-    names.extend(('chi', 'dof', 'tmin', 'tmax', 'pre_max', 'post_max', 'message'))
-    dtype.extend([float, float, float, float, int, int, 'U100'])
+    names.extend(('chi', 'dof', 'b_max', 'delta_15', 'tmin', 'tmax',
+                  'pre_max', 'post_max', 'message'))
+
+    dtype.extend([float, float, float, float, float, float, int, int, 'U250'])
 
     return Table(names=names, dtype=dtype)
 
@@ -72,10 +74,13 @@ def fit_lc(data, model, vparam_names, **kwargs):
     """
 
     out_data = []
+
+    # Try fitting the light-curve
     try:
         result, fitted_model = sncosmo.fit_lc(
             data=data, model=model, vparam_names=vparam_names, **kwargs)
 
+    # If the fit fails fill out_data with place holder values (NANs and zeros)
     except (DataQualityError, RuntimeError, ValueError) as e:
         if 'z' in vparam_names:
             out_data.extend(np.full(12, np.NAN).tolist())
@@ -88,12 +93,13 @@ def fit_lc(data, model, vparam_names, **kwargs):
             out_data.append(z)
             out_data.extend(np.full(4, np.NAN).tolist())
             out_data.append(z_err)
-            out_data.extend(np.full(8, np.NAN).tolist())
+            out_data.extend(np.full(10, np.NAN).tolist())
             out_data.extend((0, 0))
             out_data.append(str(e).replace('\n', ' '))
 
+    # Finish populating out_data with fit results
     else:
-        tmax = None
+        # Append fit parameter values
         for param in ['z', 't0', 'x0', 'x1', 'c']:
             i = result.param_names.index(param)
             value = result.parameters[i]
@@ -102,11 +108,18 @@ def fit_lc(data, model, vparam_names, **kwargs):
             if param == 't0':
                 tmax = value
 
+        # Append fit parameter errors
         for param in ['z', 't0', 'x0', 'x1', 'c']:
             out_data.append(result.errors.get(param, 0))
 
+        # Determine peak magnitude and decline rate
+        b_max = fitted_model.source_peakabsmag('bessellb', 'AB')
+        delta_15 = np.nan
+
         out_data.append(result.chisq)
         out_data.append(result.ndof)
+        out_data.append(b_max)
+        out_data.append(delta_15)
         out_data.extend(_count_pre_and_post_max(data['time'], tmax))
         out_data.append(result.message.replace('\n', ' '))
 
@@ -139,7 +152,7 @@ def fit_n_params(out_path, num_params, inputs, bands, model, warn=False, **kwarg
         os.makedirs(out_dir)
 
     kwargs['warn'] = warn
-    out_table = _create_empty_summary_table(bands)
+    out_table = _create_empty_summary_table()
     out_table.meta = kwargs
 
     # Run fit for each target
