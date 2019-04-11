@@ -98,7 +98,6 @@ class LCFitting:
                 num_params=num_param,
                 inputs=module.iter_sncosmo_input(
                     band_lists, verbose=verbose, **kwargs),
-                bands=module.band_names,
                 model=model,
                 **model_args)
 

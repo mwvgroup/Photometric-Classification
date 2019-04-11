@@ -128,7 +128,7 @@ def fit_lc(data, model, vparam_names, **kwargs):
     return out_data
 
 
-def fit_n_params(out_path, num_params, inputs, bands, model, warn=False, **kwargs):
+def fit_n_params(out_path, num_params, inputs, model, warn=False, **kwargs):
     """Fit light curves with a 4 parameter Salt2-like model using SNCosmo
 
     Redshift values are taken from the meta data of input tables using the
@@ -139,7 +139,6 @@ def fit_n_params(out_path, num_params, inputs, bands, model, warn=False, **kwarg
         out_path       (str): Where to write fit results
         num_params     (int): Number of parameters to fit. Either 4 or 5.
         inputs (iter[Table]): Iterable of SNCosmo input tables
-        bands    (list[str]): The bands of the survey being fitted
         model        (model): SNCosmo model to use for fitting
         warn          (bool): Show sncosmo warnings (default = False)
 
