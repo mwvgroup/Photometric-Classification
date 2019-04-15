@@ -21,6 +21,8 @@ master_table = Table(
            float, float, float, float, float, float, float, float, float,
            float, float, float])
 
+master_table['SN'] = [elt.strip() for elt in master_table['SN']]
+
 master_table.remove_columns(['RAJ2000', 'DEJ2000'])
 master_table.rename_column('_RAJ2000', 'RAJ2000')
 master_table.rename_column('_DEJ2000', 'DECJ2000')
