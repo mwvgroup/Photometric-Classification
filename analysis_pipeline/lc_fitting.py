@@ -102,8 +102,8 @@ def fit_lc(data, model, vparam_names, **kwargs):
     # If the fit fails fill out_data with place holder values (NANs and zeros)
     except (DataQualityError, RuntimeError, ValueError) as e:
         if 'z' in vparam_names:
-            out_data.extend(np.full(12, np.NAN).tolist())
-            out_data.append(str(e))
+            out_data.extend(np.full(16, np.NAN).tolist())
+            out_data.extend((0, 0, str(e).replace('\n', ' ')))
 
         else:
             z = data.meta['redshift']
@@ -113,8 +113,7 @@ def fit_lc(data, model, vparam_names, **kwargs):
             out_data.extend(np.full(4, np.NAN).tolist())
             out_data.append(z_err)
             out_data.extend(np.full(10, np.NAN).tolist())
-            out_data.extend((0, 0))
-            out_data.append(str(e).replace('\n', ' '))
+            out_data.extend((0, 0, str(e).replace('\n', ' ')))
 
     # Finish populating out_data with fit results
     else:
