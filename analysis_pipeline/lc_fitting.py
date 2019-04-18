@@ -78,19 +78,35 @@ def _count_pre_and_post_max(obs_times, t_max):
     return min(times_arr), max(times_arr), pre_max, post_max
 
 
-def fit_lc(data, model, vparam_names, **kwargs):
+def fit_lc(data, model, vparam_names, nest=True, **kwargs):
     """A wrapper for sncosmo.fit_lc that returns results as a list
 
     Exceptions raised by sncosmo.fit_lc are caught and stored as the exit
-    message.
+    message. By default, initial parameters are determine using nested
+    sampling. Mutable arguments are not guaranteed to go unchanged.
 
     Args:
         Any arguments for sncosmo.fit_lc
+        nest (bool): Whether to use nested sampling to determine initial values
 
     Returns:
         A list of values for 'z', 't0', 'x0', 'x1', 'c', their respective
         errors, the fit chi-squared, number of DOF, and SNCosmo exit message.
     """
+
+    if nest:
+        nest_result, _ = sncosmo.nest_lc(
+            data, model, vparam_names,
+            bounds=kwargs['bounds'],
+            modelcov=kwargs.get('modelcov', False))
+
+        nest_vals = {param: value for param, value in
+                     zip(nest_result.vparam_names, nest_result.parameters)}
+
+        model.set(**nest_vals)
+        kwargs['guess_amplitude'] = False
+        kwargs['guess_t0'] = False
+        kwargs['guess_z'] = False
 
     out_data = []
 
