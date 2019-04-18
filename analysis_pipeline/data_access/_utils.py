@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""This module provides utilities used by various sub modules."""
+"""This module provides utilities used by various submodules."""
 
 import os
 import tarfile
