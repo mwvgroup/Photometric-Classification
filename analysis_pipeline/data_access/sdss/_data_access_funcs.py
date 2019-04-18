@@ -163,8 +163,20 @@ def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=False):
         skip_data_indx = ~np.isin(master_table['Classification'], skip_types)
         data = data[skip_data_indx]
 
+    # Customize iterable of data
+    if isinstance(verbose, dict):
+        iter_data = tqdm(
+            data['CID'],
+            **verbose,
+        )
+
+    elif verbose:
+        iter_data = tqdm(data['CID'])
+
+    else:
+        iter_data = data['CID']
+
     # Yield an SNCosmo input table for each target
-    iter_data = tqdm(data['CID']) if verbose else data['CID']
     for cid in iter_data:
         sncosmo_table = get_input_for_id(cid, bands)
         if sncosmo_table:

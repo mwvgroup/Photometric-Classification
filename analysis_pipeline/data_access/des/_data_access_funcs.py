@@ -116,8 +116,20 @@ def iter_sncosmo_input(bands=None, verbose=False):
     target_list_path = _path.join(meta_data.photometry_dir, 'DES-SN3YR_DES.LIST')
     file_list = np.genfromtxt(target_list_path, dtype=str)
 
+    # Customize iterable of data
+    if isinstance(verbose, dict):
+        iter_data = tqdm(
+            file_list,
+            **verbose,
+        )
+
+    elif verbose:
+        iter_data = tqdm(file_list)
+
+    else:
+        iter_data = file_list
+
     # Yield an SNCosmo input table for each target
-    iter_data = tqdm(file_list) if verbose else file_list
     for file_name in iter_data:
         cid_int = int(file_name.lstrip('des_').rstrip('.dat'))
         sncosmo_table = get_input_for_id(cid_int, bands)

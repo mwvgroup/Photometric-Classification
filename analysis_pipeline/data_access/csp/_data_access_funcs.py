@@ -111,8 +111,20 @@ def iter_sncosmo_input(bands=None, verbose=False):
     files = glob(_path.join(meta_data.photometry_dir, '*.txt'))
     cid_vals = [_path.basename(f).split('_')[0].lstrip('SN') for f in files]
 
+    # Customize iterable of data
+    if isinstance(verbose, dict):
+        iter_data = tqdm(
+            cid_vals,
+            **verbose,
+        )
+
+    elif verbose:
+        iter_data = tqdm(cid_vals)
+
+    else:
+        iter_data = cid_vals
+
     # Yield an SNCosmo input table for each target
-    iter_data = tqdm(cid_vals) if verbose else cid_vals
     for target_name in iter_data:
         sncosmo_table = get_input_for_id(target_name, bands)
         if sncosmo_table:
