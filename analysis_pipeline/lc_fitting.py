@@ -162,7 +162,8 @@ def fit_lc(data, model, vparam_names, nest=True, **kwargs):
     return out_data
 
 
-def fit_n_params(out_path, num_params, inputs, model, warn=False, **kwargs):
+def fit_n_params(out_path, num_params, inputs, model, warn=False, nest=True,
+                 **kwargs):
     """Fit light curves with a 4 parameter Salt2-like model using SNCosmo
 
     Redshift values are taken from the meta data of input tables using the
@@ -212,6 +213,7 @@ def fit_n_params(out_path, num_params, inputs, model, warn=False, **kwargs):
             data=input_table,
             model=model_this,
             vparam_names=vparam_names,
+            nest=nest,
             **kwargs_this)
 
         new_row = [input_table.meta['cid'], len(input_table)]
@@ -271,7 +273,7 @@ class LCFitting:
         return b_array[is_blue], b_array[~is_blue]
 
     def _generic_fit(self, module, out_dir, models, num_params, bands,
-                     verbose=True, **kwargs):
+                     verbose=True, nest=True, **kwargs):
         """Iterate over a set of light-curve fits using different models,
         number of parameters, and rest frame bands
 
@@ -314,11 +316,12 @@ class LCFitting:
                 inputs=module.iter_sncosmo_input(
                     band_lists, verbose=verbose, **kwargs),
                 model=model,
+                nest=nest,
                 **model_args)
 
             tqdm.write('\n')
 
-    def fit_csp(self, out_dir, models, num_params, bands, **kwargs):
+    def fit_csp(self, out_dir, models, num_params, bands, nest=True, **kwargs):
         """Fit CSP data and save result to file
 
         Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
@@ -333,9 +336,10 @@ class LCFitting:
             Any other arguments for csp.iter_sncosmo_input
         """
 
-        self._generic_fit(csp, out_dir, models, num_params, bands, **kwargs)
+        self._generic_fit(
+            csp, out_dir, models, num_params, bands, nest=nest, **kwargs)
 
-    def fit_des(self, out_dir, models, num_params, bands, **kwargs):
+    def fit_des(self, out_dir, models, num_params, bands, nest=True, **kwargs):
         """Fit DES data and save result to file
 
         Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
@@ -350,9 +354,11 @@ class LCFitting:
             Any other arguments for des.iter_sncosmo_input
         """
 
-        self._generic_fit(des, out_dir, models, num_params, bands, **kwargs)
+        self._generic_fit(
+            des, out_dir, models, num_params, bands, nest=nest, **kwargs)
 
-    def fit_sdss(self, out_dir, models, num_params, bands, **kwargs):
+    def fit_sdss(
+            self, out_dir, models, num_params, bands, nest=True, **kwargs):
         """Fit SDSS data and save result to file
 
         Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
@@ -367,4 +373,5 @@ class LCFitting:
             Any other arguments for sdss.iter_sncosmo_input
         """
 
-        self._generic_fit(sdss, out_dir, models, num_params, bands, **kwargs)
+        self._generic_fit(
+            sdss, out_dir, models, num_params, bands, nest=nest, **kwargs)
