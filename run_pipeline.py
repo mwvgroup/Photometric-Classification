@@ -39,7 +39,6 @@ tqdm.tqdm.write('Fitting DES')
 lc_fitting.fit_des(des_dir,
                    models=['salt_2_4', 'sn_91bg'],
                    num_params=[4, 5],
-                   nest=False,
                    bands=['all', 'blue', 'red'])
 
 tqdm.tqdm.write('Fitting SDSS')

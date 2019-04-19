@@ -290,8 +290,11 @@ class LCFitting:
             fname = path_pattern.format(model_name, num_param, band_color)
 
             pbar_txt = f'{num_param} param {model_name} in {band_color} bands'
+            pbar_pos = 1 if nest else 0
             inputs = module.iter_sncosmo_input(
-                band_list, verbose={'desc': pbar_txt, 'position': 1}, **kwargs)
+                band_list,
+                verbose={'desc': pbar_txt, 'position': pbar_pos},
+                **kwargs)
 
             model_args = params[model_name][num_param]
             fit_n_params(
