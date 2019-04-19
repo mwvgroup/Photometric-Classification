@@ -13,13 +13,19 @@ from tqdm import tqdm
 from . import _module_meta_data as meta_data
 from .._utils import keep_restframe_bands, parse_snoopy_data
 
-master_table = Table.read(
-    meta_data.master_path,
-    names=['SN', 'N', 'epoch_range', 'SNID', 'Wang', 'Branch',
-           'zHelio', 'zCMB', 'T0', 'Bmag', 'e_Bmag', 'Dm15',
-           'eDm15', 'E(B-V)', 'B-V', 'e_B-V', 'low_reddening',
-           'DBMag', 'e_DBMag'],
-    format='ascii')
+master_table = Table.read(meta_data.master_path)
+master_table = Table(
+    master_table.columns,
+    dtype=[float, float, 'U10', 'U15', 'U15', 'U30', 'U5', 'U20', float, 'U5',
+           'U10', 'U25', float, float, 'U10', 'U10', 'U10', int, int, float,
+           float, float, float, float, float, float, float, float, float,
+           float, float, float])
+
+master_table['SN'] = [elt.strip() for elt in master_table['SN']]
+
+master_table.remove_columns(['RAJ2000', 'DEJ2000'])
+master_table.rename_column('_RAJ2000', 'RAJ2000')
+master_table.rename_column('_DEJ2000', 'DECJ2000')
 
 
 def get_data_for_id(cid):
@@ -52,7 +58,8 @@ def _get_zp_for_bands(band):
         An array of zero points
     """
     sorter = np.argsort(meta_data.band_names)
-    indices = sorter[np.searchsorted(meta_data.band_names, band, sorter=sorter)]
+    indices = sorter[
+        np.searchsorted(meta_data.band_names, band, sorter=sorter)]
     return np.array(meta_data.zero_point)[indices]
 
 
@@ -74,7 +81,8 @@ def get_input_for_id(cid, bands=None):
     sn_data['zp'] = _get_zp_for_bands(sn_data['band'])
     sn_data['zpsys'] = np.full(len(sn_data), 'ab')
     sn_data['flux'] = 10 ** ((sn_data['mag'] - sn_data['zp']) / -2.5)
-    sn_data['fluxerr'] = np.log(10) * sn_data['flux'] * sn_data['mag_err'] / 2.5
+    sn_data['fluxerr'] = np.log(10) * sn_data['flux'] * sn_data[
+        'mag_err'] / 2.5
     sn_data.remove_columns(['mag', 'mag_err'])
 
     if bands is not None:

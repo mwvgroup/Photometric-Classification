@@ -2,11 +2,7 @@
 # ---
 # datatype:
 # - {name: cid, datatype: string}
-# - {name: num_points_desg, datatype: int64}
-# - {name: num_points_desr, datatype: int64}
-# - {name: num_points_desi, datatype: int64}
-# - {name: num_points_desz, datatype: int64}
-# - {name: num_points_desy, datatype: int64}
+# - {name: num_points, datatype: int64}
 # - {name: z, datatype: float64}
 # - {name: t0, datatype: float64}
 # - {name: x0, datatype: float64}
@@ -19,6 +15,12 @@
 # - {name: c_err, datatype: float64}
 # - {name: chi, datatype: float64}
 # - {name: dof, datatype: float64}
+# - {name: b_max, datatype: float64}
+# - {name: delta_15, datatype: float64}
+# - {name: tmin, datatype: float64}
+# - {name: tmax, datatype: float64}
+# - {name: pre_max, datatype: int64}
+# - {name: post_max, datatype: int64}
 # - {name: message, datatype: string}
 # meta: !!omap
 # - bounds:
@@ -27,649 +29,211 @@
 #     z: [0.01, 0.9]
 # - {warn: false}
 # schema: astropy-2.0
-cid num_points_desg num_points_desr num_points_desi num_points_desz num_points_desy z t0 x0 x1 c z_err t0_err x0_err x1_err c_err chi dof message
-1248677 13 13 17 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.487759
-    t0 = +56546.17"
-1250017 14 16 15 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.493202
-    t0 = +56557.05"
-1253039 17 19 18 20 0 0.16335774379182513 56570.87936601494 4.7943672744921954e-17 1.4956767674864169 8.33847169090518e-09 0.004804517652327062 0.07958458612847608 6.410329506150286e-19 0.025838793663469254 1.6232735567361933e-05 119.64535773871484 69.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1253101 17 16 18 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56581.09"
-1253920 14 15 14 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.487772
-    t0 = +56598.30"
-1255502 6 4 4 15 0 0.037896192870335195 56590.32966122932 4.343424505904515e-16 1.9102711074190906 3.6417147075695766e-11 0.0027500671773202923 0.13606038061334402 1.2278913666537785e-17 0.04639923530102631 3.0778762866001674e-05 322.99152655816084 24.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1257366 7 8 10 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.490122
-    t0 = +56617.48"
-1257695 12 11 13 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56617.17"
-1258906 13 15 13 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.488342
-    t0 = +56618.29"
-1258940 17 18 17 18 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56618.16"
-1259412 12 11 12 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.613949
-    t0 = +56611.28"
-1261579 10 10 10 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56637.23"
-1262214 23 22 23 0 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.476347
-    t0 = +56640.67"
-1262715 11 10 12 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.476852
-    t0 = +56647.12"
-1263369 9 9 9 9 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.540963
-    t0 = +56664.66"
-1263715 8 9 9 9 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.486206
-    t0 = +56665.54"
-1275946 16 18 19 19 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57259.31"
-1279500 10 12 12 11 0 0.010000000217293085 57212.050167266294 1.6765956139934982e-15 0.8546738548656244 4.522049401600725e-12 4.59382301212178e-06 0.26616748092419584 4.303683604128527e-17 0.006599091491039606 1.2228693052118711e-05 4114.7485924574175 40.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1280217 14 16 16 17 0 0.1318386688311823 57209.81535319473 5.572069973229093e-16 0.866964491953302 3.318608104985188e-08 0.006166330424470234 0.8535556449460273 2.6308818879376753e-17 0.015607221056139233 0.0002169568591040838 316.5593340538017 58.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1281668 20 20 21 22 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57267.31"
-1281886 15 18 18 19 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57258.38"
-1282736 17 19 16 20 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.529054
-    t0 = +57263.14"
-1283373 15 13 15 18 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57267.45"
-1283878 13 15 14 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.479611
-    t0 = +57264.17"
-1283936 20 21 21 23 0 0.7184026188741038 57272.981258214255 2.6895201010650056e-17 1.6694707222331306 8.7919005409276e-11 0.0008595668333591377 0.138343405960768 7.9410893061010315e-19 0.06707904092492822 8.178169962652637e-06 176.18614864308532 80.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1285160 16 20 19 17 0 0.1710633204629146 57266.223139154106 2.5809460992937575e-17 1.4125146981813868 0.6111224668418421 0.0004051447201738889 0.05579921808021027 2.635666342274517e-19 0.009519375430050598 0.01199763594355402 88.49477838028871 67.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1285317 22 23 23 24 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.507986
-    t0 = +57295.54"
-1286398 12 14 13 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.487956
-    t0 = +57266.81"
-1287626 5 5 7 6 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.475889
-    t0 = +56670.89"
-1289288 18 19 21 23 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.900000
-    t0 = +57372.76"
-1289555 18 20 20 21 0 0.10540689033753835 57269.72240972478 4.421651205035604e-17 1.6146247825963764 0.3935271783527411 0.0007337884228293332 0.21070788552242448 1.1215930647445199e-18 0.028096678978834756 0.026869049324207916 85.11458760515235 74.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1289600 14 17 17 16 0 0.1957906098263242 57279.13106033006 3.6388064066568496e-17 1.6837478283919534 0.026625429704808024 0.0006814725733371996 0.03140679986245232 3.201428082172688e-19 0.011369735200666786 0.008745074097284006 101.63194325876358 59.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1289656 18 17 19 21 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.488558
-    t0 = +57283.13"
-1289664 12 17 17 18 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.492961
-    t0 = +57289.98"
-1290779 10 11 11 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56893.48"
-1290816 10 10 10 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56893.48"
-1291080 13 12 13 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.487117
-    t0 = +56895.23"
-1291090 13 13 11 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.500818
-    t0 = +56893.00"
-1291794 17 18 19 18 0 0.10045022826124055 57274.14322012009 6.390262466372865e-17 1.4798241392596168 0.24140773741812865 0.0004901087800233891 0.13263044336781604 1.848305236193509e-18 0.029421652058783714 0.02189957548397234 53.400211974322005 67.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1291957 16 15 14 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.518146
-    t0 = +56885.65"
-1292145 17 18 19 19 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.483581
-    t0 = +57284.16"
-1292195 19 23 20 19 0 0.21817976646686943 57275.5473771915 1.926688511476935e-17 1.4059659369555713 0.999972040768212 0.0021250041614401527 0.14339805362760671 3.5478425155549996e-19 0.03167305603025417 0.007415906828074137 117.43559654782118 76.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1292332 12 12 13 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.496485
-    t0 = +56884.96"
-1292336 12 12 13 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.495976
-    t0 = +56887.08"
-1292560 10 11 14 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56905.31"
-1293319 14 14 14 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.487303
-    t0 = +56900.79"
-1293758 10 7 1 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.389083
-    t0 = +56897.68"
-1294014 11 13 9 6 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.483574
-    t0 = +56936.68"
-1294743 11 11 11 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.624461
-    t0 = +56873.61"
-1295027 17 18 17 19 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.460626
-    t0 = +56891.26"
-1295256 15 12 16 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.475282
-    t0 = +56930.81"
-1295305 15 15 15 18 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.782271
-    t0 = +56842.23"
-1295921 13 14 14 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.486823
-    t0 = +56903.68"
-1296273 16 16 15 16 0 0.14545987637716223 56836.23519585028 5.714569064290066e-16 1.42561510391887 3.582448798722382e-08 0.003202928288444873 1.0842026952414017 2.4222535260623547e-17 0.0218906979175166 0.00016827120732926248 2120.6150775667943 58.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1296321 13 13 12 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.646981
-    t0 = +56938.02"
-1296657 4 4 10 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.389795
-    t0 = +56872.52"
-1297026 14 13 13 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.552740
-    t0 = +56958.89"
-1297465 16 14 16 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.485772
-    t0 = +56931.49"
-1298281 14 15 14 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.613974
-    t0 = +56938.30"
-1298893 3 4 5 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56933.25"
-1299643 16 17 16 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.518784
-    t0 = +56962.55"
-1299775 8 6 9 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.508212
-    t0 = +56931.37"
-1299785 16 16 17 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.477932
-    t0 = +56933.26"
-1300516 16 17 18 18 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.508691
-    t0 = +56942.65"
-1300912 16 15 17 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.482267
-    t0 = +56936.82"
-1301933 14 16 15 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56951.21"
-1302058 11 14 16 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.215587
-    t0 = +56963.79"
-1302141 21 24 22 24 0 0.1108852139360804 57274.58705806946 4.445245704430651e-17 1.475646153322698 0.9290447580589047 0.0010566785754938315 0.08631214027991518 1.6716368953195785e-18 0.03002361105705561 0.049446566066561004 91.40720386015936 86.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1302187 10 9 15 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.848716
-    t0 = +56943.61"
-1302523 13 15 13 15 0 0.18538914986722416 57197.153440682945 3.384661486872416e-16 1.4211075850772579 2.2382101433349177e-07 0.0018470241622166733 0.9516854997782502 1.3702998750409402e-17 0.013974683110606205 0.0005028728181748487 1332.4955056189774 51.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1302648 14 13 15 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.505218
-    t0 = +56939.45"
-1303004 17 18 18 19 0 0.16651713529847972 56962.57145174087 8.153350357421864e-16 0.2253073347769804 1.4162782058235734e-11 0.002282373260650908 0.014977721024479251 2.824741323798767e-17 0.0017044543560506518 2.2122837206789425e-05 7605.004386029107 67.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1303279 9 8 9 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.571405
-    t0 = +56957.60"
-1303496 9 10 9 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56965.33"
-1303883 18 17 18 20 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.051495
-    t0 = +57294.16"
-1303952 20 22 21 21 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.158731
-    t0 = +57258.98"
-1304127 19 22 21 21 0 0.07093883168333229 57273.48462197514 3.40362722214364e-17 1.5501422452484959 0.749750469932445 0.0029152084117712793 0.12059189353749389 9.785333226291324e-19 0.026085923923109447 0.0338721971640904 90.90561895071863 78.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1304442 5 2 2 7 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.485734
-    t0 = +56959.22"
-1304678 10 10 13 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.499693
-    t0 = +56975.40"
-1305504 14 16 14 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.503946
-    t0 = +56964.58"
-1305626 14 15 13 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.505748
-    t0 = +56960.79"
-1306029 16 19 19 20 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.184830
-    t0 = +57278.08"
-1306073 14 15 13 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.529243
-    t0 = +56960.35"
-1306141 17 15 17 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.503517
-    t0 = +56993.19"
-1306360 19 17 19 21 0 0.17623173061772374 57274.93886781848 4.1519485348844974e-17 1.3743034695744512 0.23431237768694746 0.0007652322379625431 0.08238860482379096 1.4827690719445173e-18 0.03999591861770608 0.025553300849553234 46.4779201856891 71.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1306390 17 17 17 17 0 0.12614826021355316 57276.697498664435 4.341973043736194e-17 1.4651083939185243 0.5385350005548263 0.001343694596696171 0.41610137792667956 1.6222868575082876e-18 0.043226608252977826 0.03839597358594293 18.8507701190389 63.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1306537 18 19 19 20 0 0.10649073366446436 57282.774526492976 5.307729275868974e-17 1.6288317690237595 0.20048931162952183 0.000773895425461267 0.08122083570924588 9.897259297058374e-19 0.024677579657279018 0.015319921781641571 85.87141889478292 71.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1306626 17 18 18 20 0 0.11878593513760838 57280.00018462593 5.841778616594979e-17 1.5165647065303027 0.06819563894420344 0.001418969519684149 0.09964614698037622 9.484871538950054e-19 0.01956173161639077 0.013905983287518825 89.66126966124254 68.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1306785 10 9 11 12 0 0.25507380139313857 57280.08387670864 2.871912818972577e-17 1.3411764224961544 0.16981610452710383 0.000835997927538662 0.2678790155259776 9.513141803133327e-19 0.06365501292890934 0.019377917242881043 25.278865881235465 37.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1306980 18 22 22 24 0 0.24573132612179652 57278.44005178794 3.005091533701766e-17 1.3081664745224257 0.2685401696454006 0.002878795032267664 0.12419527259771712 1.1547277426737055e-18 0.027620271786806018 0.03916132828592839 73.0372090183044 81.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1306991 17 18 17 20 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.900000
-    t0 = +57285.13"
-1307277 15 18 18 19 0 0.13402424305399915 57280.15034199923 4.659654519126087e-17 1.4412436040440155 0.2914440781833344 0.0006857891360755458 0.12929424941103207 1.5685757190051753e-18 0.04004746740200078 0.03296278397822219 41.73893426977132 65.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1307830 13 15 16 15 0 0.12094753625841514 57283.296703608095 5.014545647195633e-17 1.2526309828049147 4.4364512064021255e-13 0.0002449829296218911 0.05448849164167768 7.164552374632025e-19 0.025845961171038268 1.8196184483676436e-05 119.80086878579667 54.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1308314 18 18 19 19 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56994.47"
-1308326 16 16 16 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56992.87"
-1308568 15 17 19 21 0 0.3162837174296313 57285.71023291342 2.8463790909683494e-17 1.5321599694979133 0.40491929111602376 0.0010214757771532523 0.13046927850155043 8.897402462322491e-19 0.036016074671408396 0.023268297799824644 81.44425091571492 67.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1308582 13 14 15 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.606126
-    t0 = +57296.68"
-1308884 10 13 13 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.492539
-    t0 = +57291.03"
-1308957 15 20 19 18 0 0.27494082357949673 57285.21124565591 2.0321426055073917e-17 1.5305067748654941 0.05546257728390397 0.015219321257994328 0.09828523109536036 5.266508381748616e-19 0.025062718711280255 0.01707558211932081 71.7200926932141 67.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1309288 8 6 13 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +56994.21"
-1309492 14 15 15 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.491034
-    t0 = +56994.48"
-1309749 16 17 18 19 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.556207
-    t0 = +56992.95"
-1310338 18 17 9 19 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.504040
-    t0 = +56803.67"
-1310395 17 18 17 18 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.489117
-    t0 = +56968.47"
-1312274 16 16 16 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.489050
-    t0 = +56991.04"
-1313594 14 12 14 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.496046
-    t0 = +56990.87"
-1314897 14 11 14 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.483647
-    t0 = +57301.68"
-1315192 9 7 12 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.101370
-    t0 = +56999.39"
-1315259 10 10 11 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.600987
-    t0 = +56992.01"
-1315296 12 14 13 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.899970
-    t0 = +56994.96"
-1316385 8 3 8 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.477052
-    t0 = +57028.25"
-1316431 10 10 10 9 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57020.14"
-1316437 12 13 13 11 0 0.08411290166664814 57005.143696055915 4.461005797399877e-17 1.42495890735407 0.6319286120312113 0.0011466818579387236 0.0627639535086928 1.1972284886579291e-18 0.02932877989808347 0.03255270820244799 56.50198277175211 44.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1316465 9 11 10 11 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.527775
-    t0 = +57019.10"
-1317164 9 5 6 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.473510
-    t0 = +57265.26"
-1317277 13 12 13 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.513549
-    t0 = +57000.13"
-1317286 13 14 13 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.523161
-    t0 = +57026.33"
-1317454 9 10 10 10 0 0.18951444702851114 57017.80620681022 3.676402129061449e-16 0.15143484606317673 0.5339082957416614 0.004958102637477618 0.016238482148764888 2.810778509098578e-17 0.0015101605974642807 0.05728892066113486 754.9954971554739 34.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1317666 10 12 12 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.486686
-    t0 = +57334.67"
-1319366 13 17 17 18 0 0.2771160605029041 57295.32024579527 2.9671712449790323e-15 0.04494172079229356 1.2375963198696383e-08 0.001280048293035907 0.5143698846441112 3.1759714115073723e-16 0.005914020200776093 0.00025273383552903983 7418.419539746632 60.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1319821 13 10 13 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57019.33"
-1320166 10 10 10 9 0 0.26477216283860067 57017.973679407034 1.078107807122545e-15 0.0633245520338756 0.1062526330745141 0.006380464218917387 0.005993439837766346 1.0060463495097391e-16 0.000441732229295571 0.05503661587357511 864.7315995836663 34.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1322229 7 8 7 7 0 0.4574692586273611 57057.983960675556 1.3309837038967084e-16 0.4946005886746303 0.7003120815454418 0.01631087191995753 0.06820030933886301 1.1832814859281002e-17 0.005711920120818532 0.06280555969109985 4062.525462587304 24.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1322979 7 9 9 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.506577
-    t0 = +57022.42"
-1324542 10 9 9 10 0 0.04120225631200086 57037.600139898925 4.0637640193680746e-17 1.6293047766108715 0.6157498978555064 0.002137817640427756 0.09008795863337582 9.542080001464337e-19 0.037660457824187754 0.02725715498985881 52.90318700548178 33.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1325358 7 10 8 7 0 0.4436647615554349 57044.34030955062 1.6289783134491138e-17 1.6470866556732933 0.11808416377177172 0.00044276922933830787 0.12890344525658293 1.7830525297789273e-19 0.014527492987284722 0.006355175692299236 33.836922444786794 27.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1327978 12 10 13 19 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.868752
-    t0 = +57165.61"
-1328066 18 21 20 22 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.504852
-    t0 = +57289.22"
-1328105 19 21 21 23 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.503342
-    t0 = +57289.15"
-1329166 19 21 14 17 0 0.16347248569521614 57301.69602227752 2.4291872031016517e-17 1.5484206701811813 0.7329974919388712 0.0002099276527364885 0.024589909771748353 3.110826692757543e-19 0.014096118312579016 0.012649709476557303 106.18327367195067 66.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1329196 20 21 21 20 0 0.40567932067612217 57303.90238411761 1.352919101869935e-17 1.5112961980433268 6.406810685311015e-07 0.0006825705477002397 0.08128685730480356 1.2972424494021226e-19 0.018382833365635575 6.31230549974493e-06 175.4329158217189 77.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1329312 13 15 16 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.505488
-    t0 = +57298.09"
-1329615 16 17 17 16 0 0.17221472095300377 57302.20088751145 4.3502382034488207e-17 1.448554574057132 0.06017236785197477 0.0022078236768797027 0.18288957088589086 9.532996248933824e-19 0.02501584552857546 0.016292455378999038 50.779109758505896 61.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1330031 13 13 13 27 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.428691
-    t0 = +57308.53"
-1330426 16 16 17 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57337.58"
-1330642 16 18 17 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.692199
-    t0 = +57422.74"
-1330903 18 20 20 21 0 0.1724409640976894 57301.324304690075 3.334849634696605e-17 1.505379029629227 0.46591983356439637 0.0008726812002696482 0.15767430453706766 8.050834542204374e-19 0.03318315586257024 0.02192144339587976 64.8608572657483 74.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1331123 15 17 17 17 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57318.09"
-1331993 17 17 16 14 0 0.1649952996461721 57320.7719057776 2.5622300165213096e-17 1.4617927989962363 0.6475006307928083 0.000759701898912668 0.022525324038724648 3.431805403156015e-19 0.012615347542860353 0.014107623486162957 103.69976666501486 59.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1332059 17 17 18 19 0 0.010000051391201222 57317.99693672638 4.558000123327435e-17 1.516711709830343 0.5457919528644264 3.591980407781532e-05 0.09527144378807861 1.236941528083629e-18 0.030418499504940216 0.03092868089273043 65.71180428950925 66.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1332413 17 18 17 17 0 0.0933566890192386 57197.67271798915 3.0579312718196857e-16 1.8855879802528517 0.43439986689633037 0.0036990683521707993 2.491863421033486 1.7393561529381758e-17 0.02865517449148607 0.04387876563498441 421.39140145880214 64.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1333246 10 16 14 16 0 0.2446569387047287 57322.727671997105 3.440830544024703e-17 1.8159707117740487 0.17884902621991716 0.0066388903849885356 0.10009174259903375 1.126797900536975e-18 0.03836329306311738 0.020401921414312824 24.42143322902472 51.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1333438 13 15 16 9 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.480167
-    t0 = +57321.83"
-1334084 6 8 11 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.616267
-    t0 = +57331.99"
-1334087 8 4 3 12 0 0.01747355667207012 57334.00911572678 1.7927046256850736e-16 1.462470530259375 2.23124758114146e-08 0.00498797461317351 0.33306301623088075 5.53914419934079e-18 0.03798640097122151 0.00011089579220122103 48.92918623263545 22.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1334302 14 14 17 19 0 0.03701692641939354 57162.74791761767 3.490141606179884e-16 2.875489208494647 0.21163009553853096 0.004771124925145281 4.457335771039652 2.4121142465662307e-17 0.07339094911643711 0.038650052403552654 437.54318423311247 59.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1334423 14 14 14 14 0 0.12196923769115009 57332.18310087655 5.765049479958827e-17 1.6926579624290368 0.030810558032167146 0.0011907228104976117 0.03085402365468326 9.59932283371449e-19 0.024481705171729668 0.014125598459945349 53.115687271991334 51.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1334448 16 16 16 16 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.495089
-    t0 = +57328.73"
-1334470 15 15 15 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.488058
-    t0 = +57329.48"
-1334597 13 12 12 11 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.328633
-    t0 = +57334.21"
-1334620 14 15 14 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.502731
-    t0 = +57324.02"
-1334644 14 15 13 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.597802
-    t0 = +57331.20"
-1334645 14 12 14 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.496470
-    t0 = +57317.71"
-1334707 16 16 15 16 0 0.09698642651500841 57333.04150854812 3.575814149237532e-17 1.5209995325938026 0.48742818654644005 0.0004909516742514983 0.026349628715252038 3.5544563958448364e-19 0.012124656932236967 0.009075744468096114 88.48521420170628 58.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1334879 14 14 16 17 0 0.23192397728398167 57331.4703495669 2.192292640413349e-17 1.5268830226995793 0.5407502308273661 0.0006927000322762694 0.018176536341343308 1.9349214475470018e-19 0.01001541986079377 0.009933881174163106 131.90172991770493 56.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1335472 15 15 14 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.559806
-    t0 = +57355.85"
-1335564 15 16 15 14 0 0.05994901012026124 57337.35119295385 4.2581555424534005e-17 1.5106753498117669 0.908515226573059 0.002122178084600211 0.03175937744163093 1.2597590146502465e-18 0.03562806171338179 0.03303344197556107 62.79242780343666 55.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1335694 6 11 8 12 0 0.052280346458957114 57343.66554004822 1.4149537231542474e-16 1.5830952043731796 5.602461383702462e-09 0.00227806816089492 0.01481810376571957 1.7223256658577695e-18 0.013983530858409783 2.091380201335591e-05 329.0817325787411 32.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1335717 13 13 12 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57347.34"
-1335718 15 15 14 15 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.496685
-    t0 = +57347.00"
-1335868 16 17 17 16 0 0.16428241065563018 57341.73272460011 3.60270845418789e-17 1.710803062465326 0.5623635919609126 0.0003596580108596037 0.037562301356956596 7.9276052987696515e-19 0.028964498374786332 0.02368673874206484 105.76137094422228 61.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1336008 13 13 11 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.500531
-    t0 = +57346.99"
-1336009 13 13 12 13 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.580899
-    t0 = +57369.21"
-1336453 9 9 10 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.727677
-    t0 = +57340.47"
-1336480 8 7 10 11 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57347.32"
-1336687 11 12 11 11 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57348.11"
-1337117 12 12 11 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.497673
-    t0 = +57372.80"
-1337221 12 14 14 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.603713
-    t0 = +57349.18"
-1337228 12 14 14 14 0 0.24891771541847543 57354.04933932883 1.9568657172814243e-17 1.5072589938639565 0.12075390662240759 0.001745255349294969 0.028317884243733715 5.469298018869984e-19 0.027930897441156077 0.028253506004510154 43.5865891358313 49.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1337272 12 12 12 12 0 0.17063491497164615 57354.23148289405 3.515521546844763e-17 1.4170130405309262 0.2372174064642102 0.009073194315204397 0.016518678199645365 7.975438164214026e-19 0.021420508753025657 0.017502910177787045 53.32586043862083 43.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1337325 12 12 12 12 0 0.057156096647194475 57351.18824698133 3.9474980771879966e-17 1.495773106572049 0.7119952145373931 0.005770009259740201 0.02286470325634582 1.0171457962207646e-18 0.034101009460488364 0.02741254031750534 54.65362004141771 43.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1337649 9 9 9 9 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.496030
-    t0 = +57349.00"
-1337655 11 10 11 10 0 0.29392508469743983 57357.149687503465 1.7750722365428598e-17 1.6587367679924494 0.3913459334629441 0.0001573741037402543 0.03570826076975209 1.7281731698139738e-19 0.013172250288967772 0.009399381150688085 73.10153118467937 37.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1337687 12 12 12 11 0 0.051323880438663885 57347.29714063579 2.1435716907739707e-15 0.0989683308148624 0.08654903570357153 0.0026550147873209626 0.1040112700611644 3.8876929501631614e-17 0.0017356257715797003 0.021186766664915008 5247.223484747253 42.0 "Minimization exited successfully."
-1337703 14 15 15 14 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57347.82"
-1337838 10 11 10 11 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.513286
-    t0 = +57434.86"
-1338128 9 11 11 11 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.504406
-    t0 = +57416.03"
-1338170 9 11 11 11 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.605696
-    t0 = +57424.21"
-1338233 13 13 13 13 0 0.25321426036635547 57352.44041258428 1.645485202742722e-17 1.3453815951780321 0.04327575580424059 0.0021987486054461103 0.02697231003185152 5.295117692158911e-19 0.031057683543892378 0.02666197493422018 25.893248486747623 47.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1338266 20 20 19 21 0 0.1705313228968933 57361.380661991694 2.340693975883358e-17 1.4783559820105816 0.49726462916745334 0.0006632211626816931 0.023374517004413065 5.0325975009772405e-19 0.02998566257416931 0.01809347268058137 83.59394977555104 75.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1338278 10 10 10 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.486979
-    t0 = +57376.77"
-1338387 11 10 10 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.503673
-    t0 = +57340.11"
-1338430 10 9 9 9 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.494635
-    t0 = +57374.41"
-1338471 12 11 11 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.478187
-    t0 = +57339.18"
-1338675 9 8 9 8 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57377.06"
-1339002 8 9 9 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.496585
-    t0 = +57374.86"
-1339149 8 10 9 9 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57375.14"
-1339392 4 6 7 12 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.876176
-    t0 = +57377.65"
-1339450 12 13 13 13 0 0.2466987956439643 57365.724830735846 2.4682002529044042e-17 1.3963481784784275 0.3611977712719589 0.0018485952956885932 0.15290390024892986 8.288095991623859e-19 0.03867638138451227 0.030062169729639127 45.668005749543624 46.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1340454 11 11 11 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.488902
-    t0 = +57375.53"
-1341370 8 8 8 8 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57375.12"
-1341894 7 7 7 7 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57390.13"
-1342255 7 6 6 6 0 0.010000000071741287 57388.50317421777 2.308552533147774e-16 1.7523120553629645 7.621184405781634e-09 1.6591624000354688e-06 0.19282358396958443 3.5485270820428206e-18 0.0453759496734635 5.314193777611331e-06 1041.1734261752129 20.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1343208 10 10 6 10 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.481619
-    t0 = +57389.32"
-1343337 7 8 8 8 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.496075
-    t0 = +57388.84"
-1343401 6 6 6 6 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57390.13"
-1343533 7 8 8 8 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57388.13"
-1343759 9 8 7 8 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57391.23"
-1343871 7 7 7 7 0 0.6909184222065811 57415.03051555159 2.4098939025127686e-17 3.4927585692989624 2.2722309589440215e-09 0.0007141311646621795 0.5649823994754115 5.581547455985096e-19 0.036808230421392855 4.6180555239860865e-06 141.02613279127647 23.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1344692 7 7 7 7 0 0.4074576636799593 57404.037989003606 3.903120048881185e-17 0.35657841577108274 0.420076475755277 0.003402773650368146 0.3742416314089496 4.198392000681193e-18 0.01905430577711006 0.06502171202515494 319.2007610670831 23.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1345553 6 6 6 6 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57390.13"
-1345582 7 7 7 7 0 0.04875342908020326 57436.483845729315 3.357898341043019e-16 0.9525237522978207 0.9929846761701409 0.027743849863147135 0.29663053422336816 9.705083931765057e-17 0.030168090976370167 0.9204864521971546 1819.0917561923566 23.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1345594 6 5 6 6 0 0.28160372450698834 57414.065406664355 5.175363714034059e-16 0.11111527586872649 0.17529186084818266 0.013752206180925902 2.763057851469057 4.3608133025575796e-16 0.02360568205799924 0.29882442435542267 857.3996064788965 18.0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definit"
-1346137 7 7 7 7 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.455000
-    t0 = +57417.29"
-1346387 8 7 6 7 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.900000
-    t0 = +57388.84"
-1346956 5 5 5 5 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.650927
-    t0 = +57416.62"
-1346966 6 7 7 7 0 nan nan nan nan nan nan nan nan nan nan nan nan "exception was raised in user function
-User function arguments:
-     z = +0.486627
-    t0 = +57418.90"
+cid num_points z t0 x0 x1 c z_err t0_err x0_err x1_err c_err chi dof b_max delta_15 tmin tmax pre_max post_max message
+1248677 59 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.487759     t0 = +56546.176475     x0 = +0.000000     x1 = -4.353806      c = +0.984681 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1250017 60 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.493202     t0 = +56557.053643     x0 = +0.000000     x1 = -399.247932      c = +0.972646 Original python exception in user function: ValueError: Error code returned by bispev:"
+1253039 74 0.16335774379182513 56570.87936601494 4.7943672744921954e-17 1.4956767674864169 8.33847169090518e-09 0.004804517652327062 0.07958458612847608 6.410329506150286e-19 0.025838793663469254 1.6232735567361933e-05 119.64535773871484 69.0 22.725676537592058 1.2896800352476916 56547.268 56653.094 24 50 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1253101 68 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56581.092158     x0 = +0.000000     x1 = -0.144380      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1253920 58 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.487772     t0 = +56598.302297     x0 = +0.000000     x1 = -10.985675      c = +0.991883 Original python exception in user function: ValueError: Error code returned by bispev:"
+1255502 29 0.037896192870335195 56590.32966122932 4.343424505904515e-16 1.9102711074190906 3.6417147075695766e-11 0.0027500671773202923 0.13606038061334402 1.2278913666537785e-17 0.04639923530102631 3.0778762866001674e-05 322.99152655816084 24.0 20.332924065440373 0.9290007423525601 56563.266 56653.077 6 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1257366 40 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.490122     t0 = +56617.489642     x0 = +0.000000     x1 = -0.925610      c = +0.956069 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1257695 48 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56617.174158     x0 = +0.000000     x1 = -0.007160      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1258906 56 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.488342     t0 = +56618.296074     x0 = +0.000000     x1 = -18.717317      c = +0.992686 Original python exception in user function: ValueError: Error code returned by bispev:"
+1258940 70 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56618.166158     x0 = +0.000000     x1 = -0.595716      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1259412 47 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.613949     t0 = +56611.285011     x0 = +0.000000     x1 = -5.533605      c = +0.987550 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1261579 40 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56637.234158     x0 = +0.000000     x1 = -0.571187      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1262214 68 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.476347     t0 = +56640.679266     x0 = +0.000000     x1 = -0.938244      c = +0.960171 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1262715 46 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.476852     t0 = +56647.124921     x0 = +0.000000     x1 = -0.125200      c = +0.940255 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1263369 36 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.540963     t0 = +56664.664619     x0 = +0.000000     x1 = -0.993565      c = +0.998393 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1263715 35 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.486206     t0 = +56665.547708     x0 = +0.000000     x1 = -0.657104      c = +0.993649 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1275946 72 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57259.318158     x0 = +0.000000     x1 = -0.350000      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1279500 45 0.010000000217293085 57212.050167266294 1.6765956139934982e-15 0.8546738548656244 4.522049401600725e-12 4.59382301212178e-06 0.26616748092419584 4.303683604128527e-17 0.006599091491039606 1.2228693052118711e-05 4114.7485924574175 40.0 18.86643388167331 1.8604176634771505 57249.293 57319.287 0 45 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1280217 63 0.1318386688311823 57209.81535319473 5.572069973229093e-16 0.866964491953302 3.318608104985188e-08 0.006166330424470234 0.8535556449460273 2.6308818879376753e-17 0.015607221056139233 0.0002169568591040838 316.5593340538017 58.0 20.062463346563444 1.8423333261471093 57248.388 57329.175 0 63 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1281668 83 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57267.316158     x0 = +0.000000     x1 = -0.481749      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1281886 70 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57258.385158     x0 = +0.000000     x1 = -0.376012      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1282736 72 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.529054     t0 = +57263.147812     x0 = +0.000000     x1 = -2.260534      c = +0.999986 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1283373 61 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57267.456158     x0 = +0.000000     x1 = -0.666169      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1283878 56 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.479611     t0 = +57264.175718     x0 = +0.000000     x1 = -1.870397      c = +0.999881 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1283936 85 0.7184026188741038 57272.981258214255 2.6895201010650056e-17 1.6694707222331306 8.7919005409276e-11 0.0008595668333591377 0.138343405960768 7.9410893061010315e-19 0.06707904092492822 8.178169962652637e-06 176.18614864308532 80.0 23.35331778377458 1.1372457923367456 57248.373 57347.084 20 65 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1285160 72 0.1710633204629146 57266.223139154106 2.5809460992937575e-17 1.4125146981813868 0.6111224668418421 0.0004051447201738889 0.05579921808021027 2.635666342274517e-19 0.009519375430050598 0.01199763594355402 88.49477838028871 67.0 24.567054247535406 1.3516117121605937 57249.403 57372.178 10 62 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1285317 92 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.507986     t0 = +57295.542091     x0 = +0.000000     x1 = -0.464180      c = +0.998474 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1286398 52 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.487956     t0 = +57266.818215     x0 = +0.000000     x1 = -0.622412      c = +0.962872 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1287626 23 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.475889     t0 = +56670.892639     x0 = +0.000000     x1 = -3.464316      c = +0.986626 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1289288 81 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.900000     t0 = +57372.761235     x0 = +0.000000     x1 = -39.599472      c = +0.962984 Original python exception in user function: ValueError: Error code returned by bispev:"
+1289555 79 0.10540689033753835 57269.72240972478 4.421651205035604e-17 1.6146247825963764 0.3935271783527411 0.0007337884228293332 0.21070788552242448 1.1215930647445199e-18 0.028096678978834756 0.026869049324207916 85.11458760515235 74.0 23.556079543968362 1.187875188560799 57248.388 57365.115 16 63 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1289600 64 0.1957906098263242 57279.13106033006 3.6388064066568496e-17 1.6837478283919534 0.026625429704808024 0.0006814725733371996 0.03140679986245232 3.201428082172688e-19 0.011369735200666786 0.008745074097284006 101.63194325876358 59.0 23.06787351726934 1.1240049756279724 57253.285 57365.221 12 52 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1289656 75 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.488558     t0 = +57283.137259     x0 = +0.000000     x1 = -5.071178      c = +0.861179 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1289664 64 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.492961     t0 = +57289.989420     x0 = +0.000000     x1 = -0.223698      c = +0.974414 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1290779 44 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56893.485158     x0 = +0.000000     x1 = -0.173595      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1290816 40 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56893.485158     x0 = +0.000000     x1 = -0.240496      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1291080 52 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.487117     t0 = +56895.232650     x0 = +0.000000     x1 = -11.289088      c = +0.962993 Original python exception in user function: ValueError: Error code returned by bispev:"
+1291090 51 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.500818     t0 = +56893.001008     x0 = +0.000000     x1 = -0.524954      c = +0.969241 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1291794 72 0.10045022826124055 57274.14322012009 6.390262466372865e-17 1.4798241392596168 0.24140773741812865 0.0004901087800233891 0.13263044336781604 1.848305236193509e-18 0.029421652058783714 0.02189957548397234 53.400211974322005 67.0 22.881743740027073 1.3021102644462026 57252.289 57356.174 15 57 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1291957 60 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.518146     t0 = +56885.651189     x0 = +0.000000     x1 = -0.756217      c = +0.979384 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1292145 73 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.483581     t0 = +57284.161982     x0 = +0.000000     x1 = -0.035340      c = +0.906699 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1292195 81 0.21817976646686943 57275.5473771915 1.926688511476935e-17 1.4059659369555713 0.999972040768212 0.0021250041614401527 0.14339805362760671 3.5478425155549996e-19 0.03167305603025417 0.007415906828074137 117.43559654782118 76.0 25.67171759512266 1.3561591991484043 57249.403 57389.163 12 69 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1292332 49 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.496485     t0 = +56884.967146     x0 = +0.000000     x1 = -1.401072      c = +0.987816 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1292336 49 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.495976     t0 = +56887.080424     x0 = +0.000000     x1 = -1.022995      c = +0.973559 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1292560 48 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56905.316158     x0 = +0.000000     x1 = -0.321007      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1293319 57 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.487303     t0 = +56900.791867     x0 = +0.000000     x1 = -0.544036      c = +0.983145 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1293758 35 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.389083     t0 = +56897.686643     x0 = +0.000000     x1 = -1.378882      c = +0.901762 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1294014 39 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.483574     t0 = +56936.689350     x0 = +0.000000     x1 = -0.222559      c = +0.953290 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1294743 47 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.624461     t0 = +56873.615169     x0 = +0.000000     x1 = -4.473800      c = +0.980866 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1295027 71 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.460626     t0 = +56891.268725     x0 = +0.000000     x1 = -1.135425      c = +0.944198 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1295256 60 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.475282     t0 = +56930.812147     x0 = +0.000000     x1 = -0.749875      c = +0.999064 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1295305 63 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.782271     t0 = +56842.230545     x0 = +0.000000     x1 = -2.476063      c = +0.968123 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1295921 54 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.486823     t0 = +56903.682767     x0 = +0.000000     x1 = -1.119159      c = +0.998456 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1296273 63 0.14545987637716223 56836.23519585028 5.714569064290066e-16 1.42561510391887 3.582448798722382e-08 0.003202928288444873 1.0842026952414017 2.4222535260623547e-17 0.0218906979175166 0.00016827120732926248 2120.6150775667943 58.0 20.03504611771218 1.342360077147294 56903.383 57003.049 0 63 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1296321 51 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.646981     t0 = +56938.024649     x0 = +0.000000     x1 = -2.147349      c = +0.970067 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1296657 32 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.389795     t0 = +56872.528311     x0 = +0.000000     x1 = -0.340701      c = +0.901495 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1297026 56 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.552740     t0 = +56958.891241     x0 = +0.000000     x1 = -0.624304      c = +0.998296 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1297465 62 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.485772     t0 = +56931.495119     x0 = +0.000000     x1 = -9.246522      c = +0.993896 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1298281 58 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.613974     t0 = +56938.309218     x0 = +0.000000     x1 = -1.180669      c = +0.973417 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1298893 22 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56933.254158     x0 = +0.000000     x1 = -0.323793      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1299643 66 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.518784     t0 = +56962.554109     x0 = +0.000000     x1 = -0.948853      c = +0.995990 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1299775 37 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.508212     t0 = +56931.372390     x0 = +0.000000     x1 = -0.768056      c = +0.990806 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1299785 64 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.477932     t0 = +56933.269243     x0 = +0.000000     x1 = -2.800431      c = +0.999213 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1300516 69 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.508691     t0 = +56942.652379     x0 = +0.000000     x1 = -8.741825      c = +0.999517 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1300912 65 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.482267     t0 = +56936.826199     x0 = +0.000000     x1 = -0.659483      c = +0.993674 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1301933 61 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56951.218158     x0 = +0.000000     x1 = -0.313453      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1302058 56 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.215587     t0 = +56963.798494     x0 = +0.000000     x1 = -0.072543      c = +0.119679 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1302141 91 0.1108852139360804 57274.58705806946 4.445245704430651e-17 1.475646153322698 0.9290447580589047 0.0010566785754938315 0.08631214027991518 1.6716368953195785e-18 0.03002361105705561 0.049446566066561004 91.40720386015936 86.0 24.601522108401632 1.3053424767552997 57248.403 57365.044 24 67 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1302187 50 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.848716     t0 = +56943.614167     x0 = +0.000000     x1 = -0.643720      c = +0.981189 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1302523 56 0.18538914986722416 57197.153440682945 3.384661486872416e-16 1.4211075850772579 2.2382101433349177e-07 0.0018470241622166733 0.9516854997782502 1.3702998750409402e-17 0.013974683110606205 0.0005028728181748487 1332.4955056189774 51.0 20.60371702905071 1.345558245332473 57265.24 57372.059 0 56 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1302648 57 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.505218     t0 = +56939.454997     x0 = +0.000000     x1 = -0.858170      c = +0.992131 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1303004 72 0.16651713529847972 56962.57145174087 8.153350357421864e-16 0.2253073347769804 1.4162782058235734e-11 0.002282373260650908 0.014977721024479251 2.824741323798767e-17 0.0017044543560506518 2.2122837206789425e-05 7605.004386029107 67.0 19.64916511986376 3.5505309914932965 56934.371 57033.047 21 51 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1303279 43 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.571405     t0 = +56957.609176     x0 = +0.000000     x1 = -3.804468      c = +0.942520 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1303496 41 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56965.335158     x0 = +0.000000     x1 = -0.365291      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1303883 73 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.051495     t0 = +57294.169640     x0 = +0.000000     x1 = -0.774131      c = +0.003798 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1303952 84 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.158731     t0 = +57258.987967     x0 = +0.000000     x1 = -1.699955      c = +0.240955 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1304127 83 0.07093883168333229 57273.48462197514 3.40362722214364e-17 1.5501422452484959 0.749750469932445 0.0029152084117712793 0.12059189353749389 9.785333226291324e-19 0.026085923923109447 0.0338721971640904 90.90561895071863 78.0 24.564256974260125 1.2448556604211376 57249.279 57373.058 20 63 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1304442 16 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.485734     t0 = +56959.226158     x0 = +0.000000     x1 = -0.054639      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1304678 49 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.499693     t0 = +56975.408158     x0 = +0.000000     x1 = -0.644780      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1305504 60 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.503946     t0 = +56964.584953     x0 = +0.000000     x1 = -0.634109      c = +0.999990 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1305626 55 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.505748     t0 = +56960.799921     x0 = +0.000000     x1 = -0.696125      c = +0.994488 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1306029 74 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.184830     t0 = +57278.082529     x0 = +0.000000     x1 = -0.317954      c = +0.925703 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1306073 56 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.529243     t0 = +56960.351783     x0 = +0.000000     x1 = -0.584099      c = +0.995036 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1306141 65 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.503517     t0 = +56993.199401     x0 = +0.000000     x1 = -0.870262      c = +0.983989 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1306360 76 0.17623173061772374 57274.93886781848 4.1519485348844974e-17 1.3743034695744512 0.23431237768694746 0.0007652322379625431 0.08238860482379096 1.4827690719445173e-18 0.03999591861770608 0.025553300849553234 46.4779201856891 71.0 23.33284779638327 1.3775983757583603 57249.423 57355.245 11 65 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306390 68 0.12614826021355316 57276.697498664435 4.341973043736194e-17 1.4651083939185243 0.5385350005548263 0.001343694596696171 0.41610137792667956 1.6222868575082876e-18 0.043226608252977826 0.03839597358594293 18.8507701190389 63.0 23.87388451501471 1.3133834563901488 57253.401 57355.23 12 56 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306537 76 0.10649073366446436 57282.774526492976 5.307729275868974e-17 1.6288317690237595 0.20048931162952183 0.000773895425461267 0.08122083570924588 9.897259297058374e-19 0.024677579657279018 0.015319921781641571 85.87141889478292 71.0 22.9883629458555 1.174860243456049 57265.363 57372.241 12 64 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306626 73 0.11878593513760838 57280.00018462593 5.841778616594979e-17 1.5165647065303027 0.06819563894420344 0.001418969519684149 0.09964614698037622 9.484871538950054e-19 0.01956173161639077 0.013905983287518825 89.66126966124254 68.0 22.624240879719643 1.2728729949879742 57255.41 57355.245 16 57 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306785 42 0.25507380139313857 57280.08387670864 2.871912818972577e-17 1.3411764224961544 0.16981610452710383 0.000835997927538662 0.2678790155259776 9.513141803133327e-19 0.06365501292890934 0.019377917242881043 25.278865881235465 37.0 23.58913613246181 1.3992196607152572 57248.419 57311.114 22 20 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306980 86 0.24573132612179652 57278.44005178794 3.005091533701766e-17 1.3081664745224257 0.2685401696454006 0.002878795032267664 0.12419527259771712 1.1547277426737055e-18 0.027620271786806018 0.03916132828592839 73.0372090183044 81.0 23.75152536996635 1.4201680602154596 57252.229 57372.039 24 62 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1306991 72 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.900000     t0 = +57285.132183     x0 = +0.000000     x1 = -0.677825      c = +0.934554 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1307277 70 0.13402424305399915 57280.15034199923 4.659654519126087e-17 1.4412436040440155 0.2914440781833344 0.0006857891360755458 0.12929424941103207 1.5685757190051753e-18 0.04004746740200078 0.03296278397822219 41.73893426977132 65.0 23.31300428905365 1.3311095548727927 57256.292 57365.115 15 55 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1307830 59 0.12094753625841514 57283.296703608095 5.014545647195633e-17 1.2526309828049147 4.4364512064021255e-13 0.0002449829296218911 0.05448849164167768 7.164552374632025e-19 0.025845961171038268 1.8196184483676436e-05 119.80086878579667 54.0 22.676925798080788 1.4550964006212332 57257.281 57365.196 10 49 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1308314 74 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56994.471544     x0 = +0.000000     x1 = -0.954834      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1308326 63 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56992.878426     x0 = +0.000000     x1 = -1.065141      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1308568 72 0.3162837174296313 57285.71023291342 2.8463790909683494e-17 1.5321599694979133 0.40491929111602376 0.0010214757771532523 0.13046927850155043 8.897402462322491e-19 0.036016074671408396 0.023268297799824644 81.44425091571492 67.0 24.057209815643603 1.2600156766607071 57256.269 57379.066 15 57 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1308582 57 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.606126     t0 = +57296.687672     x0 = +0.000000     x1 = -0.473588      c = +0.986831 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1308884 48 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.492539     t0 = +57291.036323     x0 = +0.000000     x1 = -1.441798      c = +0.949159 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1308957 72 0.27494082357949673 57285.21124565591 2.0321426055073917e-17 1.5305067748654941 0.05546257728390397 0.015219321257994328 0.09828523109536036 5.266508381748616e-19 0.025062718711280255 0.01707558211932081 71.7200926932141 67.0 23.74868703031853 1.2613791301431654 57253.33 57373.057 18 54 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1309288 44 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +56994.216158     x0 = +0.000000     x1 = -0.686801      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1309492 61 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.491034     t0 = +56994.487683     x0 = +0.000000     x1 = -0.716906      c = +0.991957 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1309749 70 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.556207     t0 = +56992.957613     x0 = +0.000000     x1 = -0.423933      c = +0.945633 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1310338 63 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.504040     t0 = +56803.675945     x0 = +0.000000     x1 = -5.460657      c = +0.994181 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1310395 70 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.489117     t0 = +56968.475319     x0 = +0.000000     x1 = -63.723374      c = +0.988407 Original python exception in user function: ValueError: Error code returned by bispev:"
+1312274 62 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.489050     t0 = +56991.046582     x0 = +0.000000     x1 = -8.392670      c = +0.998017 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1313594 54 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.496046     t0 = +56990.872361     x0 = +0.000000     x1 = -3.243794      c = +0.984442 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1314897 54 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.483647     t0 = +57301.684610     x0 = +0.000000     x1 = -1.092961      c = +0.984599 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1315192 38 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.101370     t0 = +56999.398565     x0 = +0.000000     x1 = -3.409877      c = +0.048929 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1315259 44 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.600987     t0 = +56992.017236     x0 = +0.000000     x1 = -5.862510      c = +0.999219 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1315296 53 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.899970     t0 = +56994.964970     x0 = +0.000000     x1 = -0.833332      c = +0.949432 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1316385 32 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.477052     t0 = +57028.259158     x0 = +0.000000     x1 = -0.787654      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1316431 39 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57020.149158     x0 = +0.000000     x1 = -0.350000      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1316437 49 0.08411290166664814 57005.143696055915 4.461005797399877e-17 1.42495890735407 0.6319286120312113 0.0011466818579387236 0.0627639535086928 1.1972284886579291e-18 0.02932877989808347 0.03255270820244799 56.50198277175211 44.0 24.01270823159134 1.3428436709908311 56980.192 57052.1 15 34 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1316465 41 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.527775     t0 = +57019.106299     x0 = +0.000000     x1 = -2.831934      c = +0.982937 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1317164 35 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.473510     t0 = +57265.265190     x0 = +0.000000     x1 = -0.355917      c = +0.925881 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1317277 52 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.513549     t0 = +57000.136803     x0 = +0.000000     x1 = -0.377222      c = +0.990273 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1317286 54 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.523161     t0 = +57026.339998     x0 = +0.000000     x1 = -5.566662      c = +0.970181 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1317454 39 0.18951444702851114 57017.80620681022 3.676402129061449e-16 0.15143484606317673 0.5339082957416614 0.004958102637477618 0.016238482148764888 2.810778509098578e-17 0.0015101605974642807 0.05728892066113486 754.9954971554739 34.0 21.549032823527362 4.28469889931959 56987.028 57051.043 22 17 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1317666 47 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.486686     t0 = +57334.676666     x0 = +0.000000     x1 = -1.195504      c = +0.942458 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1319366 65 0.2771160605029041 57295.32024579527 2.9671712449790323e-15 0.04494172079229356 1.2375963198696383e-08 0.001280048293035907 0.5143698846441112 3.1759714115073723e-16 0.005914020200776093 0.00025273383552903983 7418.419539746632 60.0 18.261694894425446 4.286754844195524 57276.312 57372.107 18 47 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1319821 49 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57019.331158     x0 = +0.000000     x1 = -0.348569      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1320166 39 0.26477216283860067 57017.973679407034 1.078107807122545e-15 0.0633245520338756 0.1062526330745141 0.006380464218917387 0.005993439837766346 1.0060463495097391e-16 0.000441732229295571 0.05503661587357511 864.7315995836663 34.0 19.546411652232052 4.282990103572143 56991.108 57049.049 20 19 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1322229 29 0.4574692586273611 57057.983960675556 1.3309837038967084e-16 0.4946005886746303 0.7003120815454418 0.01631087191995753 0.06820030933886301 1.1832814859281002e-17 0.005711920120818532 0.06280555969109985 4062.525462587304 24.0 22.96796598005215 2.668031764539201 57001.05 57052.048 29 0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1322979 35 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.506577     t0 = +57022.427718     x0 = +0.000000     x1 = -2.601510      c = +0.995364 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1324542 38 0.04120225631200086 57037.600139898925 4.0637640193680746e-17 1.6293047766108715 0.6157498978555064 0.002137817640427756 0.09008795863337582 9.542080001464337e-19 0.037660457824187754 0.02725715498985881 52.90318700548178 33.0 24.082904412820728 1.1744392243098005 57011.085 57067.103 15 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1325358 32 0.4436647615554349 57044.34030955062 1.6289783134491138e-17 1.6470866556732933 0.11808416377177172 0.00044276922933830787 0.12890344525658293 1.7830525297789273e-19 0.014527492987284722 0.006355175692299236 33.836922444786794 27.0 24.1017170166121 1.1580076448451493 57005.241 57066.064 25 7 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1327978 54 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.868752     t0 = +57165.619526     x0 = +0.000000     x1 = -14.946838      c = +0.355354 Original python exception in user function: ValueError: Error code returned by bispev:"
+1328066 81 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.504852     t0 = +57289.228794     x0 = +0.000000     x1 = -0.593521      c = +0.995558 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1328105 84 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.503342     t0 = +57289.155998     x0 = +0.000000     x1 = -0.246533      c = +0.998980 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1329166 71 0.16347248569521614 57301.69602227752 2.4291872031016517e-17 1.5484206701811813 0.7329974919388712 0.0002099276527364885 0.024589909771748353 3.110826692757543e-19 0.014096118312579016 0.012649709476557303 106.18327367195067 66.0 24.88985043422051 1.2463220923352232 57268.251 57402.11 19 52 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1329196 82 0.40567932067612217 57303.90238411761 1.352919101869935e-17 1.5112961980433268 6.406810685311015e-07 0.0006825705477002397 0.08128685730480356 1.2972424494021226e-19 0.018382833365635575 6.31230549974493e-06 175.4329158217189 77.0 24.099326212362104 1.277157543182117 57266.247 57406.112 23 59 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1329312 59 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.505488     t0 = +57298.096466     x0 = +0.000000     x1 = -0.334241      c = +0.984857 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1329615 66 0.17221472095300377 57302.20088751145 4.3502382034488207e-17 1.448554574057132 0.06017236785197477 0.0022078236768797027 0.18288957088589086 9.532996248933824e-19 0.02501584552857546 0.016292455378999038 50.779109758505896 61.0 22.93038690952954 1.3257380049526581 57278.298 57385.114 16 50 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1330031 66 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.428691     t0 = +57308.534674     x0 = +0.000000     x1 = -0.832238      c = +0.970942 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1330426 66 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57337.580371     x0 = +0.000000     x1 = -0.091541      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1330642 68 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.692199     t0 = +57422.742530     x0 = +0.000000     x1 = -1.118966      c = +0.996824 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1330903 79 0.1724409640976894 57301.324304690075 3.334849634696605e-17 1.505379029629227 0.46591983356439637 0.0008726812002696482 0.15767430453706766 8.050834542204374e-19 0.03318315586257024 0.02192144339587976 64.8608572657483 74.0 24.016840988441942 1.2819513467204118 57276.312 57396.103 22 57 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1331123 66 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57318.099158     x0 = +0.000000     x1 = -0.628576      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1331993 64 0.1649952996461721 57320.7719057776 2.5622300165213096e-17 1.4617927989962363 0.6475006307928083 0.000759701898912668 0.022525324038724648 3.431805403156015e-19 0.012615347542860353 0.014107623486162957 103.69976666501486 59.0 24.6455081682616 1.3158872788894094 57291.17 57408.04 21 43 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1332059 71 0.010000051391201222 57317.99693672638 4.558000123327435e-17 1.516711709830343 0.5457919528644264 3.591980407781532e-05 0.09527144378807861 1.236941528083629e-18 0.030418499504940216 0.03092868089273043 65.71180428950925 66.0 23.83334126742362 1.2727698250847972 57288.199 57403.103 26 45 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1332413 69 0.0933566890192386 57197.67271798915 3.0579312718196857e-16 1.8855879802528517 0.43439986689633037 0.0036990683521707993 2.491863421033486 1.7393561529381758e-17 0.02865517449148607 0.04387876563498441 421.39140145880214 64.0 21.54098021170132 0.9482613385366179 57297.151 57403.064 0 69 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1333246 56 0.2446569387047287 57322.727671997105 3.440830544024703e-17 1.8159707117740487 0.17884902621991716 0.0066388903849885356 0.10009174259903375 1.126797900536975e-18 0.03836329306311738 0.020401921414312824 24.42143322902472 51.0 23.411948943374515 1.0054739704861184 57299.22 57403.103 22 34 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1333438 53 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.480167     t0 = +57321.836832     x0 = +0.000000     x1 = -0.212852      c = +0.972651 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1334084 37 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.616267     t0 = +57331.993471     x0 = +0.000000     x1 = -0.153397      c = +0.937672 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1334087 27 0.01747355667207012 57334.00911572678 1.7927046256850736e-16 1.462470530259375 2.23124758114146e-08 0.00498797461317351 0.33306301623088075 5.53914419934079e-18 0.03798640097122151 0.00011089579220122103 48.92918623263545 22.0 21.293732963045265 1.3153586846675793 57311.299 57403.103 10 17 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334302 64 0.03701692641939354 57162.74791761767 3.490141606179884e-16 2.875489208494647 0.21163009553853096 0.004771124925145281 4.457335771039652 2.4121142465662307e-17 0.07339094911643711 0.038650052403552654 437.54318423311247 59.0 20.968556101041287 0.4572353753219538 57301.033 57407.048 0 64 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334423 56 0.12196923769115009 57332.18310087655 5.765049479958827e-17 1.6926579624290368 0.030810558032167146 0.0011907228104976117 0.03085402365468326 9.59932283371449e-19 0.024481705171729668 0.014125598459945349 53.115687271991334 51.0 22.57514139206123 1.1157557669767044 57312.138 57408.057 20 36 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334448 64 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.495089     t0 = +57328.734543     x0 = +0.000000     x1 = -0.891963      c = +0.993860 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1334470 60 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.488058     t0 = +57329.488997     x0 = +0.000000     x1 = -0.062884      c = +0.989565 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1334597 48 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.328633     t0 = +57334.216272     x0 = +0.000000     x1 = -0.146257      c = +0.999840 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1334620 58 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.502731     t0 = +57324.026271     x0 = +0.000000     x1 = -4.583973      c = +0.995785 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1334644 56 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.597802     t0 = +57331.208646     x0 = +0.000000     x1 = -3.106096      c = +0.991596 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1334645 54 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.496470     t0 = +57317.715979     x0 = +0.000000     x1 = -4.398164      c = +0.992205 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1334707 63 0.09698642651500841 57333.04150854812 3.575814149237532e-17 1.5209995325938026 0.48742818654644005 0.0004909516742514983 0.026349628715252038 3.5544563958448364e-19 0.012124656932236967 0.009075744468096114 88.48521420170628 58.0 23.9915763693945 1.269256562167687 57304.307 57426.118 17 46 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1334879 61 0.23192397728398167 57331.4703495669 2.192292640413349e-17 1.5268830226995793 0.5407502308273661 0.0006927000322762694 0.018176536341343308 1.9349214475470018e-19 0.01001541986079377 0.009933881174163106 131.90172991770493 56.0 24.619557978518483 1.2644046718696096 57302.241 57426.118 20 41 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1335472 59 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.559806     t0 = +57355.859158     x0 = +0.000000     x1 = -1.479963      c = +0.995886 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1335564 60 0.05994901012026124 57337.35119295385 4.2581555424534005e-17 1.5106753498117669 0.908515226573059 0.002122178084600211 0.03175937744163093 1.2597590146502465e-18 0.03562806171338179 0.03303344197556107 62.79242780343666 55.0 24.605383095133572 1.2776804113509783 57311.28 57427.068 20 40 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1335694 37 0.052280346458957114 57343.66554004822 1.4149537231542474e-16 1.5830952043731796 5.602461383702462e-09 0.00227806816089492 0.01481810376571957 1.7223256658577695e-18 0.013983530858409783 2.091380201335591e-05 329.0817325787411 32.0 21.550649191175573 1.2161898375124132 57325.214 57408.058 15 22 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1335717 51 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57347.348158     x0 = +0.000000     x1 = -0.570556      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1335718 59 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.496685     t0 = +57347.006278     x0 = +0.000000     x1 = -2.555297      c = +0.982042 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1335868 66 0.16428241065563018 57341.73272460011 3.60270845418789e-17 1.710803062465326 0.5623635919609126 0.0003596580108596037 0.037562301356956596 7.9276052987696515e-19 0.028964498374786332 0.02368673874206484 105.76137094422228 61.0 24.11702878194713 1.0990423058132919 57315.229 57425.154 23 43 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1336008 50 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.500531     t0 = +57346.990005     x0 = +0.000000     x1 = -18.903406      c = +0.999342 Original python exception in user function: ValueError: Error code returned by bispev:"
+1336009 51 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.580899     t0 = +57369.218222     x0 = +0.000000     x1 = -2.903656      c = +0.999846 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1336453 38 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.727677     t0 = +57340.478453     x0 = +0.000000     x1 = -0.200113      c = +0.999923 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1336480 36 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57347.320158     x0 = +0.000000     x1 = -0.556323      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1336687 45 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57348.117158     x0 = +0.000000     x1 = -0.620724      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1337117 47 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.497673     t0 = +57372.803020     x0 = +0.000000     x1 = -2.657834      c = +0.999964 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1337221 54 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.603713     t0 = +57349.188587     x0 = +0.000000     x1 = -0.386163      c = +0.981797 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1337228 54 0.24891771541847543 57354.04933932883 1.9568657172814243e-17 1.5072589938639565 0.12075390662240759 0.001745255349294969 0.028317884243733715 5.469298018869984e-19 0.027930897441156077 0.028253506004510154 43.5865891358313 49.0 23.90768857679919 1.280425172442012 57325.023 57407.048 19 35 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337272 48 0.17063491497164615 57354.23148289405 3.515521546844763e-17 1.4170130405309262 0.2372174064642102 0.009073194315204397 0.016518678199645365 7.975438164214026e-19 0.021420508753025657 0.017502910177787045 53.32586043862083 43.0 23.520456858471974 1.3484536590436598 57325.068 57427.057 16 32 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337325 48 0.057156096647194475 57351.18824698133 3.9474980771879966e-17 1.495773106572049 0.7119952145373931 0.005770009259740201 0.02286470325634582 1.0171457962207646e-18 0.034101009460488364 0.02741254031750534 54.65362004141771 43.0 24.31384483372134 1.2896234494820682 57325.068 57427.057 16 32 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337649 36 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.496030     t0 = +57349.000983     x0 = +0.000000     x1 = -18.542028      c = +0.985116 Original python exception in user function: ValueError: Error code returned by bispev:"
+1337655 42 0.29392508469743983 57357.149687503465 1.7750722365428598e-17 1.6587367679924494 0.3913459334629441 0.0001573741037402543 0.03570826076975209 1.7281731698139738e-19 0.013172250288967772 0.009399381150688085 73.10153118467937 37.0 24.542670400365655 1.1472226398200682 57325.078 57408.041 19 23 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1337687 47 0.051323880438663885 57347.29714063579 2.1435716907739707e-15 0.0989683308148624 0.08654903570357153 0.0026550147873209626 0.1040112700611644 3.8876929501631614e-17 0.0017356257715797003 0.021186766664915008 5247.223484747253 42.0 18.75686411497466 4.290265042583172 57339.295 57425.154 8 39 "Minimization exited successfully."
+1337703 58 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57347.821238     x0 = +0.000000     x1 = -0.137258      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1337838 42 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.513286     t0 = +57434.862697     x0 = +0.000000     x1 = -0.411448      c = +0.994134 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1338128 42 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.504406     t0 = +57416.032507     x0 = +0.000000     x1 = -8.630025      c = +0.972238 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1338170 42 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.605696     t0 = +57424.216015     x0 = +0.000000     x1 = -3.974144      c = +0.998366 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1338233 52 0.25321426036635547 57352.44041258428 1.645485202742722e-17 1.3453815951780321 0.04327575580424059 0.0021987486054461103 0.02697231003185152 5.295117692158911e-19 0.031057683543892378 0.02666197493422018 25.893248486747623 47.0 23.957162126579213 1.3965096181031953 57319.276 57427.057 20 32 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1338266 80 0.1705313228968933 57361.380661991694 2.340693975883358e-17 1.4783559820105816 0.49726462916745334 0.0006632211626816931 0.023374517004413065 5.0325975009772405e-19 0.02998566257416931 0.01809347268058137 83.59394977555104 75.0 24.475545283539443 1.3032530838647745 57339.033 57427.068 25 55 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1338278 40 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.486979     t0 = +57376.776667     x0 = +0.000000     x1 = -0.946239      c = +0.993497 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1338387 41 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.503673     t0 = +57340.113350     x0 = +0.000000     x1 = -0.127942      c = +0.983964 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1338430 37 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.494635     t0 = +57374.413304     x0 = +0.000000     x1 = -25.201456      c = +0.999980 Original python exception in user function: ValueError: Error code returned by bispev:"
+1338471 46 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.478187     t0 = +57339.180884     x0 = +0.000000     x1 = -0.521514      c = +0.934851 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1338675 34 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57377.061538     x0 = +0.000000     x1 = -1.139129      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1339002 36 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.496585     t0 = +57374.867564     x0 = +0.000000     x1 = -0.040729      c = +0.994481 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1339149 36 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57375.144158     x0 = +0.000000     x1 = -0.068901      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1339392 29 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.876176     t0 = +57377.657400     x0 = +0.000000     x1 = -3.392450      c = +0.995743 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1339450 51 0.2466987956439643 57365.724830735846 2.4682002529044042e-17 1.3963481784784275 0.3611977712719589 0.0018485952956885932 0.15290390024892986 8.288095991623859e-19 0.03867638138451227 0.030062169729639127 45.668005749543624 46.0 24.1266129452579 1.3627644281725644 57339.281 57426.147 20 31 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1340454 43 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.488902     t0 = +57375.531285     x0 = +0.000000     x1 = -4.603005      c = +0.999650 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1341370 32 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57375.129158     x0 = +0.000000     x1 = -0.067296      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1341894 28 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57390.135158     x0 = +0.000000     x1 = -0.851178      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1342255 25 0.010000000071741287 57388.50317421777 2.308552533147774e-16 1.7523120553629645 7.621184405781634e-09 1.6591624000354688e-06 0.19282358396958443 3.5485270820428206e-18 0.0453759496734635 5.314193777611331e-06 1041.1734261752129 20.0 21.01915537388246 1.061255493659182 57365.107 57428.056 12 13 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1343208 36 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.481619     t0 = +57389.326289     x0 = +0.000000     x1 = -0.009987      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1343337 31 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.496075     t0 = +57388.848322     x0 = +0.000000     x1 = -4.325155      c = +0.998980 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1343401 24 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57390.135158     x0 = +0.000000     x1 = -1.374856      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1343533 31 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57388.135158     x0 = +0.000000     x1 = -0.530560      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1343759 32 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57391.233158     x0 = +0.000000     x1 = -0.189272      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1343871 28 0.6909184222065811 57415.03051555159 2.4098939025127686e-17 3.4927585692989624 2.2722309589440215e-09 0.0007141311646621795 0.5649823994754115 5.581547455985096e-19 0.036808230421392855 4.6180555239860865e-06 141.02613279127647 23.0 23.472509903947383 0.3119780806782444 57355.223 57408.057 28 0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1344692 28 0.4074576636799593 57404.037989003606 3.903120048881185e-17 0.35657841577108274 0.420076475755277 0.003402773650368146 0.3742416314089496 4.198392000681193e-18 0.01905430577711006 0.06502171202515494 319.2007610670831 23.0 23.74565219063143 2.9970158561453566 57366.054 57427.068 24 4 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1345553 24 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57390.135158     x0 = +0.000000     x1 = -0.052734      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1345582 28 0.04875342908020326 57436.483845729315 3.357898341043019e-16 0.9525237522978207 0.9929846761701409 0.027743849863147135 0.29663053422336816 9.705083931765057e-17 0.030168090976370167 0.9204864521971546 1819.0917561923566 23.0 22.551446384350655 1.7272038066246225 57365.051 57427.057 28 0 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1345594 23 0.28160372450698834 57414.065406664355 5.175363714034059e-16 0.11111527586872649 0.17529186084818266 0.013752206180925902 2.763057851469057 4.3608133025575796e-16 0.02360568205799924 0.29882442435542267 857.3996064788965 18.0 20.470019908308224 4.2930109260584075 57372.046 57427.057 19 4 "Covariance may not be accurate. Covariance not positive definite. Covariance forced positive definite."
+1346137 28 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.455000     t0 = +57417.292066     x0 = +0.000000     x1 = -0.612695      c = +0.550000 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1346387 28 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.900000     t0 = +57388.849136     x0 = +0.000000     x1 = -0.714088      c = +0.957428 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1346956 20 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.650927     t0 = +57416.624935     x0 = +0.000000     x1 = -7.324733      c = +0.993369 Original python exception in user function: ValueError: Error code returned by bispev: 1"
+1346966 27 nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan 0 0 "exception was raised in user function User function arguments:      z = +0.486627     t0 = +57418.901828     x0 = +0.000000     x1 = -0.598433      c = +0.998390 Original python exception in user function: ValueError: Error code returned by bispev: 1"
