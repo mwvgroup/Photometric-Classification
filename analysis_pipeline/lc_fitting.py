@@ -14,7 +14,6 @@ of fitting light-curves exclusively in the rest-frame blue or red.
 """
 
 import os
-import time
 from copy import deepcopy
 from itertools import product
 
@@ -99,7 +98,9 @@ def fit_lc(data, model, vparam_names, nest=False, **kwargs):
         nest_result, _ = sncosmo.nest_lc(
             data, model, vparam_names,
             bounds=kwargs['bounds'],
-            modelcov=kwargs.get('modelcov', False))
+            verbose=True,
+            maxiter=10000
+        )
 
         # Set initial parameters in model
         model_args = dict()
@@ -290,7 +291,7 @@ class LCFitting:
 
             pbar_txt = f'{num_param} param {model_name} in {band_color} bands'
             inputs = module.iter_sncosmo_input(
-                band_list, verbose={'desc': pbar_txt}, **kwargs)
+                band_list, verbose={'desc': pbar_txt, 'position': 1}, **kwargs)
 
             model_args = params[model_name][num_param]
             fit_n_params(
