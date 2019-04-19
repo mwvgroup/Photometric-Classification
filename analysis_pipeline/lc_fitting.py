@@ -254,7 +254,7 @@ class LCFitting:
         return b_array[is_blue], b_array[~is_blue]
 
     def _generic_fit(self, module, out_dir, models, num_params, bands,
-                     verbose=True, nest=False, **kwargs):
+                     nest=False, **kwargs):
         """Iterate over a set of light-curve fits using different models,
         number of parameters, and rest frame bands
 
@@ -264,7 +264,6 @@ class LCFitting:
             models     (list[str]): Names of models to fit
             num_params (list[int]): Number of params to fit
             bands      (list[str]): List specifying bandpass collections
-            verbose         (bool): Whether to show progress bar
             Any other arguments for module.iter_sncosmo_input
         """
 
@@ -287,14 +286,13 @@ class LCFitting:
         # Run fits
         for model, num_param, (band_color, band_list) in modeling_data:
             model_name = model.source.name + '_' + model.source.version
-            tqdm.write(f'{num_param} param {model_name} in {band_color} bands')
-            time.sleep(0.5)  # Give output time to flush
+            fname = path_pattern.format(model_name, num_param, band_color)
+
+            pbar_txt = f'{num_param} param {model_name} in {band_color} bands'
+            inputs = module.iter_sncosmo_input(
+                band_list, verbose={'desc': pbar_txt}, **kwargs)
 
             model_args = params[model_name][num_param]
-            fname = path_pattern.format(model_name, num_param, band_color)
-            inputs = module.iter_sncosmo_input(
-                band_list, verbose=verbose, **kwargs)
-
             fit_n_params(
                 out_path=os.path.join(out_dir, fname),
                 num_params=num_param,
