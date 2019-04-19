@@ -46,6 +46,6 @@ tqdm.tqdm.write('Fitting SDSS')
 lc_fitting.fit_sdss(sdss_dir,
                     models=['salt_2_4', 'sn_91bg'],
                     num_params=[4, 5],
-                    nest=False,
+                    nest=True,
                     bands=['all', 'blue', 'red'],
                     skip_types=classes_to_skip)
