@@ -94,26 +94,25 @@ def fit_lc(data, model, vparam_names, nest=False, **kwargs):
         errors, the fit chi-squared, number of DOF, and SNCosmo exit message.
     """
 
-    if nest:
-        nest_result, _ = sncosmo.nest_lc(
-            data, model, vparam_names,
-            bounds=kwargs['bounds'],
-            verbose=True,
-            maxiter=10000
-        )
-
-        # Set initial parameters in model
-        model_args = dict()
-        for vp, p in zip(nest_result.vparam_names, nest_result.parameters):
-            model_args[vp] = p
-
-        model.set(**model_args)
-        kwargs['guess_amplitude'] = False
-        kwargs['guess_t0'] = False
-        kwargs['guess_z'] = False
-
-    # Try fitting the light-curve
     try:
+        if nest:
+            nest_result, _ = sncosmo.nest_lc(
+                data, model, vparam_names,
+                bounds=kwargs['bounds'],
+                verbose=True,
+                maxiter=10000
+            )
+
+            # Set initial parameters in model
+            model_args = dict()
+            for vp, p in zip(nest_result.vparam_names, nest_result.parameters):
+                model_args[vp] = p
+
+            model.set(**model_args)
+            kwargs['guess_amplitude'] = False
+            kwargs['guess_t0'] = False
+            kwargs['guess_z'] = False
+
         result, fitted_model = sncosmo.fit_lc(
             data=data, model=model, vparam_names=vparam_names, **kwargs)
 
