@@ -100,7 +100,7 @@ def fit_lc(data, model, vparam_names, nest=False, **kwargs):
                 data, model, vparam_names,
                 bounds=kwargs['bounds'],
                 verbose=True,
-                maxiter=10000
+                maxiter=2000
             )
 
             # Set initial parameters in model
