@@ -133,10 +133,11 @@ def fit_lc(data, model, vparam_names, nest=False, **kwargs):
             out_data.append(result.errors.get(param, 0))
 
         # Determine peak magnitude and decline rate
+        b_max = fitted_model.source_peakabsmag('bessellb', 'ab')
         peak_phase = fitted_model.source.peakphase('bessellb')
-        b_max = fitted_model.source.bandmag('bessellb', 'ab', peak_phase)
+        b_0 = fitted_model.source.bandmag('bessellb', 'ab', peak_phase)
         b_15 = fitted_model.source.bandmag('bessellb', 'ab', peak_phase + 15)
-        delta_15 = b_15 - b_max
+        delta_15 = b_15 - b_0
 
         out_data.append(result.chisq)
         out_data.append(result.ndof)
