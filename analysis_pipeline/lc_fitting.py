@@ -78,6 +78,36 @@ def _count_pre_and_post_max(obs_times, t_max):
     return min(times_arr), max(times_arr), pre_max, post_max
 
 
+def simplify_t0_bounds(bounds_dict, test_time):
+    """Simplify user specified bounds into a form compatable with SNCsomo
+
+    If bounds_dict['t0'] is a list of bounds for multiple observing seasons,
+    return a copy of bounds_dict where 't0' is replaced with the bounds
+    encompassing the value test_time. If no such bound exists, combine the list
+    of bounds into a boundary spanning the entire survey.
+
+    Args:
+        bounds_dict (dict):
+        test_time(dict)
+
+    Returns:
+         A Dictionary
+    """
+
+    bounds_dict = bounds_dict.copy()
+    t0_bounds = bounds_dict.get('t0', False)
+    if not isinstance(t0_bounds[0], (list, tuple)):
+        return bounds_dict
+
+    for low_bound, up_bound in bounds_dict['t0']:
+        if low_bound <= test_time <= up_bound:
+            bounds_dict['t0'] = [low_bound, up_bound]
+            return bounds_dict
+
+    bounds_dict['t0'] = [bounds_dict['t0'][0][0], bounds_dict['t0'][-1][-1]]
+    return bounds_dict
+
+
 def fit_lc(data, model, vparam_names, nest=False, **kwargs):
     """A wrapper for sncosmo.fit_lc that returns results as a list
 
@@ -94,13 +124,17 @@ def fit_lc(data, model, vparam_names, nest=False, **kwargs):
         errors, the fit chi-squared, number of DOF, and SNCosmo exit message.
     """
 
+    if 'bounds' in kwargs:
+        kwargs['bounds'] = simplify_t0_bounds(kwargs['bounds'],
+                                              data['time'][0])
+
     try:
         if nest:
             nest_result, _ = sncosmo.nest_lc(
                 data, model, vparam_names,
                 bounds=kwargs['bounds'],
                 verbose=True,
-                maxiter=2000
+                maxiter=5000
             )
 
             # Set initial parameters in model
@@ -151,7 +185,7 @@ def fit_lc(data, model, vparam_names, nest=False, **kwargs):
 
 def fit_n_params(
         out_path, num_params, inputs, model, warn=False, nest=False, **kwargs):
-    """Fit light curves with a 4 parameter Salt2-like model using SNCosmo
+    """Iteratively fit light curves with a 4 or 5 parameter Salt2-like model
 
     Redshift values are taken from the meta data of input tables using the
     'redshift' key. Inputs with negative, false, or missing redshift values
