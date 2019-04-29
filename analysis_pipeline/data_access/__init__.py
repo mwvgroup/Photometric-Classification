@@ -36,3 +36,5 @@ CSP is the same, except you would import `des` or `csp` instead of `sdss`.
 Any data cuts applied by a given module or function are described in that
 module and function's docstring.
 """
+
+from . import csp, des, sdss
