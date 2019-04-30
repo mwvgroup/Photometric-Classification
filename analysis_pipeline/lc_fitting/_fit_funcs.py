@@ -97,14 +97,19 @@ def _simplify_t0_bounds(bounds_dict, test_time):
 
 
 def _fit_with_nesting(data, model, nest, vparam_names, **kwargs):
-    kwargs['bounds']['t0'] = (min(data['time']) - 20, max(data['time']))
+
+    # Assume first observation < 1 month after peak and > 20 days before peak
+    t0_start = min(data['time']) - 30
+    t0_end = min(max(data['time']), t0_start + 50)
+    kwargs['bounds']['t0'] = (t0_start, t0_end)
 
     if nest:
         nest_result, _ = sncosmo.nest_lc(
             data, model, vparam_names,
             bounds=kwargs['bounds'],
             verbose=True,
-            maxiter=3000
+            maxiter=5000,
+            method='multi'
         )
 
         # Set initial parameters in model
@@ -142,6 +147,9 @@ def fit_lc(data, model, vparam_names, nest=False, **kwargs):
     try:
         result, fitted_model = _fit_with_nesting(
             data, model, nest, vparam_names, **kwargs)
+
+    except KeyboardInterrupt:
+        raise
 
     # If the fit fails fill out_data with place holder values (NANs and zeros)
     except (DataQualityError, RuntimeError, ValueError) as e:
