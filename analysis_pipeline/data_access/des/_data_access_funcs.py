@@ -98,6 +98,19 @@ def get_input_for_id(cid, bands=None):
     return sncosmo_table
 
 
+def get_target_ids():
+    """Return a list of target CID values
+
+    Returns:
+        A list of CID values
+    """
+
+    # Load list of all target ids
+    target_list_path = _path.join(meta_data.photometry_dir, 'DES-SN3YR_DES.LIST')
+    file_list = np.genfromtxt(target_list_path, dtype=str)
+    return [f.lstrip('des_').rstrip('.dat') for f in file_list]
+
+
 def iter_sncosmo_input(bands=None, verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
@@ -112,26 +125,20 @@ def iter_sncosmo_input(bands=None, verbose=False):
         An astropy table formatted for use with SNCosmo
     """
 
-    # Load list of all target ids
-    target_list_path = _path.join(meta_data.photometry_dir, 'DES-SN3YR_DES.LIST')
-    file_list = np.genfromtxt(target_list_path, dtype=str)
+    ids = get_target_ids()
 
     # Customize iterable of data
     if isinstance(verbose, dict):
-        iter_data = tqdm(
-            file_list,
-            **verbose,
-        )
+        iter_data = tqdm(ids, **verbose)
 
     elif verbose:
-        iter_data = tqdm(file_list)
+        iter_data = tqdm(ids)
 
     else:
-        iter_data = file_list
+        iter_data = ids
 
     # Yield an SNCosmo input table for each target
-    for file_name in iter_data:
-        cid_int = int(file_name.lstrip('des_').rstrip('.dat'))
-        sncosmo_table = get_input_for_id(cid_int, bands)
+    for id_val in iter_data:
+        sncosmo_table = get_input_for_id(id_val, bands)
         if sncosmo_table:
             yield sncosmo_table

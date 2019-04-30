@@ -136,6 +136,29 @@ def get_input_for_id(cid, bands=None):
     return sncosmo_table
 
 
+def get_target_ids(keep_types=(), skip_types=()):
+    """Return a list of target CID values
+
+    Args:
+        keep_types (iter[str]): Optional case sensitive classifications to keep
+        skip_types (iter[str]): Optional case sensitive classifications to skip
+
+    Returns:
+        A list of CID values
+    """
+
+    data = master_table
+    if keep_types:
+        keep_data_indx = np.isin(master_table['Classification'], keep_types)
+        data = data[keep_data_indx]
+
+    if skip_types:
+        skip_data_indx = ~np.isin(master_table['Classification'], skip_types)
+        data = data[skip_data_indx]
+
+    return list(data['CID'])
+
+
 def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
@@ -153,28 +176,18 @@ def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=False):
         An astropy table formatted for use with SNCosmo
     """
 
-    # Create iterable without unwanted data
-    data = master_table
-    if keep_types:
-        keep_data_indx = np.isin(master_table['Classification'], keep_types)
-        data = data[keep_data_indx]
-
-    if skip_types:
-        skip_data_indx = ~np.isin(master_table['Classification'], skip_types)
-        data = data[skip_data_indx]
+    # Get list of IDS without unwanted types
+    ids = get_target_ids(keep_types, skip_types)
 
     # Customize iterable of data
     if isinstance(verbose, dict):
-        iter_data = tqdm(
-            data['CID'],
-            **verbose,
-        )
+        iter_data = tqdm(ids, **verbose)
 
     elif verbose:
-        iter_data = tqdm(data['CID'])
+        iter_data = tqdm(ids)
 
     else:
-        iter_data = data['CID']
+        iter_data = ids
 
     # Yield an SNCosmo input table for each target
     for cid in iter_data:

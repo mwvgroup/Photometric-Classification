@@ -97,17 +97,14 @@ def _simplify_t0_bounds(bounds_dict, test_time):
 
 
 def _fit_with_nesting(data, model, nest, vparam_names, **kwargs):
-    kwargs['bounds']['t0'] = (
-        min(data['time']) - 50,
-        max(data['time']) + 30
-    )
+    kwargs['bounds']['t0'] = (min(data['time']) - 20, max(data['time']))
 
     if nest:
         nest_result, _ = sncosmo.nest_lc(
             data, model, vparam_names,
             bounds=kwargs['bounds'],
             verbose=True,
-            maxiter=5000
+            maxiter=3000
         )
 
         # Set initial parameters in model
