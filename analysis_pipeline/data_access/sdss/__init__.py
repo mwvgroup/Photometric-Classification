@@ -22,3 +22,5 @@ from ._data_access_funcs import iter_sncosmo_input
 from ._data_access_funcs import master_table
 from ._module_meta_data import band_names
 from ._module_meta_data import lambda_effective
+
+survey_name = 'SDSS'

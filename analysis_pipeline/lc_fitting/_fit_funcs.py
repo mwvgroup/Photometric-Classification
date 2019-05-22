@@ -1,47 +1,57 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""Provides a function based interface for iteratively fitting light-curves for
-a single model / survey.
+"""This module provides wrappers for SNCosmo fitting functions.
+
+The nest_lc function acts as a wrapper for sncosmo.nest_lc but assumes
+different default input parameters.
 
 The fit_lc function acts as a wrapper for sncosmo.fit_lc that returns fit
 results as a list.
-
-The fit_n_params function iteratively fits a collection of light-curves using a
-4 or 5 parameter fit.
 """
 
-import os
 from copy import deepcopy
 
 import numpy as np
 import sncosmo
-from astropy.table import Table
 from sncosmo.fitting import DataQualityError
 
 
-def _create_empty_summary_table():
-    """Returns a table with columns:
+def nest_lc(data, model, vparam_names, **kwargs):
+    """Set initial model params using nested sampling
 
-         cid, num_points, z, t0, x0, x1, z_err, t0_err, x0_err,
-         x1_err, c_err, chi, dof, tmin, tmax, pre_max, post_max, message
+    If not specified, bounds on t0 assume the first observation is less than 1
+    month after peak and greater than 20 days before peak
+
+    Args:
+        data             (Table): Table of light curve data formatted for SNCosmo
+        model            (Model): SNCosmo model
+        vparam_names (list[str]): List of parameters to vary in the model
+        verbose           (bool): Whether to display progress (Default: True)
+        maxiter            (int): Maximum sampling iterations (Default: 5000)
+        method             (str): Nested sampling method (Default: 'multi')
     """
 
-    names = ['cid', 'num_points']
-    dtype = ['U20', int]
+    # Assume first observation < 1 month after peak and > 20 days before peak
+    t0_start = min(data['time']) - 30
+    t0_end = min(max(data['time']), t0_start + 50)
+    kwargs['bounds']['t0'] = kwargs['bounds'].get('t0', (t0_start, t0_end))
 
-    param_names = ('z', 't0', 'x0', 'x1', 'c')
-    names.extend(param_names)
-    names.extend((p + '_err' for p in param_names))
-    dtype.extend((float for _ in range(len(names) - 2)))
+    # Set other default values
+    kwargs['verbose'] = kwargs.get('verbose', True)
+    kwargs['maxiter'] = kwargs.get('maxiter', 5000)
+    kwargs['method'] = kwargs.get('method', 'multi')
 
-    names.extend(
-        ('chi', 'dof', 'b_max',
-         'delta_15', 'tmin', 'tmax',
-         'pre_max', 'post_max', 'message'))
+    # Set initial parameters in model
+    nest_result, _ = sncosmo.nest_lc(data, model, vparam_names, **kwargs)
+    model_args = dict()
+    for vp, p in zip(nest_result.vparam_names, nest_result.parameters):
+        model_args[vp] = p
 
-    dtype.extend([float, float, float, float, float, float, int, int, 'U1000'])
-    return Table(names=names, dtype=dtype)
+    model_out = deepcopy(model)
+    model_out.set(**model_args)
+
+    return model_out
 
 
 def _count_pre_and_post_max(obs_times, t_max):
@@ -64,80 +74,14 @@ def _count_pre_and_post_max(obs_times, t_max):
     return min(times_arr), max(times_arr), pre_max, post_max
 
 
-def _simplify_t0_bounds(bounds_dict, test_time):
-    """Simplify user specified bounds into a form compatable with SNCsomo
-
-    If bounds_dict['t0'] is a list of bounds for multiple observing seasons,
-    return a copy of bounds_dict where 't0' is replaced with the bounds
-    encompassing the value test_time. If no such bound exists, combine the list
-    of bounds into a boundary spanning the entire survey.
-
-    Args:
-        bounds_dict (dict):
-        test_time(dict)
-
-    Returns:
-         A Dictionary
-    """
-
-    if 't0' not in bounds_dict:
-        return bounds_dict
-
-    bounds_dict = bounds_dict.copy()
-    if not isinstance(bounds_dict['t0'][0], (list, tuple)):
-        return bounds_dict
-
-    for low_bound, up_bound in bounds_dict['t0']:
-        if low_bound <= test_time <= up_bound:
-            bounds_dict['t0'] = [low_bound, up_bound]
-            return bounds_dict
-
-    bounds_dict['t0'] = [bounds_dict['t0'][0][0], bounds_dict['t0'][-1][-1]]
-    return bounds_dict
-
-
-def _fit_with_nesting(data, model, nest, vparam_names, **kwargs):
-
-    # Assume first observation < 1 month after peak and > 20 days before peak
-    t0_start = min(data['time']) - 30
-    t0_end = min(max(data['time']), t0_start + 50)
-    kwargs['bounds']['t0'] = (t0_start, t0_end)
-
-    if nest:
-        nest_result, _ = sncosmo.nest_lc(
-            data, model, vparam_names,
-            bounds=kwargs['bounds'],
-            verbose=True,
-            maxiter=5000,
-            method='multi'
-        )
-
-        # Set initial parameters in model
-        model_args = dict()
-        for vp, p in zip(nest_result.vparam_names, nest_result.parameters):
-            model_args[vp] = p
-
-        model.set(**model_args)
-        kwargs['guess_amplitude'] = False
-        kwargs['guess_t0'] = False
-        kwargs['guess_z'] = False
-
-    result, fitted_model = sncosmo.fit_lc(
-        data=data, model=model, vparam_names=vparam_names, **kwargs)
-
-    return result, fitted_model
-
-
-def fit_lc(data, model, vparam_names, nest=False, **kwargs):
+def fit_lc(data, model, vparam_names, **kwargs):
     """A wrapper for sncosmo.fit_lc that returns results as a list
 
     Exceptions raised by sncosmo.fit_lc are caught and stored as the exit
-    message. By default, initial parameters are determine using nested
-    sampling. Mutable arguments are not guaranteed to go unchanged.
+    message. Mutable arguments are not guaranteed to go unchanged.
 
     Args:
         Any arguments for sncosmo.fit_lc
-        nest (bool): Whether to use nested sampling to determine initial values
 
     Returns:
         A list of values for 'z', 't0', 'x0', 'x1', 'c', their respective
@@ -145,8 +89,8 @@ def fit_lc(data, model, vparam_names, nest=False, **kwargs):
     """
 
     try:
-        result, fitted_model = _fit_with_nesting(
-            data, model, nest, vparam_names, **kwargs)
+        result, fitted_model = sncosmo.fit_lc(
+            data, model, vparam_names, **kwargs)
 
     except KeyboardInterrupt:
         raise
@@ -182,64 +126,3 @@ def fit_lc(data, model, vparam_names, nest=False, **kwargs):
         out_data.append(result.message.replace('\n', ' '))
 
     return out_data
-
-
-def fit_n_params(
-        out_path, num_params, inputs, model, warn=False, nest=False, **kwargs):
-    """Iteratively fit light curves with a 4 or 5 parameter Salt2-like model
-
-    Redshift values are taken from the meta data of input tables using the
-    'redshift' key. Inputs with negative, false, or missing redshift values
-    are skipped.
-
-    Args:
-        out_path       (str): Where to write fit results
-        num_params     (int): Number of parameters to fit. Either 4 or 5.
-        inputs (iter[Table]): Iterable of SNCosmo input tables
-        model        (model): SNCosmo model to use for fitting
-        warn          (bool): Show sncosmo warnings (default = False)
-        nest (bool): Use nested sampling to determine initial guess values
-
-        Additionally any arguments for sncosmo.fit_lc not mentioned above
-    """
-
-    if num_params not in (4, 5):
-        raise ValueError("Parameter 'num_params' must be either 4 or 5")
-
-    out_dir = os.path.dirname(out_path)
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
-
-    kwargs['warn'] = warn
-    out_table = _create_empty_summary_table()
-    out_table.meta = kwargs
-
-    # Define list of parameters to fit
-    vparam_names = ['z', 't0', 'x0', 'x1', 'c']
-    if num_params == 4:
-        del vparam_names[0]
-
-    # Run fit for each target
-    for input_table in inputs:
-        model_this = deepcopy(model)
-        kwargs_this = deepcopy(kwargs)
-
-        # Set redshift in model for 4 param fits
-        if num_params == 4:
-            z = input_table.meta.get('redshift', False)
-            if z < 0 or not z:
-                continue
-
-            model_this.set(z=z)
-
-        fit_results = fit_lc(
-            data=input_table,
-            model=model_this,
-            vparam_names=vparam_names,
-            nest=nest,
-            **kwargs_this)
-
-        new_row = [input_table.meta['cid'], len(input_table)]
-        new_row.extend(fit_results)
-        out_table.add_row(new_row)
-        out_table.write(out_path, overwrite=True)
