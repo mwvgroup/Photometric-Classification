@@ -14,7 +14,32 @@ from copy import deepcopy
 
 import numpy as np
 import sncosmo
+from astropy.table import Table
 from sncosmo.fitting import DataQualityError
+
+
+def create_empty_summary_table():
+    """Returns a table with columns:
+
+         cid, num_points, z, t0, x0, x1, z_err, t0_err, x0_err,
+         x1_err, c_err, chi, dof, tmin, tmax, pre_max, post_max, message
+    """
+
+    names = ['cid', 'num_points']
+    dtype = ['U20', int]
+
+    param_names = ('z', 't0', 'x0', 'x1', 'c')
+    names.extend(param_names)
+    names.extend((p + '_err' for p in param_names))
+    dtype.extend((float for _ in range(len(names) - 2)))
+
+    names.extend(
+        ('chi', 'dof', 'b_max',
+         'delta_15', 'tmin', 'tmax',
+         'pre_max', 'post_max', 'message'))
+
+    dtype.extend([float, float, float, float, float, float, int, int, 'U1000'])
+    return Table(names=names, dtype=dtype)
 
 
 def nest_lc(data, model, vparam_names, **kwargs):
@@ -88,6 +113,7 @@ def fit_lc(data, model, vparam_names, **kwargs):
         errors, the fit chi-squared, number of DOF, and SNCosmo exit message.
     """
 
+    out_data = [data.meta['cid'], len(data)]
     try:
         result, fitted_model = sncosmo.fit_lc(
             data, model, vparam_names, **kwargs)
@@ -97,18 +123,18 @@ def fit_lc(data, model, vparam_names, **kwargs):
 
     # If the fit fails fill out_data with place holder values (NANs and zeros)
     except (DataQualityError, RuntimeError, ValueError) as e:
-        out_data = np.full(16, np.NAN).tolist()
+        out_data.extend(np.full(16, np.NAN).tolist())
         out_data.extend((0, 0, str(e).replace('\n', ' ')))
         if 'z' not in vparam_names:
-            out_data[0] = data.meta['redshift']
-            out_data[5] = data.meta.get('redshift_err', np.NAN)
+            out_data[2] = data.meta['redshift']
+            out_data[7] = data.meta.get('redshift_err', np.NAN)
 
     else:
         params = {p: v for p, v in zip(result.param_names, result.parameters)}
 
-        # Create list of parameter values
-        out_data = [params[p] for p in ('z', 't0', 'x0', 'x1', 'c')]
-        for param in ('z', 't0', 'x0', 'x1', 'c'):
+        # Add fit results to out_data
+        out_data.extend(result.parameters)
+        for param in result.param_names:
             out_data.append(result.errors.get(param, 0))
 
         # Determine peak magnitude and decline rate
