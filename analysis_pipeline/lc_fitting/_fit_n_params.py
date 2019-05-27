@@ -30,7 +30,7 @@ def _split_bands(bands, lambda_eff):
     return b_array[is_blue], b_array[~is_blue]
 
 
-def _split_data(data_table, band_names, lambda_eff):
+def split_data(data_table, band_names, lambda_eff):
     """Split a data table into blue and red data (by restframe)
 
     Split data by keeping filters that are redward or blueward of 5500 Ang.
@@ -80,7 +80,7 @@ def _split_data(data_table, band_names, lambda_eff):
     return out_list
 
 
-def _create_table_paths(out_dir, model, survey):
+def _create_table_paths(out_dir, model, survey, num_params):
     """Create a list of file paths for all, blue, and red band fit results
 
     Args:
@@ -93,7 +93,8 @@ def _create_table_paths(out_dir, model, survey):
     """
 
     def create_fname(band):
-        return f'{model.source.name}_{model.source.version}_{survey}_{band}.csv'
+        model_name = f'{model.source.name}_{model.source.version}'
+        return f'{survey}_{num_params}_{model_name}_{band}.csv'
 
     out_dir = Path(out_dir)
     return [out_dir / create_fname(band) for band in ('all', 'blue', 'red')]
@@ -115,35 +116,38 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose):
 
     # Create separate tables for each band's fit results
     out_tables = [create_empty_summary_table() for _ in range(3)]
-    out_paths = _create_table_paths(out_dir, model, module.survey_name)
+    out_paths = _create_table_paths(
+        out_dir,
+        model,
+        module.survey_name.lower(),
+        len(params_to_fit))
+
     for data in module.iter_sncosmo_input(verbose=verbose):
 
-        model_s = deepcopy(model)
+        model_this = deepcopy(model)
+        kwargs_this = deepcopy(kwargs)
         # If not fitting for redshift and it is available, set z
         if 'z' not in params_to_fit:
             z = data.meta.get('redshift', -9)
             if z <= 0:
                 continue
 
-            model_s.set(z=z)
-
-        sampled_model = nest_lc(
-            data, model_s, params_to_fit, **deepcopy(kwargs))
+            model_this.set(z=z)
 
         # Fit light-curves
-        blue, red = _split_data(data, module.band_names,
-                                module.lambda_effective)
+        sampled_model = nest_lc(data, model_this, params_to_fit, **kwargs_this)
+        blue, red = split_data(data, module.band_names, module.lambda_effective)
         iter_data = zip(out_tables, out_paths, [data, blue, red])
         for table, path, input_table in iter_data:
-            kwargs['guess_amplitude'] = False
-            kwargs['guess_t0'] = False
-            kwargs['guess_z'] = False
+            kwargs_this['guess_amplitude'] = False
+            kwargs_this['guess_t0'] = False
+            kwargs_this['guess_z'] = False
 
             fit_results = fit_lc(
                 data=input_table,
                 model=deepcopy(sampled_model),
                 vparam_names=params_to_fit,
-                **deepcopy(kwargs))
+                **kwargs_this)
 
             table.add_row(fit_results)
             table.write(path, overwrite=True)

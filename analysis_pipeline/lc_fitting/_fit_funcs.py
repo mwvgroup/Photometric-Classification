@@ -58,8 +58,8 @@ def nest_lc(data, model, vparam_names, **kwargs):
     """
 
     # Assume first observation < 1 month after peak and > 20 days before peak
-    t0_start = min(data['time']) - 30
-    t0_end = min(max(data['time']), t0_start + 50)
+    t0_start = min(data['time']) - 10
+    t0_end = min(data['time']) + 10
     kwargs['bounds']['t0'] = kwargs['bounds'].get('t0', (t0_start, t0_end))
 
     # Set other default values
