@@ -80,20 +80,23 @@ def _split_data(data_table, band_names, lambda_eff):
     return out_list
 
 
-def _create_table_paths(out_dir, survey):
-    """Create a list of file paths
+def _create_table_paths(out_dir, model, survey):
+    """Create a list of file paths for all, blue, and red band fit results
 
     Args:
         out_dir (str): Out directory of file paths
+        model (Model): SNCosmo model
         survey  (str): Name of a survey
 
     Returns:
-        ["<out_dir>/<survey>_<bands>" for bands in ('all', 'blue', 'red')]
+        ["<out_dir>/<model>_<model version><survey>_<bands>", ...]
     """
 
+    def create_fname(band):
+        return f'{model.source.name}_{model.source.version}_{survey}_{band}.csv'
+
     out_dir = Path(out_dir)
-    return [out_dir / f'{survey}_{bands}.csv' for bands in
-            ('all', 'blue', 'red')]
+    return [out_dir / create_fname(band) for band in ('all', 'blue', 'red')]
 
 
 def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose):
@@ -112,7 +115,7 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose):
 
     # Create separate tables for each band's fit results
     out_tables = [create_empty_summary_table() for _ in range(3)]
-    out_paths = _create_table_paths(out_dir, module.survey_name)
+    out_paths = _create_table_paths(out_dir, model, module.survey_name)
     for data in module.iter_sncosmo_input(verbose=verbose):
 
         model_s = deepcopy(model)
