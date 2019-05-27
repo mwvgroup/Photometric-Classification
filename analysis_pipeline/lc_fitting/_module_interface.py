@@ -9,44 +9,30 @@ of fitting light-curves exclusively in the rest-frame blue or red.
 """
 
 import numpy as np
-import sncosmo
 import yaml
 
 from ._fit_n_params import fit_n_params
-from .._sn91bg_model._model import SN91bgSource
 from ..data_access import csp, des, sdss
 
-# Get models for fitting
-salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
-salt_2_0 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0'))
-sn_91bg = sncosmo.Model(source=SN91bgSource())
-models_dict = dict(salt_2_4=salt_2_4, salt_2_0=salt_2_0, sn_91bg=sn_91bg)
 
-
-def iter_all_fits(out_dir, module, kwargs):
+def iter_all_fits(out_dir, module, models, num_params, kwargs):
     """Iteratively fit data for a given survey
 
     Args:
-        out_dir   (str): Directory to write fit results to
-        module (module): A data access module
-        nkwargs  (dict): A dictionary of kwargs for sncosmo.nest_lc
-        fkwargs  (dict): A dictionary of kwargs for sncosmo.fit_lc
+        out_dir          (str): Directory to write fit results to
+        module        (module): A data access module
+        models   (list[Model]): List of models to fit
+        num_params (list[int]): Number of params to fit
+        kwargs          (dict): A dictionary of kwargs for nest_lc AND fit_lc
     """
 
-    salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
-    salt_2_0 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0'))
-    sn_91bg = sncosmo.Model(source=SN91bgSource())
-    models_dict = {
-        'salt2_2.4': salt_2_4,
-        'salt2_2.0': salt_2_0,
-        'sn91bg_color_interpolation': sn_91bg}
-
-    for model_name, model in models_dict.items():
-        for num_params in (4, 5):
+    for model in models:
+        for num_params in num_params:
             # Get kwargs
-            kwargs_this = kwargs[module.survey_name.lower()][model_name][
-                num_params]
+            model_key = f'{model.source.name}_{model.source.version}'
+            kwargs_this = kwargs[model_key][num_params]
 
+            kwargs_this['warn'] = kwargs_this.get('warn', False)
             fit_n_params(out_dir, num_params, module, model, kwargs_this)
 
 
@@ -72,7 +58,7 @@ class LCFitting:
         self._fitting_params = None
         if params_file is not None:
             with open(params_file) as ofile:
-                self._fitting_params = yaml.load(ofile)
+                self._fitting_params = yaml.load(ofile, Loader=yaml.FullLoader)
 
     @property
     def fit_params(self):
@@ -94,7 +80,7 @@ class LCFitting:
         b_array = np.array(bands)
         return b_array[is_blue], b_array[~is_blue]
 
-    def fit_csp(self, out_dir):
+    def fit_csp(self, out_dir, models, num_params):
         """Fit CSP data and save result to file
 
         Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
@@ -103,16 +89,14 @@ class LCFitting:
 
         Args:
             out_dir          (str): Directory where results are saved
-            models     (list[str]): Names of models to fit
+            models   (list[Model]): List of models to fit
             num_params (list[int]): Number of params to fit
-            bands      (list[str]): List specifying bandpass collections
-            Any other arguments for csp.iter_sncosmo_input
-            nest (bool): Use nested sampling to determine initial guess values
         """
 
-        iter_all_fits(out_dir, csp, self._fitting_params)
+        kwargs = self._fitting_params[csp.survey_name.lower()]
+        iter_all_fits(out_dir, csp, models, num_params, kwargs)
 
-    def fit_des(self, out_dir):
+    def fit_des(self, out_dir, models, num_params):
         """Fit DES data and save result to file
 
         Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
@@ -121,16 +105,14 @@ class LCFitting:
 
         Args:
             out_dir          (str): Directory where results are saved
-            models     (list[str]): Names of models to fit
+            models   (list[Model]): List of models to fit
             num_params (list[int]): Number of params to fit
-            bands      (list[str]): List specifying bandpass collections
-            Any other arguments for des.iter_sncosmo_input
-            nest (bool): Use nested sampling to determine initial guess values
         """
 
-        iter_all_fits(out_dir, des, self._fitting_params)
+        kwargs = self._fitting_params[des.survey_name.lower()]
+        iter_all_fits(out_dir, des, models, num_params, kwargs)
 
-    def fit_sdss(self, out_dir):
+    def fit_sdss(self, out_dir, models, num_params):
         """Fit SDSS data and save result to file
 
         Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
@@ -139,11 +121,9 @@ class LCFitting:
 
         Args:
             out_dir          (str): Directory where results are saved
-            models     (list[str]): Names of models to fit
+            models   (list[Model]): List of models to fit
             num_params (list[int]): Number of params to fit
-            bands      (list[str]): List specifying bandpass collections
-            Any other arguments for sdss.iter_sncosmo_input
-            nest (bool): Use nested sampling to determine initial guess values
         """
 
-        iter_all_fits(out_dir, sdss, self._fitting_params)
+        kwargs = self._fitting_params[sdss.survey_name.lower()]
+        iter_all_fits(out_dir, sdss, models, num_params, kwargs)
