@@ -109,11 +109,14 @@ def fit_lc(data, model, vparam_names, **kwargs):
         Any arguments for sncosmo.fit_lc
 
     Returns:
-        A list of values for 'z', 't0', 'x0', 'x1', 'c', their respective
-        errors, the fit chi-squared, number of DOF, and SNCosmo exit message.
+        A list of values for the target id, number of photometric points,
+        'z', 't0', 'x0', 'x1', 'c', their respective errors,
+        the fit chi-squared, number of DOF, b_max, delta_15, t_min, t_max,
+        the number of points pre / post max, and the SNCosmo exit message.
     """
 
     out_data = [data.meta['cid'], len(data)]
+
     try:
         result, fitted_model = sncosmo.fit_lc(
             data, model, vparam_names, **kwargs)
