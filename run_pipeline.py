@@ -6,12 +6,14 @@
 """
 
 import argparse
+from pathlib import Path
+
+# Define default output directories
+out_dir = Path(__file__).resolve().parent / 'fit_results'
 
 
 def run(args):
     """Run light curve fits using command line args"""
-
-    from pathlib import Path
 
     import sncosmo
 
@@ -23,8 +25,7 @@ def run(args):
     salt_2_0 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0'))
     sn_91bg = sncosmo.Model(source=SN91bgSource())
 
-    # Create output directories
-    out_dir = Path(__file__).resolve().parent / f'fit_results/{args.survey}'
+    out_dir = Path(args.out_dir) / args.survey
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Run fitting
@@ -67,6 +68,13 @@ if __name__ == '__main__':
         nargs='+',
         default=['AGN', 'SLSN', 'SNII', 'Variable'],
         help='Object classifications to skip. Only supported for SDSS.'
+    )
+
+    parser.add_argument(
+        '-o', '--out_dir',
+        type=str,
+        default=out_dir,
+        help='Output directory for fit results.'
     )
 
     args = parser.parse_args()
