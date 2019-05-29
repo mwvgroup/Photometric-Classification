@@ -100,7 +100,8 @@ def _create_table_paths(out_dir, model, survey, num_params):
     return [out_dir / create_fname(band) for band in ('all', 'blue', 'red')]
 
 
-def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose):
+def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
+                    skip_types=()):
     """Fit light curves from a given data module in all bandpass collections
 
     Args:
@@ -122,8 +123,7 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose):
         module.survey_name.lower(),
         len(params_to_fit))
 
-    for data in module.iter_sncosmo_input(verbose=verbose):
-
+    for data in module.iter_sncosmo_input(verbose=verbose, skip_types=skip_types):
         model_this = deepcopy(model)
         kwargs_this = deepcopy(kwargs)
         # If not fitting for redshift and it is available, set z
@@ -153,7 +153,7 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose):
             table.write(path, overwrite=True)
 
 
-def fit_n_params(out_dir, num_params, module, model, kwargs):
+def fit_n_params(out_dir, num_params, module, model, kwargs, skip_types=()):
     """Fit light curves from in all bandpass collections with 4 or 5 parameters
 
     Args:
@@ -175,4 +175,5 @@ def fit_n_params(out_dir, num_params, module, model, kwargs):
     pbar_txt = f'{num_params} param fit for {module.survey_name}'
     pbar_args = {'desc': pbar_txt, 'position': 1}
 
-    _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, pbar_args)
+    _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, pbar_args,
+                    skip_types=skip_types)

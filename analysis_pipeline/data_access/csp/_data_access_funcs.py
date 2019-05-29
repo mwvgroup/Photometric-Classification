@@ -104,7 +104,7 @@ def get_target_ids():
     return [_path.basename(f).split('_')[0].lstrip('SN') for f in files]
 
 
-def iter_sncosmo_input(bands=None, verbose=False):
+def iter_sncosmo_input(bands=None, verbose=False, **kwargs):
     """Iterate through CSP supernova and yield the SNCosmo input tables
 
     To return a select collection of band-passes, specify the band argument.

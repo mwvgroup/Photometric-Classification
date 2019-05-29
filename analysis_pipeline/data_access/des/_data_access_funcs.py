@@ -111,7 +111,7 @@ def get_target_ids():
     return [f.lstrip('des_').rstrip('.dat') for f in file_list]
 
 
-def iter_sncosmo_input(bands=None, verbose=False):
+def iter_sncosmo_input(bands=None, verbose=False, **kwargs):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
     To return a select collection of band-passes, specify the band argument.

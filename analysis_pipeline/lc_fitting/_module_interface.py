@@ -15,7 +15,7 @@ from ._fit_n_params import fit_n_params
 from ..data_access import csp, des, sdss
 
 
-def iter_all_fits(out_dir, module, models, num_params, kwargs):
+def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
     """Iteratively fit data for a given survey
 
     Args:
@@ -33,7 +33,8 @@ def iter_all_fits(out_dir, module, models, num_params, kwargs):
             kwargs_this = kwargs[model_key][num_params]
 
             kwargs_this['warn'] = kwargs_this.get('warn', False)
-            fit_n_params(out_dir, num_params, module, model, kwargs_this)
+            fit_n_params(out_dir, num_params, module, model, kwargs_this,
+                         skip_types=skip_types)
 
 
 class LCFitting:
@@ -80,7 +81,7 @@ class LCFitting:
         b_array = np.array(bands)
         return b_array[is_blue], b_array[~is_blue]
 
-    def fit_csp(self, out_dir, models, num_params):
+    def fit_csp(self, out_dir, models, num_params, **kwargs):
         """Fit CSP data and save result to file
 
         Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
@@ -96,7 +97,7 @@ class LCFitting:
         kwargs = self._fitting_params[csp.survey_name.lower()]
         iter_all_fits(out_dir, csp, models, num_params, kwargs)
 
-    def fit_des(self, out_dir, models, num_params):
+    def fit_des(self, out_dir, models, num_params, **kwargs):
         """Fit DES data and save result to file
 
         Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
@@ -112,7 +113,7 @@ class LCFitting:
         kwargs = self._fitting_params[des.survey_name.lower()]
         iter_all_fits(out_dir, des, models, num_params, kwargs)
 
-    def fit_sdss(self, out_dir, models, num_params):
+    def fit_sdss(self, out_dir, models, num_params, skip_types=()):
         """Fit SDSS data and save result to file
 
         Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
@@ -126,4 +127,4 @@ class LCFitting:
         """
 
         kwargs = self._fitting_params[sdss.survey_name.lower()]
-        iter_all_fits(out_dir, sdss, models, num_params, kwargs)
+        iter_all_fits(out_dir, sdss, models, num_params, kwargs, skip_types=skip_types)

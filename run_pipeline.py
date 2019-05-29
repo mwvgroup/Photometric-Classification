@@ -28,9 +28,13 @@ def run(args):
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Run fitting
+    # Todo fix model handling
     lc_fitting = LCFitting(args.args_path)
     fit_func = getattr(lc_fitting, f'fit_{args.survey}')
-    fit_func(out_dir, models=[salt_2_4, sn_91bg], num_params=args.num_params)
+    fit_func(out_dir,
+             models=[salt_2_4, sn_91bg],
+             num_params=args.num_params,
+             skip_types=args.skip_types)
 
 
 # Parse command line input
@@ -56,6 +60,14 @@ if __name__ == '__main__':
         nargs='+',
         default=[4, 5],
         help='Number of params to fit (4, 5)')
+
+    parser.add_argument(
+        '-t', '--skip_types',
+        type=str,
+        nargs='+',
+        default=['AGN', 'SLSN', 'SNII', 'Variable'],
+        help='Object classifications to skip. Only supported for SDSS.'
+    )
 
     args = parser.parse_args()
     if args.survey not in ('csp', 'des', 'sdss'):
