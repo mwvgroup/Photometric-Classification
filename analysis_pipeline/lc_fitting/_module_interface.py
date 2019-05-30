@@ -27,13 +27,13 @@ def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
     """
 
     for model in models:
-        for num_params in num_params:
+        for n in num_params:
             # Get kwargs
             model_key = f'{model.source.name}_{model.source.version}'
-            kwargs_this = kwargs[model_key][num_params]
+            kwargs_this = kwargs[model_key][n]
 
             kwargs_this['warn'] = kwargs_this.get('warn', False)
-            fit_n_params(out_dir, num_params, module, model, kwargs_this,
+            fit_n_params(out_dir, n, module, model, kwargs_this,
                          skip_types=skip_types)
 
 
