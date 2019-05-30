@@ -59,7 +59,12 @@ class LCFitting:
         self._fitting_params = None
         if params_file is not None:
             with open(params_file) as ofile:
-                self._fitting_params = yaml.load(ofile, Loader=yaml.FullLoader)
+                # Try yaml for Python 3.7, fall back to Python 3.6
+                try:
+                    self._fitting_params = yaml.load(ofile, Loader=yaml.FullLoader)
+
+                except AttributeError:
+                    self._fitting_params = yaml.load(ofile)
 
     @property
     def fit_params(self):
