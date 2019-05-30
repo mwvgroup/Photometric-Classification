@@ -45,26 +45,34 @@ def create_empty_summary_table():
 def nest_lc(data, model, vparam_names, **kwargs):
     """Set initial model params using nested sampling
 
-    If not specified, bounds on t0 assume the first observation is less than 1
-    month after peak and greater than 20 days before peak
+    If not specified, bounds on t0 assume the first observation is less than
+    15 days after peak and before the last data point.
+
+    Arguments are protected against mutation except for ``bounds`` which may be
+    modified as outlined above.
 
     Args:
-        data             (Table): Table of light curve data formatted for SNCosmo
+        data             (Table): Table of light curve data for SNCosmo
         model            (Model): SNCosmo model
         vparam_names (list[str]): List of parameters to vary in the model
+        bounds            (dict): Boundaries on fit parameters
         verbose           (bool): Whether to display progress (Default: True)
         maxiter            (int): Maximum sampling iterations (Default: 5000)
         method             (str): Nested sampling method (Default: 'multi')
     """
 
-    # Assume first observation < 1 month after peak and > 20 days before peak
-    t0_start = min(data['time']) - 10
-    t0_end = min(data['time']) + 10
+    # Assume first observation < 15 days after peak and before last data point
+    t0_start = min(data['time']) - 15
+    t0_end = max(data['time'])
     kwargs['bounds']['t0'] = kwargs['bounds'].get('t0', (t0_start, t0_end))
+
+    # Protect mutable arguments
+    kwargs = deepcopy(kwargs)
+    model = deepcopy(model)
 
     # Set other default values
     kwargs['verbose'] = kwargs.get('verbose', True)
-    kwargs['maxiter'] = kwargs.get('maxiter', 5000)
+    kwargs['maxiter'] = kwargs.get('maxiter', 10000)
     kwargs['method'] = kwargs.get('method', 'multi')
 
     # Set initial parameters in model
@@ -73,10 +81,8 @@ def nest_lc(data, model, vparam_names, **kwargs):
     for vp, p in zip(nest_result.vparam_names, nest_result.parameters):
         model_args[vp] = p
 
-    model_out = deepcopy(model)
-    model_out.set(**model_args)
-
-    return model_out
+    model.set(**model_args)
+    return model
 
 
 def _count_pre_and_post_max(obs_times, t_max):
@@ -118,8 +124,11 @@ def fit_lc(data, model, vparam_names, **kwargs):
     out_data = [data.meta['cid'], len(data)]
 
     try:
+        if len(data) == 0:
+            raise RuntimeError('Empty table passed to fit_lc.')
+
         result, fitted_model = sncosmo.fit_lc(
-            data, model, vparam_names, **kwargs)
+            data, deepcopy(model), vparam_names, **deepcopy(kwargs))
 
     except KeyboardInterrupt:
         raise

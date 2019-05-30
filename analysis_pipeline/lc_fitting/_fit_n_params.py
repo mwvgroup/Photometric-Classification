@@ -126,6 +126,7 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
     for data in module.iter_sncosmo_input(verbose=verbose, skip_types=skip_types):
         model_this = deepcopy(model)
         kwargs_this = deepcopy(kwargs)
+
         # If not fitting for redshift and it is available, set z
         if 'z' not in params_to_fit:
             z = data.meta.get('redshift', -9)
@@ -147,7 +148,7 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
                 data=input_table,
                 model=deepcopy(sampled_model),
                 vparam_names=params_to_fit,
-                **kwargs_this)
+                **deepcopy(kwargs_this))
 
             table.add_row(fit_results)
             table.write(path, overwrite=True)

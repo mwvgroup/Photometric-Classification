@@ -95,7 +95,7 @@ def get_input_for_id(cid, bands=None):
     as outliers are also removed.
 
     Args:
-        cid         (int): The ID of the desired object
+        cid         (str): The ID of the desired object
         bands (iter[str]): Optionally only return select rest frame
                              bands (eg. '91bg_proj_sdss_u1')
 
@@ -104,6 +104,7 @@ def get_input_for_id(cid, bands=None):
     """
 
     # Format table
+    cid = str(cid)
     phot_data = get_data_for_id(cid)
     phot_data = phot_data[phot_data['FLAG'] < 1024]
 
