@@ -104,8 +104,8 @@ class TestSNCosmoAgreement(TestCase):
             **fitting_kwargs)
 
         params = ['z', 't0', 'x0', 'x1', 'c']
-        for i in range(5):
+        for i, value in enumerate(sncosmo_result.parameters):
             err_msg = f'Parameter {params[i]} disagrees'
-            self.assertEqual(pipeline_result[i],
-                             sncosmo_result.parameters[i],
+            self.assertEqual(pipeline_result[i + 2],
+                             value,
                              err_msg)
