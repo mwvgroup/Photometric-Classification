@@ -31,7 +31,6 @@ def run(args):
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Run fitting
-    # Todo fix model handling
     lc_fitting = LCFitting(args.args_path)
     fit_func = getattr(lc_fitting, f'fit_{args.survey}')
     fit_func(out_dir,

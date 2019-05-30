@@ -58,6 +58,7 @@ def nest_lc(data, model, vparam_names, **kwargs):
         bounds            (dict): Boundaries on fit parameters
         verbose           (bool): Whether to display progress (Default: True)
         maxiter            (int): Maximum sampling iterations (Default: 5000)
+        maxcall            (int): Maximum function calls (Default: 20000)
         method             (str): Nested sampling method (Default: 'multi')
     """
 
@@ -73,6 +74,7 @@ def nest_lc(data, model, vparam_names, **kwargs):
     # Set other default values
     kwargs['verbose'] = kwargs.get('verbose', True)
     kwargs['maxiter'] = kwargs.get('maxiter', 10000)
+    kwargs['maxcall'] = kwargs.get('maxcall', 20000)
     kwargs['method'] = kwargs.get('method', 'multi')
 
     # Set initial parameters in model
