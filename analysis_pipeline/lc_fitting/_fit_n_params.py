@@ -94,7 +94,7 @@ def _create_table_paths(out_dir, model, survey, num_params):
 
     def create_fname(band):
         model_name = f'{model.source.name}_{model.source.version}'
-        return f'{survey}_{num_params}_{model_name}_{band}.csv'
+        return f'{survey}_{num_params}_{model_name}_{band}.ecsv'
 
     out_dir = Path(out_dir)
     return [out_dir / create_fname(band) for band in ('all', 'blue', 'red')]
@@ -137,13 +137,13 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
 
         # Fit light-curves
         sampled_model = nest_lc(data, model_this, params_to_fit, **kwargs_this)
+        kwargs_this['guess_amplitude'] = False
+        kwargs_this['guess_t0'] = False
+        kwargs_this['guess_z'] = False
+
         blue, red = split_data(data, module.band_names, module.lambda_effective)
         iter_data = zip(out_tables, out_paths, [data, blue, red])
         for table, path, input_table in iter_data:
-            kwargs_this['guess_amplitude'] = False
-            kwargs_this['guess_t0'] = False
-            kwargs_this['guess_z'] = False
-
             fit_results = fit_lc(
                 data=input_table,
                 model=deepcopy(sampled_model),
