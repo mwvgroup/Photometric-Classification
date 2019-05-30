@@ -21,9 +21,11 @@ def run(args):
     from analysis_pipeline.lc_fitting import LCFitting
 
     # Define models for fitting
-    salt_2_4 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4'))
-    salt_2_0 = sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0'))
-    sn_91bg = sncosmo.Model(source=SN91bgSource())
+    models = dict(
+        salt_2_4=sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4')),
+        salt_2_0=sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0')),
+        sn_91bg=sncosmo.Model(source=SN91bgSource())
+    )
 
     out_dir = Path(args.out_dir) / args.survey
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -33,7 +35,7 @@ def run(args):
     lc_fitting = LCFitting(args.args_path)
     fit_func = getattr(lc_fitting, f'fit_{args.survey}')
     fit_func(out_dir,
-             models=[salt_2_4, sn_91bg],
+             models=[models[s] for s in args.models],
              num_params=args.num_params,
              skip_types=args.skip_types)
 
@@ -54,6 +56,13 @@ if __name__ == '__main__':
         type=str,
         required=True,
         help='Path of fitting arguments')
+
+    parser.add_argument(
+        '-m', '--models',
+        type=str,
+        nargs='+',
+        default=['salt_2_4'],
+        help='Models to fit (salt_2_0, salt_2_4, sn_91bg)')
 
     parser.add_argument(
         '-n', '--num_params',
