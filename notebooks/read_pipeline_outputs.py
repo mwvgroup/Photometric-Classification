@@ -9,7 +9,7 @@ from astropy.table import Table
 
 
 def get_fit_results(survey, model, params, out_dir='./'):
-    """Get lightcurve fits for a given survey and model
+    """Get light-curve fits for a given survey and model
 
     Args:
         survey  (str): The name of the survey
