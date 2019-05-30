@@ -15,7 +15,7 @@ data_dir = os.path.join(_file_dir, 'data')
 filter_dir = os.path.join(data_dir, '01-FILTERS')
 photometry_dir = os.path.join(data_dir, '02-DATA_PHOTOMETRY/DES-SN3YR_DES')
 fits_dir = os.path.join(data_dir, '04-BBCFITS')
-master_table_path = os.path.join(fits_dir, 'SALT2mu_DES+LOWZ_C11.FITRES')
+master_table_path = os.path.join(fits_dir, 'SALT2mu_DES+LOWZ_G10.FITRES')
 
 # Download data if it does not exist
 _des_url = 'http://desdr-server.ncsa.illinois.edu/despublic/sn_files/y3/tar_files/'

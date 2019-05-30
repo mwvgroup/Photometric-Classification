@@ -95,7 +95,7 @@ def get_input_for_id(cid, bands=None):
     as outliers are also removed.
 
     Args:
-        cid         (int): The ID of the desired object
+        cid         (str): The ID of the desired object
         bands (iter[str]): Optionally only return select rest frame
                              bands (eg. '91bg_proj_sdss_u1')
 
@@ -104,6 +104,7 @@ def get_input_for_id(cid, bands=None):
     """
 
     # Format table
+    cid = str(cid)
     phot_data = get_data_for_id(cid)
     phot_data = phot_data[phot_data['FLAG'] < 1024]
 
@@ -136,6 +137,29 @@ def get_input_for_id(cid, bands=None):
     return sncosmo_table
 
 
+def get_target_ids(keep_types=(), skip_types=()):
+    """Return a list of target CID values
+
+    Args:
+        keep_types (iter[str]): Optional case sensitive classifications to keep
+        skip_types (iter[str]): Optional case sensitive classifications to skip
+
+    Returns:
+        A list of CID values
+    """
+
+    data = master_table
+    if keep_types:
+        keep_data_indx = np.isin(master_table['Classification'], keep_types)
+        data = data[keep_data_indx]
+
+    if skip_types:
+        skip_data_indx = ~np.isin(master_table['Classification'], skip_types)
+        data = data[skip_data_indx]
+
+    return list(data['CID'])
+
+
 def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=False):
     """Iterate through SDSS supernova and yield the SNCosmo input tables
 
@@ -153,18 +177,20 @@ def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=False):
         An astropy table formatted for use with SNCosmo
     """
 
-    # Create iterable without unwanted data
-    data = master_table
-    if keep_types:
-        keep_data_indx = np.isin(master_table['Classification'], keep_types)
-        data = data[keep_data_indx]
+    # Get list of IDS without unwanted types
+    ids = get_target_ids(keep_types, skip_types)
 
-    if skip_types:
-        skip_data_indx = ~np.isin(master_table['Classification'], skip_types)
-        data = data[skip_data_indx]
+    # Customize iterable of data
+    if isinstance(verbose, dict):
+        iter_data = tqdm(ids, **verbose)
+
+    elif verbose:
+        iter_data = tqdm(ids)
+
+    else:
+        iter_data = ids
 
     # Yield an SNCosmo input table for each target
-    iter_data = tqdm(data['CID']) if verbose else data['CID']
     for cid in iter_data:
         sncosmo_table = get_input_for_id(cid, bands)
         if sncosmo_table:

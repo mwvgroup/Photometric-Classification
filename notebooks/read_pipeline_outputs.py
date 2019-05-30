@@ -9,7 +9,7 @@ from astropy.table import Table
 
 
 def get_fit_results(survey, model, params, out_dir='./'):
-    """Get lightcurve fits for a given survey and model
+    """Get light-curve fits for a given survey and model
 
     Args:
         survey  (str): The name of the survey
@@ -24,8 +24,9 @@ def get_fit_results(survey, model, params, out_dir='./'):
         A DataFrame of fits in red bands
     """
 
+    survey = survey.lower()
     model_name = model.source.name + '_' + model.source.version
-    fname = f'{survey}/{model_name}_{params}param_{{}}.ecsv'
+    fname = f'{survey}/{survey}_{params}_{model_name}_{{}}.ecsv'
     path_pattern = os.path.join(out_dir, fname)
 
     all_data = None

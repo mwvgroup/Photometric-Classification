@@ -1,49 +1,90 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""Run the analysis pipeline for all data (CSP, DES, and SDSS) and all models
-(SALT 2.4 and 91bg).
-"""
+"""Command line interface for the analysis_pipeline package."""
 
-import os
+import argparse
+from pathlib import Path
 
-import tqdm
+# Define default output directories
+out_dir = Path(__file__).resolve().parent / 'fit_results'
 
-from analysis_pipeline.lc_fitting import LCFitting
 
-file_dir = os.path.dirname(os.path.abspath(__file__))
-lc_fitting = LCFitting('./fitting_params.yml')
+def run(args):
+    """Run light curve fits using command line args"""
 
-csp_dir = os.path.join(file_dir, 'pipeline_outputs/csp')
-des_dir = os.path.join(file_dir, 'pipeline_outputs/des')
-sdss_dir = os.path.join(file_dir, 'pipeline_outputs/sdss')
+    import sncosmo
 
-for path in (csp_dir, des_dir, sdss_dir):
-    if not os.path.exists(path):
-        os.makedirs(path, exist_ok=True)
+    from analysis_pipeline import SN91bgSource
+    from analysis_pipeline.lc_fitting import LCFitting
 
-tqdm.tqdm.write('Fitting SDSS for comparison with published values.')
-classes_to_skip = ['AGN', 'SLSN', 'SNII', 'Variable']
-lc_fitting.fit_sdss(sdss_dir, models=['salt_2_0'],
-                    num_params=[4],
-                    bands=['all'],
-                    skip_types=classes_to_skip)
+    # Define models for fitting
+    models = dict(
+        salt_2_4=sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4')),
+        salt_2_0=sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0')),
+        sn_91bg=sncosmo.Model(source=SN91bgSource())
+    )
 
-tqdm.tqdm.write('Fitting CSP')
-lc_fitting.fit_csp(csp_dir,
-                   models=['salt_2_4', 'sn_91bg'],
-                   num_params=[4, 5],
-                   bands=['all', 'blue', 'red'])
+    out_dir = Path(args.out_dir) / args.survey
+    out_dir.mkdir(parents=True, exist_ok=True)
 
-tqdm.tqdm.write('Fitting DES')
-lc_fitting.fit_des(des_dir,
-                   models=['salt_2_4', 'sn_91bg'],
-                   num_params=[4, 5],
-                   bands=['all', 'blue', 'red'])
+    # Run fitting
+    lc_fitting = LCFitting(args.args_path)
+    fit_func = getattr(lc_fitting, f'fit_{args.survey}')
+    fit_func(out_dir,
+             models=[models[s] for s in args.models],
+             num_params=args.num_params,
+             skip_types=args.skip_types)
 
-tqdm.tqdm.write('Fitting SDSS')
-lc_fitting.fit_sdss(sdss_dir,
-                    models=['salt_2_4', 'sn_91bg'],
-                    num_params=[4, 5],
-                    bands=['all', 'blue', 'red'],
-                    skip_types=classes_to_skip)
+
+# Parse command line input
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Fit light-curves for a given survey.')
+
+    parser.add_argument(
+        '-s', '--survey',
+        type=str,
+        required=True,
+        help='Survey name (csp, des, sdss)')
+
+    parser.add_argument(
+        '-a', '--args_path',
+        type=str,
+        required=True,
+        help='Path of fitting arguments')
+
+    parser.add_argument(
+        '-m', '--models',
+        type=str,
+        nargs='+',
+        default=['salt_2_4'],
+        help='Models to fit (salt_2_0, salt_2_4, sn_91bg)')
+
+    parser.add_argument(
+        '-n', '--num_params',
+        type=int,
+        nargs='+',
+        default=[4, 5],
+        help='Number of params to fit (4, 5)')
+
+    parser.add_argument(
+        '-t', '--skip_types',
+        type=str,
+        nargs='+',
+        default=['AGN', 'SLSN', 'SNII', 'Variable'],
+        help='Object classifications to skip. Only supported for SDSS.'
+    )
+
+    parser.add_argument(
+        '-o', '--out_dir',
+        type=str,
+        default=out_dir,
+        help='Output directory for fit results.'
+    )
+
+    args = parser.parse_args()
+    if args.survey not in ('csp', 'des', 'sdss'):
+        raise ValueError(f"Survey name '{args.survey}' not recognized")
+
+    run(args)

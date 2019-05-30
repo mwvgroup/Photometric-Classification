@@ -92,7 +92,19 @@ def get_input_for_id(cid, bands=None):
     return sn_data
 
 
-def iter_sncosmo_input(bands=None, verbose=False):
+def get_target_ids():
+    """Return a list of target CID values
+
+    Returns:
+        A lis of CID values
+    """
+
+    # Get target ids
+    files = glob(_path.join(meta_data.photometry_dir, '*.txt'))
+    return [_path.basename(f).split('_')[0].lstrip('SN') for f in files]
+
+
+def iter_sncosmo_input(bands=None, verbose=False, **kwargs):
     """Iterate through CSP supernova and yield the SNCosmo input tables
 
     To return a select collection of band-passes, specify the band argument.
@@ -107,13 +119,20 @@ def iter_sncosmo_input(bands=None, verbose=False):
         An astropy table formatted for use with SNCosmo
     """
 
-    # Get target ids
-    files = glob(_path.join(meta_data.photometry_dir, '*.txt'))
-    cid_vals = [_path.basename(f).split('_')[0].lstrip('SN') for f in files]
+    ids = get_target_ids()
+
+    # Customize iterable of data
+    if isinstance(verbose, dict):
+        iter_data = tqdm(ids, **verbose)
+
+    elif verbose:
+        iter_data = tqdm(ids)
+
+    else:
+        iter_data = ids
 
     # Yield an SNCosmo input table for each target
-    iter_data = tqdm(cid_vals) if verbose else cid_vals
-    for target_name in iter_data:
-        sncosmo_table = get_input_for_id(target_name, bands)
+    for id_val in iter_data:
+        sncosmo_table = get_input_for_id(id_val, bands)
         if sncosmo_table:
             yield sncosmo_table
