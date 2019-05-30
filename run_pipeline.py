@@ -1,9 +1,7 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""Run the analysis pipeline for all data (CSP, DES, and SDSS) and all models
-(SALT 2.4 and 91bg).
-"""
+"""Command line interface for the analysis_pipeline package."""
 
 import argparse
 from pathlib import Path
