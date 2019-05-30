@@ -26,7 +26,7 @@ def get_fit_results(survey, model, params, out_dir='./'):
 
     survey = survey.lower()
     model_name = model.source.name + '_' + model.source.version
-    fname = f'{survey}/{survey}_{params}_{model_name}_{{}}.csv'
+    fname = f'{survey}/{survey}_{params}_{model_name}_{{}}.ecsv'
     path_pattern = os.path.join(out_dir, fname)
 
     all_data = None
