@@ -44,7 +44,7 @@ def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
 
 class LCFitting:
 
-    def __init__(self, params_file=None, out_dir=None):
+    def __init__(self, params_file=None, _out_dir=None):
         """Provides survey specific light-curve fitting functions
 
         Args:
@@ -61,7 +61,7 @@ class LCFitting:
                          red (>= 5500 A) bands
         """
 
-        self.out_dir = out_dir if out_dir else DEFAULT_FIT_DIR
+        self.out_dir = _out_dir if _out_dir else DEFAULT_FIT_DIR
         self._fitting_params = None
         if params_file is not None:
             with open(params_file) as ofile:
