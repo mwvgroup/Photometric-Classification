@@ -4,10 +4,6 @@
 """Command line interface for the analysis_pipeline package."""
 
 import argparse
-from pathlib import Path
-
-# Define default output directories
-out_dir = Path(__file__).resolve().parent / 'fit_results'
 
 
 def run(args):
@@ -25,14 +21,10 @@ def run(args):
         sn_91bg=sncosmo.Model(source=SN91bgSource())
     )
 
-    out_dir = Path(args.out_dir) / args.survey
-    out_dir.mkdir(parents=True, exist_ok=True)
-
     # Run fitting
-    lc_fitting = LCFitting(args.args_path)
+    lc_fitting = LCFitting(args.args_path, args.out_dir)
     fit_func = getattr(lc_fitting, f'fit_{args.survey}')
-    fit_func(out_dir,
-             models=[models[s] for s in args.models],
+    fit_func(models=[models[s] for s in args.models],
              num_params=args.num_params,
              skip_types=args.skip_types)
 
@@ -79,7 +71,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-o', '--out_dir',
         type=str,
-        default=out_dir,
+        default=None,
         help='Output directory for fit results.'
     )
 

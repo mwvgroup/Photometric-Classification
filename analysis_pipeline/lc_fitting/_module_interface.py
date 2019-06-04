@@ -16,7 +16,7 @@ import yaml
 from ._fit_n_params import fit_n_params
 from ..data_access import csp, des, sdss
 
-DEFAULT_FIT_DIR = Path(__file__).resolve().parent / 'fit_results'
+DEFAULT_FIT_DIR = Path(__file__).resolve().parent.parent / 'fit_results'
 DEFAULT_FIT_DIR.mkdir(exist_ok=True)
 
 
@@ -44,7 +44,7 @@ def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
 
 class LCFitting:
 
-    def __init__(self, params_file=None, out_dir=DEFAULT_FIT_DIR):
+    def __init__(self, params_file=None, out_dir=None):
         """Provides survey specific light-curve fitting functions
 
         Args:
@@ -61,7 +61,7 @@ class LCFitting:
                          red (>= 5500 A) bands
         """
 
-        self.out_dir = out_dir
+        self.out_dir = out_dir if out_dir else DEFAULT_FIT_DIR
         self._fitting_params = None
         if params_file is not None:
             with open(params_file) as ofile:

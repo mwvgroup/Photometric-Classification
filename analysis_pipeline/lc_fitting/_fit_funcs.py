@@ -4,7 +4,10 @@
 """This module provides wrappers for SNCosmo fitting functions.
 
 The nest_lc function acts as a wrapper for sncosmo.nest_lc but assumes
-different default input parameters.
+different default input parameters and only returns a model object
+
+The get_sampled_model function is the same as the nest_lc functions, but
+uses cached values when available.
 
 The fit_lc function acts as a wrapper for sncosmo.fit_lc that returns fit
 results as a list.
@@ -18,18 +21,19 @@ import sncosmo
 from astropy.table import Table
 from sncosmo.fitting import DataQualityError
 
-PRIOR_DIR = Path(__file__).resolve().parent / 'priors'
+PRIOR_DIR = Path(__file__).resolve().parent.parent / 'priors'
+PRIOR_DIR.mkdir(exist_ok=True)
 PRIORS = dict()  # For lazy loading priors
 
 
 def create_empty_summary_table():
     """Returns a table with columns:
 
-         cid, num_points, z, t0, x0, x1, z_err, t0_err, x0_err,
+         obj_id, num_points, z, t0, x0, x1, z_err, t0_err, x0_err,
          x1_err, c_err, chi, dof, tmin, tmax, pre_max, post_max, message
     """
 
-    names = ['cid', 'num_points']
+    names = ['obj_id', 'num_points']
     dtype = ['U20', int]
 
     param_names = ('z', 't0', 'x0', 'x1', 'c')
@@ -108,13 +112,14 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
     """
 
     model_name = f'{model.source.name}_{model.source.version}'
-    file_name = f'{survey_name.lower()}_{len(vparam_names)}_{model_name}.csv'
+    file_name = f'{survey_name.lower()}_{len(vparam_names)}_{model_name}.ecsv'
     file_path = PRIOR_DIR / file_name
-
-    if file_path.exist():
+    print(data.meta['obj_id'])
+    if file_path.exists():
         priors_table = PRIORS.get(file_path, Table.read(file_path))
         prior = priors_table[priors_table['obj_id'] == data.meta['obj_id']]
         if prior:
+            print(prior)
             sampled_model = deepcopy(model)
             for param in vparam_names:
                 sampled_model.update({param: prior[param]})
@@ -126,9 +131,10 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
     else:
         col_names = ['obj_id']
         for param in vparam_names:
-            col_names.extend((param, param + '_min', param + '_min'))
+            col_names.extend((param, param + '_min', param + '_max'))
 
-        priors_table = Table(names=col_names)
+        dtype = ['U100'] + [float for _ in range(len(col_names) - 1)]
+        priors_table = Table(names=col_names, dtype=dtype)
 
     sampled_model = nest_lc(data, model, vparam_names, **kwargs)
     new_row = [data.meta['obj_id']]
@@ -139,7 +145,7 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
         new_row.extend(kwargs['bounds'][param])
 
     priors_table.add_row(new_row)
-    priors_table.write(file_path)
+    priors_table.write(file_path, overwrite=True)
 
     return sampled_model
 
@@ -180,7 +186,7 @@ def fit_lc(data, model, vparam_names, **kwargs):
         the number of points pre / post max, and the SNCosmo exit message.
     """
 
-    out_data = [data.meta['cid'], len(data)]
+    out_data = [data.meta['obj_id'], len(data)]
 
     try:
         if len(data) == 0:

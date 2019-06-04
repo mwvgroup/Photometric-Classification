@@ -13,14 +13,14 @@ from . import _module_meta_data as meta_data
 from .._utils import keep_restframe_bands
 
 master_table = Table.read(meta_data.master_table_path, format='ascii')
-master_table['CID'] = Column(master_table['CID'], dtype=str)
+master_table['obj_id'] = Column(master_table['CID'], dtype=str)
 
 
 def _get_outliers():
     """Return a dictionary of data points marked by SDSS II as outliers
 
     Returns:
-        A dictionary {<cid>: [<MJD of bad data point>, ...], ...}
+        A dictionary {<obj_id>: [<MJD of bad data point>, ...], ...}
     """
 
     out_dict = dict()
@@ -28,11 +28,11 @@ def _get_outliers():
         for line in ofile.readlines():
             if line.startswith('IGNORE:'):
                 line_list = line.split()
-                cid, mjd, band = line_list[1], line_list[2], line_list[3]
-                if cid not in out_dict:
-                    out_dict[str(cid)] = []
+                obj_id, mjd, band = line_list[1], line_list[2], line_list[3]
+                if obj_id not in out_dict:
+                    out_dict[str(obj_id)] = []
 
-                out_dict[str(cid)].append(mjd)
+                out_dict[str(obj_id)].append(mjd)
 
     return out_dict
 
@@ -55,20 +55,20 @@ def construct_band_name(filter_id, ccd_id):
     return f'91bg_proj_sdss_{"ugriz"[filter_id]}{ccd_id}'
 
 
-def get_data_for_id(cid):
+def get_data_for_id(obj_id):
     """Returns published photometric data for a SDSS observed object
 
     No data cuts are applied to the returned data.
 
     Args:
-        cid (str): The Candidate ID of the desired object
+        obj_id (str): The Candidate ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
     """
 
     # Read in ascii data table for specified object
-    file_path = os.path.join(meta_data.smp_dir, f'SMP_{int(cid):06d}.dat')
+    file_path = os.path.join(meta_data.smp_dir, f'SMP_{int(obj_id):06d}.dat')
     all_data = Table.read(file_path, format='ascii')
 
     # Rename columns using header data from file
@@ -76,7 +76,7 @@ def get_data_for_id(cid):
     for i, name in enumerate(col_names):
         all_data[f'col{i + 1}'].name = name
 
-    table_meta_data = master_table[master_table['CID'] == cid]
+    table_meta_data = master_table[master_table['obj_id'] == obj_id]
     all_data.meta['redshift'] = table_meta_data['zCMB'][0]
     all_data.meta['redshift_err'] = table_meta_data['zerrCMB'][0]
     all_data.meta['ra'] = table_meta_data['RA'][0]
@@ -87,7 +87,7 @@ def get_data_for_id(cid):
     return all_data
 
 
-def get_input_for_id(cid, bands=None):
+def get_input_for_id(obj_id, bands=None):
     """Returns an SNCosmo input table a given SDSS object ID
 
     Only data points with a published photometric quality flag < 1024 are
@@ -95,7 +95,7 @@ def get_input_for_id(cid, bands=None):
     as outliers are also removed.
 
     Args:
-        cid         (str): The ID of the desired object
+        obj_id         (str): The ID of the desired object
         bands (iter[str]): Optionally only return select rest frame
                              bands (eg. '91bg_proj_sdss_u1')
 
@@ -104,11 +104,11 @@ def get_input_for_id(cid, bands=None):
     """
 
     # Format table
-    cid = str(cid)
-    phot_data = get_data_for_id(cid)
+    obj_id = str(obj_id)
+    phot_data = get_data_for_id(obj_id)
     phot_data = phot_data[phot_data['FLAG'] < 1024]
 
-    outlier_list = outlier_mjd.get(cid, [])
+    outlier_list = outlier_mjd.get(obj_id, [])
     if outlier_list:
         keep_indices = ~np.isin(phot_data['MJD'], outlier_list)
         phot_data = phot_data[keep_indices]
@@ -124,7 +124,7 @@ def get_input_for_id(cid, bands=None):
     sncosmo_table['flux'] = phot_data['FLUX'] * 1E-6
     sncosmo_table['fluxerr'] = phot_data['FLUXERR'] * 1E-6
     sncosmo_table['zpsys'] = np.full(len(phot_data), 'ab')
-    sncosmo_table.meta['cid'] = cid
+    sncosmo_table.meta['obj_id'] = obj_id
 
     # Keep only specified band-passes
     if bands is not None:
@@ -138,14 +138,14 @@ def get_input_for_id(cid, bands=None):
 
 
 def get_target_ids(keep_types=(), skip_types=()):
-    """Return a list of target CID values
+    """Return a list of object ID values
 
     Args:
         keep_types (iter[str]): Optional case sensitive classifications to keep
         skip_types (iter[str]): Optional case sensitive classifications to skip
 
     Returns:
-        A list of CID values
+        A list of object ID values
     """
 
     data = master_table
@@ -157,7 +157,7 @@ def get_target_ids(keep_types=(), skip_types=()):
         skip_data_indx = ~np.isin(master_table['Classification'], skip_types)
         data = data[skip_data_indx]
 
-    return list(data['CID'])
+    return list(data['obj_id'])
 
 
 def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=False):
@@ -191,7 +191,7 @@ def iter_sncosmo_input(bands=None, keep_types=(), skip_types=(), verbose=False):
         iter_data = ids
 
     # Yield an SNCosmo input table for each target
-    for cid in iter_data:
-        sncosmo_table = get_input_for_id(cid, bands)
+    for obj_id in iter_data:
+        sncosmo_table = get_input_for_id(obj_id, bands)
         if sncosmo_table:
             yield sncosmo_table

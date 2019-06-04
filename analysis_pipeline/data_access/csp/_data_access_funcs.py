@@ -28,22 +28,22 @@ master_table.rename_column('_RAJ2000', 'RAJ2000')
 master_table.rename_column('_DEJ2000', 'DECJ2000')
 
 
-def get_data_for_id(cid):
+def get_data_for_id(obj_id):
     """Returns photometric data for a supernova candidate in a given filter
 
     No data cuts are applied to the returned data.
 
     Args:
-        cid (str): The Candidate ID of the desired object
+        obj_id (str): The Candidate ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
     """
 
-    file_path = _path.join(meta_data.photometry_dir, f'SN{cid}_snpy.txt')
+    file_path = _path.join(meta_data.photometry_dir, f'SN{obj_id}_snpy.txt')
     data_table = parse_snoopy_data(file_path)
     data_table['band'] = '91bg_proj_csp_' + data_table['band']
-    data_table.meta['cid'] = cid
+    data_table.meta['obj_id'] = obj_id
 
     return data_table
 
@@ -63,13 +63,13 @@ def _get_zp_for_bands(band):
     return np.array(meta_data.zero_point)[indices]
 
 
-def get_input_for_id(cid, bands=None):
+def get_input_for_id(obj_id, bands=None):
     """Returns an SNCosmo input table a given CSP object ID
 
     No data cuts are applied to the returned data.
 
     Args:
-        cid         (int): The ID of the desired object
+        obj_id         (int): The ID of the desired object
         bands (list[str]): Optionally only return select bands
                              (eg. '91bg_proj_csp_V0')
 
@@ -77,7 +77,7 @@ def get_input_for_id(cid, bands=None):
         An astropy table of photometric data formatted for use with SNCosmo
     """
 
-    sn_data = get_data_for_id(cid)
+    sn_data = get_data_for_id(obj_id)
     sn_data['zp'] = _get_zp_for_bands(sn_data['band'])
     sn_data['zpsys'] = np.full(len(sn_data), 'ab')
     sn_data['flux'] = 10 ** ((sn_data['mag'] - sn_data['zp']) / -2.5)
@@ -93,10 +93,10 @@ def get_input_for_id(cid, bands=None):
 
 
 def get_target_ids():
-    """Return a list of target CID values
+    """Return a list of object ID values
 
     Returns:
-        A lis of CID values
+        A list of object ID values
     """
 
     # Get target ids

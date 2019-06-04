@@ -18,7 +18,7 @@ master_table = Table.read(
     data_start=4,
     comment='#',
     exclude_names=['dummy_col'],
-    names=['dummy_col', 'CID', 'CIDint', 'IDSURVEY', 'TYPE', 'FIELD',
+    names=['dummy_col', 'obj_id', 'CIDint', 'IDSURVEY', 'TYPE', 'FIELD',
            'CUTFLAG_SNANA', 'zHEL', 'zHELERR', 'zCMB', 'zCMBERR',
            'zHD', 'zHDERR', 'VPEC', 'VPECERR', 'HOST_LOGMASS',
            'HOST_LOGMASS_ERR', 'SNRMAX1', 'SNRMAX2', 'SNRMAX3', 'PKMJD',
@@ -31,20 +31,20 @@ master_table = Table.read(
            'biasCor_x1', 'biasCor_c', 'biasScale_muCOV', 'IDSAMPLE'])
 
 
-def get_data_for_id(cid):
+def get_data_for_id(obj_id):
     """Returns DES photometric data for a given object ID
 
     No data cuts are applied to the returned data.
 
     Args:
-        cid (str): The ID of the desired object
+        obj_id (str): The ID of the desired object
 
     Returns:
         An astropy table of photometric data for the given candidate ID
     """
 
     # Read in ascci data table for specified object
-    file_path = _path.join(meta_data.photometry_dir, f'des_{int(cid):08d}.dat')
+    file_path = _path.join(meta_data.photometry_dir, f'des_{int(obj_id):08d}.dat')
     all_data = Table.read(
         file_path, format='ascii',
         data_start=27, data_end=-1,
@@ -59,26 +59,26 @@ def get_data_for_id(cid):
         all_data.meta['PEAKMJD'] = float(table_meta_data[12].split()[1])
         all_data.meta['redshift'] = float(table_meta_data[13].split()[1])
         all_data.meta['redshift_err'] = float(table_meta_data[13].split()[3])
-        all_data.meta['cid'] = cid
+        all_data.meta['obj_id'] = obj_id
         del all_data.meta['comments']
 
     return all_data
 
 
-def get_input_for_id(cid, bands=None):
+def get_input_for_id(obj_id, bands=None):
     """Returns an SNCosmo input table a given DES object ID
 
     No data cuts are applied to the returned data.
 
     Args:
-        cid         (int): The ID of the desired object
+        obj_id      (int): The ID of the desired object
         bands (list[str]): Optionally only return select bands (eg. 'desg')
 
     Returns:
         An astropy table of photometric data formatted for use with SNCosmo
     """
 
-    all_sn_data = get_data_for_id(cid)
+    all_sn_data = get_data_for_id(obj_id)
     sncosmo_table = Table()
     sncosmo_table['time'] = all_sn_data['MJD']
     sncosmo_table['band'] = ['des' + s for s in all_sn_data['BAND']]
@@ -99,10 +99,10 @@ def get_input_for_id(cid, bands=None):
 
 
 def get_target_ids():
-    """Return a list of target CID values
+    """Return a list of object ID values
 
     Returns:
-        A list of CID values
+        A list of object ID values
     """
 
     # Load list of all target ids
