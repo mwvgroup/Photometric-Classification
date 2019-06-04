@@ -11,11 +11,15 @@ results as a list.
 """
 
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 import sncosmo
 from astropy.table import Table
 from sncosmo.fitting import DataQualityError
+
+PRIOR_DIR = Path(__file__).resolve().parent / 'priors'
+PRIORS = dict()  # For lazy loading priors
 
 
 def create_empty_summary_table():
@@ -63,11 +67,12 @@ def nest_lc(data, model, vparam_names, **kwargs):
     """
 
     # Assume first observation < 15 days after peak and before last data point
+    # Intentionally mutate kwargs
     t0_start = min(data['time']) - 15
     t0_end = max(data['time'])
     kwargs['bounds']['t0'] = kwargs['bounds'].get('t0', (t0_start, t0_end))
 
-    # Protect mutable arguments
+    # Protect against further argument mutation
     kwargs = deepcopy(kwargs)
     model = deepcopy(model)
 
@@ -85,6 +90,58 @@ def nest_lc(data, model, vparam_names, **kwargs):
 
     model.set(**model_args)
     return model
+
+
+def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
+    """Set initial model params using cached values
+
+    If cached values are not available, determine them using nested sampling
+    and save them to file.
+
+    Args:
+        survey_name        (str): The name of the survey being fit
+        data             (Table): Table of light curve data for SNCosmo
+        model            (Model): SNCosmo model
+        vparam_names (list[str]): List of parameters to vary in the model
+        bounds            (dict): Boundaries on fit parameters
+        Any other arguments for analysis_pipeline.lc_fitting.nest_lc
+    """
+
+    model_name = f'{model.source.name}_{model.source.version}'
+    file_name = f'{survey_name.lower()}_{len(vparam_names)}_{model_name}.csv'
+    file_path = PRIOR_DIR / file_name
+
+    if file_path.exist():
+        priors_table = PRIORS.get(file_path, Table.read(file_path))
+        prior = priors_table[priors_table['obj_id'] == data.meta['obj_id']]
+        if prior:
+            sampled_model = deepcopy(model)
+            for param in vparam_names:
+                sampled_model.update({param: prior[param]})
+                kwargs['bounds'][param] = \
+                    (prior[f'{param}_min'], prior[f'{param}_max'])
+
+            return sampled_model
+
+    else:
+        col_names = ['obj_id']
+        for param in vparam_names:
+            col_names.extend((param, param + '_min', param + '_min'))
+
+        priors_table = Table(names=col_names)
+
+    sampled_model = nest_lc(data, model, vparam_names, **kwargs)
+    new_row = [data.meta['obj_id']]
+    for param in vparam_names:
+        i = sampled_model.param_names.index(param)
+        param_val = sampled_model.parameters[i]
+        new_row.append(param_val)
+        new_row.extend(kwargs['bounds'][param])
+
+    priors_table.add_row(new_row)
+    priors_table.write(file_path)
+
+    return sampled_model
 
 
 def _count_pre_and_post_max(obs_times, t_max):

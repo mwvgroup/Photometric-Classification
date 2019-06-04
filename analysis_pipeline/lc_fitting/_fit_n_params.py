@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 from astropy.table import Table
 
-from ._fit_funcs import create_empty_summary_table, fit_lc, nest_lc
+from ._fit_funcs import create_empty_summary_table, fit_lc, get_sampled_model
 
 
 def _split_bands(bands, lambda_eff):
@@ -136,7 +136,14 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
             model_this.set(z=z)
 
         # Fit light-curves
-        sampled_model = nest_lc(data, model_this, params_to_fit, **kwargs_this)
+        sampled_model = get_sampled_model(
+            module.survey_name,
+            data,
+            model_this,
+            params_to_fit,
+            **kwargs_this)
+
+
         kwargs_this['guess_amplitude'] = False
         kwargs_this['guess_t0'] = False
         kwargs_this['guess_z'] = False
