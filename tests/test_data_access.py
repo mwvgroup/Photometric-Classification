@@ -66,8 +66,8 @@ class EmptyInputTables(TestCase):
 
         msg = 'Empty table for cid {} with bands {}'
         for input_table in islice(input_iterable, 20):
-            cid = input_table.meta['cid']
-            self.assertTrue(input_table, msg=msg.format(cid, band_cut))
+            obj_id = input_table.meta['obj_id']
+            self.assertTrue(input_table, msg=msg.format(obj_id, band_cut))
 
     def test_empty_des_inputs(self):
         """Test the first 20 DES inputs aren't empty for various band cuts"""
@@ -103,14 +103,14 @@ class ZeroPoint(TestCase):
 
         generic_msg = 'Incorrect zero point for cid {}. Found {}, expected {}'
         for table in islice(input_iterable, 20):
-            cid = table.meta['cid']
+            obj_id = table.meta['obj_id']
             correct_zero = table['zp'] == expected_zero
 
             if not all(correct_zero):
                 bad_indices = np.logical_not(correct_zero)
                 example_val = table['zp'][bad_indices][0]
 
-                err_msg = generic_msg.format(cid, example_val, expected_zero)
+                err_msg = generic_msg.format(obj_id, example_val, expected_zero)
                 self.assertTrue(False, msg=err_msg)
 
     def test_des_zero_point(self):
