@@ -8,11 +8,16 @@ The LCFitting class provides survey specific fitting functions and is capable
 of fitting light-curves exclusively in the rest-frame blue or red.
 """
 
+from pathlib import Path
+
 import numpy as np
 import yaml
 
 from ._fit_n_params import fit_n_params
 from ..data_access import csp, des, sdss
+
+DEFAULT_FIT_DIR = Path(__file__).resolve().parent / 'fit_results'
+DEFAULT_FIT_DIR.mkdir(exist_ok=True)
 
 
 def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
@@ -39,7 +44,7 @@ def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
 
 class LCFitting:
 
-    def __init__(self, params_file=None):
+    def __init__(self, params_file=None, out_dir=DEFAULT_FIT_DIR):
         """Provides survey specific light-curve fitting functions
 
         Args:
@@ -56,12 +61,14 @@ class LCFitting:
                          red (>= 5500 A) bands
         """
 
+        self.out_dir = out_dir
         self._fitting_params = None
         if params_file is not None:
             with open(params_file) as ofile:
                 # Try yaml for Python 3.7, fall back to Python 3.6
                 try:
-                    self._fitting_params = yaml.load(ofile, Loader=yaml.FullLoader)
+                    self._fitting_params = yaml.load(ofile,
+                                                     Loader=yaml.FullLoader)
 
                 except AttributeError:
                     self._fitting_params = yaml.load(ofile)
@@ -86,50 +93,37 @@ class LCFitting:
         b_array = np.array(bands)
         return b_array[is_blue], b_array[~is_blue]
 
-    def fit_csp(self, out_dir, models, num_params, **kwargs):
-        """Fit CSP data and save result to file
-
-        Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
-        Acceptable number of fit params are 4 and 5.
-        Acceptable bands are 'all', 'blue', and 'red'.
+    def fit_csp(self, models, num_params, **kwargs):
+        """Fit CSP data and save results to file
 
         Args:
-            out_dir          (str): Directory where results are saved
             models   (list[Model]): List of models to fit
             num_params (list[int]): Number of params to fit
         """
 
         kwargs = self._fitting_params[csp.survey_name.lower()]
-        iter_all_fits(out_dir, csp, models, num_params, kwargs)
+        iter_all_fits(self.out_dir, csp, models, num_params, kwargs)
 
-    def fit_des(self, out_dir, models, num_params, **kwargs):
-        """Fit DES data and save result to file
-
-        Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
-        Acceptable number of fit params are 4 and 5.
-        Acceptable bands are 'all', 'blue', and 'red'.
+    def fit_des(self, models, num_params, **kwargs):
+        """Fit DES data and save results to file
 
         Args:
-            out_dir          (str): Directory where results are saved
             models   (list[Model]): List of models to fit
             num_params (list[int]): Number of params to fit
         """
 
         kwargs = self._fitting_params[des.survey_name.lower()]
-        iter_all_fits(out_dir, des, models, num_params, kwargs)
+        iter_all_fits(self.out_dir, des, models, num_params, kwargs)
 
-    def fit_sdss(self, out_dir, models, num_params, skip_types=()):
-        """Fit SDSS data and save result to file
-
-        Acceptable models to fit include 'salt_2_4', 'salt_2_0', and 'sn_91bg'.
-        Acceptable number of fit params are 4 and 5.
-        Acceptable bands are 'all', 'blue', and 'red'.
+    def fit_sdss(self, models, num_params, skip_types=()):
+        """Fit SDSS data and save results to file
 
         Args:
-            out_dir          (str): Directory where results are saved
             models   (list[Model]): List of models to fit
             num_params (list[int]): Number of params to fit
+            skip_types (list[str]): Classifications to skip
         """
 
         kwargs = self._fitting_params[sdss.survey_name.lower()]
-        iter_all_fits(out_dir, sdss, models, num_params, kwargs, skip_types=skip_types)
+        iter_all_fits(self.out_dir, sdss, models, num_params, kwargs,
+                      skip_types=skip_types)
