@@ -111,15 +111,18 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
         Any other arguments for analysis_pipeline.lc_fitting.nest_lc
     """
 
+    # Get path of priors file
     model_name = f'{model.source.name}_{model.source.version}'
     file_name = f'{survey_name.lower()}_{len(vparam_names)}_{model_name}.ecsv'
     file_path = PRIOR_DIR / file_name
-    print(data.meta['obj_id'])
+
     if file_path.exists():
-        priors_table = PRIORS.get(file_path, Table.read(file_path))
+        # Lazy load priors
+        priors_table = PRIORS.setdefault(file_path, Table.read(file_path))
+
+        # Get prior for specific object
         prior = priors_table[priors_table['obj_id'] == data.meta['obj_id']]
         if prior:
-            print(prior)
             sampled_model = deepcopy(model)
             for param in vparam_names:
                 sampled_model.update({param: prior[param]})
@@ -128,14 +131,19 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
 
             return sampled_model
 
+    # If priors table doesn't exist, create it
     else:
+        # Data model for priors file
         col_names = ['obj_id']
+        dtype = ['U100']
         for param in vparam_names:
             col_names.extend((param, param + '_min', param + '_max'))
+            dtype.extend((float, float, float))
 
-        dtype = ['U100'] + [float for _ in range(len(col_names) - 1)]
         priors_table = Table(names=col_names, dtype=dtype)
+        PRIORS[file_path] = priors_table
 
+    # Calculate prior values
     sampled_model = nest_lc(data, model, vparam_names, **kwargs)
     new_row = [data.meta['obj_id']]
     for param in vparam_names:
