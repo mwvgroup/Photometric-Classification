@@ -123,7 +123,8 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
         module.survey_name.lower(),
         len(params_to_fit))
 
-    for data in module.iter_sncosmo_input(verbose=verbose, skip_types=skip_types):
+    for data in module.iter_sncosmo_input(verbose=verbose,
+                                          skip_types=skip_types):
         model_this = deepcopy(model)
         kwargs_this = deepcopy(kwargs)
 
@@ -143,12 +144,12 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
             params_to_fit,
             **kwargs_this)
 
-
         kwargs_this['guess_amplitude'] = False
         kwargs_this['guess_t0'] = False
         kwargs_this['guess_z'] = False
 
-        blue, red = split_data(data, module.band_names, module.lambda_effective)
+        blue, red = split_data(data, module.band_names,
+                               module.lambda_effective)
         iter_data = zip(out_tables, out_paths, [data, blue, red])
         for table, path, input_table in iter_data:
             fit_results = fit_lc(
@@ -161,7 +162,7 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
             table.write(path, overwrite=True)
 
 
-def fit_n_params(out_dir, num_params, module, model, kwargs, skip_types=()):
+def _fit_n_params(out_dir, num_params, module, model, kwargs, skip_types=()):
     """Fit light curves from in all bandpass collections with 4 or 5 parameters
 
     Args:
@@ -183,5 +184,38 @@ def fit_n_params(out_dir, num_params, module, model, kwargs, skip_types=()):
     pbar_txt = f'{num_params} param {model.source.name} - {model.source.version} for {module.survey_name}'
     pbar_args = {'desc': pbar_txt, 'position': 1}
 
-    _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, pbar_args,
-                    skip_types=skip_types)
+    _iter_fit_bands(
+        out_dir,
+        module,
+        model,
+        params_to_fit,
+        kwargs,
+        pbar_args,
+        skip_types=skip_types)
+
+
+def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
+    """Iteratively fit data for a given survey
+
+    Args:
+        out_dir          (str): Directory to write fit results to
+        module        (module): A data access module
+        models   (list[Model]): List of models to fit
+        num_params (list[int]): Number of params to fit
+        kwargs          (dict): A dictionary of kwargs for nest_lc AND fit_lc
+    """
+
+    for model in models:
+        for n in num_params:
+            # Get kwargs
+            model_key = f'{model.source.name}_{model.source.version}'
+            kwargs_this = kwargs[model_key]
+            kwargs_this['warn'] = kwargs_this.get('warn', False)
+
+            _fit_n_params(
+                out_dir,
+                n,
+                module,
+                model,
+                kwargs_this,
+                skip_types=skip_types)

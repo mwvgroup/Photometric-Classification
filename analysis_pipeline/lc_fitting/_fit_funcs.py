@@ -27,27 +27,59 @@ PRIORS = dict()  # For lazy loading priors
 
 
 def create_empty_summary_table():
-    """Returns a table with columns:
+    """Create an empty table for storing fit results.
 
+    Columns:
          obj_id, num_points, z, t0, x0, x1, z_err, t0_err, x0_err,
          x1_err, c_err, chi, dof, tmin, tmax, pre_max, post_max, message
+
+    Returns:
+        An astropy Table
     """
 
+    param_names = (
+        'z', 't0', 'x0', 'x1', 'c',
+        'z_err', 't0_err', 'x0_err', 'x1_err', 'c_err'
+    )
+
+    # Specify column names
     names = ['obj_id', 'num_points']
-    dtype = ['U20', int]
-
-    param_names = ('z', 't0', 'x0', 'x1', 'c')
     names.extend(param_names)
-    names.extend((p + '_err' for p in param_names))
-    dtype.extend((float for _ in range(len(names) - 2)))
-
     names.extend(
         ('chi', 'dof', 'b_max',
          'delta_15', 'tmin', 'tmax',
          'pre_max', 'post_max', 'message'))
 
-    dtype.extend([float, float, float, float, float, float, int, int, 'U1000'])
+    # Specify colomn data types
+    dtype = ['U20', int]
+    dtype.extend((float for _ in param_names))
+    dtype.extend((float, float, float, float, float, float, int, int, 'U1000'))
+
     return Table(names=names, dtype=dtype)
+
+
+def create_empty_priors_table(model):
+    """Create an empty table for storing fit priors.
+
+    Columns:
+         obj_id, *<model.param_names>, *<model.param_names>_min,
+         *<model.param_names>_max
+
+    Args:
+        model (Model): An SNCosmo model
+
+    Returns:
+        An astropy Table
+    """
+
+    col_names = ['obj_id']
+    dtype = ['U100']
+    for param in model.param_names:
+        col_names.extend((param, param + '_min', param + '_max'))
+        dtype.extend((float, float, float))
+
+    priors_table = Table(names=col_names, dtype=dtype)
+    return priors_table
 
 
 def nest_lc(data, model, vparam_names, **kwargs):
@@ -76,24 +108,16 @@ def nest_lc(data, model, vparam_names, **kwargs):
     t0_end = max(data['time'])
     kwargs['bounds']['t0'] = kwargs['bounds'].get('t0', (t0_start, t0_end))
 
-    # Protect against further argument mutation
+    # Protect against **further** argument mutation
     kwargs = deepcopy(kwargs)
     model = deepcopy(model)
 
-    # Set other default values
+    # Set other default and get model with nested values
     kwargs['verbose'] = kwargs.get('verbose', True)
     kwargs['maxiter'] = kwargs.get('maxiter', 10000)
     kwargs['maxcall'] = kwargs.get('maxcall', 20000)
-    kwargs['method'] = kwargs.get('method', 'multi')
-
-    # Set initial parameters in model
-    nest_result, _ = sncosmo.nest_lc(data, model, vparam_names, **kwargs)
-    model_args = dict()
-    for vp, p in zip(nest_result.vparam_names, nest_result.parameters):
-        model_args[vp] = p
-
-    model.set(**model_args)
-    return model
+    _, nest_model = sncosmo.nest_lc(data, model, vparam_names, **kwargs)
+    return nest_model
 
 
 def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
@@ -113,15 +137,14 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
 
     # Get path of priors file
     model_name = f'{model.source.name}_{model.source.version}'
-    file_name = f'{survey_name.lower()}_{len(vparam_names)}_{model_name}.ecsv'
+    file_name = f'{survey_name.lower()}_{model_name}.ecsv'
     file_path = PRIOR_DIR / file_name
 
     if file_path.exists():
-        # Lazy load priors
+        # Lazy load prior for object represented by ``data``
         priors_table = PRIORS.setdefault(file_path, Table.read(file_path))
-
-        # Get prior for specific object
         prior = priors_table[priors_table['obj_id'] == data.meta['obj_id']]
+
         if prior:
             sampled_model = deepcopy(model)
             for param in vparam_names:
@@ -131,29 +154,19 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
 
             return sampled_model
 
-    # If priors table doesn't exist, create it
     else:
-        # Data model for priors file
-        col_names = ['obj_id']
-        dtype = ['U100']
-        for param in vparam_names:
-            col_names.extend((param, param + '_min', param + '_max'))
-            dtype.extend((float, float, float))
-
-        priors_table = Table(names=col_names, dtype=dtype)
-        PRIORS[file_path] = priors_table
+        PRIORS[file_path] = create_empty_priors_table(model)
 
     # Calculate prior values
     sampled_model = nest_lc(data, model, vparam_names, **kwargs)
     new_row = [data.meta['obj_id']]
-    for param in vparam_names:
-        i = sampled_model.param_names.index(param)
-        param_val = sampled_model.parameters[i]
+    for param_name, param_val in zip(sampled_model.param_names,
+                                     sampled_model.parameters):
         new_row.append(param_val)
-        new_row.extend(kwargs['bounds'][param])
+        new_row.extend(kwargs['bounds'][param_name])
 
-    priors_table.add_row(new_row)
-    priors_table.write(file_path, overwrite=True)
+    PRIORS[file_path].add_row(new_row)
+    PRIORS[file_path].write(file_path, overwrite=True)
 
     return sampled_model
 
@@ -208,7 +221,8 @@ def fit_lc(data, model, vparam_names, **kwargs):
 
     # If the fit fails fill out_data with place holder values (NANs and zeros)
     except (DataQualityError, RuntimeError, ValueError) as e:
-        out_data.extend(np.full(16, np.NAN).tolist())
+        num_cols = 2 * len(model.param_names) + 8
+        out_data = np.full(num_cols, np.NAN).tolist()
         out_data.extend((0, 0, str(e).replace('\n', ' ')))
         if 'z' not in vparam_names:
             out_data[2] = data.meta['redshift']
@@ -229,6 +243,7 @@ def fit_lc(data, model, vparam_names, **kwargs):
         b_15 = fitted_model.source.bandmag('bessellb', 'ab', peak_phase + 15)
         delta_15 = b_15 - b_0
 
+        # Add remaining data
         out_data.append(result.chisq)
         out_data.append(result.ndof)
         out_data.append(b_max)

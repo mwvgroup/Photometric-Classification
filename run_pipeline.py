@@ -4,6 +4,33 @@
 """Command line interface for the analysis_pipeline package."""
 
 import argparse
+from pathlib import Path
+
+import yaml
+
+import analysis_pipeline
+from analysis_pipeline.data_access import csp, des, sdss
+
+out_dir = Path(analysis_pipeline.__file__).resolve().parent / 'fit_results'
+out_dir.mkdir(exist_ok=True)
+
+
+def read_yaml(file_path):
+    """A yaml file reader compatible with Python 3.6 adn 3.7
+
+    Args:
+        file_path (str): The yaml file path to read
+
+    Returns:
+        A dict of the file's contents
+    """
+
+    with open(file_path) as ofile:
+        try:
+            return yaml.load(ofile, Loader=yaml.FullLoader)
+
+        except AttributeError:
+            return yaml.load(ofile)
 
 
 def run(args):
@@ -12,21 +39,28 @@ def run(args):
     import sncosmo
 
     from analysis_pipeline import SN91bgSource
-    from analysis_pipeline.lc_fitting import LCFitting
+    from analysis_pipeline.lc_fitting import iter_all_fits
 
-    # Define models for fitting
-    models = dict(
-        salt_2_4=sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4')),
-        salt_2_0=sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0')),
+    # Define surveys and models for fitting
+    models_dict = dict(
+        salt_2_4=sncosmo.Model(
+            source=sncosmo.get_source('salt2', version='2.4')),
+        salt_2_0=sncosmo.Model(
+            source=sncosmo.get_source('salt2', version='2.0')),
         sn_91bg=sncosmo.Model(source=SN91bgSource())
     )
+    models = [models_dict[model_name] for model_name in args.models]
+    survey = {'csp': csp, 'des': des, 'sdss': sdss}[args.survey]
 
     # Run fitting
-    lc_fitting = LCFitting(args.args_path, args.out_dir)
-    fit_func = getattr(lc_fitting, f'fit_{args.survey}')
-    fit_func(models=[models[s] for s in args.models],
-             num_params=args.num_params,
-             skip_types=args.skip_types)
+    kwargs = read_yaml(args.args_path)[args.survey]
+    iter_all_fits(
+        out_dir,
+        survey,
+        models,
+        args.num_params,
+        kwargs,
+        skip_types=args.skip_types)
 
 
 # Parse command line input
