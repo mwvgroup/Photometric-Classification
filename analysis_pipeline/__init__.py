@@ -6,6 +6,10 @@ from pathlib import Path as _Path
 
 from astropy.table import Table as _Table
 
+from ._lc_fitting import fit_lc
+from ._lc_fitting import get_sampled_model
+from ._lc_fitting import iter_all_fits
+from ._lc_fitting import nest_lc
 from ._sn91bg_model._model import SN91bgSource
 
 _FIT_DIR = _Path(__file__).resolve().parent.parent / 'fit_results'

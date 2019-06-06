@@ -120,11 +120,14 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
     out_paths = _create_table_paths(
         out_dir,
         model,
-        module.survey_name.lower(),
+        module.survey_abbrev.lower(),
         len(params_to_fit))
 
-    for data in module.iter_sncosmo_input(verbose=verbose,
-                                          skip_types=skip_types):
+    filter_func = lambda x: x.meta.get('classification', '') not in skip_types
+    iterable = module.iter_data(
+        verbose=verbose, format_sncosmo=True, filter_func=filter_func)
+
+    for data in iterable:
         model_this = deepcopy(model)
         kwargs_this = deepcopy(kwargs)
 
@@ -138,7 +141,7 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
 
         # Fit light-curves
         sampled_model = get_sampled_model(
-            module.survey_name,
+            module.survey_abbrev,
             data,
             model_this,
             params_to_fit,
@@ -181,7 +184,7 @@ def _fit_n_params(out_dir, num_params, module, model, kwargs, skip_types=()):
     params_to_fit = param_names[5 - num_params:]
 
     # Create progress bar options
-    pbar_txt = f'{num_params} param {model.source.name} - {model.source.version} for {module.survey_name}'
+    pbar_txt = f'{num_params} param {model.source.name} - {model.source.version} for {module.survey_abbrev}'
     pbar_args = {'desc': pbar_txt, 'position': 1}
 
     _iter_fit_bands(

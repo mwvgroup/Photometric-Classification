@@ -112,7 +112,7 @@ def nest_lc(data, model, vparam_names, **kwargs):
     kwargs = deepcopy(kwargs)
     model = deepcopy(model)
 
-    # Set other default and get model with nested values
+    # Set kwargs specific to sncosmo.nest_lc and get model with nested values
     kwargs['verbose'] = kwargs.get('verbose', True)
     kwargs['maxiter'] = kwargs.get('maxiter', 10000)
     kwargs['maxcall'] = kwargs.get('maxcall', 20000)
@@ -158,7 +158,14 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
         PRIORS[file_path] = create_empty_priors_table(model)
 
     # Calculate prior values
-    sampled_model = nest_lc(data, model, vparam_names, **kwargs)
+    try:
+        sampled_model = nest_lc(data, model, vparam_names, **kwargs)
+
+    except ValueError:
+        sampled_model = deepcopy(model)
+        param_dict = {p: np.median(kwargs['bounds'][p]) for p in sampled_model.param_names}
+        sampled_model.update(param_dict)
+
     new_row = [data.meta['obj_id']]
     for param_name, param_val in zip(sampled_model.param_names,
                                      sampled_model.parameters):
@@ -221,8 +228,8 @@ def fit_lc(data, model, vparam_names, **kwargs):
 
     # If the fit fails fill out_data with place holder values (NANs and zeros)
     except (DataQualityError, RuntimeError, ValueError) as e:
-        num_cols = 2 * len(model.param_names) + 8
-        out_data = np.full(num_cols, np.NAN).tolist()
+        num_cols = 2 * len(model.param_names) + 6
+        out_data.extend(np.full(num_cols, np.NAN).tolist())
         out_data.extend((0, 0, str(e).replace('\n', ' ')))
         if 'z' not in vparam_names:
             out_data[2] = data.meta['redshift']
