@@ -18,7 +18,7 @@ from pathlib import Path
 
 import numpy as np
 import sncosmo
-from astropy.table import Table
+from astropy.table import Column, Table
 from sncosmo.fitting import DataQualityError
 
 PRIOR_DIR = Path(__file__).resolve().parent.parent / 'priors'
@@ -27,7 +27,7 @@ PRIORS = dict()  # For lazy loading priors
 
 
 def create_empty_summary_table():
-    """Create an empty table for storing fit results.
+    """Create an empty table for storing fit results
 
     Columns:
          obj_id, num_points, z, t0, x0, x1, z_err, t0_err, x0_err,
@@ -58,8 +58,8 @@ def create_empty_summary_table():
     return Table(names=names, dtype=dtype)
 
 
-def create_empty_priors_table(model):
-    """Create an empty table for storing fit priors.
+def get_priors_table(model, file_path):
+    """Create an empty table for storing fit priors
 
     Columns:
          obj_id, *<model.param_names>, *<model.param_names>_min,
@@ -72,14 +72,24 @@ def create_empty_priors_table(model):
         An astropy Table
     """
 
-    col_names = ['obj_id']
-    dtype = ['U100']
-    for param in model.param_names:
-        col_names.extend((param, param + '_min', param + '_max'))
-        dtype.extend((float, float, float))
+    if model in PRIORS:
+        return PRIORS[model]
 
-    priors_table = Table(names=col_names, dtype=dtype)
-    return priors_table
+    elif file_path.exists():
+        data = Table.read(file_path)
+        data['obj_id'] = Column(data['obj_id'], dtype='U100')  # Enforce dtype
+        return PRIORS.setdefault(model, data)
+
+    else:
+        col_names = ['obj_id']
+        dtype = ['U100']
+        for param in model.param_names:
+            col_names.extend((param, param + '_min', param + '_max'))
+            dtype.extend((float, float, float))
+
+        col_names.append('manual')
+        dtype.append(int)
+        return PRIORS.setdefault(model, Table(names=col_names, dtype=dtype))
 
 
 def nest_lc(data, model, vparam_names, **kwargs):
@@ -140,40 +150,40 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
     file_name = f'{survey_name.lower()}_{model_name}.ecsv'
     file_path = PRIOR_DIR / file_name
 
-    if file_path.exists():
-        # Lazy load prior for object represented by ``data``
-        priors_table = PRIORS.setdefault(file_path, Table.read(file_path))
-        prior = priors_table[priors_table['obj_id'] == data.meta['obj_id']]
+    # Try to use tabulated priors
+    priors_table = get_priors_table(model, file_path)
+    prior = priors_table[priors_table['obj_id'] == data.meta['obj_id']]
+    if prior:
+        sampled_model = deepcopy(model)
+        for param in vparam_names:
+            sampled_model.update({param: prior[param]})
+            kwargs['bounds'][param] = \
+                (prior[f'{param}_min'], prior[f'{param}_max'])
 
-        if prior:
-            sampled_model = deepcopy(model)
-            for param in vparam_names:
-                sampled_model.update({param: prior[param]})
-                kwargs['bounds'][param] = \
-                    (prior[f'{param}_min'], prior[f'{param}_max'])
+        return sampled_model
 
-            return sampled_model
-
-    else:
-        PRIORS[file_path] = create_empty_priors_table(model)
-
-    # Calculate prior values
+    # Calculate new prior values
     try:
         sampled_model = nest_lc(data, model, vparam_names, **kwargs)
 
     except ValueError:
+        # Fall back to using the median of the boundaries for each parameter.
         sampled_model = deepcopy(model)
-        param_dict = {p: np.median(kwargs['bounds'][p]) for p in sampled_model.param_names}
-        sampled_model.update(param_dict)
+        sampled_model.update(
+            {p: np.median(kwargs['bounds'][p]) for p in
+             sampled_model.param_names}
+        )
 
+    # Update the tabulated prior data
     new_row = [data.meta['obj_id']]
     for param_name, param_val in zip(sampled_model.param_names,
                                      sampled_model.parameters):
         new_row.append(param_val)
         new_row.extend(kwargs['bounds'][param_name])
 
-    PRIORS[file_path].add_row(new_row)
-    PRIORS[file_path].write(file_path, overwrite=True)
+    new_row.append(0)
+    PRIORS[model].add_row(new_row)
+    PRIORS[model].write(file_path, overwrite=True)
 
     return sampled_model
 

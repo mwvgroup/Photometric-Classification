@@ -9,13 +9,13 @@ from pathlib import Path
 import yaml
 from SNData.csp import dr3
 from SNData.des import sn3yr
-from SNData.sdss import sako14
+from SNData.sdss import sako18
 
 import analysis_pipeline
 
 out_dir = Path(analysis_pipeline.__file__).resolve().parent / 'fit_results'
 out_dir.mkdir(exist_ok=True)
-for data in (dr3, sn3yr, sako14):
+for data in (dr3, sn3yr, sako18):
     data.download_module_data()
     data.register_filters()
 
@@ -55,7 +55,7 @@ def run(args):
         sn_91bg=sncosmo.Model(source=SN91bgSource())
     )
     models = [models_dict[model_name] for model_name in args.models]
-    survey = {'csp': dr3, 'des': sn3yr, 'sdss': sako14}[args.survey]
+    survey = {'csp': dr3, 'des': sn3yr, 'sdss': sako18}[args.survey]
 
     # Run fitting
     kwargs = read_yaml(args.args_path)[args.survey]
@@ -114,8 +114,8 @@ if __name__ == '__main__':
         help='Output directory for fit results.'
     )
 
-    args = parser.parse_args()
-    if args.survey not in ('csp', 'des', 'sdss'):
-        raise ValueError(f"Survey name '{args.survey}' not recognized")
+    cli_args = parser.parse_args()
+    if cli_args.survey not in ('csp', 'des', 'sdss'):
+        raise ValueError(f"Survey name '{cli_args.survey}' not recognized")
 
-    run(args)
+    run(cli_args)
