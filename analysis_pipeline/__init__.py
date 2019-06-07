@@ -4,6 +4,7 @@
 import os as _os
 from pathlib import Path as _Path
 
+import pandas as _pd
 from astropy.table import Table as _Table
 
 from ._lc_fitting import fit_lc
@@ -12,11 +13,12 @@ from ._lc_fitting import iter_all_fits
 from ._lc_fitting import nest_lc
 from ._sn91bg_model._model import SN91bgSource
 
-_FIT_DIR = _Path(__file__).resolve().parent.parent / 'fit_results'
+_FIT_DIR = _Path(__file__).resolve().parent / 'fit_results'
+_PRIOR_DIR = _Path(__file__).resolve().parent / 'priors'
 
 
 def get_fit_results(survey, model, params):
-    """Get light-curve fits for a given survey and model
+    """Get light-curve fits for a given survey, model, and number of parameters
 
     Args:
         survey  (str): The name of the survey
@@ -55,3 +57,22 @@ def get_fit_results(survey, model, params):
         red_data.set_index('obj_id', inplace=True)
 
     return all_data, blue_data, red_data
+
+
+def get_priors(survey, model):
+    """Get light-curve priors for a given survey and model
+
+    Args:
+        survey  (str): The name of the survey
+        model (Model): The SNCosmo model used to fit light-curves
+
+    Returns:
+        A DataFrame of priors
+    """
+
+    model_name = f'{model.source.name}_{model.source.version}'
+    file_name = f'{survey.lower()}_{model_name}.ecsv'
+    file_path = _PRIOR_DIR / file_name
+
+    data = _pd.read_csv(file_path, comment='#', delimiter=' ')
+    return data.set_index('obj_id')
