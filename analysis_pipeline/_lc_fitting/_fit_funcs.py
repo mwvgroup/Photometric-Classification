@@ -18,7 +18,7 @@ from pathlib import Path
 
 import numpy as np
 import sncosmo
-from astropy.table import Column, Table
+from astropy.table import Column, Table, vstack, unique
 from sncosmo.fitting import DataQualityError
 
 PRIOR_DIR = Path(__file__).resolve().parent.parent / 'priors'
@@ -76,9 +76,17 @@ def get_priors_table(model, file_path):
         return PRIORS[model]
 
     elif file_path.exists():
-        data = Table.read(file_path)
-        data['obj_id'] = Column(data['obj_id'], dtype='U100')  # Enforce dtype
-        return PRIORS.setdefault(model, data)
+        priors = Table.read(file_path)
+        priors['obj_id'] = Column(priors['obj_id'], dtype='U100')
+
+        manual_priors_path = file_path.with_suffix('.man.ecsv')
+        if manual_priors_path.exists():
+            manual_priors = Table.read(manual_priors_path)
+            manual_priors['obj_id'] = Column(manual_priors['obj_id'], dtype='U100')
+            priors = vstack([manual_priors, priors])
+            priors = unique(priors, keys='obj_id', keep='first')
+
+        return PRIORS.setdefault(model, priors)
 
     else:
         col_names = ['obj_id']
@@ -181,7 +189,6 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
         new_row.append(param_val)
         new_row.extend(kwargs['bounds'][param_name])
 
-    new_row.append(0)
     PRIORS[model].add_row(new_row)
     PRIORS[model].write(file_path, overwrite=True)
 

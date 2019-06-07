@@ -4,10 +4,9 @@
 import os as _os
 from pathlib import Path as _Path
 
-import pandas as _pd
 from astropy.table import Table as _Table
 
-from ._lc_fitting import fit_lc
+from ._lc_fitting import fit_lc, split_data
 from ._lc_fitting import get_sampled_model
 from ._lc_fitting import iter_all_fits
 from ._lc_fitting import nest_lc
@@ -31,9 +30,9 @@ def get_fit_results(survey, model, params):
         A DataFrame of fits in red bands or None
     """
 
-    survey = survey.lower()
+    survey = survey.survey_abbrev.lower()
     model_name = model.source.name + '_' + model.source.version
-    fname = f'{survey}/{survey}_{params}_{model_name}_{{}}.ecsv'
+    fname = f'{survey}_{params}_{model_name}_{{}}.ecsv'
 
     all_data = None
     all_data_path = _FIT_DIR / fname.format('all')
@@ -59,20 +58,20 @@ def get_fit_results(survey, model, params):
     return all_data, blue_data, red_data
 
 
-def get_priors(survey, model):
-    """Get light-curve priors for a given survey and model
+def get_priors_paths(survey, model):
+    """Return the path to the light-curve priors for a given survey and model
 
     Args:
         survey  (str): The name of the survey
         model (Model): The SNCosmo model used to fit light-curves
 
     Returns:
-        A DataFrame of priors
+        A Path object for the auto generated priors
+        A Path object for the manually set priors
     """
 
     model_name = f'{model.source.name}_{model.source.version}'
-    file_name = f'{survey.lower()}_{model_name}.ecsv'
-    file_path = _PRIOR_DIR / file_name
-
-    data = _pd.read_csv(file_path, comment='#', delimiter=' ')
-    return data.set_index('obj_id')
+    auto_priors_name = f'{survey.lower()}_{model_name}.ecsv'
+    auto_priors_path = _PRIOR_DIR / auto_priors_name
+    manual_priors_path = auto_priors_path.with_suffix('.man.ecsv')
+    return auto_priors_path, manual_priors_path
