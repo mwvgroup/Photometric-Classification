@@ -18,8 +18,10 @@ from pathlib import Path
 
 import numpy as np
 import sncosmo
-from astropy.table import Column, Table, vstack, unique
+from astropy.table import Column, Table, unique, vstack
 from sncosmo.fitting import DataQualityError
+
+from .._utils import timeout
 
 PRIOR_DIR = Path(__file__).resolve().parent.parent / 'priors'
 PRIOR_DIR.mkdir(exist_ok=True)
@@ -78,6 +80,7 @@ def get_priors_table(model, file_path):
     elif file_path.exists():
         priors = Table.read(file_path)
         priors['obj_id'] = Column(priors['obj_id'], dtype='U100')
+        priors['message'] = Column(priors['message'], dtype='U100')
 
         manual_priors_path = file_path.with_suffix('.man.ecsv')
         if manual_priors_path.exists():
@@ -95,8 +98,8 @@ def get_priors_table(model, file_path):
             col_names.extend((param, param + '_min', param + '_max'))
             dtype.extend((float, float, float))
 
-        col_names.append('manual')
-        dtype.append(int)
+        col_names.append('message')
+        dtype.append('U100')
         return PRIORS.setdefault(model, Table(names=col_names, dtype=dtype))
 
 
@@ -172,15 +175,19 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
 
     # Calculate new prior values
     try:
-        sampled_model = nest_lc(data, model, vparam_names, **kwargs)
+        with timeout(seconds=int(1.5 * 60)):
+            sampled_model = nest_lc(data, model, vparam_names, **kwargs)
 
-    except ValueError:
+        msg = 'Success'
+
+    except (ValueError, TimeoutError, RuntimeError) as e:
         # Fall back to using the median of the boundaries for each parameter.
         sampled_model = deepcopy(model)
         sampled_model.update(
             {p: np.median(kwargs['bounds'][p]) for p in
              sampled_model.param_names}
         )
+        msg = f'Fail {e} - defaulting to middle point'
 
     # Update the tabulated prior data
     new_row = [data.meta['obj_id']]
@@ -189,6 +196,7 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
         new_row.append(param_val)
         new_row.extend(kwargs['bounds'][param_name])
 
+    new_row.append(msg)
     PRIORS[model].add_row(new_row)
     PRIORS[model].write(file_path, overwrite=True)
 
