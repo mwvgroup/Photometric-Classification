@@ -101,7 +101,7 @@ def _create_table_paths(out_dir, model, survey, num_params):
 
 
 def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
-                    skip_types=()):
+                    time_out, skip_types=()):
     """Fit light curves from a given data module in all bandpass collections
 
     Args:
@@ -111,6 +111,8 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
         params_to_fit (list[str]): Parameters to fit for
         kwargs             (dict): Any arguments for nest_lc and fit_lc
         verbose            (dict): Optional arguments for tqdm progress bar
+        time_out            (int): Seconds before nested sampling times out
+        skip_types    (list[str]): Classifications to skip if provided by survey
     """
 
     Path(out_dir).mkdir(exist_ok=True)
@@ -141,10 +143,11 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
 
         # Fit light-curves
         sampled_model = get_sampled_model(
-            module.survey_abbrev,
-            data,
-            model_this,
-            params_to_fit,
+            survey_name=module.survey_abbrev,
+            data=data,
+            model=model_this,
+            vparam_names=params_to_fit,
+            time_out=time_out,
             **kwargs_this)
 
         kwargs_this['guess_amplitude'] = False
@@ -165,15 +168,18 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
             table.write(path, overwrite=True)
 
 
-def _fit_n_params(out_dir, num_params, module, model, kwargs, skip_types=()):
+def _fit_n_params(out_dir, num_params, module, model, kwargs,
+                  time_out, skip_types=()):
     """Fit light curves from in all bandpass collections with 4 or 5 parameters
 
     Args:
-        out_dir    (str): Directory of output files
-        num_params (int): Number of parameters to fit (4 or 5)
-        module  (module): data access module for a particular survey
-        model    (Model): SNCosmo model
-        kwargs    (dict): Any arguments for nest_lc and fit_lc
+        out_dir          (str): Directory of output files
+        num_params       (int): Number of parameters to fit (4 or 5)
+        module        (module): data access module for a particular survey
+        model          (Model): SNCosmo model
+        kwargs          (dict): Any arguments for nest_lc and fit_lc
+        time_out         (int): Seconds before nested sampling times out
+        skip_types (list[str]): Classifications to skip if provided by survey
     """
 
     if num_params not in (4, 5):
@@ -188,16 +194,18 @@ def _fit_n_params(out_dir, num_params, module, model, kwargs, skip_types=()):
     pbar_args = {'desc': pbar_txt, 'position': 1}
 
     _iter_fit_bands(
-        out_dir,
-        module,
-        model,
-        params_to_fit,
-        kwargs,
-        pbar_args,
+        out_dir=out_dir,
+        module=module,
+        model=model,
+        params_to_fit=params_to_fit,
+        kwargs=kwargs,
+        verbose=pbar_args,
+        time_out=time_out,
         skip_types=skip_types)
 
 
-def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
+def iter_all_fits(out_dir, module, models, num_params, kwargs,
+                  time_out=None, skip_types=()):
     """Iteratively fit data for a given survey
 
     Args:
@@ -206,6 +214,8 @@ def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
         models   (list[Model]): List of models to fit
         num_params (list[int]): Number of params to fit
         kwargs          (dict): A dictionary of kwargs for nest_lc AND fit_lc
+        time_out         (int): Seconds before nested sampling times out
+        skip_types (list[str]): Classifications to skip if provided by survey
     """
 
     for model in models:
@@ -216,9 +226,10 @@ def iter_all_fits(out_dir, module, models, num_params, kwargs, skip_types=()):
             kwargs_this['warn'] = kwargs_this.get('warn', False)
 
             _fit_n_params(
-                out_dir,
-                n,
-                module,
-                model,
-                kwargs_this,
+                out_dir=out_dir,
+                num_params=n,
+                module=module,
+                model=model,
+                kwargs=kwargs_this,
+                time_out=time_out,
                 skip_types=skip_types)

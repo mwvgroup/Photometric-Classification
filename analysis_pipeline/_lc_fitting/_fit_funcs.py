@@ -68,7 +68,8 @@ def get_priors_table(model, file_path):
          *<model.param_names>_max
 
     Args:
-        model (Model): An SNCosmo model
+        model    (Model): An SNCosmo model
+        file_path (Path): Path of the table with prior values
 
     Returns:
         An astropy Table
@@ -103,6 +104,7 @@ def get_priors_table(model, file_path):
         return PRIORS.setdefault(model, Table(names=col_names, dtype=dtype))
 
 
+# noinspection PyIncorrectDocstring
 def nest_lc(data, model, vparam_names, **kwargs):
     """Set initial model params using nested sampling
 
@@ -126,7 +128,7 @@ def nest_lc(data, model, vparam_names, **kwargs):
     # Assume first observation < 15 days after peak and before last data point
     # Intentionally mutate kwargs
     t0_start = min(data['time']) - 15
-    t0_end = max(data['time'])
+    t0_end = min(max(data['time']), min(data['time']) + 25)
     kwargs['bounds']['t0'] = kwargs['bounds'].get('t0', (t0_start, t0_end))
 
     # Protect against **further** argument mutation
@@ -141,7 +143,8 @@ def nest_lc(data, model, vparam_names, **kwargs):
     return nest_model
 
 
-def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
+def get_sampled_model(survey_name, data, model, vparam_names,
+                      time_out=None, **kwargs):
     """Set initial model params using cached values
 
     If cached values are not available, determine them using nested sampling
@@ -152,9 +155,12 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
         data             (Table): Table of light curve data for SNCosmo
         model            (Model): SNCosmo model
         vparam_names (list[str]): List of parameters to vary in the model
-        bounds            (dict): Boundaries on fit parameters
+        time_out           (int): Seconds before nested sampling times out
         Any other arguments for analysis_pipeline.lc_fitting.nest_lc
     """
+
+    if time_out is None:
+        time_out = 120
 
     # Get path of priors file
     model_name = f'{model.source.name}_{model.source.version}'
@@ -175,7 +181,7 @@ def get_sampled_model(survey_name, data, model, vparam_names, **kwargs):
 
     # Calculate new prior values
     try:
-        with timeout(seconds=int(1.5 * 60)):
+        with timeout(seconds=time_out):
             sampled_model = nest_lc(data, model, vparam_names, **kwargs)
 
         msg = 'Success'

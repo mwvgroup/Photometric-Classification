@@ -60,11 +60,12 @@ def run(args):
     # Run fitting
     kwargs = read_yaml(args.args_path)[args.survey]
     iter_all_fits(
-        out_dir,
-        survey,
-        models,
-        args.num_params,
-        kwargs,
+        out_dir=out_dir,
+        module=survey,
+        models=models,
+        num_params=args.num_params,
+        time_out=args.time_out,
+        kwargs=kwargs,
         skip_types=args.skip_types)
 
 
@@ -100,7 +101,7 @@ if __name__ == '__main__':
         help='Number of params to fit (4, 5)')
 
     parser.add_argument(
-        '-t', '--skip_types',
+        '-k', '--skip_types',
         type=str,
         nargs='+',
         default=['AGN', 'SLSN', 'SNII', 'Variable'],
@@ -112,6 +113,13 @@ if __name__ == '__main__':
         type=str,
         default=None,
         help='Output directory for fit results.'
+    )
+
+    parser.add_argument(
+        '-t', '--time_out',
+        type=int,
+        default=90,
+        help='Seconds before nested sampling times out.'
     )
 
     cli_args = parser.parse_args()
