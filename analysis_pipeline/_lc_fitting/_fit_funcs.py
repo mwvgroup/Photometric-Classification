@@ -21,7 +21,7 @@ import sncosmo
 from astropy.table import Column, Table, unique, vstack
 from sncosmo.fitting import DataQualityError
 
-from .._utils import timeout
+from .._utils import _get_priors_paths, timeout
 
 PRIOR_DIR = Path(__file__).resolve().parent.parent / 'priors'
 PRIOR_DIR.mkdir(exist_ok=True)
@@ -86,7 +86,8 @@ def get_priors_table(model, file_path):
         manual_priors_path = file_path.with_suffix('.man.ecsv')
         if manual_priors_path.exists():
             manual_priors = Table.read(manual_priors_path)
-            manual_priors['obj_id'] = Column(manual_priors['obj_id'], dtype='U100')
+            manual_priors['obj_id'] = Column(manual_priors['obj_id'],
+                                             dtype='U100')
             priors = vstack([manual_priors, priors])
             priors = unique(priors, keys='obj_id', keep='first')
 
@@ -290,3 +291,20 @@ def fit_lc(data, model, vparam_names, **kwargs):
         out_data.append(result.message.replace('\n', ' '))
 
     return out_data
+
+
+def get_priors(module, model):
+    """Get priors for a given survey and model
+
+    Args:
+        module (Module): An SNData module
+        model   (Model): The model of the priors
+
+    Returns:
+        A pandas data frame indexed on object ID
+    """
+
+    auto_priors_path, _ = \
+        _get_priors_paths(module.survey_abbrev.lower(), model)
+    df = get_priors_table(model, auto_priors_path).to_pandas()
+    return df.set_index('obj_id')
