@@ -20,8 +20,8 @@ def bi_search(a, x):
     Binary search
 
     Args:
-        a (list): The sorted list in which the number x will be searched
-        x  (num): The number to be searched
+        a (ndarray): The sorted list in which the number x will be searched
+        x     (num): The number to be searched
 
     Returns:
         The position of nearest neighbors of the number x

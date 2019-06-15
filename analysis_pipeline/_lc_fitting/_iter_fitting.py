@@ -31,9 +31,9 @@ def _split_bands(bands, lambda_eff):
 
 
 def split_data(data_table, band_names, lambda_eff):
-    """Split a data table into blue and red data (by restframe)
+    """Split a data table into blue and red data (by rest frame)
 
-    Split data by keeping filters that are redward or blueward of 5500 Ang.
+    Split data by keeping filters that are red-ward or blue-ward of 5500 Ang.
 
     Args:
         data_table (Table): An SNCosmo input table with column 'band'
@@ -190,7 +190,11 @@ def _fit_n_params(out_dir, num_params, module, model, kwargs,
     params_to_fit = param_names[5 - num_params:]
 
     # Create progress bar options
-    pbar_txt = f'{num_params} param {model.source.name} - {model.source.version} for {module.survey_abbrev}'
+    pbar_txt = (f'{num_params} param '
+                f'{model.source.name} - '
+                f'{model.source.version} for '
+                f'{module.survey_abbrev}')
+
     pbar_args = {'desc': pbar_txt, 'position': 1}
 
     _iter_fit_bands(

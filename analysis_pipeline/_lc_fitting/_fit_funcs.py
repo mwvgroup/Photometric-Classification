@@ -50,7 +50,7 @@ def create_empty_summary_table():
          'delta_15', 'tmin', 'tmax',
          'pre_max', 'post_max', 'message'))
 
-    # Specify colomn data types
+    # Specify column data types
     dtype = ['U20', int]
     dtype.extend((float for _ in param_names))
     dtype.extend((float, float, float, float, float, float, int, int, 'U1000'))

@@ -37,7 +37,11 @@ The `fitting_params.yml` file specified survey specific boundaries for each fit.
 python run_pipeline.py -a fitting_params.yml -s csp -n 4 -m sn_91bg
 ```
 
-A full description of available arguments can be retrieved by running `python run_pipeline.py -h`.
+A full description of available arguments can be retrieved by running `python run_pipeline.py -h`. 
+
+
+
+The pipeline will automatically perform nested sampling to determine the initial fit parameters for each model / survey and save the results to file. If results for a given light curve fit have already been cached, then the pipeline will skip the sampling process and use the cahced values. Sampled values are determined on an object / model basis. This means the same priors are used for the 4 and 5 parameter fits and for all band pass collections. The Jupyter notebook `3_fit_inspection.ipynb` can be used to inspect light curve fits and manually adjust priors for any targets with poor fits.
 
 
 

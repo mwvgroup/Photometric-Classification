@@ -1,7 +1,9 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""A collection of general utilites"""
+"""A collection of general utilities and file paths used across the analysis
+pipeline.
+"""
 
 import os as _os
 import signal
@@ -104,7 +106,7 @@ def save_priors(obj_id, module, model, priors_dict, message='-'):
 
     Args:
         obj_id       (str): The ID of the object to save priors for
-        module       (str): An SNData module
+        module    (module): An SNData module
         model      (Model): The SNCosmo model of the priors
         priors_dict (dict): Dictionary of prior values
         message (str): Message to include with new priors (Default: '-')
