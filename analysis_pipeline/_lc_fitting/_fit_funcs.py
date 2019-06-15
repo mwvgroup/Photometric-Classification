@@ -21,10 +21,8 @@ import sncosmo
 from astropy.table import Column, Table, unique, vstack
 from sncosmo.fitting import DataQualityError
 
-from .._utils import _get_priors_paths, timeout
+from ..utils import PRIOR_DIR, _get_priors_paths, timeout
 
-PRIOR_DIR = Path(__file__).resolve().parent.parent / 'priors'
-PRIOR_DIR.mkdir(exist_ok=True)
 PRIORS = dict()  # For lazy loading priors
 
 

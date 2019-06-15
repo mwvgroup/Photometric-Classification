@@ -9,9 +9,7 @@ from pathlib import Path
 
 from astropy.table import Column, Table, unique
 
-_FIT_DIR = Path(__file__).resolve().parent / 'fit_results'
-_PRIOR_DIR = Path(__file__).resolve().parent / 'priors'
-
+FIT_DIR = Path(__file__).resolve().parent / 'fit_results'
 PRIOR_DIR = Path(__file__).resolve().parent.parent / 'priors'
 PRIOR_DIR.mkdir(exist_ok=True)
 
@@ -44,9 +42,9 @@ def get_fit_results(survey, model, params):
     """Get light-curve fits for a given survey, model, and number of parameters
 
     Args:
-        survey  (str): The name of the survey
-        model (Model): The SNCosmo model used to fit light-curves
-        params  (int): The number of Salt2 params that were fit (4 or 5)
+        survey (module): An SNData submodule for a particular data release
+        model   (Model): The SNCosmo model used to fit light-curves
+        params    (int): The number of Salt2 params that were fit (4 or 5)
 
     Returns:
         A DataFrame of fits in all bands or None
@@ -59,21 +57,21 @@ def get_fit_results(survey, model, params):
     fname = f'{survey}_{params}_{model_name}_{{}}.ecsv'
 
     all_data = None
-    all_data_path = _FIT_DIR / fname.format('all')
+    all_data_path = FIT_DIR / fname.format('all')
     if all_data_path.exists():
         all_data = Table.read(all_data_path)
         all_data = all_data.to_pandas()
         all_data.set_index('obj_id', inplace=True)
 
     blue_data = None
-    blue_data_path = _FIT_DIR / fname.format('blue')
+    blue_data_path = FIT_DIR / fname.format('blue')
     if _os.path.exists(blue_data_path):
         blue_data = Table.read(blue_data_path)
         blue_data = blue_data.to_pandas()
         blue_data.set_index('obj_id', inplace=True)
 
     red_data = None
-    red_data_path = _FIT_DIR / fname.format('red')
+    red_data_path = FIT_DIR / fname.format('red')
     if _os.path.exists(red_data_path):
         red_data = Table.read(red_data_path)
         red_data = red_data.to_pandas()
@@ -96,7 +94,7 @@ def _get_priors_paths(survey, model):
 
     model_name = f'{model.source.name}_{model.source.version}'
     auto_priors_name = f'{survey.lower()}_{model_name}.ecsv'
-    auto_priors_path = _PRIOR_DIR / auto_priors_name
+    auto_priors_path = PRIOR_DIR / auto_priors_name
     manual_priors_path = auto_priors_path.with_suffix('.man.ecsv')
     return auto_priors_path, manual_priors_path
 

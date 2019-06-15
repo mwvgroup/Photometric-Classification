@@ -4,7 +4,6 @@
 """Command line interface for the analysis_pipeline package."""
 
 import argparse
-from pathlib import Path
 
 import yaml
 from SNData.csp import dr3
@@ -13,8 +12,7 @@ from SNData.sdss import sako18
 
 import analysis_pipeline
 
-out_dir = Path(analysis_pipeline.__file__).resolve().parent / 'fit_results'
-out_dir.mkdir(exist_ok=True)
+out_dir = analysis_pipeline.FIT_DIR
 for data in (dr3, sn3yr, sako18):
     data.download_module_data()
     data.register_filters()
