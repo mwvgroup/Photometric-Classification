@@ -4,10 +4,36 @@
 """Command line interface for the analysis_pipeline package."""
 
 import argparse
-from pathlib import Path
 
-# Define default output directories
-out_dir = Path(__file__).resolve().parent / 'fit_results'
+import yaml
+from SNData.csp import dr3
+from SNData.des import sn3yr
+from SNData.sdss import sako18
+
+import analysis_pipeline
+
+out_dir = analysis_pipeline.FIT_DIR
+for data in (dr3, sn3yr, sako18):
+    data.download_module_data()
+    data.register_filters()
+
+
+def read_yaml(file_path):
+    """A yaml file reader compatible with Python 3.6 adn 3.7
+
+    Args:
+        file_path (str): The yaml file path to read
+
+    Returns:
+        A dict of the file's contents
+    """
+
+    with open(file_path) as ofile:
+        try:
+            return yaml.load(ofile, Loader=yaml.FullLoader)
+
+        except AttributeError:
+            return yaml.load(ofile)
 
 
 def run(args):
@@ -16,25 +42,29 @@ def run(args):
     import sncosmo
 
     from analysis_pipeline import SN91bgSource
-    from analysis_pipeline.lc_fitting import LCFitting
+    from analysis_pipeline import iter_all_fits
 
-    # Define models for fitting
-    models = dict(
-        salt_2_4=sncosmo.Model(source=sncosmo.get_source('salt2', version='2.4')),
-        salt_2_0=sncosmo.Model(source=sncosmo.get_source('salt2', version='2.0')),
+    # Define surveys and models for fitting
+    models_dict = dict(
+        salt_2_4=sncosmo.Model(
+            source=sncosmo.get_source('salt2', version='2.4')),
+        salt_2_0=sncosmo.Model(
+            source=sncosmo.get_source('salt2', version='2.0')),
         sn_91bg=sncosmo.Model(source=SN91bgSource())
     )
-
-    out_dir = Path(args.out_dir) / args.survey
-    out_dir.mkdir(parents=True, exist_ok=True)
+    models = [models_dict[model_name] for model_name in args.models]
+    survey = {'csp': dr3, 'des': sn3yr, 'sdss': sako18}[args.survey]
 
     # Run fitting
-    lc_fitting = LCFitting(args.args_path)
-    fit_func = getattr(lc_fitting, f'fit_{args.survey}')
-    fit_func(out_dir,
-             models=[models[s] for s in args.models],
-             num_params=args.num_params,
-             skip_types=args.skip_types)
+    kwargs = read_yaml(args.args_path)[args.survey]
+    iter_all_fits(
+        out_dir=out_dir,
+        module=survey,
+        models=models,
+        num_params=args.num_params,
+        time_out=args.time_out,
+        kwargs=kwargs,
+        skip_types=args.skip_types)
 
 
 # Parse command line input
@@ -69,7 +99,7 @@ if __name__ == '__main__':
         help='Number of params to fit (4, 5)')
 
     parser.add_argument(
-        '-t', '--skip_types',
+        '-k', '--skip_types',
         type=str,
         nargs='+',
         default=['AGN', 'SLSN', 'SNII', 'Variable'],
@@ -79,12 +109,19 @@ if __name__ == '__main__':
     parser.add_argument(
         '-o', '--out_dir',
         type=str,
-        default=out_dir,
+        default=None,
         help='Output directory for fit results.'
     )
 
-    args = parser.parse_args()
-    if args.survey not in ('csp', 'des', 'sdss'):
-        raise ValueError(f"Survey name '{args.survey}' not recognized")
+    parser.add_argument(
+        '-t', '--time_out',
+        type=int,
+        default=90,
+        help='Seconds before nested sampling times out.'
+    )
 
-    run(args)
+    cli_args = parser.parse_args()
+    if cli_args.survey not in ('csp', 'des', 'sdss'):
+        raise ValueError(f"Survey name '{cli_args.survey}' not recognized")
+
+    run(cli_args)

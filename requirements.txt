@@ -1,3 +1,4 @@
+scipy
 astropy
 matplotlib
 iminuit
@@ -6,5 +7,6 @@ pandas
 pyyaml
 requests
 sncosmo
+sndata
 tqdm
 bokeh

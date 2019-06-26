@@ -5,6 +5,7 @@
 This repository applies the photometric classification technique from González-Gaitan et al. 2014 to SDSS, DES, and CSP data to identify peculiar Type Ia Supernovae (SNe Ia).  Work on the accompanying paper can be found [here](https://github.com/mwvgroup/91bg_paper).
 
 1. [Project Todo List](#todo)
+1. [Running the Analysis Pipeline](#running-the-analysis-pipeline)
 1. [About the 91bg model](#about-the-91bg-model)
 1. [Notes on SDSS Data](#notes-on-the-sdss-ii-sn-survey-data-sako-et-al-2018)
 1. [Notes on DES Data](#notes-on-the-des-year-3-cosmology-data-brout-sako-et-al-2019-and-brout-scolnic-et-al-2019)
@@ -14,19 +15,48 @@ This repository applies the photometric classification technique from González-
 
 ## Todo:
 
+- The chi-squared values calculated by SNCosmo include data points outside the phase range of the model. This results in unreasonbly (and for our purposes incorrectly) large chi-squared values. We need to calculate them manually.
+- 4 parameter Satl2.4 fits have been visually inspected for CSP. This needs to be repeated for other models / surveys.
 - The `num_points_<band>` column in the fit summary tables contain the number of data points per observer frame band. This needs to be changed to the number of points in the rest frame so that we can ignore lightcurves with too few data points.
-
 - Our ported 91bg model does not always work with `sncosmo.nest_lc`.
-
 - Cache and manually edit fit priors for each target.
+
+
+
+## Running the Analysis Pipeline
+
+The analysis pipeline runs light-curve fits for a combination of surveys, models, and number of fit parameters. By default the pipeline uses the Salt2.4 model to run 4 and 5 parameter fits (with / without redshift). To run the pipeline:
+
+```bash
+python run_pipeline.py -a fitting_params.yml -s csp
+```
+
+The `fitting_params.yml` file specified survey specific boundaries for each fit. To fit a different model or to only run fits with a certain number of parameters:
+
+```bash
+python run_pipeline.py -a fitting_params.yml -s csp -n 4 -m sn_91bg
+```
+
+A full description of available arguments can be retrieved by running `python run_pipeline.py -h`. 
+
+The pipeline will automatically perform nested sampling to determine the initial fit parameters for each model / survey and save the results to file. If results for a given light curve fit have already been cached, then the pipeline will skip the sampling process and use the cahced values. If the sampling process encounters an error or times out, the pipeline will use the middle point of the fitting bounds as an initial guess. **At present the 91bg model will always time out**.
+
+Sampled values are determined on an object / model basis. This means the same priors are used for the 4 and 5 parameter fits and for all band pass collections. The Jupyter notebook `3_fit_inspection.ipynb` can be used to inspect light curve fits and manually adjust priors for any targets with poor fits.
+
+
 
 
 ## About the 91bg model
 
 - The [91bg model](https://github.com/mwvgroup/SDSS-Classification/blob/issues/3/port_model/sncosmo_91bgmodel/_sncosmo_91bgmodel.py) is based on 35 [SED templates](https://github.com/mwvgroup/SDSS-Classification/tree/issues/3/port_model/snana_sims/91BG_SED) provided by S. Gonzalez-Gaitan. These SEDs are based on [Nugent's](https://iopscience.iop.org/article/10.1086/341707) 91bg but extending a bit to the UV. They form a 7\*5 grid with 7 different stretches and 5 different colors. The ranges and relations of colors and stretch to generate the different SNANA templates were obtained by fitting with [SiFTO](https://iopscience.iop.org/article/10.1086/588518/meta) this template to all 91bg at low-z.
+
 - The 7 SEDs with different stretches can be generated from one single SED by stretching the phase (or time) axis: flux = template(t, &lambda;) &rArr; flux = template(t / stretch, &lambda;).
+
 - Our approach is picking 5 SEDs with same stretch (st = 0.65) and different colors (c = [0, 0.25, 0.5, 1.0]), using template(t / (stretch/0.65), &lambda;) to fit for stretch and linearly interpolating over 5 SEDs to fit for color.
+
 - For now, this model works well on recovering stretches and colors of snana simulated light curves but the fitted redshifts are slightly larger than the simulated value. We'll keep trying to further optimize this model.
+
+  
 
 
 ## Notes on the SDSS-II SN Survey Data (Sako et al. 2018)

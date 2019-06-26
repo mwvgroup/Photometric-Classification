@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 from astropy.table import Table
 
-from ._fit_funcs import create_empty_summary_table, fit_lc, nest_lc
+from ._fit_funcs import create_empty_summary_table, fit_lc, get_sampled_model
 
 
 def _split_bands(bands, lambda_eff):
@@ -31,9 +31,9 @@ def _split_bands(bands, lambda_eff):
 
 
 def split_data(data_table, band_names, lambda_eff):
-    """Split a data table into blue and red data (by restframe)
+    """Split a data table into blue and red data (by rest frame)
 
-    Split data by keeping filters that are redward or blueward of 5500 Ang.
+    Split data by keeping filters that are red-ward or blue-ward of 5500 Ang.
 
     Args:
         data_table (Table): An SNCosmo input table with column 'band'
@@ -101,7 +101,7 @@ def _create_table_paths(out_dir, model, survey, num_params):
 
 
 def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
-                    skip_types=()):
+                    time_out, skip_types=()):
     """Fit light curves from a given data module in all bandpass collections
 
     Args:
@@ -111,6 +111,8 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
         params_to_fit (list[str]): Parameters to fit for
         kwargs             (dict): Any arguments for nest_lc and fit_lc
         verbose            (dict): Optional arguments for tqdm progress bar
+        time_out            (int): Seconds before nested sampling times out
+        skip_types    (list[str]): Classifications to skip if provided by survey
     """
 
     Path(out_dir).mkdir(exist_ok=True)
@@ -120,10 +122,14 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
     out_paths = _create_table_paths(
         out_dir,
         model,
-        module.survey_name.lower(),
+        module.survey_abbrev.lower(),
         len(params_to_fit))
 
-    for data in module.iter_sncosmo_input(verbose=verbose, skip_types=skip_types):
+    filter_func = lambda x: x.meta.get('classification', '') not in skip_types
+    iterable = module.iter_data(
+        verbose=verbose, format_sncosmo=True, filter_func=filter_func)
+
+    for data in iterable:
         model_this = deepcopy(model)
         kwargs_this = deepcopy(kwargs)
 
@@ -136,12 +142,20 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
             model_this.set(z=z)
 
         # Fit light-curves
-        sampled_model = nest_lc(data, model_this, params_to_fit, **kwargs_this)
+        sampled_model = get_sampled_model(
+            survey_name=module.survey_abbrev,
+            data=data,
+            model=model_this,
+            vparam_names=params_to_fit,
+            time_out=time_out,
+            **kwargs_this)
+
         kwargs_this['guess_amplitude'] = False
         kwargs_this['guess_t0'] = False
         kwargs_this['guess_z'] = False
 
-        blue, red = split_data(data, module.band_names, module.lambda_effective)
+        blue, red = split_data(data, module.band_names,
+                               module.lambda_effective)
         iter_data = zip(out_tables, out_paths, [data, blue, red])
         for table, path, input_table in iter_data:
             fit_results = fit_lc(
@@ -154,15 +168,18 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
             table.write(path, overwrite=True)
 
 
-def fit_n_params(out_dir, num_params, module, model, kwargs, skip_types=()):
+def _fit_n_params(out_dir, num_params, module, model, kwargs,
+                  time_out, skip_types=()):
     """Fit light curves from in all bandpass collections with 4 or 5 parameters
 
     Args:
-        out_dir    (str): Directory of output files
-        num_params (int): Number of parameters to fit (4 or 5)
-        module  (module): data access module for a particular survey
-        model    (Model): SNCosmo model
-        kwargs    (dict): Any arguments for nest_lc and fit_lc
+        out_dir          (str): Directory of output files
+        num_params       (int): Number of parameters to fit (4 or 5)
+        module        (module): data access module for a particular survey
+        model          (Model): SNCosmo model
+        kwargs          (dict): Any arguments for nest_lc and fit_lc
+        time_out         (int): Seconds before nested sampling times out
+        skip_types (list[str]): Classifications to skip if provided by survey
     """
 
     if num_params not in (4, 5):
@@ -173,8 +190,50 @@ def fit_n_params(out_dir, num_params, module, model, kwargs, skip_types=()):
     params_to_fit = param_names[5 - num_params:]
 
     # Create progress bar options
-    pbar_txt = f'{num_params} param {model.source.name} - {model.source.version} for {module.survey_name}'
+    pbar_txt = (f'{num_params} param '
+                f'{model.source.name} - '
+                f'{model.source.version} for '
+                f'{module.survey_abbrev}')
+
     pbar_args = {'desc': pbar_txt, 'position': 1}
 
-    _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, pbar_args,
-                    skip_types=skip_types)
+    _iter_fit_bands(
+        out_dir=out_dir,
+        module=module,
+        model=model,
+        params_to_fit=params_to_fit,
+        kwargs=kwargs,
+        verbose=pbar_args,
+        time_out=time_out,
+        skip_types=skip_types)
+
+
+def iter_all_fits(out_dir, module, models, num_params, kwargs,
+                  time_out=None, skip_types=()):
+    """Iteratively fit data for a given survey
+
+    Args:
+        out_dir          (str): Directory to write fit results to
+        module        (module): A data access module
+        models   (list[Model]): List of models to fit
+        num_params (list[int]): Number of params to fit
+        kwargs          (dict): A dictionary of kwargs for nest_lc AND fit_lc
+        time_out         (int): Seconds before nested sampling times out
+        skip_types (list[str]): Classifications to skip if provided by survey
+    """
+
+    for model in models:
+        for n in num_params:
+            # Get kwargs
+            model_key = f'{model.source.name}_{model.source.version}'
+            kwargs_this = kwargs[model_key]
+            kwargs_this['warn'] = kwargs_this.get('warn', False)
+
+            _fit_n_params(
+                out_dir=out_dir,
+                num_params=n,
+                module=module,
+                model=model,
+                kwargs=kwargs_this,
+                time_out=time_out,
+                skip_types=skip_types)
