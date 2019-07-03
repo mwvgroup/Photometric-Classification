@@ -307,13 +307,8 @@ def fit_lc(data, model, vparam_names, **kwargs):
         delta_15 = b_15 - b_0
 
         # Add remaining data
-        # out_data.append(result.chisq)
-        # out_data.append(result.ndof)
         man_chi, num_points = calc_chisq(data, fitted_model)
-        num_param = 5
-        if 'z' not in vparam_names:
-            num_param = 4
-        man_dof = num_points - num_param
+        man_dof = num_points - len(vparam_names)
         out_data.append(man_chi)
         out_data.append(man_dof)
         out_data.append(b_max)
