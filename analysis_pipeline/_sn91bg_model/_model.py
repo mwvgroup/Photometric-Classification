@@ -6,6 +6,7 @@ source object for 91bg like supernovae.
 """
 
 import os
+from bisect import bisect
 
 import numpy as np
 import sncosmo
@@ -16,36 +17,19 @@ COMPILED_MODEL_PATH = os.path.join(FILE_DIR, 'template.npy')
 
 
 def bi_search(a, x):
-    """Binary search
+    """Binary search for value ``x`` in array ``a``
 
     Args:
         a (ndarray): The sorted list in which the number x will be searched
         x     (num): The number to be searched
 
     Returns:
-        The position of nearest neighbors of the number x
+        The position of nearest left neighbor of ``x``
+        The position of nearest right neighbor of ``x``
     """
 
-    if x in a:
-        try:
-            return a.index(x)
-
-        except AttributeError:
-            return a.tolist().index(x)
-
-    if x < a[0] or x > a[-1]:
-        raise ValueError('x is out of range')
-
-    left, right = 0, len(a)
-    while abs(right - left) > 1:
-        m = (left + right) // 2
-        if a[m] > x:
-            right = m
-
-        if a[m] < x:
-            left = m
-
-    return left, right
+    index = bisect(a, x)
+    return index - 1, index
 
 
 def linear_interp(x0, x1, f, x):
@@ -57,13 +41,10 @@ def linear_interp(x0, x1, f, x):
         f      (list): The list contains values at x0 and x1
 
     Returns:
-        Interpolation value
+        Interpolated value
     """
 
-    y0 = f[0]
-    y1 = f[1]
-    y = y0 + ((x - x0) * y1 - (x - x0) * y0) / (x1 - x0)
-    return y
+    return f[0] + ((x - x0) * f[1] - (x - x0) * f[0]) / (x1 - x0)
 
 
 class SN91bgSource(sncosmo.Source):
@@ -83,22 +64,20 @@ class SN91bgSource(sncosmo.Source):
         self.version = 'salt2_phase'
 
         # Determine phase range of Salt2.4 model
-        salt2_phase = sncosmo.get_source('salt2', version='2.4').source._phase
+        salt2_phase = sncosmo.get_source('salt2', version='2.4')._phase
         self.phase_lim = min(salt2_phase), max(salt2_phase)
 
         # Get phase limited 91bg model
-        grid_cords, self._flux_values = self._get_91bg_model(
-            *self.phase_lim[0])
-        self._stretch = grid_cords[0]
-        self._color = grid_cords[1]
-        self._phase = grid_cords[2]
-        self._wave = grid_cords[3]
+        grid_cords, self._flux_values = self._get_91bg_model(*self.phase_lim)
+        self._color = grid_cords[0]
+        self._phase = grid_cords[1]
+        self._wave = grid_cords[2]
 
         # Define initial parameter values
         self._parameters = np.array([1., 1., 0.55])
 
         # Creat bi-cubic spline for phase and wavelength using 5 templates
-        # (stretch: 0.65, color: [0,0.25,0.5,0.75,1.])
+        # (stretch: 1, color: [0,0.25,0.5,0.75,1.])
         self._flux_color_splines = np.empty(self._color.shape,
                                             RectBivariateSpline)
         for i in range(len(self._color)):
@@ -112,10 +91,10 @@ class SN91bgSource(sncosmo.Source):
     def _get_91bg_model(phase_min=-18, phase_max=100):
         """Load template spectra for SN 1991bg
 
-        Full template spans 7 stretch values, 5 color values, 114 dates, and
-        1101 wavelengths. The phase range can be limited by specifying the
-        phase_min and phase_max arguments. Returned grid coordinates are
-        ordered as stretch, color, phase, and wavelength.
+        Full template spans 5 color values, 119 phases, and 1101 wavelengths.
+        The phase range can be limited by specifying the phase_min and
+        phase_max arguments. Returned grid coordinates are ordered as color,
+        phase, and wavelength.
 
         Args:
              phase_min (float): Minimum phase of model (Default: -18)
@@ -126,24 +105,23 @@ class SN91bgSource(sncosmo.Source):
             An array of modeled flux values
         """
 
-        if phase_min < -18 or phase_max > 100:
-            raise ValueError(
-                'phase_min and phase_max must be within [-18, 100]')
-
-        modeled_flux = np.load(COMPILED_MODEL_PATH)[0]
-
         # 4-dimension grid points in the model
         stretch = np.array([0.65, 0.75, 0.85, 0.95, 1.05, 1.15, 1.25])
         color = np.array([0.0, 0.25, 0.5, 0.75, 1])
         phase = np.arange(-18, 101, 1)
         wave = np.arange(1000, 12001, 10)
 
+        # Read model and get flux for first stretch value
+        # Adjust phase values to a stretch of 1
+        modeled_flux = np.load(COMPILED_MODEL_PATH)[0]
+        phase = phase / stretch[0]
+
         # Limit model phase range
         phase_indices = ((phase_min <= phase) & (phase <= phase_max))
         modeled_flux = modeled_flux[:, phase_indices, :]
         phase = phase[phase_indices]
 
-        return (stretch, color, phase, wave), modeled_flux
+        return (color, phase, wave), modeled_flux
 
     def _flux(self, phase, wave):
         """
@@ -166,15 +144,15 @@ class SN91bgSource(sncosmo.Source):
         if color in self._color:
             color_index = self._color.tolist().index(color)
             flux_spline_func = self._flux_color_splines[color_index]
-            model_flux = flux_spline_func(phase / (stretch / 0.65), wave)
+            model_flux = flux_spline_func(phase / stretch, wave)
 
         else:
             c1, c2 = bi_search(self._color, color)
-            y = [self._flux_color_splines[c1](phase / (stretch / 0.65), wave),
-                 self._flux_color_splines[c2](phase / (stretch / 0.65), wave)]
+            y = [self._flux_color_splines[c1](phase / stretch, wave),
+                 self._flux_color_splines[c2](phase / stretch, wave)]
 
-            model_flux = linear_interp(self._color[c1], self._color[c2], y,
-                                       color)
+            model_flux = linear_interp(
+                self._color[c1], self._color[c2], y, color)
 
         # Enforce zero flux outside model range
         phase_indices = (
