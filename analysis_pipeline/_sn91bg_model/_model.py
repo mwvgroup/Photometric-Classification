@@ -29,6 +29,7 @@ def bi_search(a, x):
     if x in a:
         try:
             return a.index(x)
+
         except AttributeError:
             return a.tolist().index(x)
 
@@ -66,6 +67,12 @@ def linear_interp(x0, x1, f, x):
 
 
 class SN91bgSource(sncosmo.Source):
+    """An SNCosmo model for SN 1991bg-like supernovae.
+
+    The phase of this model has been reduced to match the phase range of the
+    SNCosmo Salt2.4 model.
+    """
+
     _param_names = ['x0', 'x1', 'c']
     param_names_latex = ['x0', 'x1', 'c']  # used in plotting display
 
@@ -76,11 +83,12 @@ class SN91bgSource(sncosmo.Source):
         self.version = 'salt2_phase'
 
         # Determine phase range of Salt2.4 model
-        salt2_phase = sncosmo.Model('salt2').source._phase
+        salt2_phase = sncosmo.get_source('salt2', version='2.4').source._phase
         self.phase_lim = min(salt2_phase), max(salt2_phase)
 
         # Get phase limited 91bg model
-        grid_cords, self._flux_values = self._get_91bg_model(*self.phase_lim[0])
+        grid_cords, self._flux_values = self._get_91bg_model(
+            *self.phase_lim[0])
         self._stretch = grid_cords[0]
         self._color = grid_cords[1]
         self._phase = grid_cords[2]
@@ -91,24 +99,36 @@ class SN91bgSource(sncosmo.Source):
 
         # Creat bi-cubic spline for phase and wavelength using 5 templates
         # (stretch: 0.65, color: [0,0.25,0.5,0.75,1.])
-        self._model_flux = np.empty(len(self._color), RectBivariateSpline)
+        self._flux_color_splines = np.empty(self._color.shape,
+                                            RectBivariateSpline)
         for i in range(len(self._color)):
-            self._model_flux[i] = RectBivariateSpline(
+            self._flux_color_splines[i] = RectBivariateSpline(
                 self._phase,
                 self._wave,
                 self._flux_values[i],
                 kx=3, ky=3)
 
     @staticmethod
-    def _get_91bg_model(phase_min, phase_max):
+    def _get_91bg_model(phase_min=-18, phase_max=100):
         """Load template spectra for SN 1991bg
 
-        Template spans 7 stretch values, 5 color values, 114 dates,
-        and 1101 wavelengths.
+        Full template spans 7 stretch values, 5 color values, 114 dates, and
+        1101 wavelengths. The phase range can be limited by specifying the
+        phase_min and phase_max arguments. Returned grid coordinates are
+        ordered as stretch, color, phase, and wavelength.
+
+        Args:
+             phase_min (float): Minimum phase of model (Default: -18)
+             phase_max (float): Maximum phase of model (Default: 100)
 
         Returns:
-            An array of shape (7, 5, 114, 1101)
+            A tuple of grid coordinates for the modeled flux
+            An array of modeled flux values
         """
+
+        if phase_min < -18 or phase_max > 100:
+            raise ValueError(
+                'phase_min and phase_max must be within [-18, 100]')
 
         modeled_flux = np.load(COMPILED_MODEL_PATH)[0]
 
@@ -140,22 +160,26 @@ class SN91bgSource(sncosmo.Source):
             A 2d array of flux with shape (<len(phase)>, <len(wave)>)
         """
 
-        A, st, c = self._parameters
+        amplitude, stretch, color = self._parameters
 
         # Linearly interpolate template flux by color
-        if c in self._color:
-            f = self._model_flux[self._color.tolist().index(c)](
-                phase / (st / 0.65), wave)
+        if color in self._color:
+            color_index = self._color.tolist().index(color)
+            flux_spline_func = self._flux_color_splines[color_index]
+            model_flux = flux_spline_func(phase / (stretch / 0.65), wave)
 
         else:
-            c1, c2 = bi_search(self._color, c)
-            y = [self._model_flux[c1](phase / (st / 0.65), wave),
-                 self._model_flux[c2](phase / (st / 0.65), wave)]
+            c1, c2 = bi_search(self._color, color)
+            y = [self._flux_color_splines[c1](phase / (stretch / 0.65), wave),
+                 self._flux_color_splines[c2](phase / (stretch / 0.65), wave)]
 
-            f = linear_interp(self._color[c1], self._color[c2], y, c)
+            model_flux = linear_interp(self._color[c1], self._color[c2], y,
+                                       color)
 
+        # Enforce zero flux outside model range
         phase_indices = (
-                (phase < self.phase_lim[0]) | (self.phase_lim[1] < phase)
+                (phase < self.phase_lim[0]) |
+                (self.phase_lim[1] < phase)
         )
-        f[phase_indices] = np.zeros(wave.shape)
-        return A * f
+        model_flux[phase_indices] = np.zeros(wave.shape)
+        return amplitude * model_flux
