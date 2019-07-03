@@ -8,7 +8,7 @@ csp: {
       'c':[-1., 1.]}
   },
 
-  sn91bg_color_interpolation:{
+  sn91bg_salt2_phase:{
     bounds:{
       'z': [0.002, 0.085],
       'x0':[0, 1.5],
@@ -28,7 +28,7 @@ des: {
       'c':[-0.3, 0.3]}
   },
 
-  sn91bg_color_interpolation: {
+  sn91bg_salt2_phase: {
     bounds:{
       'z': [0.01, 0.9],
       'x0':[0, 0.05],
@@ -55,7 +55,7 @@ sdss: {
       'c':[-1., 1.2]}
   },
 
-  sn91bg_color_interpolation: {
+  sn91bg_salt2_phase: {
     bounds:{
       'z': [0.01, 0.8],
       'x0':[0, 0.02],
