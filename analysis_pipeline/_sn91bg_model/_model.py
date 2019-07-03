@@ -16,8 +16,7 @@ COMPILED_MODEL_PATH = os.path.join(FILE_DIR, 'template.npy')
 
 
 def bi_search(a, x):
-    """
-    Binary search
+    """Binary search
 
     Args:
         a (ndarray): The sorted list in which the number x will be searched
@@ -49,8 +48,7 @@ def bi_search(a, x):
 
 
 def linear_interp(x0, x1, f, x):
-    """
-    Linear interpolation
+    """Linear interpolation
 
     Args:
         x0, x1  (num): Grid points

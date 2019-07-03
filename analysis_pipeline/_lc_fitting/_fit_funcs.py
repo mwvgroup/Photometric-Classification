@@ -227,6 +227,7 @@ def _count_pre_and_post_max(obs_times, t_max):
     post_max = sum(times_arr > t_max)
     return min(times_arr), max(times_arr), pre_max, post_max
 
+
 def calc_chisq(data, model):
     """
     Calculate the chi-squared for a given data table and model
@@ -239,16 +240,18 @@ def calc_chisq(data, model):
         The un-normalized chi-squared
         The number of data points used in the calculation
     """
-    while(1):
+
+    while True:
         try:
             # Model flux and keep only non-zero values
             data['model_flux'] = [model.bandflux(b, t) for b, t in zip(data['band'], data['time'])]
             data = data[data['model_flux'] > 0]
             chisq = np.sum(((data['model_flux'] - data['flux']) / data['fluxerr']) ** 2)
             return chisq, len(data)
+
         except ValueError as err:
             # Remove bands that are out of model range
-            data = data[data['band']!=err.args[0].split()[1][1:-1]]
+            data = data[data['band'] != err.args[0].split()[1][1:-1]]
 
 
 def fit_lc(data, model, vparam_names, **kwargs):
@@ -304,8 +307,8 @@ def fit_lc(data, model, vparam_names, **kwargs):
         delta_15 = b_15 - b_0
 
         # Add remaining data
-        #out_data.append(result.chisq)
-        #out_data.append(result.ndof)
+        # out_data.append(result.chisq)
+        # out_data.append(result.ndof)
         man_chi, num_points = calc_chisq(data, fitted_model)
         num_param = 5
         if 'z' not in vparam_names:

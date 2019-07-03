@@ -24,7 +24,7 @@ class TestSNCosmoAgreement(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.test_cid = '2005kc'
-        cls.input_table = dr3.get_sncosmo_input(cls.test_cid)
+        cls.input_table = dr3.get_data_for_id(cls.test_cid, format_sncosmo=True)
 
     def test_5_params(self):
         """Run test for a 5 parameter fit"""
