@@ -6,7 +6,6 @@ source object for 91bg like supernovae.
 """
 
 import os
-from bisect import bisect
 
 import numpy as np
 import sncosmo
@@ -15,36 +14,7 @@ from scipy.interpolate import RectBivariateSpline
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
 COMPILED_MODEL_PATH = os.path.join(FILE_DIR, 'template.npy')
 
-
-def bi_search(a, x):
-    """Binary search for value ``x`` in array ``a``
-
-    Args:
-        a (ndarray): The sorted list in which the number x will be searched
-        x     (num): The number to be searched
-
-    Returns:
-        The position of nearest left neighbor of ``x``
-        The position of nearest right neighbor of ``x``
-    """
-
-    index = bisect(a, x)
-    return index - 1, index
-
-
-def linear_interp(x0, x1, f, x):
-    """Linear interpolation
-
-    Args:
-        x0, x1  (num): Grid points
-        x       (num): Coordinates of interpolation point
-        f      (list): The list contains values at x0 and x1
-
-    Returns:
-        Interpolated value
-    """
-
-    return f[0] + ((x - x0) * f[1] - (x - x0) * f[0]) / (x1 - x0)
+from ._utils import bi_search, linear_interp
 
 
 class SN91bgSource(sncosmo.Source):
