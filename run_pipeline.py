@@ -50,7 +50,10 @@ def run(args):
             source=sncosmo.get_source('salt2', version='2.4')),
         salt_2_0=sncosmo.Model(
             source=sncosmo.get_source('salt2', version='2.0')),
-        sn_91bg=sncosmo.Model(source=SN91bgSource())
+        sn_91bg_p=sncosmo.Model(
+            source=SN91bgSource(version='salt2_phase')),
+        sn_91bg_c=sncosmo.Model(
+            source=SN91bgSource(version='color_interpolation'))
     )
     models = [models_dict[model_name] for model_name in args.models]
     survey = {'csp': dr3, 'des': sn3yr, 'sdss': sako18}[args.survey]
@@ -89,7 +92,7 @@ if __name__ == '__main__':
         type=str,
         nargs='+',
         default=['salt_2_4'],
-        help='Models to fit (salt_2_0, salt_2_4, sn_91bg)')
+        help='Models to fit (salt_2_0, salt_2_4, sn_91bg_c, sn_91bg_p)')
 
     parser.add_argument(
         '-n', '--num_params',
