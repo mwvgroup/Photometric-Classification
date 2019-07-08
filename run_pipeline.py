@@ -92,7 +92,7 @@ if __name__ == '__main__':
         type=str,
         nargs='+',
         default=['salt_2_4'],
-        help='Models to fit (salt_2_0, salt_2_4, sn_91bg_c, sn_91bg_p)')
+        help='Models to fit (salt_2_0, salt_2_4, sn_91bg_p, sn_91bg_c)')
 
     parser.add_argument(
         '-n', '--num_params',

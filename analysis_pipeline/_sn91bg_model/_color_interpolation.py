@@ -14,17 +14,17 @@ from scipy.interpolate import RectBivariateSpline
 from ._utils import bi_search, linear_interp
 
 FILE_DIR = os.path.abspath(os.path.dirname(__file__))
-COMPILED_MODEL_PATH = os.path.join(FILE_DIR, 'complete_template.npy')
+COMPILED_MODEL_PATH = os.path.join(FILE_DIR, 'template.npy')
 
 
 class SN91bgSource(sncosmo.Source):
-    _param_names = ['amplitude', 'stretch', 'color']
-    param_names_latex = ['A', 'st', 'c']  # used in plotting display
+    _param_names = ['x0', 'x1', 'c']
+    param_names_latex = ['x0', 'x1', 'c']  # used in plotting display
 
     def __init__(self):
         super(SN91bgSource, self).__init__()
 
-        self.name = '91bg model'
+        self.name = 'sn91bg'
         self.version = 'color_interpolation'
 
         # Model spectra and initial guess for stretch, color, and amplitude
