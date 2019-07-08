@@ -5,12 +5,14 @@
 
 import argparse
 
+import sncosmo
 import yaml
 from SNData.csp import dr3
 from SNData.des import sn3yr
 from SNData.sdss import sako18
 
 import analysis_pipeline
+from analysis_pipeline import SN91bgSource
 
 out_dir = analysis_pipeline.FIT_DIR
 for data in (dr3, sn3yr, sako18):
@@ -19,7 +21,7 @@ for data in (dr3, sn3yr, sako18):
 
 
 def read_yaml(file_path):
-    """A yaml file reader compatible with Python 3.6 adn 3.7
+    """A yaml file reader compatible with Python 3.6 and 3.7
 
     Args:
         file_path (str): The yaml file path to read
@@ -39,10 +41,22 @@ def read_yaml(file_path):
 def run(args):
     """Run light curve fits using command line args"""
 
-    import sncosmo
+    models = get_models(args.models)
+    survey = {'csp': dr3, 'des': sn3yr, 'sdss': sako18}[args.survey]
 
-    from analysis_pipeline import SN91bgSource
-    from analysis_pipeline import iter_all_fits
+    # Run fitting
+    kwargs = read_yaml(args.args_path)[args.survey]
+    analysis_pipeline.iter_all_fits(
+        out_dir=out_dir,
+        module=survey,
+        models=models,
+        num_params=args.num_params,
+        time_out=args.time_out,
+        kwargs=kwargs,
+        skip_types=args.skip_types)
+
+
+def get_models(model_names):
 
     # Define surveys and models for fitting
     models_dict = dict(
@@ -55,19 +69,9 @@ def run(args):
         sn_91bg_c=sncosmo.Model(
             source=SN91bgSource(version='color_interpolation'))
     )
-    models = [models_dict[model_name] for model_name in args.models]
-    survey = {'csp': dr3, 'des': sn3yr, 'sdss': sako18}[args.survey]
 
-    # Run fitting
-    kwargs = read_yaml(args.args_path)[args.survey]
-    iter_all_fits(
-        out_dir=out_dir,
-        module=survey,
-        models=models,
-        num_params=args.num_params,
-        time_out=args.time_out,
-        kwargs=kwargs,
-        skip_types=args.skip_types)
+    models = [models_dict[model_name] for model_name in model_names]
+    return models
 
 
 # Parse command line input
