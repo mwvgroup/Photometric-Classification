@@ -332,5 +332,6 @@ def get_priors(module, model):
 
     auto_priors_path, _ = \
         _get_priors_paths(module.survey_abbrev.lower(), model)
+
     df = get_priors_table(model, auto_priors_path).to_pandas()
     return df.set_index('obj_id')

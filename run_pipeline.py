@@ -6,18 +6,13 @@
 import argparse
 
 import sncosmo
+import sndata
 import yaml
-from SNData.csp import dr3
-from SNData.des import sn3yr
-from SNData.sdss import sako18
 
 import analysis_pipeline
-from analysis_pipeline import SN91bgSource
 
+analysis_pipeline.models.register_sources()
 out_dir = analysis_pipeline.FIT_DIR
-for data in (dr3, sn3yr, sako18):
-    data.download_module_data()
-    data.register_filters()
 
 
 def read_yaml(file_path):
@@ -38,40 +33,47 @@ def read_yaml(file_path):
             return yaml.load(ofile)
 
 
-def run(args):
-    """Run light curve fits using command line args"""
+def get_models(cli_args):
+    """Return a list of SNCosmo models specified by command line arguments
 
-    models = get_models(args.models)
-    survey = {'csp': dr3, 'des': sn3yr, 'sdss': sako18}[args.survey]
+    Args:
+        cli_args (argparse.Namespace): Command line arguments
+
+    Returns:
+        A list of SNCosmo models
+    """
+
+    models_list = list()
+    for name, version in zip(cli_args.models, cli_args.versions):
+        source = sncosmo.get_source(name, version=version)
+        model = sncosmo.Model(source=source)
+        models_list.append(model)
+
+    return models_list
+
+
+def run(cli_args):
+    """Run light curve fits using command line args
+
+    Args:
+        cli_args (argparse.Namespace): Command line arguments
+    """
+
+    models = get_models(cli_args)
+    data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
+    data_module.download_module_data()
+    data_module.register_filters()
 
     # Run fitting
-    kwargs = read_yaml(args.args_path)[args.survey]
-    analysis_pipeline.iter_all_fits(
-        out_dir=out_dir,
-        module=survey,
+    kwargs = read_yaml(cli_args.args_path)[cli_args.survey]
+    analysis_pipeline.lc_fitting.iter_all_fits(
+        out_dir=cli_args.out_dir,
+        module=data_module,
         models=models,
-        num_params=args.num_params,
-        time_out=args.time_out,
+        num_params=cli_args.num_params,
+        time_out=cli_args.time_out,
         kwargs=kwargs,
-        skip_types=args.skip_types)
-
-
-def get_models(model_names):
-
-    # Define surveys and models for fitting
-    models_dict = dict(
-        salt_2_4=sncosmo.Model(
-            source=sncosmo.get_source('salt2', version='2.4')),
-        salt_2_0=sncosmo.Model(
-            source=sncosmo.get_source('salt2', version='2.0')),
-        sn_91bg_p=sncosmo.Model(
-            source=SN91bgSource(version='salt2_phase')),
-        sn_91bg_c=sncosmo.Model(
-            source=SN91bgSource(version='color_interpolation'))
-    )
-
-    models = [models_dict[model_name] for model_name in model_names]
-    return models
+        skip_types=cli_args.skip_types)
 
 
 # Parse command line input
@@ -83,7 +85,13 @@ if __name__ == '__main__':
         '-s', '--survey',
         type=str,
         required=True,
-        help='Survey name (csp, des, sdss)')
+        help='Survey name (e.g. csp)')
+
+    parser.add_argument(
+        '-r', '--release',
+        type=str,
+        required=True,
+        help='Release name (e.g. dr3)')
 
     parser.add_argument(
         '-a', '--args_path',
@@ -95,8 +103,15 @@ if __name__ == '__main__':
         '-m', '--models',
         type=str,
         nargs='+',
-        default=['salt_2_4'],
-        help='Models to fit (salt_2_0, salt_2_4, sn_91bg_p, sn_91bg_c)')
+        default=['salt2'],
+        help='Models to fit (salt2, sn91bg)')
+
+    parser.add_argument(
+        '-v', '--versions',
+        type=str,
+        nargs='+',
+        default=['2.4'],
+        help='Version of each model to fit')
 
     parser.add_argument(
         '-n', '--num_params',
@@ -116,7 +131,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-o', '--out_dir',
         type=str,
-        default=None,
+        default=out_dir,
         help='Output directory for fit results.'
     )
 
