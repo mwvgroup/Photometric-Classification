@@ -150,6 +150,9 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
             time_out=time_out,
             **kwargs_this)
 
+        if 'z' not in params_to_fit:
+            assert sampled_model.get('z') == z
+
         kwargs_this['guess_amplitude'] = False
         kwargs_this['guess_t0'] = False
         kwargs_this['guess_z'] = False

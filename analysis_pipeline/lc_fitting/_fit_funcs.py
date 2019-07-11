@@ -78,9 +78,12 @@ def get_priors_table(model, file_path):
 
     elif file_path.exists():
         priors = Table.read(file_path)
+
+        # Typecast to avoid truncating values when appending to table
         priors['obj_id'] = Column(priors['obj_id'], dtype='U100')
         priors['message'] = Column(priors['message'], dtype='U100')
 
+        # Prefer manually specified priors over automatic ones
         manual_priors_path = file_path.with_suffix('.man.ecsv')
         if manual_priors_path.exists():
             manual_priors = Table.read(manual_priors_path)
@@ -91,7 +94,7 @@ def get_priors_table(model, file_path):
 
         return PRIORS.setdefault(model, priors)
 
-    else:
+    else:  # Create new priors table
         col_names = ['obj_id']
         dtype = ['U100']
         for param in model.param_names:
@@ -119,7 +122,7 @@ def nest_lc(data, model, vparam_names, **kwargs):
         vparam_names (list[str]): List of parameters to vary in the model
         bounds            (dict): Boundaries on fit parameters
         verbose           (bool): Whether to display progress (Default: True)
-        maxiter            (int): Maximum sampling iterations (Default: 5000)
+        maxiter            (int): Maximum sampling iterations (Default: 10000)
         maxcall            (int): Maximum function calls (Default: 20000)
         method             (str): Nested sampling method (Default: 'multi')
     """
@@ -134,7 +137,7 @@ def nest_lc(data, model, vparam_names, **kwargs):
     kwargs = deepcopy(kwargs)
     model = deepcopy(model)
 
-    # Set kwargs specific to sncosmo.nest_lc and get model with nested values
+    # Define our own default values and get model with nested values
     kwargs['verbose'] = kwargs.get('verbose', True)
     kwargs['maxiter'] = kwargs.get('maxiter', 10000)
     kwargs['maxcall'] = kwargs.get('maxcall', 20000)
@@ -189,8 +192,7 @@ def get_sampled_model(survey_name, data, model, vparam_names,
         # Fall back to using the median of the boundaries for each parameter.
         sampled_model = deepcopy(model)
         sampled_model.update(
-            {p: np.median(kwargs['bounds'][p]) for p in
-             sampled_model.param_names}
+            {p: np.median(kwargs['bounds'][p]) for p in vparam_names}
         )
         msg = f'Fail {e} - defaulting to middle point'
 
@@ -244,9 +246,9 @@ def calc_chisq(data, model):
     while True:
         try:
             # Model flux and keep only non-zero values
-            data['model_flux'] = [model.bandflux(b, t) for b, t in zip(data['band'], data['time'])]
-            data = data[data['model_flux'] > 0]
-            chisq = np.sum(((data['model_flux'] - data['flux']) / data['fluxerr']) ** 2)
+            model_flux = np.array([model.bandflux(b, t) for b, t in zip(data['band'], data['time'])])
+            data = data[model_flux > 0]
+            chisq = np.sum(((model_flux - data['flux']) / data['fluxerr']) ** 2)
             return chisq, len(data)
 
         except ValueError as err:
