@@ -87,8 +87,9 @@ class TestChisqCalculation(TestCase):
         test_table = self.create_test_table(model)
         expected_chisq = calc_chisq(test_table, model)
 
-        test_table.add_row([100000000, 'sdssu', 0, 1])
-        test_table.add_row([1, 'this_band_is_fake', 1, 1])
+        # Add values that are out of the model range
+        test_table.add_row([100000000, 'sdssu', 0, 1])  # Out of time range
+        test_table.add_row([1, 'csp_dr3_H', 1, 1])  # out of wavelength range
         actual_chisq = calc_chisq(test_table, model)
 
         self.assertEqual(expected_chisq[0], actual_chisq[0])
