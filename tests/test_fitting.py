@@ -16,7 +16,9 @@ from sndata.csp import dr3
 from analysis_pipeline.lc_fitting import calc_chisq
 from analysis_pipeline.lc_fitting import create_empty_summary_table
 from analysis_pipeline.lc_fitting import fit_lc
+from analysis_pipeline.lc_fitting import nest_lc
 
+TEST_ID = '2005kc'  # Use the same CSP object for all applicable tests
 dr3.download_module_data()
 dr3.register_filters(force=True)
 
@@ -35,6 +37,44 @@ class TestSummaryTable(TestCase):
 
         self.assertEqual(expected_names, returned_names,
                          'Incorrect column names.')
+
+
+class TestNestLC(TestCase):
+    """Test arguments are mutated as expected during nested sampling"""
+
+    def runTest(self):
+        # Set up test data to do nested sampling on
+        test_data = dr3.get_data_for_id(TEST_ID, format_sncosmo=True)
+        model = sncosmo.Model('salt2')
+        bounds = {
+            'z': [0.0035, 0.084],
+            'x0': [0, 0.05],
+            'x1': [-5, 5],
+            'c': [-1., 1.]
+        }
+
+        # Preserve original input data
+        original_data = deepcopy(test_data)
+        original_model = deepcopy(model)
+        original_bounds = deepcopy(bounds)
+
+        # Check for argument mutation
+        nest_lc(test_data, model,
+                vparam_names=model.param_names,
+                bounds=bounds)
+
+        self.assertTrue(all(original_data == test_data), 'Data was mutated')
+        self.assertSequenceEqual(
+            original_model.parameters.tolist(),
+            model.parameters.tolist(),
+            'Model was mutated')
+
+        # We expect ``t0`` to be added to bounds
+        self.assertIn('t0', bounds)
+
+        # Other entries should remain unchanged
+        del bounds['t0']
+        self.assertEqual(original_bounds, bounds, 'Bounds were mutated')
 
 
 class TestChisqCalculation(TestCase):
