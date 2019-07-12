@@ -1,7 +1,8 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""Test functions used in light curve fitting.
+"""Test core functionality of light curve fitting from
+analysis_pipeline.lc_fitting._fit_funcs
 """
 
 from copy import copy
@@ -23,11 +24,20 @@ dr3.download_module_data()
 dr3.register_filters(force=True)
 
 
+def copy_data(*args):
+    """Return a deep copy of passed objects"""
+
+    if len(args) == 1:
+        return deepcopy(args[0])
+
+    return (deepcopy(a) for a in args)
+
+
 class TestSummaryTable(TestCase):
     """Test the fit result summary table is created with the correct columns"""
 
     def runTest(self):
-        test_param_names = ['x0', 'x1']
+        test_param_names = ['var1', 'var2']
         expected_names = set(create_empty_summary_table([]).colnames)
         expected_names.update(test_param_names)
         expected_names.update((n + '_err' for n in test_param_names))
@@ -37,44 +47,6 @@ class TestSummaryTable(TestCase):
 
         self.assertEqual(expected_names, returned_names,
                          'Incorrect column names.')
-
-
-class TestNestLC(TestCase):
-    """Test arguments are mutated as expected during nested sampling"""
-
-    def runTest(self):
-        # Set up test data to do nested sampling on
-        test_data = dr3.get_data_for_id(TEST_ID, format_sncosmo=True)
-        model = sncosmo.Model('salt2')
-        bounds = {
-            'z': [0.0035, 0.084],
-            'x0': [0, 0.05],
-            'x1': [-5, 5],
-            'c': [-1., 1.]
-        }
-
-        # Preserve original input data
-        original_data = deepcopy(test_data)
-        original_model = deepcopy(model)
-        original_bounds = deepcopy(bounds)
-
-        # Check for argument mutation
-        nest_lc(test_data, model,
-                vparam_names=model.param_names,
-                bounds=bounds)
-
-        self.assertTrue(all(original_data == test_data), 'Data was mutated')
-        self.assertSequenceEqual(
-            original_model.parameters.tolist(),
-            model.parameters.tolist(),
-            'Model was mutated')
-
-        # We expect ``t0`` to be added to bounds
-        self.assertIn('t0', bounds)
-
-        # Other entries should remain unchanged
-        del bounds['t0']
-        self.assertEqual(original_bounds, bounds, 'Bounds were mutated')
 
 
 class TestChisqCalculation(TestCase):
@@ -87,8 +59,7 @@ class TestChisqCalculation(TestCase):
         test_table['band'] = Column(np.full(len(test_table), 'sdssu'),
                                     dtype='U100')
 
-        modeled_flux = np.array([model.bandflux(b, t) for b, t in
-                                 zip(test_table['band'], test_table['time'])])
+        modeled_flux = model.bandflux(test_table['band'], test_table['time'])
         test_table['flux'] = 10 * modeled_flux
         test_table['fluxerr'] = .1 * test_table['flux']
 
@@ -114,7 +85,7 @@ class TestChisqCalculation(TestCase):
 
         # Add values that are out of the model range
         test_table.add_row([100000000, 'sdssu', 0, 1])  # Out of time range
-        test_table.add_row([1, 'csp_dr3_H', 1, 1])  # out of wavelength range
+        test_table.add_row([1, 'csp_dr3_H', 1, 1])  # Out of wavelength range
         actual_chisq = calc_chisq(test_table, model)
 
         self.assertEqual(expected_chisq[0], actual_chisq[0],
@@ -124,28 +95,75 @@ class TestChisqCalculation(TestCase):
                          'Incorrect number of data points')
 
 
-class TestSNCosmoAgreement(TestCase):
-    """Test that fit results agree between the analysis pipeline and
-    directly calling SNCosmo"""
+class TestLCFitting(TestCase):
+    """Test arguments are mutated as expected during nested sampling"""
 
-    @classmethod
-    def setUpClass(cls):
-        cls.test_cid = '2005kc'
-        cls.input_table = dr3.get_data_for_id(cls.test_cid,
-                                              format_sncosmo=True)
+    @staticmethod
+    def create_test_data():
+        test_data = dr3.get_data_for_id(TEST_ID, format_sncosmo=True)
+        model = sncosmo.Model('salt2')
+        bounds = {
+            'z': [0.0035, 0.084],
+            'x0': [0, 0.05],
+            'x1': [-5, 5],
+            'c': [-1., 1.]
+        }
 
-    def test_5_params(self):
-        """Run test for a 5 parameter fit"""
+        return test_data, model, bounds
 
-        # Create model
-        model_source = sncosmo.get_source('salt2', version='2.4')
-        salt_2_4 = sncosmo.Model(source=model_source)
+    def test_nest_lc_mutation(self):
+        """Test arguments are mutated as expected during nested sampling"""
+
+        test_data, model, bounds = self.create_test_data()
+
+        # Preserve original input data
+        original_data, original_model, original_bounds = \
+            copy_data(test_data, model, bounds)
+
+        # Check for argument mutation
+        nest_lc(test_data, model,
+                vparam_names=model.param_names,
+                bounds=bounds)
+
+        self.assertTrue(all(original_data == test_data), 'Data was mutated')
+        self.assertEqual(original_bounds, bounds, 'Bounds were mutated')
+        self.assertSequenceEqual(
+            original_model.parameters.tolist(),
+            model.parameters.tolist(),
+            'Model was mutated')
+
+    def test_fit_lc_mutation(self):
+        test_data, model, bounds = self.create_test_data()
+
+        # Preserve original input data
+        original_data, original_model, original_bounds = \
+            copy_data(test_data, model, bounds)
+
+        # Check for argument mutation
+        nest_lc(test_data, model,
+                vparam_names=model.param_names,
+                bounds=bounds)
+
+        self.assertTrue(all(original_data == test_data), 'Data was mutated')
+        self.assertEqual(original_bounds, bounds, 'Bounds were mutated')
+        self.assertSequenceEqual(
+            original_model.parameters.tolist(),
+            model.parameters.tolist(),
+            'Model was mutated')
+
+    def test_fit_5_params(self):
+        """
+        Test that fit results agree between the analysis pipeline and
+        directly calling SNCosmo
+        """
+
+        test_data, model, bounds = self.create_test_data()
         fitting_kwargs = dict(
-            data=self.input_table,
-            model=salt_2_4,
+            data=test_data,
+            model=model,
             warn=False,
             vparam_names=['z', 't0', 'x0', 'x1', 'c'],
-            bounds={'z': [0.002, 0.085]})
+            bounds=bounds)
 
         # Run fits with analysis pipeline and SNCosmo seperatly
         pipeline_result = fit_lc(**deepcopy(fitting_kwargs))

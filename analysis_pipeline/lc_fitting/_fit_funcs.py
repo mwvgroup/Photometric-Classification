@@ -246,7 +246,7 @@ def calc_chisq(data, model):
     while True:
         try:
             # Model flux and keep only non-zero values
-            model_flux = np.array([model.bandflux(b, t) for b, t in zip(data['band'], data['time'])])
+            model_flux = model.bandflux(data['band'], data['time'])
             data = data[model_flux > 0]
             chisq = np.sum(((model_flux - data['flux']) / data['fluxerr']) ** 2)
             return chisq, len(data)
