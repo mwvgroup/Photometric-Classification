@@ -118,7 +118,7 @@ def _iter_fit_bands(out_dir, module, model, params_to_fit, kwargs, verbose,
     Path(out_dir).mkdir(exist_ok=True)
 
     # Create separate tables for each band's fit results
-    out_tables = [create_empty_summary_table() for _ in range(3)]
+    out_tables = [create_empty_summary_table(model.param_names) for _ in range(3)]
     out_paths = _create_table_paths(
         out_dir,
         model,

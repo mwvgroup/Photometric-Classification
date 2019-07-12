@@ -26,25 +26,24 @@ from ..utils import PRIOR_DIR, _get_priors_paths, timeout
 PRIORS = dict()  # For lazy loading priors
 
 
-def create_empty_summary_table():
+def create_empty_summary_table(param_names):
     """Create an empty table for storing fit results
 
     Columns:
-         obj_id, num_points, z, t0, x0, x1, z_err, t0_err, x0_err,
-         x1_err, c_err, chi, dof, tmin, tmax, pre_max, post_max, message
+         obj_id, num_points, *param_names, *param_names + _err, chi, dof,
+         tmin, tmax, pre_max, post_max, message
+
+    Args:
+        param_names (list[str]): List of parameter names
 
     Returns:
         An astropy Table
     """
 
-    param_names = (
-        'z', 't0', 'x0', 'x1', 'c',
-        'z_err', 't0_err', 'x0_err', 'x1_err', 'c_err'
-    )
-
     # Specify column names
     names = ['obj_id', 'num_points']
     names.extend(param_names)
+    names.extend((name + '_err' for name in param_names))
     names.extend(
         ('chi', 'dof', 'b_max',
          'delta_15', 'tmin', 'tmax',
@@ -52,6 +51,7 @@ def create_empty_summary_table():
 
     # Specify column data types
     dtype = ['U20', int]
+    dtype.extend((float for _ in param_names))
     dtype.extend((float for _ in param_names))
     dtype.extend((float, float, float, float, float, float, int, int, 'U1000'))
 
