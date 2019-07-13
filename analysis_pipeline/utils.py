@@ -76,7 +76,7 @@ def split_data(data_table, band_names, lambda_eff):
     return out_list
 
 
-def get_fit_results(model, survey, num_params, bands='all'):
+def get_fit_results(survey, model, num_params, bands):
     """Get light-curve fits for a given survey, model, and number of parameters
 
     Args:
@@ -96,16 +96,14 @@ def get_fit_results(model, survey, num_params, bands='all'):
     path_index = ['all', 'blue', 'red'].index(bands)
     path = [all_path, blue_path, red_path][path_index]
 
-    data = None
-    if path.exists():
-        data = Table.read(all_path)
-        data = data.to_pandas()
-        data.set_index('obj_id', inplace=True)
+    data = Table.read(path)
+    data = data.to_pandas()
+    data.set_index('obj_id', inplace=True)
 
     return data
 
 
-def get_priors(model, survey):
+def get_priors(survey, model):
     """Get light-curve priors for a given survey and model
 
     Args:
@@ -117,7 +115,9 @@ def get_priors(model, survey):
     """
 
     path = _paths.get_priors_path(model, survey)
-    return Table.read(path)
+    data = Table.read(path).to_pandas()
+    data.set_index('obj_id', inplace=True)
+    return data
 
 
 def save_manual_priors(obj_id, survey, model, priors_dict, message='-'):
