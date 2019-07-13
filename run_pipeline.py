@@ -9,10 +9,10 @@ import sncosmo
 import sndata
 import yaml
 
-import analysis_pipeline
+from analysis_pipeline import models
+from analysis_pipeline.lc_fitting import run_iter_fitting
 
-analysis_pipeline.models.register_sources()
-out_dir = analysis_pipeline.FIT_DIR
+models.register_sources()
 
 
 def read_yaml(file_path):
@@ -43,13 +43,17 @@ def get_models(cli_args):
         A list of SNCosmo models
     """
 
-    models_list = list()
+    kwargs = read_yaml(cli_args.args_path)[cli_args.survey]
+
+    models_list = []
+    kwargs_list = []
     for name, version in zip(cli_args.models, cli_args.versions):
         source = sncosmo.get_source(name, version=version)
         model = sncosmo.Model(source=source)
         models_list.append(model)
+        kwargs_list.append(kwargs[f'{name}_{version}'])
 
-    return models_list
+    return models_list, kwargs_list
 
 
 def run(cli_args):
@@ -59,20 +63,19 @@ def run(cli_args):
         cli_args (argparse.Namespace): Command line arguments
     """
 
-    models = get_models(cli_args)
+    # Download and register data for fitting
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
     data_module.register_filters()
 
-    # Run fitting
-    kwargs = read_yaml(cli_args.args_path)[cli_args.survey]
-    analysis_pipeline.lc_fitting.iter_all_fits(
-        out_dir=cli_args.out_dir,
-        module=data_module,
-        models=models,
-        num_params=cli_args.num_params,
+    # Get list of specified models and fit them all
+    model_lists, kwarg_list = get_models(cli_args)
+    run_iter_fitting(
+        survey=data_module,
+        model_list=model_lists,
+        kwarg_list=kwarg_list,
+        fitz_list=cli_args.fit_z,
         time_out=cli_args.time_out,
-        kwargs=kwargs,
         skip_types=cli_args.skip_types)
 
 
@@ -114,11 +117,11 @@ if __name__ == '__main__':
         help='Version of each model to fit')
 
     parser.add_argument(
-        '-n', '--num_params',
-        type=int,
+        '-z', '--fit_z',
         nargs='+',
-        default=[4, 5],
-        help='Number of params to fit (4, 5)')
+        type=int,
+        default=False,
+        help='Whether to fit for redshift')
 
     parser.add_argument(
         '-k', '--skip_types',
@@ -129,21 +132,18 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '-o', '--out_dir',
-        type=str,
-        default=out_dir,
-        help='Output directory for fit results.'
-    )
-
-    parser.add_argument(
         '-t', '--time_out',
         type=int,
-        default=90,
+        default=120,
         help='Seconds before nested sampling times out.'
     )
 
     cli_args = parser.parse_args()
-    if cli_args.survey not in ('csp', 'des', 'sdss'):
-        raise ValueError(f"Survey name '{cli_args.survey}' not recognized")
+    if not (len(cli_args.models) ==
+            len(cli_args.versions) ==
+            len(cli_args.fit_z)):
+
+        raise ValueError(
+            'Number of models, version, and redshift flags must match.')
 
     run(cli_args)

@@ -1,52 +1,88 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""A collection of general utilities and file paths used across the analysis
-pipeline.
-"""
+"""A collection of general utilities used across the analysis pipeline."""
 
-import os as _os
-import signal
-from pathlib import Path
+import numpy as np
+from astropy.table import Column, unique
+from astropy.table import Table
 
-from astropy.table import Column, Table, unique
-
-FIT_DIR = Path(__file__).resolve().parent / 'fit_results'
-PRIOR_DIR = Path(__file__).resolve().parent / 'priors'
-PRIOR_DIR.mkdir(exist_ok=True)
+from . import _paths
 
 
-class timeout:
-    """A timeout context manager"""
+def _split_bands(bands, lambda_eff):
+    """Split band-passes into collections of blue and red bands
 
-    def __init__(self, seconds=1, error_message='Timeout'):
-        """A timeout context manager
-        Args:
-            seconds       (int): The number of seconds until timeout
-            error_message (str): The TimeOutError message on timeout
-        """
+    Blue bands have an effective wavelength < 5500 Ang. Red bands have an
+    effective wavelength >= 5500 Ang.
 
-        self.seconds = seconds
-        self.error_message = error_message
+    Args:
+        bands        (array[str]): Name of band-passes
+        lambda_eff (array[float]): Effective wavelength of band-passes
+    """
 
-    def handle_timeout(self, signum, frame):
-        raise TimeoutError(self.error_message)
-
-    def __enter__(self):
-        signal.signal(signal.SIGALRM, self.handle_timeout)
-        signal.alarm(self.seconds)
-
-    def __exit__(self, type, value, traceback):
-        signal.alarm(0)
+    is_blue = np.array(lambda_eff) < 5500
+    b_array = np.array(bands)
+    return b_array[is_blue], b_array[~is_blue]
 
 
-def get_fit_results(survey, model, params):
+def split_data(data_table, band_names, lambda_eff):
+    """Split a data table into blue and red data (by rest frame)
+
+    Split data by keeping filters that are red-ward or blue-ward of 5500 Ang.
+
+    Args:
+        data_table (Table): An SNCosmo input table with column 'band'
+        band_names  (iter): List of all bands available in the survey
+        lambda_eff  (iter): The effective wavelength of each band in band_names
+
+    Returns:
+        A SNCosmo input table with only blue bands
+        A SNCosmo input table with only red bands
+    """
+
+    # Type cast to allow numpy indexing
+    band_names = np.array(band_names)
+    lambda_eff = np.array(lambda_eff)
+
+    @np.vectorize
+    def lambda_for_band(band):
+        return lambda_eff[band_names == band]
+
+    # Rest frame effective wavelengths for each observation
+    z = data_table.meta['redshift']
+    observed_lambda = lambda_for_band(data_table['band'])
+    rest_frame_lambda = observed_lambda / (1 + z)
+
+    # Get the name of the observer frame band with the smallest distance
+    # to each rest frame lambda
+    delta_lambda = np.array([
+        np.abs(rest_frame_lambda - l_eff) for l_eff in lambda_eff])
+
+    min_indx = np.argmin(delta_lambda, axis=0)
+    rest_frame_filters = np.array(band_names)[min_indx]
+
+    # Keep only the specified filters that are within 700 Angstroms of the
+    # rest frame effective wavelength
+    is_ok_diff = delta_lambda[min_indx, np.arange(delta_lambda.shape[1])] < 700
+
+    # Split into blue and red band passes
+    out_list = []
+    for bands in _split_bands(band_names, lambda_eff):
+        is_in_bands = np.isin(rest_frame_filters, bands)
+        indices = np.logical_and(is_in_bands, is_ok_diff)
+        out_list.append(data_table[indices])
+
+    return out_list
+
+
+def get_fit_results(model, survey, num_params, bands='all'):
     """Get light-curve fits for a given survey, model, and number of parameters
 
     Args:
-        survey (module): An SNData submodule for a particular data release
-        model   (Model): The SNCosmo model used to fit light-curves
-        params    (int): The number of Salt2 params that were fit (4 or 5)
+        survey  (module): An SNData submodule for a particular data release
+        model    (Model): The SNCosmo model used to fit light-curves
+        num_params (int): The number of params that were fit
 
     Returns:
         A DataFrame of fits in all bands or None
@@ -54,66 +90,49 @@ def get_fit_results(survey, model, params):
         A DataFrame of fits in red bands or None
     """
 
-    survey = survey.survey_abbrev.lower()
-    model_name = model.source.name + '_' + model.source.version
-    fname = f'{survey}_{params}_{model_name}_{{}}.ecsv'
+    all_path, blue_path, red_path = \
+        _paths.get_fit_result_paths(model, survey, num_params)
 
-    all_data = None
-    all_data_path = FIT_DIR / fname.format('all')
-    if all_data_path.exists():
-        all_data = Table.read(all_data_path)
-        all_data = all_data.to_pandas()
-        all_data.set_index('obj_id', inplace=True)
+    path_index = ['all', 'blue', 'red'].index(bands)
+    path = [all_path, blue_path, red_path][path_index]
 
-    blue_data = None
-    blue_data_path = FIT_DIR / fname.format('blue')
-    if _os.path.exists(blue_data_path):
-        blue_data = Table.read(blue_data_path)
-        blue_data = blue_data.to_pandas()
-        blue_data.set_index('obj_id', inplace=True)
+    data = None
+    if path.exists():
+        data = Table.read(all_path)
+        data = data.to_pandas()
+        data.set_index('obj_id', inplace=True)
 
-    red_data = None
-    red_data_path = FIT_DIR / fname.format('red')
-    if _os.path.exists(red_data_path):
-        red_data = Table.read(red_data_path)
-        red_data = red_data.to_pandas()
-        red_data.set_index('obj_id', inplace=True)
-
-    return all_data, blue_data, red_data
+    return data
 
 
-def _get_priors_paths(survey, model):
-    """Return the path to the light-curve priors for a given survey and model
+def get_priors(model, survey):
+    """Get light-curve priors for a given survey and model
 
     Args:
-        survey  (str): The name of the survey
-        model (Model): The SNCosmo model used to fit light-curves
+        survey  (module): An SNData submodule for a particular data release
+        model    (Model): The SNCosmo model used to fit light-curves
 
     Returns:
-        A Path object for the auto generated priors
-        A Path object for the manually set priors
+        An astropy table
     """
 
-    model_name = f'{model.source.name}_{model.source.version}'
-    auto_priors_name = f'{survey.lower()}_{model_name}.ecsv'
-    auto_priors_path = PRIOR_DIR / auto_priors_name
-    manual_priors_path = auto_priors_path.with_suffix('.man.ecsv')
-    return auto_priors_path, manual_priors_path
+    path = _paths.get_priors_path(model, survey)
+    return Table.read(path)
 
 
-def save_priors(obj_id, module, model, priors_dict, message='-'):
+def save_manual_priors(obj_id, survey, model, priors_dict, message='-'):
     """Save priors to the analysis pipeline's internal file structure
 
     Args:
         obj_id       (str): The ID of the object to save priors for
-        module    (module): An SNData module
+        survey    (module): An sndata data access module
         model      (Model): The SNCosmo model of the priors
         priors_dict (dict): Dictionary of prior values
         message (str): Message to include with new priors (Default: '-')
     """
 
-    auto_priors_path, manual_priors_path = \
-        _get_priors_paths(module.survey_abbrev.lower(), model)
+    auto_priors_path = _paths.get_priors_path(model, survey, manual=True)
+    manual_priors_path = _paths.get_priors_path(model, survey, manual=True)
 
     try:
         existing_data = Table.read(manual_priors_path)

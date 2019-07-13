@@ -15,7 +15,7 @@ from astropy.table import Column, Table
 from sndata.csp import dr3
 
 from analysis_pipeline.lc_fitting import calc_chisq
-from analysis_pipeline.lc_fitting import create_empty_summary_table
+from analysis_pipeline.lc_fitting import create_results_table
 from analysis_pipeline.lc_fitting import fit_lc
 from analysis_pipeline.lc_fitting import nest_lc
 
@@ -33,16 +33,16 @@ def copy_data(*args):
     return (deepcopy(a) for a in args)
 
 
-class TestSummaryTable(TestCase):
+class TestSummaryTableNames(TestCase):
     """Test the fit result summary table is created with the correct columns"""
 
     def runTest(self):
         test_param_names = ['var1', 'var2']
-        expected_names = set(create_empty_summary_table([]).colnames)
+        expected_names = set(create_results_table([]).colnames)
         expected_names.update(test_param_names)
         expected_names.update((n + '_err' for n in test_param_names))
 
-        returned_table = create_empty_summary_table(test_param_names)
+        returned_table = create_results_table(test_param_names)
         returned_names = set(returned_table.colnames)
 
         self.assertEqual(expected_names, returned_names,
