@@ -1,12 +1,13 @@
-scipy
 astropy
-matplotlib
+bokeh
 iminuit
+matplotlib
+nestle
 numpy
 pandas
 pyyaml
 requests
+scipy
 sncosmo
 sndata
 tqdm
-bokeh

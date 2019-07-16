@@ -5,21 +5,18 @@
 
 import argparse
 
+import sncosmo
+import sndata
 import yaml
-from SNData.csp import dr3
-from SNData.des import sn3yr
-from SNData.sdss import sako18
 
-import analysis_pipeline
+from analysis_pipeline import models
+from analysis_pipeline.lc_fitting import run_iter_fitting
 
-out_dir = analysis_pipeline.FIT_DIR
-for data in (dr3, sn3yr, sako18):
-    data.download_module_data()
-    data.register_filters()
+models.register_sources()
 
 
 def read_yaml(file_path):
-    """A yaml file reader compatible with Python 3.6 adn 3.7
+    """A yaml file reader compatible with Python 3.6 and 3.7
 
     Args:
         file_path (str): The yaml file path to read
@@ -36,35 +33,50 @@ def read_yaml(file_path):
             return yaml.load(ofile)
 
 
-def run(args):
-    """Run light curve fits using command line args"""
+def get_models(cli_args):
+    """Return a list of SNCosmo models specified by command line arguments
 
-    import sncosmo
+    Args:
+        cli_args (argparse.Namespace): Command line arguments
 
-    from analysis_pipeline import SN91bgSource
-    from analysis_pipeline import iter_all_fits
+    Returns:
+        A list of SNCosmo models
+    """
 
-    # Define surveys and models for fitting
-    models_dict = dict(
-        salt_2_4=sncosmo.Model(
-            source=sncosmo.get_source('salt2', version='2.4')),
-        salt_2_0=sncosmo.Model(
-            source=sncosmo.get_source('salt2', version='2.0')),
-        sn_91bg=sncosmo.Model(source=SN91bgSource())
-    )
-    models = [models_dict[model_name] for model_name in args.models]
-    survey = {'csp': dr3, 'des': sn3yr, 'sdss': sako18}[args.survey]
+    kwargs = read_yaml(cli_args.args_path)[cli_args.survey]
 
-    # Run fitting
-    kwargs = read_yaml(args.args_path)[args.survey]
-    iter_all_fits(
-        out_dir=out_dir,
-        module=survey,
-        models=models,
-        num_params=args.num_params,
-        time_out=args.time_out,
-        kwargs=kwargs,
-        skip_types=args.skip_types)
+    models_list = []
+    kwargs_list = []
+    for name, version in zip(cli_args.models, cli_args.versions):
+        source = sncosmo.get_source(name, version=version)
+        model = sncosmo.Model(source=source)
+        models_list.append(model)
+        kwargs_list.append(kwargs[f'{name}_{version}'])
+
+    return models_list, kwargs_list
+
+
+def run(cli_args):
+    """Run light curve fits using command line args
+
+    Args:
+        cli_args (argparse.Namespace): Command line arguments
+    """
+
+    # Download and register data for fitting
+    data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
+    data_module.download_module_data()
+    data_module.register_filters()
+
+    # Get list of specified models and fit them all
+    model_lists, kwarg_list = get_models(cli_args)
+    run_iter_fitting(
+        survey=data_module,
+        model_list=model_lists,
+        kwarg_list=kwarg_list,
+        fitz_list=cli_args.fit_z,
+        time_out=cli_args.time_out,
+        skip_types=cli_args.skip_types)
 
 
 # Parse command line input
@@ -76,7 +88,13 @@ if __name__ == '__main__':
         '-s', '--survey',
         type=str,
         required=True,
-        help='Survey name (csp, des, sdss)')
+        help='Survey name (e.g. csp)')
+
+    parser.add_argument(
+        '-r', '--release',
+        type=str,
+        required=True,
+        help='Release name (e.g. dr3)')
 
     parser.add_argument(
         '-a', '--args_path',
@@ -88,15 +106,22 @@ if __name__ == '__main__':
         '-m', '--models',
         type=str,
         nargs='+',
-        default=['salt_2_4'],
-        help='Models to fit (salt_2_0, salt_2_4, sn_91bg)')
+        default=['salt2'],
+        help='Models to fit (salt2, sn91bg)')
 
     parser.add_argument(
-        '-n', '--num_params',
-        type=int,
+        '-v', '--versions',
+        type=str,
         nargs='+',
-        default=[4, 5],
-        help='Number of params to fit (4, 5)')
+        default=['2.4'],
+        help='Version of each model to fit')
+
+    parser.add_argument(
+        '-z', '--fit_z',
+        nargs='+',
+        type=int,
+        default=False,
+        help='Whether to fit for redshift')
 
     parser.add_argument(
         '-k', '--skip_types',
@@ -107,21 +132,18 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '-o', '--out_dir',
-        type=str,
-        default=None,
-        help='Output directory for fit results.'
-    )
-
-    parser.add_argument(
         '-t', '--time_out',
         type=int,
-        default=90,
+        default=120,
         help='Seconds before nested sampling times out.'
     )
 
     cli_args = parser.parse_args()
-    if cli_args.survey not in ('csp', 'des', 'sdss'):
-        raise ValueError(f"Survey name '{cli_args.survey}' not recognized")
+    if not (len(cli_args.models) ==
+            len(cli_args.versions) ==
+            len(cli_args.fit_z)):
+
+        raise ValueError(
+            'Number of models, version, and redshift flags must match.')
 
     run(cli_args)
