@@ -29,7 +29,7 @@ def run(cli_args):
     data_module.register_filters()
 
     # specify arguments for classification.classify_data
-    data_iter = data_module.iter_data(format_sncosmo=True)
+    data_iter = data_module.iter_data(format_sncosmo=True, verbose=True)
     band_names = data_module.band_names
     lambda_eff = data_module.lambda_effective
     fit_func = getattr(fit_funcs, cli_args.fit_func)
