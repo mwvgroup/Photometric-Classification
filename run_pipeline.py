@@ -4,56 +4,16 @@
 """Command line interface for the analysis_pipeline package."""
 
 import argparse
+import warnings
 
-import sncosmo
 import sndata
-import yaml
 
+from analysis_pipeline import classification
+from analysis_pipeline import fit_funcs
 from analysis_pipeline import models
-from analysis_pipeline.lc_fitting import run_iter_fitting
 
+warnings.simplefilter('ignore')
 models.register_sources()
-
-
-def read_yaml(file_path):
-    """A yaml file reader compatible with Python 3.6 and 3.7
-
-    Args:
-        file_path (str): The yaml file path to read
-
-    Returns:
-        A dict of the file's contents
-    """
-
-    with open(file_path) as ofile:
-        try:
-            return yaml.load(ofile, Loader=yaml.FullLoader)
-
-        except AttributeError:
-            return yaml.load(ofile)
-
-
-def get_models(cli_args):
-    """Return a list of SNCosmo models specified by command line arguments
-
-    Args:
-        cli_args (argparse.Namespace): Command line arguments
-
-    Returns:
-        A list of SNCosmo models
-    """
-
-    kwargs = read_yaml(cli_args.args_path)[cli_args.survey]
-
-    models_list = []
-    kwargs_list = []
-    for name, version in zip(cli_args.models, cli_args.versions):
-        source = sncosmo.get_source(name, version=version)
-        model = sncosmo.Model(source=source)
-        models_list.append(model)
-        kwargs_list.append(kwargs[f'{name}_{version}'])
-
-    return models_list, kwargs_list
 
 
 def run(cli_args):
@@ -68,19 +28,27 @@ def run(cli_args):
     data_module.download_module_data()
     data_module.register_filters()
 
-    # Get list of specified models and fit them all
-    model_lists, kwarg_list = get_models(cli_args)
-    run_iter_fitting(
-        survey=data_module,
-        model_list=model_lists,
-        kwarg_list=kwarg_list,
-        fitz_list=cli_args.fit_z,
-        time_out=cli_args.time_out,
-        skip_types=cli_args.skip_types)
+    # specify arguments for classification.classify_data
+    data_iter = data_module.iter_data(format_sncosmo=True)
+    band_names = data_module.band_names
+    lambda_eff = data_module.lambda_effective
+    fit_func = getattr(fit_funcs, cli_args.fit_func)
+    vparams = cli_args.vparams
+    out_path = cli_args.out_path
+    timeout_sec = cli_args.timeout
+    kwargs_bg = {'bounds': {
+        'z': [0.01, 0.8],
+        'x0': [0, 0.02],
+        'x1': [0.65, 1.25],
+        'c': [0, 1]}
+    }
+
+    classification.classify_data(
+        data_iter, band_names, lambda_eff, fit_func, vparams,
+        timeout_sec=timeout_sec, kwargs_bg=kwargs_bg, out_path=out_path)
 
 
-# Parse command line input
-if __name__ == '__main__':
+def create_cli_parser():
     parser = argparse.ArgumentParser(
         description='Fit light-curves for a given survey.')
 
@@ -97,53 +65,37 @@ if __name__ == '__main__':
         help='Release name (e.g. dr3)')
 
     parser.add_argument(
-        '-a', '--args_path',
+        '-f', '--fit_func',
         type=str,
+        default='simple_fit',
+        help='Which fitting function to use')
+
+    parser.add_argument(
+        '-v', '--vparams',
+        type=str,
+        nargs='+',
         required=True,
-        help='Path of fitting arguments')
+        help='What parameters to vary with the fit')
 
     parser.add_argument(
-        '-m', '--models',
-        type=str,
-        nargs='+',
-        default=['salt2'],
-        help='Models to fit (salt2, sn91bg)')
-
-    parser.add_argument(
-        '-v', '--versions',
-        type=str,
-        nargs='+',
-        default=['2.4'],
-        help='Version of each model to fit')
-
-    parser.add_argument(
-        '-z', '--fit_z',
-        nargs='+',
-        type=int,
-        default=False,
-        help='Whether to fit for redshift')
-
-    parser.add_argument(
-        '-k', '--skip_types',
-        type=str,
-        nargs='+',
-        default=['AGN', 'SLSN', 'SNII', 'Variable'],
-        help='Object classifications to skip. Only supported for SDSS.'
-    )
-
-    parser.add_argument(
-        '-t', '--time_out',
+        '-t', '--timeout',
         type=int,
         default=120,
-        help='Seconds before nested sampling times out.'
+        help='Seconds before fitting times out.'
     )
 
+    parser.add_argument(
+        '-o', '--out_path',
+        type=str,
+        required=True,
+        help='Output file path.'
+    )
+
+    return parser
+
+
+# Parse command line input
+if __name__ == '__main__':
+    parser = create_cli_parser()
     cli_args = parser.parse_args()
-    if not (len(cli_args.models) ==
-            len(cli_args.versions) ==
-            len(cli_args.fit_z)):
-
-        raise ValueError(
-            'Number of models, version, and redshift flags must match.')
-
     run(cli_args)

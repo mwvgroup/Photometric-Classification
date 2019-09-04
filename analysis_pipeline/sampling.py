@@ -3,6 +3,9 @@
 
 """This module determines and caches prior values specific to a given
 light-curve and model. Prior values are determined using nested sampling.
+
+Todo: THis module is currently a dump of old logic. It's save as a reference
+for future work only
 """
 
 from copy import deepcopy

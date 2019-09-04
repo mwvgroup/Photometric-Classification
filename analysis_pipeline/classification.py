@@ -86,8 +86,8 @@ def fit_results_to_table_row(data, band_set, results, fitted_model):
     new_row += [pre_max, post_max]
 
     # Add parameters and their errors to the new row
-    new_row += fitted_model.parameters
-    new_row += [results.errors[p] for p in fitted_model.param_names]
+    new_row += list(fitted_model.parameters)
+    new_row += [results.errors.get(p, 0) for p in fitted_model.param_names]
 
     # Calc chi-squared
     chisq, dof = utils.calc_model_chisq(data, fitted_model)
@@ -143,8 +143,7 @@ def run_fits(all_data, red_data, blue_data, vparams, fit_func,
         sn91bg.set(z=z)
 
     # Fit salt2 model to determine t0
-    norm_result_all, norm_fit_all = fit_func(all_data, salt2, vparams,
-                                             **kwargs_s2)
+    norm_result_all, norm_fit_all = fit_func(all_data, salt2, vparams, **kwargs_s2)
     t0 = norm_fit_all.parameters[norm_fit_all.param_names.index('t0')]
 
     # Set initial t0 value for remainder of fits. Unless a set of bounds is
@@ -168,17 +167,19 @@ def run_fits(all_data, red_data, blue_data, vparams, fit_func,
 
 
 def classify_data(data_iter, band_names, lambda_eff, fit_func, vparams,
-                  timeout_seconds=90, kwargs_s2=None, kwargs_bg=None,
+                  timeout_sec=90, kwargs_s2=None, kwargs_bg=None,
                   out_path=None):
     """Tabulate fit results for a collection of data tables
 
     Args:
-        data_iter  (iter): Iterable of hhotometric data for different SN
+        data_iter  (iter): Iterable of photometric data for different SN
         band_names (list): Name of bands included in ``data_iter``
         vparams    (list): Effective wavelength for each band in ``band_names``
         fit_func   (func): Function to use to run fits
+        timeout_sec (int): Number of seconds before timeout fitting for target
         kwargs_s2  (dict): Kwargs to pass ``fit_func`` when fitting salt2
         kwargs_bg  (dict): Kwargs to pass ``fit_func`` when fitting sn91bg
+        out_path    (str): Optionally cache progressive results to file
 
     Returns:
        An astropy table with fit results
@@ -189,7 +190,7 @@ def classify_data(data_iter, band_names, lambda_eff, fit_func, vparams,
         blue_data, red_data = utils.split_data(data, band_names, lambda_eff)
 
         try:
-            with utils.timeout(timeout_seconds):
+            with utils.timeout(timeout_sec):
                 fit_results = run_fits(
                     data, red_data, blue_data,
                     vparams,
@@ -200,15 +201,15 @@ def classify_data(data_iter, band_names, lambda_eff, fit_func, vparams,
         except KeyboardInterrupt:
             raise
 
-        except:
-            pass  # Todo: add masked row with error message
+        except Exception as e:
+            print(data.meta['obj_id'], ':', str(e))
 
         else:
-            # Todo: Add fit results to table
             band_sets = ('all', 'blue', 'red', 'all', 'blue', 'red')
             data_tables = (data, red_data, blue_data, data, red_data, blue_data)
-            for (results, fitted_model) in fit_results:
-                row = fit_results_to_table_row(data, 'all', results, fitted_model)
+            row_data_iter = zip(band_sets, data_tables, fit_results)
+            for bs, dt, (results, fitted_model) in row_data_iter:
+                row = fit_results_to_table_row(dt, bs, results, fitted_model)
                 out_table.add_row(row)
 
         if out_path:
