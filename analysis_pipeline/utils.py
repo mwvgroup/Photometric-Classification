@@ -3,11 +3,63 @@
 
 """A collection of general utilities used across the analysis pipeline."""
 
+import signal
+
 import numpy as np
-from astropy.table import Column, unique
 from astropy.table import Table
 
-from . import _paths
+
+class timeout:
+    """A timeout context manager"""
+
+    def __init__(self, seconds=1, error_message='Timeout'):
+        """A timeout context manager
+        Args:
+            seconds       (int): The number of seconds until timeout
+            error_message (str): The TimeOutError message on timeout
+        """
+
+        self.seconds = seconds
+        self.error_message = error_message
+
+    def handle_timeout(self, signum, frame):
+        raise TimeoutError(self.error_message)
+
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.handle_timeout)
+        signal.alarm(self.seconds)
+
+    def __exit__(self, type_, value, traceback):
+        signal.alarm(0)
+
+
+def calc_model_chisq(data, model):
+    """
+    Calculate the chi-squared for a given data table and model
+
+    Args:
+        data  (Table): An SNCosmo input table
+        model (Model): An SNCosmo Model
+
+    Returns:
+        The un-normalized chi-squared
+        The number of data points used in the calculation
+    """
+
+    while True:
+        try:
+            # Model flux and keep only non-zero values
+            model_flux = model.bandflux(data['band'], data['time'])
+            data = data[model_flux > 0]
+            model_flux = model_flux[model_flux > 0]
+
+            residuals = model_flux - data['flux']
+            chisq = np.sum((residuals / data['fluxerr']) ** 2)
+            return chisq, len(data)
+
+        except ValueError as err:
+            # Remove bands that are out of model range
+            data = data[data['band'] != err.args[0].split()[1][1:-1]]
 
 
 def _split_bands(bands, lambda_eff):
@@ -76,78 +128,19 @@ def split_data(data_table, band_names, lambda_eff):
     return out_list
 
 
-def get_fit_results(survey, model, num_params, bands):
-    """Get light-curve fits for a given survey, model, and number of parameters
+def classification_filter_factory(classifications):
+    """Factory function that returns an sndata filter function
+
+    Filter function limits data iterator to targets of a given classification
 
     Args:
-        survey  (module): An SNData submodule for a particular data release
-        model    (Model): The SNCosmo model used to fit light-curves
-        num_params (int): The number of params that were fit
+         classifications (list[str]): A list of classification to allow
 
     Returns:
-        A DataFrame of fits in all bands or None
-        A DataFrame of fits in blue bands or None
-        A DataFrame of fits in red bands or None
+        A filter function for sndata
     """
 
-    all_path, blue_path, red_path = \
-        _paths.get_fit_result_paths(model, survey, num_params)
+    def filter_func(table):
+        return table.meta['classification'] in classifications
 
-    path_index = ['all', 'blue', 'red'].index(bands)
-    path = [all_path, blue_path, red_path][path_index]
-
-    data = Table.read(path)
-    data = data.to_pandas()
-    data.set_index('obj_id', inplace=True)
-
-    return data
-
-
-def get_priors(survey, model):
-    """Get light-curve priors for a given survey and model
-
-    Args:
-        survey  (module): An SNData submodule for a particular data release
-        model    (Model): The SNCosmo model used to fit light-curves
-
-    Returns:
-        An astropy table
-    """
-
-    path = _paths.get_priors_path(model, survey)
-    data = Table.read(path).to_pandas()
-    data.set_index('obj_id', inplace=True)
-    return data
-
-
-def save_manual_priors(obj_id, survey, model, priors_dict, message='-'):
-    """Save priors to the analysis pipeline's internal file structure
-
-    Args:
-        obj_id       (str): The ID of the object to save priors for
-        survey    (module): An sndata data access module
-        model      (Model): The SNCosmo model of the priors
-        priors_dict (dict): Dictionary of prior values
-        message (str): Message to include with new priors (Default: '-')
-    """
-
-    auto_priors_path = _paths.get_priors_path(model, survey, manual=True)
-    manual_priors_path = _paths.get_priors_path(model, survey, manual=True)
-
-    try:
-        existing_data = Table.read(manual_priors_path)
-        existing_data['message'] = Column(existing_data['message'],
-                                          dtype='U100')
-
-    except FileNotFoundError:
-        auto_data = Table.read(auto_priors_path)
-        names = auto_data.colnames
-        dtype = [float for _ in names]
-        dtype[0] = dtype[-1] = 'U1000'
-        existing_data = Table(names=names, dtype=dtype)
-
-    priors_dict['obj_id'] = obj_id
-    priors_dict['message'] = message
-    existing_data.add_row(priors_dict)
-    new_data = unique(existing_data, keep='last', keys=['obj_id'])
-    new_data.write(manual_priors_path, overwrite=True)
+    return filter_func

@@ -5,7 +5,6 @@
 light-curve and model. Prior values are determined using nested sampling.
 """
 
-import signal
 from copy import deepcopy
 from pathlib import Path
 
@@ -15,30 +14,6 @@ from astropy.table import Column, Table, unique, vstack
 from .._paths import get_priors_path
 
 PRIORS = dict()  # For lazy loading priors
-
-
-class timeout:
-    """A timeout context manager"""
-
-    def __init__(self, seconds=1, error_message='Timeout'):
-        """A timeout context manager
-        Args:
-            seconds       (int): The number of seconds until timeout
-            error_message (str): The TimeOutError message on timeout
-        """
-
-        self.seconds = seconds
-        self.error_message = error_message
-
-    def handle_timeout(self, signum, frame):
-        raise TimeoutError(self.error_message)
-
-    def __enter__(self):
-        signal.signal(signal.SIGALRM, self.handle_timeout)
-        signal.alarm(self.seconds)
-
-    def __exit__(self, type_, value, traceback):
-        signal.alarm(0)
 
 
 def create_priors_table(model):
@@ -188,7 +163,8 @@ def calc_new_priors(data, model, vparam_names, survey, time_out=120, **kwargs):
 
     try:
         with timeout(seconds=time_out):
-            sampled_model, bounds = nest_lc(data, model, vparam_names, **kwargs)
+            sampled_model, bounds = nest_lc(data, model, vparam_names,
+                                            **kwargs)
             msg = 'Success'
 
     except (ValueError, TimeoutError, RuntimeError) as e:
@@ -212,7 +188,8 @@ def calc_new_priors(data, model, vparam_names, survey, time_out=120, **kwargs):
     return sampled_model, bounds
 
 
-def get_sampled_model(data, model, vparam_names, survey, time_out=120, **kwargs):
+def get_sampled_model(data, model, vparam_names, survey, time_out=120,
+                      **kwargs):
     """Set initial model params using cached values
 
     If cached values are not available, determine them using nested sampling
@@ -233,10 +210,61 @@ def get_sampled_model(data, model, vparam_names, survey, time_out=120, **kwargs)
     if cached_prior:
         sampled_model = deepcopy(model)
         sampled_model.update({k: cached_prior[k] for k in vparam_names})
-        bounds = {k: (cached_prior[f'{k}_min'], cached_prior[f'{k}_max']) for k in vparam_names}
+        bounds = {k: (cached_prior[f'{k}_min'], cached_prior[f'{k}_max']) for k
+                  in vparam_names}
 
     else:
         sampled_model, bounds = calc_new_priors(
             data, model, vparam_names, survey, time_out, **kwargs)
 
     return sampled_model, bounds
+
+
+def get_priors(survey, model):
+    """Get light-curve priors for a given survey and model
+
+    Args:
+        survey  (module): An SNData submodule for a particular data release
+        model    (Model): The SNCosmo model used to fit light-curves
+
+    Returns:
+        An astropy table
+    """
+
+    path = _paths.get_priors_path(model, survey)
+    data = Table.read(path).to_pandas()
+    data.set_index('obj_id', inplace=True)
+    return data
+
+
+def save_manual_priors(obj_id, survey, model, priors_dict, message='-'):
+    """Save priors to the analysis pipeline's internal file structure
+
+    Args:
+        obj_id       (str): The ID of the object to save priors for
+        survey    (module): An sndata data access module
+        model      (Model): The SNCosmo model of the priors
+        priors_dict (dict): Dictionary of prior values
+        message (str): Message to include with new priors (Default: '-')
+    """
+
+    auto_priors_path = _paths.get_priors_path(model, survey, manual=True)
+    manual_priors_path = _paths.get_priors_path(model, survey, manual=True)
+
+    try:
+        existing_data = Table.read(manual_priors_path)
+        existing_data['message'] = Column(existing_data['message'],
+                                          dtype='U100')
+
+    except FileNotFoundError:
+        auto_data = Table.read(auto_priors_path)
+        names = auto_data.colnames
+        dtype = [float for _ in names]
+        dtype[0] = dtype[-1] = 'U1000'
+        existing_data = Table(names=names, dtype=dtype)
+
+    priors_dict['obj_id'] = obj_id
+    priors_dict['message'] = message
+    existing_data.add_row(priors_dict)
+    new_data = unique(existing_data, keep='last', keys=['obj_id'])
+    new_data.write(manual_priors_path, overwrite=True)
