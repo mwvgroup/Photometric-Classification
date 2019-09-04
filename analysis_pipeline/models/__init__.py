@@ -9,10 +9,6 @@ For more information on the Nugent template see:
     https://iopscience.iop.org/article/10.1086/341707
 """
 
-import sncosmo
-
-from . import _color_interpolation, _salt2_phase
-
 
 def SN91bg(name=None, version='salt2_phase'):
     """Return a version a SN 1991bg-like model for SNCosmo
@@ -25,11 +21,13 @@ def SN91bg(name=None, version='salt2_phase'):
              (Default: salt2_phase)
     """
 
+    from . import sources
+
     if version == 'salt2_phase':
-        return _salt2_phase.SN91bgSource()
+        return sources.Salt2Phase()
 
     if version == 'color_interpolation':
-        return _color_interpolation.SN91bgSource()
+        return sources.ColorInterpolation()
 
     else:
         raise ValueError(f"Unidentified version: '{version}'.")
@@ -43,6 +41,8 @@ def register_sources(force=False):
     Args:
         force (bool): Whether to overwrite an already registered source
     """
+
+    import sncosmo
 
     sncosmo.register_loader(
         data_class=sncosmo.Source,
