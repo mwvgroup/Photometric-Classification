@@ -25,10 +25,12 @@ def run(cli_args):
     """
 
     # Create output file paths
-    out_dir = Path(out_path=cli_args.out_dir)
+    out_dir = Path(cli_args.out_dir).resolve()
     out_dir.mkdir(exist_ok=True, parents=True)
-    fit_path = out_dir/ 'fits.ecsv'
-    classification_path = out_dir / 'classification.ecsv'
+
+    file_prefix = f'{cli_args.survey}_{cli_args.release}_{cli_args.fit_func}_'
+    fit_path = out_dir / (file_prefix + 'fits.ecsv')
+    classification_path = out_dir / (file_prefix + 'class.ecsv')
 
     # Download and register data for fitting
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
@@ -45,8 +47,6 @@ def run(cli_args):
 
     # Todo: this should be specified externally from the CLI somehow
     kwargs_bg = {'bounds': {
-        'z': [0.01, 0.8],
-        'x0': [0, 0.02],
         'x1': [0.65, 1.25],
         'c': [0, 1]}
     }
@@ -90,7 +90,7 @@ def create_cli_parser():
     parser.add_argument(
         '-t', '--timeout',
         type=int,
-        default=120,
+        default=90,
         help='Seconds before fitting times out.'
     )
 

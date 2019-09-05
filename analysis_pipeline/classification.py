@@ -5,6 +5,8 @@
 determines the corresponding classification coordinates.
 """
 
+from copy import deepcopy
+
 import numpy as np
 import sncosmo
 from astropy.table import Table
@@ -130,8 +132,8 @@ def run_fits(all_data, red_data, blue_data, vparams, fit_func,
     """
 
     # Copy kwargs if given to avoid mutation
-    kwargs_s2 = kwargs_s2.copy() if kwargs_s2 else dict()
-    kwargs_bg = kwargs_bg.copy() if kwargs_bg else dict()
+    kwargs_s2 = deepcopy(kwargs_s2) if kwargs_s2 else dict()
+    kwargs_bg = deepcopy(kwargs_bg) if kwargs_bg else dict()
 
     # Load models
     salt2 = sncosmo.Model('salt2')
@@ -144,8 +146,7 @@ def run_fits(all_data, red_data, blue_data, vparams, fit_func,
         sn91bg.set(z=z)
 
     # Fit salt2 model to determine t0
-    norm_result_all, norm_fit_all = fit_func(all_data, salt2, vparams,
-                                             **kwargs_s2)
+    norm_result_all, norm_fit_all = fit_func(all_data, salt2, vparams, **kwargs_s2)
     t0 = norm_fit_all.parameters[norm_fit_all.param_names.index('t0')]
 
     # Set initial t0 value for remainder of fits. Unless a set of bounds is
@@ -196,9 +197,11 @@ def tabulate_fit_results(
     out_table.meta['timeout_sec'] = timeout_sec
     out_table.meta['kwargs_s2'] = kwargs_s2
     out_table.meta['kwargs_bg'] = kwargs_bg
-    out_table.meta['out_path'] = out_path
+    out_table.meta['out_path'] = str(out_path)
 
     for data in data_iter:
+        if data.meta['obj_id'] not in ('2004ey',):
+            continue
         blue_data, red_data = utils.split_data(data, band_names, lambda_eff)
 
         try:
@@ -217,8 +220,13 @@ def tabulate_fit_results(
             # Add a masked row so we have a record in the output table
             # indicating something went wrong.
             num_cols = len(out_table.colnames)
-            masked_row = np.full(num_cols, np.nan).tolist()
-            masked_row[-1] = f'data.meta["obj_id""] : {e}'
+            row = np.full(num_cols, -99).tolist()
+            mask = np.full(num_cols, True)
+
+            row[0] = data.meta['obj_id']
+            row[-1] = str(e).replace('\n', '')
+            mask[0] = mask[-1] = False
+            out_table.add_row(row, mask=mask)
 
         else:
             # Create an iterator over data necessary to make each row
@@ -239,41 +247,46 @@ def tabulate_fit_results(
 
 
 def classify_targets(fits_table, out_path=None):
-    """Classify targets based on their fit results
+    """Tabulate classification coordinates for SNe based on their fit results
 
     See the ``create_empty_table`` function for information on the assumed
     input table format.
 
     Args:
         fits_table (Table): A table of fit results
+        out_path    (str): Optionally write results to file
 
     Returns:
-        An astropy table of classifications
+        An astropy table of classification coordinates
     """
+    i = ~np.array(np.any(fits_table.mask.to_pandas(), axis=1))
+    fits_table = fits_table[i]
 
-    # Convert input table to a dataframe so we can leverage multi-indexing
-    fits_df = fits_table.to_pandas(index=['obj_id', 'band_set'])
-    fits_df.dropna(inplace=True)
+    # Convert input table to a DataFrame so we can leverage multi-indexing
+    fits_df = fits_table.to_pandas()
+    fits_df.set_index(['obj_id', 'source', 'band_set'], inplace=True)
 
     out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
     for obj_id in fits_df.index.unique(level='obj_id'):
+
         norm_blue_chisq = (fits_df.loc[obj_id, 'salt2', 'blue']['chisq'] /
-                           fits_df.loc[obj_id, 'salt2', 'blue']['dof'])
+                           fits_df.loc[obj_id, 'salt2', 'blue']['ndof'])
 
         norm_red_chisq = (fits_df.loc[obj_id, 'salt2', 'red']['chisq'] /
-                          fits_df.loc[obj_id, 'salt2', 'red']['dof'])
+                          fits_df.loc[obj_id, 'salt2', 'red']['ndof'])
 
         bg_blue_chisq = (fits_df.loc[obj_id, 'sn91bg', 'blue']['chisq'] /
-                         fits_df.loc[obj_id, 'sn91bg', 'blue']['dof'])
+                         fits_df.loc[obj_id, 'sn91bg', 'blue']['ndof'])
 
         bg_red_chisq = (fits_df.loc[obj_id, 'sn91bg', 'red']['chisq'] /
-                        fits_df.loc[obj_id, 'sn91bg', 'red']['dof'])
+                        fits_df.loc[obj_id, 'sn91bg', 'red']['ndof'])
+
 
         x = norm_blue_chisq - bg_blue_chisq
         y = norm_red_chisq - bg_red_chisq
         out_table.add_row([obj_id, x, y])
-        if out_path:
-            out_table.write(out_path)
+
+    if out_path:
+        out_table.write(out_path)
 
     return out_table
-
