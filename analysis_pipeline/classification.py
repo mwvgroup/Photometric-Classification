@@ -5,6 +5,7 @@
 determines the corresponding classification coordinates.
 """
 
+import numpy as np
 import sncosmo
 from astropy.table import Table
 
@@ -143,7 +144,8 @@ def run_fits(all_data, red_data, blue_data, vparams, fit_func,
         sn91bg.set(z=z)
 
     # Fit salt2 model to determine t0
-    norm_result_all, norm_fit_all = fit_func(all_data, salt2, vparams, **kwargs_s2)
+    norm_result_all, norm_fit_all = fit_func(all_data, salt2, vparams,
+                                             **kwargs_s2)
     t0 = norm_fit_all.parameters[norm_fit_all.param_names.index('t0')]
 
     # Set initial t0 value for remainder of fits. Unless a set of bounds is
@@ -185,7 +187,17 @@ def classify_data(data_iter, band_names, lambda_eff, fit_func, vparams,
        An astropy table with fit results
     """
 
+    # Add arguments to output table meta data
     out_table = create_empty_table()
+    out_table.meta['band_names'] = band_names
+    out_table.meta['lambda_eff'] = lambda_eff
+    out_table.meta['fit_func'] = fit_func.__name__
+    out_table.meta['vparams'] = vparams
+    out_table.meta['timeout_sec'] = timeout_sec
+    out_table.meta['kwargs_s2'] = kwargs_s2
+    out_table.meta['kwargs_bg'] = kwargs_bg
+    out_table.meta['out_path'] = out_path
+
     for data in data_iter:
         blue_data, red_data = utils.split_data(data, band_names, lambda_eff)
 
@@ -202,12 +214,19 @@ def classify_data(data_iter, band_names, lambda_eff, fit_func, vparams,
             raise
 
         except Exception as e:
-            print(data.meta['obj_id'], ':', str(e))
+            # Add a masked row so we have a record in the output table
+            # indicating something went wrong.
+            num_cols = len(out_table.colnames)
+            masked_row = np.full(num_cols, np.nan).tolist()
+            masked_row[-1] = f'data.meta["obj_id""] : {e}'
 
         else:
+            # Create an iterator over data necessary to make each row
             band_sets = ('all', 'blue', 'red', 'all', 'blue', 'red')
             data_tables = (data, red_data, blue_data, data, red_data, blue_data)
             row_data_iter = zip(band_sets, data_tables, fit_results)
+
+            # Populate the output table
             for bs, dt, (results, fitted_model) in row_data_iter:
                 row = fit_results_to_table_row(dt, bs, results, fitted_model)
                 out_table.add_row(row)
