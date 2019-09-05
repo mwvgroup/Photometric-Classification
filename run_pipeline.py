@@ -5,6 +5,7 @@
 
 import argparse
 import warnings
+from pathlib import Path
 
 import sndata
 
@@ -23,19 +24,26 @@ def run(cli_args):
         cli_args (argparse.Namespace): Command line arguments
     """
 
+    # Create output file paths
+    out_dir = Path(out_path=cli_args.out_dir)
+    out_dir.mkdir(exist_ok=True, parents=True)
+    fit_path = out_dir/ 'fits.ecsv'
+    classification_path = out_dir / 'classification.ecsv'
+
     # Download and register data for fitting
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
     data_module.register_filters()
 
-    # specify arguments for classification.classify_data
+    # specify arguments for classification.tabulate_fit_results
     data_iter = data_module.iter_data(format_sncosmo=True, verbose=True)
     band_names = data_module.band_names
     lambda_eff = data_module.lambda_effective
     fit_func = getattr(fit_funcs, cli_args.fit_func)
     vparams = cli_args.vparams
-    out_path = cli_args.out_path
     timeout_sec = cli_args.timeout
+
+    # Todo: this should be specified externally from the CLI somehow
     kwargs_bg = {'bounds': {
         'z': [0.01, 0.8],
         'x0': [0, 0.02],
@@ -43,9 +51,11 @@ def run(cli_args):
         'c': [0, 1]}
     }
 
-    classification.classify_data(
+    fit_results = classification.tabulate_fit_results(
         data_iter, band_names, lambda_eff, fit_func, vparams,
-        timeout_sec=timeout_sec, kwargs_bg=kwargs_bg, out_path=out_path)
+        timeout_sec=timeout_sec, kwargs_bg=kwargs_bg, out_path=fit_path)
+
+    classification.classify_targets(fit_results, out_path=classification_path)
 
 
 def create_cli_parser():
@@ -85,10 +95,10 @@ def create_cli_parser():
     )
 
     parser.add_argument(
-        '-o', '--out_path',
+        '-o', '--out_dir',
         type=str,
         required=True,
-        help='Output file path.'
+        help='Directory to write output files to.'
     )
 
     return parser

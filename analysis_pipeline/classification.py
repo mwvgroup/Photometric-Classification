@@ -168,9 +168,9 @@ def run_fits(all_data, red_data, blue_data, vparams, fit_func,
     return norm_all, norm_blue, norm_red, bg_all, bg_blue, bg_red
 
 
-def classify_data(data_iter, band_names, lambda_eff, fit_func, vparams,
-                  timeout_sec=90, kwargs_s2=None, kwargs_bg=None,
-                  out_path=None):
+def tabulate_fit_results(
+        data_iter, band_names, lambda_eff, fit_func, vparams,
+        timeout_sec=90, kwargs_s2=None, kwargs_bg=None, out_path=None):
     """Tabulate fit results for a collection of data tables
 
     Args:
@@ -223,7 +223,8 @@ def classify_data(data_iter, band_names, lambda_eff, fit_func, vparams,
         else:
             # Create an iterator over data necessary to make each row
             band_sets = ('all', 'blue', 'red', 'all', 'blue', 'red')
-            data_tables = (data, red_data, blue_data, data, red_data, blue_data)
+            data_tables = (
+            data, red_data, blue_data, data, red_data, blue_data)
             row_data_iter = zip(band_sets, data_tables, fit_results)
 
             # Populate the output table
@@ -235,3 +236,44 @@ def classify_data(data_iter, band_names, lambda_eff, fit_func, vparams,
             out_table.write(out_path)
 
     return out_table
+
+
+def classify_targets(fits_table, out_path=None):
+    """Classify targets based on their fit results
+
+    See the ``create_empty_table`` function for information on the assumed
+    input table format.
+
+    Args:
+        fits_table (Table): A table of fit results
+
+    Returns:
+        An astropy table of classifications
+    """
+
+    # Convert input table to a dataframe so we can leverage multi-indexing
+    fits_df = fits_table.to_pandas(index=['obj_id', 'band_set'])
+    fits_df.dropna(inplace=True)
+
+    out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
+    for obj_id in fits_df.index.unique(level='obj_id'):
+        norm_blue_chisq = (fits_df.loc[obj_id, 'salt2', 'blue']['chisq'] /
+                           fits_df.loc[obj_id, 'salt2', 'blue']['dof'])
+
+        norm_red_chisq = (fits_df.loc[obj_id, 'salt2', 'red']['chisq'] /
+                          fits_df.loc[obj_id, 'salt2', 'red']['dof'])
+
+        bg_blue_chisq = (fits_df.loc[obj_id, 'sn91bg', 'blue']['chisq'] /
+                         fits_df.loc[obj_id, 'sn91bg', 'blue']['dof'])
+
+        bg_red_chisq = (fits_df.loc[obj_id, 'sn91bg', 'red']['chisq'] /
+                        fits_df.loc[obj_id, 'sn91bg', 'red']['dof'])
+
+        x = norm_blue_chisq - bg_blue_chisq
+        y = norm_red_chisq - bg_red_chisq
+        out_table.add_row([obj_id, x, y])
+        if out_path:
+            out_table.write(out_path)
+
+    return out_table
+
