@@ -5,6 +5,8 @@
 fitting functions in ``sncosmo``.
 """
 
+from copy import deepcopy
+
 import sncosmo as _sncosmo
 
 
@@ -21,6 +23,7 @@ def simple_fit(data, model, vparam_names, **kwargs):
          - A fitted ``Model`` instance
     """
 
+    kwargs = deepcopy(kwargs)
     return _sncosmo.fit_lc(data, model, vparam_names, **kwargs)
 
 
@@ -37,6 +40,7 @@ def nest_fit(data, model, vparam_names, **kwargs):
          - A fitted ``Model`` instance
     """
 
+    kwargs = deepcopy(kwargs)
     return _sncosmo.nest_lc(data, model, vparam_names, **kwargs)
 
 
@@ -53,6 +57,7 @@ def mcmc_fit(data, model, vparam_names, **kwargs):
          - A fitted ``Model`` instance
     """
 
+    kwargs = deepcopy(kwargs)
     return _sncosmo.mcmc_lc(data, model, vparam_names, **kwargs)
 
 
@@ -69,6 +74,7 @@ def nested_simple_fit(data, model, vparam_names, **kwargs):
          - A fitted ``Model`` instance
     """
 
+    kwargs = deepcopy(kwargs)
     _, nested_model = _sncosmo.nest_lc(data, model, vparam_names, **kwargs)
     return _sncosmo.fit_lc(data, model, vparam_names, **kwargs)
 
@@ -86,5 +92,6 @@ def nested_mcmc_fit(data, model, vparam_names, **kwargs):
          - A fitted ``Model`` instance
     """
 
+    kwargs = deepcopy(kwargs)
     _, nested_model = _sncosmo.nest_lc(data, model, vparam_names, **kwargs)
     return _sncosmo.mcmc_lc(data, model, vparam_names, **kwargs)

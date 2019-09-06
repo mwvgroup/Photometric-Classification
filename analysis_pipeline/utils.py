@@ -157,6 +157,7 @@ def classification_filter_factory(classifications):
     """
 
     def filter_func(table):
-        return table.meta['classification'] in classifications
+        return 'classification' not in table.meta or \
+               table.meta['classification'] in classifications
 
     return filter_func

@@ -34,7 +34,7 @@ def create_empty_table(**kwargs):
         - x1_err
         - c_err
         - chisq
-        - dof
+        - ndof
         - b_max
         - delta_15
         - message
@@ -60,7 +60,7 @@ def create_empty_table(**kwargs):
     dtype += [float, float, float, float, 'U1000']
 
     # Unless otherwise specified, we default to returning a masked table
-    kwargs = kwargs.copy()
+    kwargs = deepcopy(kwargs)
     kwargs.setdefault('masked', True)
     return Table(names=names, dtype=dtype, **kwargs)
 
