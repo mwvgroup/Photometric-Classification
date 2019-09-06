@@ -10,13 +10,14 @@ For more information on the Nugent template see:
 """
 
 
+# noinspection PyPep8Naming, PyUnusedLocal
 def SN91bg(name=None, version='salt2_phase'):
     """Return a version a SN 1991bg-like model for SNCosmo
 
     Versions include: ``salt2_phase``, ``color_interpolation``
 
     Args:
-         name (None): Dummy arg for compatability with SNCosmo
+         name (None): Dummy arg for compatibility with SNCosmo
          version (str): The version of the template to load
              (Default: salt2_phase)
     """

@@ -4,6 +4,7 @@
 """A collection of general utilities used across the analysis pipeline."""
 
 import signal
+from copy import deepcopy
 
 import numpy as np
 from astropy.table import Table
@@ -14,6 +15,7 @@ class timeout:
 
     def __init__(self, seconds=1, error_message='Timeout'):
         """A timeout context manager
+
         Args:
             seconds       (int): The number of seconds until timeout
             error_message (str): The TimeOutError message on timeout
@@ -46,10 +48,24 @@ def calc_model_chisq(data, model):
         The number of data points used in the calculation
     """
 
+    data = deepcopy(data)
+    data.sort('time')  # To keep sncosmo happy
+
     while True:
         try:
             # Model flux and keep only non-zero values
             model_flux = model.bandflux(data['band'], data['time'])
+
+        except ValueError as err:
+            if 'outside spectral range' not in str(err):
+                raise  # Something went wrong that we aren't expecting
+
+            # We expect a need to sometimes remove bands outside of model range
+            data = data[data['band'] != err.args[0].split()[1][1:-1]]
+            if len(data) == 0:
+                raise RuntimeError('Ran out of data inside model range!')
+
+        else:
             data = data[model_flux > 0]
             model_flux = model_flux[model_flux > 0]
 
@@ -57,12 +73,8 @@ def calc_model_chisq(data, model):
             chisq = np.sum((residuals / data['fluxerr']) ** 2)
             return chisq, len(data)
 
-        except ValueError as err:
-            # Remove bands that are out of model range
-            data = data[data['band'] != err.args[0].split()[1][1:-1]]
 
-
-def _split_bands(bands, lambda_eff):
+def split_bands(bands, lambda_eff):
     """Split band-passes into collections of blue and red bands
 
     Blue bands have an effective wavelength < 5500 Ang. Red bands have an
@@ -71,11 +83,15 @@ def _split_bands(bands, lambda_eff):
     Args:
         bands        (array[str]): Name of band-passes
         lambda_eff (array[float]): Effective wavelength of band-passes
+
+    Returns:
+        An array of blue filter names
+        An array of red filter names
     """
 
     is_blue = np.array(lambda_eff) < 5500
-    b_array = np.array(bands)
-    return b_array[is_blue], b_array[~is_blue]
+    band_array = np.array(bands)
+    return band_array[is_blue], band_array[~is_blue]
 
 
 def split_data(data_table, band_names, lambda_eff):
@@ -120,7 +136,7 @@ def split_data(data_table, band_names, lambda_eff):
 
     # Split into blue and red band passes
     out_list = []
-    for bands in _split_bands(band_names, lambda_eff):
+    for bands in split_bands(band_names, lambda_eff):
         is_in_bands = np.isin(rest_frame_filters, bands)
         indices = np.logical_and(is_in_bands, is_ok_diff)
         out_list.append(data_table[indices])

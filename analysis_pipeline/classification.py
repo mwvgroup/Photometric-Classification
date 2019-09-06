@@ -73,6 +73,8 @@ def fit_results_to_table_row(data, band_set, results, fitted_model):
     'x0', 'x1', and 'c' (in order).
 
     Args:
+        data         (Table): The data used in the fit
+        band_set       (str): The name of the band set ('all', 'blue', 'red')
         results     (Result): Fitting results returned by ``sncosmo``
         fitted_model (Model): A fitted ``sncosmo`` model
 
@@ -126,6 +128,7 @@ def run_fits(all_data, blue_data, red_data, vparams, fit_func,
         fit_func   (func): Function to use to run fits (eg. ``sncosmo.fit_lc``)
         kwargs_s2  (dict): Kwargs to pass ``fit_func`` when fitting salt2
         kwargs_bg  (dict): Kwargs to pass ``fit_func`` when fitting sn91bg
+        show_plots (bool): Plot and display each individual fit
 
     Returns:
        Fit results and the fitted model for each model / data combination
@@ -160,7 +163,7 @@ def run_fits(all_data, blue_data, red_data, vparams, fit_func,
             kwargs_bg.setdefault('bounds', {})
             kwargs_bg['bounds']['t0'] = (salt2_t0 - 3, salt2_t0 + 3)
 
-        result, fitted_model = fit_func(data_tables, model, vparams, **kwarg)
+        result, fitted_model = fit_func(data_table, model, vparams, **kwarg)
         out_data.append((result, fitted_model))
 
         # We rely on the fact that the salt2.4 model and full data table
@@ -184,7 +187,8 @@ def tabulate_fit_results(
     Args:
         data_iter  (iter): Iterable of photometric data for different SN
         band_names (list): Name of bands included in ``data_iter``
-        vparams    (list): Effective wavelength for each band in ``band_names``
+        lambda_eff (list): Effective wavelength for each band in ``band_names``
+        vparams    (list): Name of parameters to vary
         fit_func   (func): Function to use to run fits
         timeout_sec (int): Number of seconds before timeout fitting for target
         kwargs_s2  (dict): Kwargs to pass ``fit_func`` when fitting salt2
@@ -279,10 +283,10 @@ def classify_targets(fits_table, out_path=None):
             continue
 
         salt2_blue_chisq = (fits_df.loc[obj_id, 'salt2', 'blue']['chisq'] /
-                           fits_df.loc[obj_id, 'salt2', 'blue']['ndof'])
+                            fits_df.loc[obj_id, 'salt2', 'blue']['ndof'])
 
         salt2_red_chisq = (fits_df.loc[obj_id, 'salt2', 'red']['chisq'] /
-                          fits_df.loc[obj_id, 'salt2', 'red']['ndof'])
+                           fits_df.loc[obj_id, 'salt2', 'red']['ndof'])
 
         bg_blue_chisq = (fits_df.loc[obj_id, 'sn91bg', 'blue']['chisq'] /
                          fits_df.loc[obj_id, 'sn91bg', 'blue']['ndof'])
