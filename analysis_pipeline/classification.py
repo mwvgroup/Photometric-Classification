@@ -145,39 +145,35 @@ def run_fits(all_data, blue_data, red_data, vparams, fit_func,
         salt2.set(z=z)
         sn91bg.set(z=z)
 
-    # Fit salt2 model to determine t0
-    norm_result_all, norm_fit_all = fit_func(all_data, salt2, vparams, **kwargs_s2)
-    t0 = norm_fit_all.parameters[norm_fit_all.param_names.index('t0')]
+    # Build iterator over data and models for each fit we want to run
+    data_tables = 2 * [all_data, red_data, blue_data]
+    models = 3 * [salt2] + 3 * [sn91bg]
+    kwargs = 3 * [kwargs_s2] + 3 * [kwargs_bg]
+    fitting_data = zip(data_tables, models, kwargs)
 
-    # Set initial t0 value for remainder of fits. Unless a set of bounds is
-    # already specified in the kwargs, we bound the 91bg t0 value since we
-    # expect it to be close to the slat2 value
-    salt2.set(t0=t0)
-    sn91bg.set(t0=t0)
-    if 't0' not in kwargs_bg.get('bounds', {}):
-        kwargs_bg.setdefault('bounds', {})
-        kwargs_bg['bounds']['t0'] = (t0 - 3, t0 + 3)
+    out_data = []
+    salt2_t0 = None
+    for data_table, model, kwarg in fitting_data:
 
-    # Run the remaining fits
-    norm_all = (norm_result_all, norm_fit_all)
-    if show_plots: sncosmo.plot_lc(all_data, norm_all[1])
+        # Default to bounding t0 to the salt2.4 t0 +/- 3 days
+        if salt2_t0 is not None and 't0' not in kwargs_bg.get('bounds', {}):
+            kwargs_bg.setdefault('bounds', {})
+            kwargs_bg['bounds']['t0'] = (salt2_t0 - 3, salt2_t0 + 3)
 
-    norm_blue = fit_func(blue_data, salt2, vparams, **kwargs_s2)
-    if show_plots: sncosmo.plot_lc(blue_data, norm_blue[1])
+        result, fitted_model = fit_func(data_tables, model, vparams, **kwarg)
+        out_data.append((result, fitted_model))
 
-    norm_red = fit_func(red_data, salt2, vparams, **kwargs_s2)
-    if show_plots: sncosmo.plot_lc(red_data, norm_red[1])
+        # We rely on the fact that the salt2.4 model and full data table
+        # are first in the iterator
+        if salt2_t0 is None:
+            salt2_t0 = fitted_model.parameters[fitted_model.param_names.index('t0')]
+            salt2.set(t0=salt2_t0)
+            sn91bg.set(t0=salt2_t0)
 
-    bg_all = fit_func(all_data, sn91bg, vparams, **kwargs_bg)
-    if show_plots: sncosmo.plot_lc(all_data, bg_all[1])
+        if show_plots:
+            sncosmo.plot_lc(data_table, fitted_model)
 
-    bg_blue = fit_func(blue_data, sn91bg, vparams, **kwargs_bg)
-    if show_plots: sncosmo.plot_lc(blue_data, bg_blue[1])
-
-    bg_red = fit_func(red_data, sn91bg, vparams, **kwargs_bg)
-    if show_plots: sncosmo.plot_lc(red_data, bg_red[1])
-
-    return norm_all, norm_blue, norm_red, bg_all, bg_blue, bg_red
+    return out_data
 
 
 def tabulate_fit_results(
@@ -239,9 +235,8 @@ def tabulate_fit_results(
 
         else:
             # Create an iterator over data necessary to make each row
-            band_sets = ('all', 'blue', 'red', 'all', 'blue', 'red')
-            data_tables = (
-            data, red_data, blue_data, data, red_data, blue_data)
+            band_sets = 2 * ['all', 'blue', 'red']
+            data_tables = 2 * [data, red_data, blue_data]
             row_data_iter = zip(band_sets, data_tables, fit_results)
 
             # Populate the output table
@@ -283,10 +278,10 @@ def classify_targets(fits_table, out_path=None):
         if len(fits_df.loc[obj_id]) < 6:
             continue
 
-        norm_blue_chisq = (fits_df.loc[obj_id, 'salt2', 'blue']['chisq'] /
+        salt2_blue_chisq = (fits_df.loc[obj_id, 'salt2', 'blue']['chisq'] /
                            fits_df.loc[obj_id, 'salt2', 'blue']['ndof'])
 
-        norm_red_chisq = (fits_df.loc[obj_id, 'salt2', 'red']['chisq'] /
+        salt2_red_chisq = (fits_df.loc[obj_id, 'salt2', 'red']['chisq'] /
                           fits_df.loc[obj_id, 'salt2', 'red']['ndof'])
 
         bg_blue_chisq = (fits_df.loc[obj_id, 'sn91bg', 'blue']['chisq'] /
@@ -295,8 +290,8 @@ def classify_targets(fits_table, out_path=None):
         bg_red_chisq = (fits_df.loc[obj_id, 'sn91bg', 'red']['chisq'] /
                         fits_df.loc[obj_id, 'sn91bg', 'red']['ndof'])
 
-        x = norm_blue_chisq - bg_blue_chisq
-        y = norm_red_chisq - bg_red_chisq
+        x = salt2_blue_chisq - bg_blue_chisq
+        y = salt2_red_chisq - bg_red_chisq
         out_table.add_row([obj_id, x, y])
 
     if out_path:
