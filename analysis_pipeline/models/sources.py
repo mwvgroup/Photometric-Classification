@@ -68,7 +68,7 @@ class Salt2Phase(sncosmo.Source):
         self.phase_lim = min(salt2_phase), max(salt2_phase)
 
         # Get phase limited 91bg model
-        grid_cords, self._flux_values = self._get_91bg_model(*self.phase_lim)
+        grid_cords, self._flux_values = self.get_template(*self.phase_lim)
         self._color = grid_cords[0]
         self._phase = grid_cords[1]
         self._wave = grid_cords[2]
@@ -88,7 +88,7 @@ class Salt2Phase(sncosmo.Source):
                 kx=3, ky=3)
 
     @staticmethod
-    def _get_91bg_model(phase_min=-18, phase_max=100):
+    def get_template(phase_min=-18, phase_max=100):
         """Load template spectra for SN 1991bg
 
         Full template spans 5 color values, 119 phases, and 1101 wavelengths.
@@ -174,7 +174,8 @@ class ColorInterpolation(sncosmo.Source):
         self.version = 'color_interpolation'
 
         # Model spectra and initial guess for stretch, color, and amplitude
-        self._flux_values = self._get_91bg_model()[0]
+        coords, flux = self.get_template()
+        self._flux_values = flux[0]
         self._parameters = np.array([1., 1., 0.55])
 
         # 4-dimension grid points in the model
@@ -194,7 +195,7 @@ class ColorInterpolation(sncosmo.Source):
                 kx=3, ky=3)
 
     @staticmethod
-    def _get_91bg_model():
+    def get_template():
         """Load template spectra for SN 1991bg
         Template spans 7 stretch values, 5 color values, 114 dates,
         and 1101 wavelengths.
@@ -203,7 +204,12 @@ class ColorInterpolation(sncosmo.Source):
             An array of shape (7, 5, 114, 1101)
         """
 
-        return np.load(COMPILED_MODEL_PATH)
+        stretch = np.array([0.65, 0.75, 0.85, 0.95, 1.05, 1.15, 1.25])
+        color = np.array([0.0, 0.25, 0.5, 0.75, 1])
+        phase = np.arange(-18, 101, 1)
+        wave = np.arange(1000, 12001, 10)
+        coords = (stretch, color, phase, wave)
+        return coords, np.load(COMPILED_MODEL_PATH)
 
     def _flux(self, phase, wave):
         """
