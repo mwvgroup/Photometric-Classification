@@ -7,13 +7,12 @@ from unittest import TestCase
 
 import numpy as np
 import sncosmo
+from astropy.table import Table
 
 from analysis_pipeline import classification
 
 
 # Todo: Test the following functions
-# - classify_targets
-# - create_empty_table
 # - run_fits
 # - tabulate_fit_results
 
@@ -55,8 +54,13 @@ class TestTableCreation(TestCase):
 
 
 class TestFitsToTableRow(TestCase):
+    """Tests for classification.fit_results_to_table_row"""
 
     def runTest(self):
+        """Run fits for data with a known result and check the returned
+        row is correct.
+        """
+
         # We use the example data from sncosmo since it is weel behaved
         data = sncosmo.load_example_data()
         model = sncosmo.Model('salt2')
@@ -96,3 +100,59 @@ class TestFitsToTableRow(TestCase):
         ]
 
         self.assertCountEqual(expected_row, row)
+
+
+class TestClassificationCoords(TestCase):
+    """Tests for classification.classify_targets"""
+
+    expected_input_columns = ['obj_id', 'source', 'band_set', 'chisq', 'ndof']
+
+    def test_correct_coordinates(self):
+        """Test correct coordinates are returned for the given input data"""
+
+        test_data = Table(names=self.expected_input_columns, rows=[
+            ['dummy_id', 'salt2', 'blue', 10, 1],
+            ['dummy_id', 'salt2', 'red', 20, 1],
+            ['dummy_id', 'sn91bg', 'blue', 10, 1],
+            ['dummy_id', 'sn91bg', 'red', 10, 1]
+        ])
+
+        expected_row = ['dummy_id', 0, 10]
+        class_coordinates = classification.classify_targets(test_data)
+        self.assertListEqual(list(class_coordinates[0]), expected_row)
+
+    def test_masked_values(self):
+        """Test handling of masked data"""
+
+        test_data = Table(names=self.expected_input_columns, rows=[
+            ['dummy_id', 'salt2', 'blue', 10, 1],
+            ['dummy_id', 'salt2', 'red', 20, 1],  # Second row
+            ['dummy_id', 'sn91bg', 'blue', 10, 1],
+            ['dummy_id', 'sn91bg', 'red', 10, 1]
+        ], masked=True)
+
+        # Mask data in the second row
+        test_data.mask = [
+            [False, True, False, False],
+            [False, True, False, False],
+            [False, True, False, False],
+            [False, True, False, False],
+            [False, True, False, False]
+        ]
+
+        class_coordinates = classification.classify_targets(test_data)
+        self.assertEqual(0, len(class_coordinates))
+
+    def test_failed_fits(self):
+        """Test handling of rows with NAN values"""
+
+        # Instantiate a table representing a failed 91bg fit
+        test_data = Table(names=self.expected_input_columns, rows=[
+            ['dummy_id', 'salt2', 'blue', 10, 1],
+            ['dummy_id', 'salt2', 'red', 20, 1],
+            ['dummy_id', 'sn91bg', 'blue', np.NAN, np.NAN],
+            ['dummy_id', 'sn91bg', 'red', np.NAN, np.NAN]
+        ])
+
+        class_coordinates = classification.classify_targets(test_data)
+        self.assertEqual(0, len(class_coordinates))

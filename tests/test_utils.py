@@ -8,7 +8,6 @@ from unittest import TestCase
 
 import numpy as np
 import sncosmo
-import sndata
 from astropy.table import Column, Table
 from sndata.csp import dr3
 
@@ -42,15 +41,15 @@ class TestTimeout(TestCase):
         try:
             self.sleep(seconds)
 
-        except:
+        except TimeoutError:
             duration = np.round(time.time() - start, 1)
             self.assertEqual(seconds, duration)
 
     def test_error_for_float_arg(self):
         """Test an error is raised by the context manager when passed a float
 
-        The signal manager expects integers, so if an error is not raised for
-        a float then make sure you know what is actually going on.
+        The signal manager expects integers, so if a TypeError is not raised
+        for a float then make sure you know what is actually going on.
         """
 
         self.assertRaises(TypeError, self.sleep, 2.1)
@@ -106,10 +105,10 @@ class TestCalcModelChisq(TestCase):
         returned_chisq, returned_dof = utils.calc_model_chisq(data,
                                                               self.test_model)
 
-        self.assertEqual(
-            expected_chisq, returned_chisq, 'Incorrect chisq value')
-        self.assertEqual(
-            expected_dof, returned_dof, 'Incorrect number of data points')
+        self.assertEqual(expected_chisq, returned_chisq,
+                         'Incorrect chisq value')
+        self.assertEqual(expected_dof, returned_dof,
+                         'Incorrect number of data points')
 
     def test_unregistered_band(self):
         """Test unregistered band names in the data table cause an error
@@ -154,88 +153,49 @@ class TestSplitBands(TestCase):
 class TestSplitData(TestCase):
     """Tests for utils.split_data"""
 
-    @property
-    def test_data(self):
-        return sncosmo.load_example_data()
-
-    @classmethod
-    def setUpClass(cls):
-        """Define test data and expected return values"""
-
-        cls.band_names = sndata.sdss.sako18.band_names
-        cls.lambda_effective = sndata.sdss.sako18.lambda_effective
-
-        # Define what bands should be rest frame blue / rest frame red at
-        # different redshift values
-        cls.test_conditions = {
-            0: {'blue': ['sdssu', 'sdssg'], 'red': ['sdssr', 'sdssi']},
-            .5: {'blue': ['sdssu'], 'red': ['sdssg', 'sdssr', 'sdssi']},
-            1: {'blue': [], 'red': ['sdssu', 'sdssg', 'sdssr', 'sdssi']}
-        }
-
-    def _test_bands_for_redshift(self, redshift, blue_data, red_data):
+    def _test_bands_for_redshift(self, redshift):
         """Assert whether correct tables were returned for a given redshift
 
         Args:
             redshift  (float): The redshift value
-            blue_data (Table): The table of returned blue data
-            red_data  (Table): The table of returned red data
         """
 
-        blue_bands = set(blue_data['bands'])
-        red_bands = set(red_data['bands'])
+        band_names = np.array(['u', 'g', 'r', 'i', 'z'])
+        lambda_eff = np.array([3550, 4680, 6160, 7480, 8930])
+        rest_frame_cutoff = 5500 * (1 + redshift)
+        expected_blue = band_names[lambda_eff < rest_frame_cutoff]
+        expected_red = band_names[lambda_eff > rest_frame_cutoff]
 
-        expected_blue = self.test_conditions[redshift]['blue']
-        expected_red = self.test_conditions[redshift]['red']
+        data = Table([band_names], names=['band'])
+        data.meta['redshift'] = redshift
+        blue_table, red_table = utils.split_data(
+            data, band_names, lambda_eff, redshift)
 
         err_msg = f'Wrongs bands for z={redshift}'
-        self.assertCountEqual(expected_blue, blue_bands, err_msg)
-        self.assertCountEqual(expected_red, red_bands, err_msg)
+        self.assertCountEqual(expected_blue, blue_table['band'], err_msg)
+        self.assertCountEqual(expected_red, red_table['band'], err_msg)
 
-    def test_maintaines_metadata(self):
-        """Test whether passed and returned tables have same metadata"""
-
-        test_data = self.test_data
-        test_data.meta['redshift'] = 0
-        test_data.meta['test_key'] = 12345
-        blue_data, red_data = utils.split_data(
-            test_data, self.band_names, self.lambda_effective)
-
-        self.assertEqual(
-            blue_data.meta['test_key'], test_data.meta['test_key'])
-
-        self.assertEqual(
-            red_data.meta['test_key'], test_data.meta['test_key'])
-
-    def test_redshift_0(self):
+    def test_redshift_dependency(self):
         """Test whether correct tables were returned for z=0"""
 
-        test_data = self.test_data
-        test_data.meta['redshift'] = 0
+        for z in (0, .12, .1):
+            self._test_bands_for_redshift(z)
+
+    def test_maintains_metadata(self):
+        """Test whether passed and returned tables have same metadata"""
+
+        test_data = Table([['u', 'g']], names=['band'])
+        test_data.meta['dummy_key'] = 12345
         blue_data, red_data = utils.split_data(
-            test_data, self.band_names, self.lambda_effective)
+            test_data, ['u', 'g'], [3550, 4680], 0)
 
-        self._test_bands_for_redshift(1, blue_data, red_data)
+        self.assertIn('dummy_key', blue_data.meta, 'Blue table missing metadata')
+        self.assertIn('dummy_key', red_data.meta, 'Red table missing metadata')
 
-    def test_redshift_point_5(self):
-        """Test whether correct tables were returned for z=.1"""
-
-        test_data = self.test_data
-        test_data.meta['redshift'] = .5
-        blue_data, red_data = utils.split_data(
-            test_data, self.band_names, self.lambda_effective)
-
-        self._test_bands_for_redshift(.5, blue_data, red_data)
-
-    def test_redshift_1(self):
-        """Test whether correct tables were returned for z=1"""
-
-        test_data = self.test_data
-        test_data.meta['redshift'] = 1
-        blue_data, red_data = utils.split_data(
-            test_data, self.band_names, self.lambda_effective)
-
-        self._test_bands_for_redshift(1, blue_data, red_data)
+    def test_missing_effective_wavlength(self):
+        test_data = Table([['u', 'g']], names=['band'])
+        args = test_data, ['u'], [3550], 0
+        self.assertRaises(ValueError, utils.split_data, *args)
 
 
 class TestFilterFactory(TestCase):
@@ -248,22 +208,23 @@ class TestFilterFactory(TestCase):
         returned_obj = utils.classification_filter_factory(dummy_arg)
         self.assertTrue(callable(returned_obj), 'Returned object not callable')
 
-    def test_filtering(self):
-        """Test the returned filter function correctly filters data table"""
+    def test_no_classification(self):
+        """Test handling of tables without a classification in the metadata"""
 
         no_classification_table = Table()
-        class1_table = Table()
-        class1_table.meta['classification'] = 'class1'
-
-        class2_table = Table()
-        class2_table.meta['classification'] = 'class2'
-
         filter_func = utils.classification_filter_factory(['class1'])
-
         self.assertTrue(
             filter_func(no_classification_table),
             "Did not return true for table with no classification")
 
+    def test_filtering(self):
+        """Test the returned filter function correctly filters data table"""
+
+        class1_table, class2_table = Table(), Table()
+        class1_table.meta['classification'] = 'class1'
+        class2_table.meta['classification'] = 'class2'
+
+        filter_func = utils.classification_filter_factory(['class1'])
         self.assertTrue(
             filter_func(class1_table),
             "Returned False for desired classification")

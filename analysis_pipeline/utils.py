@@ -94,7 +94,7 @@ def split_bands(bands, lambda_eff):
     return band_array[is_blue], band_array[~is_blue]
 
 
-def split_data(data_table, band_names, lambda_eff):
+def split_data(data_table, band_names, lambda_eff, z):
     """Split a data table into blue and red data (by rest frame)
 
     Split data by keeping filters that are red-ward or blue-ward of 5500 Ang.
@@ -103,11 +103,18 @@ def split_data(data_table, band_names, lambda_eff):
         data_table (Table): An SNCosmo input table with column 'band'
         band_names  (iter): List of all bands available in the survey
         lambda_eff  (iter): The effective wavelength of each band in band_names
+        z          (float): The redshift of the observed target
 
     Returns:
         A SNCosmo input table with only blue bands
         A SNCosmo input table with only red bands
     """
+
+    observed_bands = np.unique(data_table['band'])
+    band_has_lambda_eff = np.isin(observed_bands, band_names)
+    if not band_has_lambda_eff.all():
+        missing_bands = observed_bands[~band_has_lambda_eff]
+        raise ValueError(f'Missing effective wavelength for: {missing_bands}')
 
     # Type cast to allow numpy indexing
     band_names = np.array(band_names)
@@ -118,7 +125,6 @@ def split_data(data_table, band_names, lambda_eff):
         return lambda_eff[band_names == band]
 
     # Rest frame effective wavelengths for each observation
-    z = data_table.meta['redshift']
     observed_lambda = lambda_for_band(data_table['band'])
     rest_frame_lambda = observed_lambda / (1 + z)
 

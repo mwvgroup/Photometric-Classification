@@ -16,43 +16,40 @@ class TestMutation(TestCase):
 
     def _generic_test(self, func):
         # Use sncosmo example data for testing
-        test_data = sncosmo.load_example_data()
-        test_model = sncosmo.Model('salt2')
-        test_params = test_model.param_names
-        test_bounds = {
+        data = sncosmo.load_example_data()
+        model = sncosmo.Model('salt2')
+        params = model.param_names
+        bounds = {
             'z': (0.3, 0.7),
-            't0': (test_data.meta['t0'] - 1, test_data.meta['t0'] + 1),
-            'x0': (test_data.meta['x0'] - 1, test_data.meta['x0'] + 1),
-            'x1': (test_data.meta['x1'] - 1, test_data.meta['x1'] + 1),
-            'c': (test_data.meta['c'] - 1, test_data.meta['c'] + 1)}
+            't0': (data.meta['t0'] - 1, data.meta['t0'] + 1),
+            'x0': (data.meta['x0'] - 1, data.meta['x0'] + 1),
+            'x1': (data.meta['x1'] - 1, data.meta['x1'] + 1),
+            'c': (data.meta['c'] - 1, data.meta['c'] + 1)}
 
         # Preserve original input data
-        original_data = deepcopy(test_data)
-        original_model = deepcopy(test_model)
-        original_bounds = deepcopy(test_bounds)
-        original_params = deepcopy(test_params)
+        original_data = deepcopy(data)
+        original_model = deepcopy(model)
+        original_bounds = deepcopy(bounds)
+        original_params = deepcopy(params)
 
         # Check for argument mutation
-        func(test_data,
-             test_model,
-             vparam_names=test_model.param_names,
-             bounds=test_bounds)
+        func(data, model, vparam_names=model.param_names, bounds=bounds)
 
         self.assertTrue(
-            all(original_data == test_data),
+            all(original_data == data),
             '`data` argument was mutated')
 
         self.assertSequenceEqual(
-            original_params, test_params,
+            original_params, params,
             '`vparam_names` argument was mutated')
 
         self.assertEqual(
-            original_bounds, test_bounds,
+            original_bounds, bounds,
             '`bounds` argument was mutated')
 
         self.assertSequenceEqual(
             original_model.parameters.tolist(),
-            test_model.parameters.tolist(),
+            model.parameters.tolist(),
             '`model` argument was mutated')
 
     def test_simple_fit(self):

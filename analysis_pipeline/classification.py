@@ -279,7 +279,7 @@ def classify_targets(fits_table, out_path=None):
         # We expect fit for 3 band sets x 3 models = 6 fits total
         # Less than 6 means one of the fits failed and was dropped by the
         # `drop_na` call above
-        if len(fits_df.loc[obj_id]) < 6:
+        if len(fits_df.loc[obj_id]) < 4:
             continue
 
         salt2_blue_chisq = (fits_df.loc[obj_id, 'salt2', 'blue']['chisq'] /
