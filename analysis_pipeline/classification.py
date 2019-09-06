@@ -111,8 +111,8 @@ def fit_results_to_table_row(data, band_set, results, fitted_model):
     return new_row
 
 
-def run_fits(all_data, red_data, blue_data, vparams, fit_func,
-             kwargs_s2=None, kwargs_bg=None):
+def run_fits(all_data, blue_data, red_data, vparams, fit_func,
+             kwargs_s2=None, kwargs_bg=None, show_plots=False):
     """Run light curve fits on a given target using the normal and 91bg model
 
     Fits are run for all_data, red_data, and then blue_data using salt2 and
@@ -120,8 +120,8 @@ def run_fits(all_data, red_data, blue_data, vparams, fit_func,
 
     Args:
         all_data  (Table): Photometric data in all bands
-        red_data  (Table): Photometric data in just the 'blue' bands
         blue_data (Table): Photometric data in just the 'red' bands
+        red_data  (Table): Photometric data in just the 'blue' bands
         vparams    (iter): Iterable of param names to fit
         fit_func   (func): Function to use to run fits (eg. ``sncosmo.fit_lc``)
         kwargs_s2  (dict): Kwargs to pass ``fit_func`` when fitting salt2
@@ -160,11 +160,22 @@ def run_fits(all_data, red_data, blue_data, vparams, fit_func,
 
     # Run the remaining fits
     norm_all = (norm_result_all, norm_fit_all)
+    if show_plots: sncosmo.plot_lc(all_data, norm_all[1])
+
     norm_blue = fit_func(blue_data, salt2, vparams, **kwargs_s2)
+    if show_plots: sncosmo.plot_lc(blue_data, norm_blue[1])
+
     norm_red = fit_func(red_data, salt2, vparams, **kwargs_s2)
+    if show_plots: sncosmo.plot_lc(red_data, norm_red[1])
+
     bg_all = fit_func(all_data, sn91bg, vparams, **kwargs_bg)
+    if show_plots: sncosmo.plot_lc(all_data, bg_all[1])
+
     bg_blue = fit_func(blue_data, sn91bg, vparams, **kwargs_bg)
+    if show_plots: sncosmo.plot_lc(blue_data, bg_blue[1])
+
     bg_red = fit_func(red_data, sn91bg, vparams, **kwargs_bg)
+    if show_plots: sncosmo.plot_lc(red_data, bg_red[1])
 
     return norm_all, norm_blue, norm_red, bg_all, bg_blue, bg_red
 
@@ -200,14 +211,12 @@ def tabulate_fit_results(
     out_table.meta['out_path'] = str(out_path)
 
     for data in data_iter:
-        if data.meta['obj_id'] not in ('2004ey',):
-            continue
         blue_data, red_data = utils.split_data(data, band_names, lambda_eff)
 
         try:
             with utils.timeout(timeout_sec):
                 fit_results = run_fits(
-                    data, red_data, blue_data,
+                    data, blue_data, red_data,
                     vparams,
                     fit_func,
                     kwargs_s2,
@@ -259,15 +268,20 @@ def classify_targets(fits_table, out_path=None):
     Returns:
         An astropy table of classification coordinates
     """
-    i = ~np.array(np.any(fits_table.mask.to_pandas(), axis=1))
-    fits_table = fits_table[i]
 
     # Convert input table to a DataFrame so we can leverage multi-indexing
     fits_df = fits_table.to_pandas()
     fits_df.set_index(['obj_id', 'source', 'band_set'], inplace=True)
+    fits_df.dropna(inplace=True)
 
     out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
     for obj_id in fits_df.index.unique(level='obj_id'):
+
+        # We expect fit for 3 band sets x 3 models = 6 fits total
+        # Less than 6 means one of the fits failed and was dropped by the
+        # `drop_na` call above
+        if len(fits_df.loc[obj_id]) < 6:
+            continue
 
         norm_blue_chisq = (fits_df.loc[obj_id, 'salt2', 'blue']['chisq'] /
                            fits_df.loc[obj_id, 'salt2', 'blue']['ndof'])
@@ -280,7 +294,6 @@ def classify_targets(fits_table, out_path=None):
 
         bg_red_chisq = (fits_df.loc[obj_id, 'sn91bg', 'red']['chisq'] /
                         fits_df.loc[obj_id, 'sn91bg', 'red']['ndof'])
-
 
         x = norm_blue_chisq - bg_blue_chisq
         y = norm_red_chisq - bg_red_chisq
