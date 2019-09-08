@@ -13,73 +13,134 @@ from analysis_pipeline import models
 models.register_sources(force=True)
 
 
-class TestSourceFluxTemplate(TestCase):
+class TemplateLoading(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.coordinate_order = ['stretch', 'color', 'phase', 'wave']
+
+    def test_coordinates(self):
+        """Test the returned template coordinates have the correct values"""
+
+        coords, template = models.load_template()
+        self.assertEqual(len(coords), len(self.coordinate_order),
+                         'Wrong number of coordinate arrays')
+
+        # Define expected coordinates
+        stretch = np.array([0.65, 0.75, 0.85, 0.95, 1.05, 1.15, 1.25])
+        color = np.array([0.0, 0.25, 0.5, 0.75, 1])
+        phase = np.arange(-18, 101, 1)
+        wave = np.arange(1000, 12001, 10)
+        expected_coords = [stretch, color, phase, wave]
+
+        for i in range(len(coords)):
+            self.assertListEqual(
+                coords[i].tolist(), expected_coords[i].tolist(),
+                f'Unexpected {self.coordinate_order[i]} coordinates')
+
+    def test_template_dimensions_match_coords(self):
+        """Test the flux template dimensions match the number of coordinates"""
+
+        coords, template = models.load_template()
+        test_data = zip(self.coordinate_order, coords, template.shape)
+        for coord_name, coord_array, template_len in test_data:
+            self.assertEqual(
+                len(coord_array), template_len,
+                f'Shape mismatch for coordinate {coord_name}')
+
+    def test_phase_limiting(self):
+        """Test the default phase range extends over the full model"""
+
+        min_phase = -10
+        max_phase = 50
+
+        (_, _, phase, _), _ = models.load_template(min_phase, max_phase)
+        self.assertEqual(min_phase, min(phase))
+        self.assertEqual(max_phase, max(phase))
+
+    def test_default_phase(self):
+        """Test the default phase range extends over the full model"""
+
+        min_model_phase = -18
+        max_model_phase = 100
+
+        (_, _, phase, _), _ = models.load_template()
+        self.assertEqual(min_model_phase, min(phase))
+        self.assertEqual(max_model_phase, max(phase))
+
+
+class BaseSourceTestingClass(TestCase):
     """Test sources return flux values in agreement with their templates"""
 
-    def _test_source(self, source):
-        """Test return of model.flux agrees with the source template
+    @classmethod
+    def setUpClass(cls):
+        cls.source = sncosmo.get_source(cls.source_name, cls.source_version)
 
-        Args:
-            source (Source): The sncosmo source object to test
-        """
+    def _test_flux_matches_template(self):
+        """Test return of model.flux agrees with the source template"""
 
-        stretch = source._stretch
-        color = source._color
-        phase = source._phase
-        wave = source._wave
-        template = source._template
+        # Get template spaning the phase range of the model
+        (stretch, color, phase, wave), template = models.load_template(
+            self.source.minphase(), self.source.maxphase())
 
         for i, x1 in enumerate(stretch):
             for j, c in enumerate(color):
-                source.set(x1=x1, c=c)
-                model_flux = source.flux(phase, wave)
+                self.source.set(x1=x1, c=c)
+                model_flux = self.source.flux(phase, wave)
                 template_flux = template[i, j]
                 self.assertTrue(np.all(np.isclose(model_flux, template_flux)))
 
-    def test_salt2_phase(self):
-        """Test return of model.flux agrees with the source template"""
+    def _test_correct_version(self):
+        """Test the source was registered with the correct version name
 
-        source = sncosmo.get_source('sn91bg', 'salt2_phase')
-        self._test_source(source)
-
-    def test_color_interpolation(self):
-        """Test return of model.flux agrees with the source template"""
-        source = sncosmo.get_source('sn91bg', 'color_interpolation')
-        self._test_source(source)
-
-
-class TestVersionAgreement(TestCase):
-    """Test the various versions of the ported models agree with each other"""
-
-    def runTest(self):
-        """Compare modeled fluxes for each stretch, color, phase, and wavelength
-        in the flux templates.
+        This ensures that ``sncosmo.get_source`` returns the correct version.
         """
 
-        # Load models for different source versions
-        salt2_phase = sncosmo.Model(sncosmo.get_source('sn91bg', 'salt2_phase'))
-        color_interp = sncosmo.Model(sncosmo.get_source('sn91bg', 'color_interpolation'))
-
-        # Read in the coordinates of the flux template from file
-        (stretch, color, phase, wave), _ = color_interp.source.get_template()
-
-        for x1 in stretch:
-            for c in color:
-                salt2_phase.set(x1=x1, c=c)
-                color_interp.set(x1=x1, c=c)
-
-                salt2_phase_flux = salt2_phase.flux(phase, wave)
-                color_interp_phase_flux = color_interp.flux(phase, wave)
-                models_agree = np.all(salt2_phase_flux == color_interp_phase_flux)
-                self.assertTrue(models_agree, f'Models disagree for x1={x1}, c={c}')
+        self.assertEqual(self.source.version, self.source_version)
 
 
-# Todo: This might not be a necessary test.
-class TestInterpolation(TestCase):
-    """Test models are correctly interpolating from their flux templates"""
+class PhaseLimited(BaseSourceTestingClass):
+    source_name = 'sn91bg'
+    source_version = 'phase_limited'
 
-    def test_salt2_phase(self):
-        self.fail()
+    def test_flux_matches_template(self):
+        """Test return of model.flux agrees with the source template"""
 
-    def test_color_interpolation(self):
-        self.fail()
+        self._test_flux_matches_template()
+
+    def test_correct_version(self):
+        """Test the source was registered with the correct version name"""
+
+        self._test_correct_version()
+
+    def test_phase_limit(self):
+        """Test the model has the correct phase range
+
+        Phase range should match the salt2 model as closly as possible
+        """
+
+        salt2 = sncosmo.get_source('salt2', version='2.4')
+        (_, _, template_phase, _), _ = models.load_template()
+
+        # The template may not extend to the bounds of the salt2 model.
+        # In that case we use the edge of the template.
+        min_phase = max(salt2.minphase(), min(template_phase))
+        max_phase = min(salt2.maxphase(), max(template_phase))
+
+        self.assertEqual(min_phase, self.source.minphase())
+        self.assertEqual(max_phase, self.source.maxphase())
+
+
+class ColorInterpolation(BaseSourceTestingClass):
+    source_name = 'sn91bg'
+    source_version = 'color_interpolation'
+
+    def test_flux_matches_template(self):
+        """Test return of model.flux agrees with the source template"""
+
+        self._test_flux_matches_template()
+
+    def test_correct_version(self):
+        """Test the source was registered with the correct version name"""
+
+        self._test_correct_version()

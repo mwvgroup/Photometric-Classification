@@ -8,6 +8,6 @@ pandas
 pyyaml
 requests
 scipy
-sncosmo
+sncosmo==2.0.0
 sndata
 tqdm

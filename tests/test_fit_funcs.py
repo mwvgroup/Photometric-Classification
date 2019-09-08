@@ -14,7 +14,13 @@ from analysis_pipeline import fit_funcs
 class TestMutation(TestCase):
     """Test arguments are not mutated by fit functions"""
 
-    def _generic_test(self, func):
+    def _test_fit_function(self, func):
+        """Test a given fitting function does not mutate arguments
+
+        Args:
+            func (Callable): A sncosmo style fitting function
+        """
+
         # Use sncosmo example data for testing
         data = sncosmo.load_example_data()
         model = sncosmo.Model('salt2')
@@ -55,24 +61,24 @@ class TestMutation(TestCase):
     def test_simple_fit(self):
         """Test fit_funcs.simple_fit"""
 
-        self._generic_test(fit_funcs.simple_fit)
+        self._test_fit_function(fit_funcs.simple_fit)
 
     def test_nest_fit(self):
         """Test fit_funcs.nest_fit"""
 
-        self._generic_test(fit_funcs.nest_fit)
+        self._test_fit_function(fit_funcs.nest_fit)
 
     def test_mcmc_fit(self):
         """Test fit_funcs.mcmc_fit"""
 
-        self._generic_test(fit_funcs.mcmc_fit)
+        self._test_fit_function(fit_funcs.mcmc_fit)
 
     def test_nested_simple_fit(self):
         """Test fit_funcs.nested_simple_fit"""
 
-        self._generic_test(fit_funcs.nested_simple_fit)
+        self._test_fit_function(fit_funcs.nested_simple_fit)
 
     def test_nested_mcmc_fit(self):
         """Test fit_funcs.nested_mcmc_fit"""
 
-        self._generic_test(fit_funcs.nested_mcmc_fit)
+        self._test_fit_function(fit_funcs.nested_mcmc_fit)

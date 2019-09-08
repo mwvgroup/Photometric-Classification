@@ -139,7 +139,7 @@ class ColorInterpolation(sncosmo.Source):
 
         # Model spectra and initial guess for stretch, color, and amplitude
         coords, flux = load_template()
-        self._flux_values = flux[0]
+        self._template = flux[0]
         self._parameters = np.array([1., 1., 0.55])
 
         # 4-dimension grid points in the model
@@ -152,7 +152,7 @@ class ColorInterpolation(sncosmo.Source):
             self._model_flux[i] = RectBivariateSpline(
                 self._phase,
                 self._wave,
-                self._flux_values[i],
+                self._template[i],
                 kx=3, ky=3)
 
     @staticmethod

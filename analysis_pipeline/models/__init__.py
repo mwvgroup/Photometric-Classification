@@ -13,10 +13,10 @@ from ._sources import load_template
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
-def SN91bg(name=None, version='salt2_phase'):
+def SN91bg(name=None, version='phase_limited'):
     """Return a version a SN 1991bg-like model for SNCosmo
 
-    Versions include: ``salt2_phase``, ``color_interpolation``
+    Versions include: 'phase_limited', 'color_interpolation'
 
     Args:
          name   (None): A dummy argument for compatibility with SNCosmo
@@ -25,7 +25,7 @@ def SN91bg(name=None, version='salt2_phase'):
 
     from . import _sources
 
-    if version == 'salt2_phase':
+    if version == 'phase_limited':
         return _sources.PhaseLimited()
 
     if version == 'color_interpolation':
@@ -38,7 +38,7 @@ def SN91bg(name=None, version='salt2_phase'):
 def register_sources(force=False):
     """Register SN 1991bg-like models with SNCosmo
 
-    Versions include: ``salt2_phase``, ``color_interpolation``
+    Versions include: 'phase_limited', 'color_interpolation'
 
     Args:
         force (bool): Whether to overwrite an already registered source
@@ -50,7 +50,7 @@ def register_sources(force=False):
         data_class=sncosmo.Source,
         name='sn91bg',
         func=SN91bg,
-        version='salt2_phase',
+        version='phase_limited',
         force=force)
 
     sncosmo.register_loader(

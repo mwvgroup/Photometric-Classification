@@ -36,8 +36,7 @@ class timeout:
 
 
 def calc_model_chisq(data, model):
-    """
-    Calculate the chi-squared for a given data table and model
+    """Calculate the chi-squared for a given data table and model
 
     Args:
         data  (Table): An SNCosmo input table
@@ -60,7 +59,7 @@ def calc_model_chisq(data, model):
             if 'outside spectral range' not in str(err):
                 raise  # Something went wrong that we aren't expecting
 
-            # We expect a need to sometimes remove bands outside of model range
+            # sncosmo doesn't like bands that are outside of the model's range
             data = data[data['band'] != err.args[0].split()[1][1:-1]]
             if len(data) == 0:
                 raise RuntimeError('Ran out of data inside model range!')
@@ -94,10 +93,13 @@ def split_bands(bands, lambda_eff):
     return band_array[is_blue], band_array[~is_blue]
 
 
-def split_data(data_table, band_names, lambda_eff, z):
+def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
     """Split a data table into blue and red data (by rest frame)
 
-    Split data by keeping filters that are red-ward or blue-ward of 5500 Ang.
+    Wavelengths are expected to be in angstroms. Split data by keeping filters
+    that are red-ward or blue-ward of 5500 Ang. If the closest rest frame
+    filter for an observation is more than ``cutoff`` angstroms away, drop the
+    observation.
 
     Args:
         data_table (Table): An SNCosmo input table with column 'band'
@@ -110,6 +112,8 @@ def split_data(data_table, band_names, lambda_eff, z):
         A SNCosmo input table with only red bands
     """
 
+    # Check an effective wavelength was specified for each band in the
+    # data table. This avoids a cryptic error message later on.
     observed_bands = np.unique(data_table['band'])
     band_has_lambda_eff = np.isin(observed_bands, band_names)
     if not band_has_lambda_eff.all():
@@ -124,7 +128,7 @@ def split_data(data_table, band_names, lambda_eff, z):
     def lambda_for_band(band):
         return lambda_eff[band_names == band]
 
-    # Rest frame effective wavelengths for each observation
+    # Calculate rest frame effective wavelengths for each observation
     observed_lambda = lambda_for_band(data_table['band'])
     rest_frame_lambda = observed_lambda / (1 + z)
 
@@ -138,7 +142,7 @@ def split_data(data_table, band_names, lambda_eff, z):
 
     # Keep only the specified filters that are within 700 Angstroms of the
     # rest frame effective wavelength
-    is_ok_diff = delta_lambda[min_indx, np.arange(delta_lambda.shape[1])] < 700
+    is_ok_diff = delta_lambda[min_indx, np.arange(delta_lambda.shape[1])] < cutoff
 
     # Split into blue and red band passes
     out_list = []

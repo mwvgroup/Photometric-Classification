@@ -66,10 +66,10 @@ def create_empty_table(**kwargs):
 
 
 def fit_results_to_table_row(data, band_set, results, fitted_model):
-    """Format fit results so they can be appended to an astropy table
+    """Format sncosmo fit results so they can be appended to an astropy table
 
     See the ``create_empty_table`` function for information on the assumed
-    table format. Fitted model is assumed to have the parameters 'z', 't0',
+    table format. ``fitted_model`` is assumed to have the parameters 'z', 't0',
     'x0', 'x1', and 'c' (in order).
 
     Args:
