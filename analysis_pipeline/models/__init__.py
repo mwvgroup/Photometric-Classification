@@ -1,13 +1,15 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""This module provides a custom SNCosmo source for modeling 91bg-like
-supernovae. The model is based on the 91bg template from Nugent et al. 2002
-but is extended into the UV.
+"""This module provides a SNCosmo Source class for modeling 91bg-like
+supernovae. The model is based on the 91bg template from Nugent et al.
+2002 but is extended into the ultra-violet.
 
 For more information on the Nugent template see:
     https://iopscience.iop.org/article/10.1086/341707
 """
+
+from ._sources import load_template
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
@@ -17,18 +19,17 @@ def SN91bg(name=None, version='salt2_phase'):
     Versions include: ``salt2_phase``, ``color_interpolation``
 
     Args:
-         name (None): Dummy arg for compatibility with SNCosmo
+         name   (None): A dummy argument for compatibility with SNCosmo
          version (str): The version of the template to load
-             (Default: salt2_phase)
     """
 
-    from . import sources
+    from . import _sources
 
     if version == 'salt2_phase':
-        return sources.Salt2Phase()
+        return _sources.PhaseLimited()
 
     if version == 'color_interpolation':
-        return sources.ColorInterpolation()
+        return _sources.ColorInterpolation()
 
     else:
         raise ValueError(f"Unidentified version: '{version}'.")

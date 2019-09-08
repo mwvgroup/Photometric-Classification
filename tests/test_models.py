@@ -13,34 +13,39 @@ from analysis_pipeline import models
 models.register_sources(force=True)
 
 
-class TestFluxTemplate(TestCase):
-    """Test models return flux values in agreement with their templates"""
+class TestSourceFluxTemplate(TestCase):
+    """Test sources return flux values in agreement with their templates"""
 
-    def _test_model(self, model):
+    def _test_source(self, source):
         """Test return of model.flux agrees with the source template
 
         Args:
-            model (Model): The sncosmo model to test
+            source (Source): The sncosmo source object to test
         """
 
-        (stretch, color, phase, wave), template = model.source.get_template()
+        stretch = source._stretch
+        color = source._color
+        phase = source._phase
+        wave = source._wave
+        template = source._template
+
         for i, x1 in enumerate(stretch):
             for j, c in enumerate(color):
-                model.set(x1=x1, c=c)
-                model_flux = model.flux(phase, wave)
+                source.set(x1=x1, c=c)
+                model_flux = source.flux(phase, wave)
                 template_flux = template[i, j]
-                self.assertTrue(np.all(model_flux == template_flux))
+                self.assertTrue(np.all(np.isclose(model_flux, template_flux)))
 
     def test_salt2_phase(self):
         """Test return of model.flux agrees with the source template"""
 
         source = sncosmo.get_source('sn91bg', 'salt2_phase')
-        self._test_model(sncosmo.Model(source))
+        self._test_source(source)
 
     def test_color_interpolation(self):
         """Test return of model.flux agrees with the source template"""
         source = sncosmo.get_source('sn91bg', 'color_interpolation')
-        self._test_model(sncosmo.Model(source))
+        self._test_source(source)
 
 
 class TestVersionAgreement(TestCase):
