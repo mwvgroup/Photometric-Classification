@@ -21,43 +21,42 @@ class StretchColorSimulation(TestCase):
     def setUpClass(cls):
         """Simulate a set of parameters to test against"""
 
-        np.random.seed(12345)  # So we have consistent test results
+        np.random.seed(1)  # So we have consistent test results
         cls.sim_stretch, cls.sim_color = sncosmo_sims.bg_stretch_color(1e5)
 
-        # Since we are dealing with a sampling from a distribution, we define
-        # an absolute tolerance for determining if returned values match
-        # expected values
-        cls.tolerance = .0005
-
     def test_average_stretch(self):
-        """Test simulated params have correct average stretch"""
+        """Test simulated params have correct average stretch +/- .001"""
 
         average_stretch = np.average(self.sim_stretch)
         is_correct_stretch = np.isclose(
             sncosmo_sims.AVG_STRETCH,
             average_stretch,
-            rtol=0, atol=self.tolerance)
+            rtol=0, atol=.001)
 
         err_msg = f'Expected {sncosmo_sims.AVG_STRETCH}, found {average_stretch}'
         self.assertTrue(is_correct_stretch, err_msg)
 
     def test_average_color(self):
-        """Test simulated params have correct average color"""
+        """Test simulated params have correct average color +/- .001"""
 
         average_color = np.average(self.sim_color)
         is_correct_stretch = np.isclose(
             sncosmo_sims.AVG_COLOR,
             average_color,
-            rtol=0, atol=self.tolerance)
+            rtol=0, atol=.001)
 
         err_msg = f'Expected {sncosmo_sims.AVG_COLOR}, found {average_color}'
         self.assertTrue(is_correct_stretch, err_msg)
 
     def test_covariance(self):
-        """Test simulated params have correct covariance matrix"""
+        """Test simulated params have correct covariance matrix
+
+        Comparison requires an relative tolerance 10%
+        """
 
         covariance = np.cov([self.sim_stretch, self.sim_color])
-        is_correct_cov = np.isclose(sncosmo_sims.COVARIANCE, covariance).all()
+        is_correct_cov = np.isclose(
+            sncosmo_sims.COVARIANCE, covariance, atol=0, rtol=.1).all()
 
         err_msg = f'Expected {sncosmo_sims.COVARIANCE}, found {covariance}'
         self.assertTrue(is_correct_cov, err_msg)
@@ -71,7 +70,7 @@ class StretchColorSimulation(TestCase):
         min_color = .3
         max_color = .7
 
-        np.random.seed(12345)
+        np.random.seed(1)
         stretch, color = sncosmo_sims.bg_stretch_color(
             size=1000,
             min_stretch=min_stretch,
