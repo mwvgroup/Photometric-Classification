@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""Tests for the ``simulation`` module."""
+"""Tests for the ``models`` module."""
 
 from unittest import TestCase
 

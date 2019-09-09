@@ -1,5 +1,6 @@
 astropy
 bokeh
+emcee
 iminuit
 matplotlib
 nestle
@@ -11,3 +12,9 @@ scipy
 sncosmo==2.0.0
 sndata
 tqdm
+
+
+# For documentation building
+sphinx
+sphinx-argparse
+sphinx_rtd_theme

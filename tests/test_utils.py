@@ -11,7 +11,10 @@ import sncosmo
 from astropy.table import Column, Table
 from sndata.csp import dr3
 
-from analysis_pipeline import utils
+from phot_class import utils
+
+dr3.download_module_data()
+dr3.register_filters(force=True)
 
 
 class TestTimeout(TestCase):
@@ -102,7 +105,6 @@ class TestCalcModelChisq(TestCase):
 
         # Add values that are out of the model's wavelength range
         # Here we use the H band from CSP
-        dr3.register_filters(force=True)
         data.add_row([1, 'csp_dr3_H', 0, 0, 25, 'ab'])
 
         returned_chisq, returned_dof = utils.calc_model_chisq(data,
@@ -212,26 +214,26 @@ class TestFilterFactory(TestCase):
         self.assertTrue(callable(returned_obj), 'Returned object not callable')
 
     def test_no_classification(self):
-        """Test handling of tables without a classification in the metadata"""
+        """Test handling of tables without a fitting in the metadata"""
 
         no_classification_table = Table()
         filter_func = utils.classification_filter_factory(['class1'])
         self.assertTrue(
             filter_func(no_classification_table),
-            "Did not return true for table with no classification")
+            "Did not return true for table with no fitting")
 
     def test_filtering(self):
         """Test the returned filter function correctly filters data table"""
 
         class1_table, class2_table = Table(), Table()
-        class1_table.meta['classification'] = 'class1'
-        class2_table.meta['classification'] = 'class2'
+        class1_table.meta['fitting'] = 'class1'
+        class2_table.meta['fitting'] = 'class2'
 
         filter_func = utils.classification_filter_factory(['class1'])
         self.assertTrue(
             filter_func(class1_table),
-            "Returned False for desired classification")
+            "Returned False for desired fitting")
 
         self.assertFalse(
             filter_func(class2_table),
-            "Returned True for un-desired classification")
+            "Returned True for un-desired fitting")

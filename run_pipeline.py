@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""Command line interface for the analysis_pipeline package."""
+"""Command line interface for the ``phot_class`` Python package."""
 
 import argparse
 import warnings
@@ -9,9 +9,9 @@ from pathlib import Path
 
 import sndata
 
-from analysis_pipeline import classification
-from analysis_pipeline import fit_funcs
-from analysis_pipeline import models
+from phot_class import classification
+from phot_class import fit_funcs
+from phot_class import models
 
 warnings.simplefilter('ignore')
 models.register_sources()
@@ -37,7 +37,7 @@ def run(cli_args):
     data_module.download_module_data()
     data_module.register_filters()
 
-    # specify arguments for classification.tabulate_fit_results
+    # specify arguments for fitting.tabulate_fit_results
     data_iter = data_module.iter_data(format_sncosmo=True, verbose=True)
     band_names = data_module.band_names
     lambda_eff = data_module.lambda_effective
@@ -60,7 +60,7 @@ def run(cli_args):
 
 def create_cli_parser():
     parser = argparse.ArgumentParser(
-        description='Fit light-curves for a given survey.')
+        description='Command line interface for the ``phot_class`` Python package.')
 
     parser.add_argument(
         '-s', '--survey',

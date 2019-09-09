@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""This module reads SNANA simulation results data, transforms them into
+"""This module reads SNANA models results data, transforms them into
 an SNcosmo format data table with metadata: z, t0, x0, st, c;
 It also writes the resulting tables and metadata into csv files.
 """
@@ -15,11 +15,11 @@ from astropy.table import Table, vstack
 
 def read_lc(number, DATA_DIR):
     """
-    Read SNANA simulation results and transform to SNcosmo format
+    Read SNANA models results and transform to SNcosmo format
     
     Args:
         number     (int): cid of the SN
-        DATA_DIR   (str): path of SNANA simulation light curve data directory
+        DATA_DIR   (str): path of SNANA models light curve data directory
        
     return:
         A SNcosmo-format data table with metadata: z,t0,x0,st,c 
@@ -122,7 +122,7 @@ def write_lc(num, DATA_DIR, path):
     
     Args:
         num       (int): how many light curves to parse
-        DATA_DIR  (str): path of SNANA simulation light curve data directory
+        DATA_DIR  (str): path of SNANA models light curve data directory
         path      (str): path to write output files
 
     """

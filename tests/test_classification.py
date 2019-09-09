@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""Tests for the ``classification`` module."""
+"""Tests for the ``fitting`` module."""
 
 from unittest import TestCase
 
@@ -9,7 +9,7 @@ import numpy as np
 import sncosmo
 from astropy.table import Table
 
-from analysis_pipeline import classification
+from phot_class import classification
 
 
 # Todo: Test the following functions
@@ -18,7 +18,7 @@ from analysis_pipeline import classification
 
 
 class TestTableCreation(TestCase):
-    """Tests for classification.create_empty_table"""
+    """Tests for fitting.create_empty_table"""
 
     def test_is_empty(self):
         """Test the returned table is empty by default"""
@@ -54,7 +54,7 @@ class TestTableCreation(TestCase):
 
 
 class TestFitsToTableRow(TestCase):
-    """Tests for classification.fit_results_to_table_row"""
+    """Tests for fitting.fit_results_to_table_row"""
 
     def runTest(self):
         """Run fits for data with a known result and check the returned
@@ -103,7 +103,7 @@ class TestFitsToTableRow(TestCase):
 
 
 class TestClassificationCoords(TestCase):
-    """Tests for classification.classify_targets"""
+    """Tests for fitting.classify_targets"""
 
     expected_input_columns = ['obj_id', 'source', 'band_set', 'chisq', 'ndof']
 

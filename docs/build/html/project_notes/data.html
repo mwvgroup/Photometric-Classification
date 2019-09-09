@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data &mdash; SNe Constraints  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Installation" href="../api_reference/installation.html" />
+    <link rel="prev" title="Classification of Peculiar Supernovae" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> SNe Constraints
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Project Notes:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-sdss-ii-sn-survey-data-sako-et-al-2018">The SDSS-II SN Survey Data (Sako et al. 2018)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-des-year-3-cosmology-data-brout-sako-et-al-2019-and-brout-scolnic-et-al-2019">The DES Year 3 Cosmology Data (Brout, Sako et al. 2019 and Brout, Scolnic et al. 2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-csp-data">The CSP data</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/overview.html">phot_class (Package Overview)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/fit_funcs.html">phot_class.fit_funcs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/classification.html">phot_class.classification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/utils.html">phot_class.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/models.html">phot_class.models (Models Overview)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/models.snana_sims.html">phot_class.models.snana_sims</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference/models.sncosmo_sims.html">phot_class.models.sncosmo_sims</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SNe Constraints</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/project_notes/data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="data">
+<h1>Data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h1>
+<p>We primarily consider observations from the Sload Digital Sky Survey (SDSS)
+Supernova Survey, the Dark Energy Survey (DES) Year 3 Cosmology release, and
+he third data release of the Carnegie Supernova Project (CSP). We rely on the
+<code class="docutils literal notranslate"><span class="pre">sndata</span></code> python package for programatic access to each of these data sets.
+In principle, the pipeline we have built should extend trivially to any data
+set ported into <code class="docutils literal notranslate"><span class="pre">sndata</span></code>.</p>
+<p>Some notes are included below for each data set. These are included for use
+by developers, and should not be considered a formal reference.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more information on <code class="docutils literal notranslate"><span class="pre">sndata</span></code> see the
+<a class="reference external" href="https://sn-data.readthedocs.io/en/latest/">official documentation</a></p>
+</div>
+<div class="section" id="the-sdss-ii-sn-survey-data-sako-et-al-2018">
+<h2>The SDSS-II SN Survey Data (Sako et al. 2018)<a class="headerlink" href="#the-sdss-ii-sn-survey-data-sako-et-al-2018" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Observed during three-month campaigns in Fall 2005, 2006, and 2007 as part of an extension to the original SDSS.</p></li>
+<li><p>SN span redshift range 0.05 &lt; z &lt; 0.4 (Frieman et al. 2008).</p></li>
+<li><p>10,258 Included sources. 3225 Variable, 499 classified as SN Ia, and 86 as Core collapse.</p></li>
+<li><p>All objects were observed in two or more filters and visually inspected to ensure they were not artifacts.</p></li>
+</ul>
+<dl class="simple">
+<dt>SDSS Classification schemes:</dt><dd><ul class="simple">
+<li><p><strong>Unknown:</strong> The light curve was too sparse and/or noisy to make a useful classification.</p></li>
+<li><p><strong>Variable:</strong> The source was observed in more than one observing season (and hence is not a supernova).</p></li>
+<li><p><strong>AGN:</strong> An optical spectrum was identified as having features associated with an active galaxy.</p></li>
+<li><p><strong>SNII, SNIbc (either Ib or Ic), SNIa:</strong>
+- SN classifications without prefixes are based on a spectrum (including a few non-SDSS spectra)
+- A prefix “p” indicates the redshift is unknown and that the identification was made with photometric data only
+- A prefix “z” indicates that a redshift is measured from its candidate host galaxy and the classification uses that redshift as a prior.</p></li>
+<li><p><strong>SN Ia?:</strong> classification is based on a spectrum that suggests a SN Ia but is inconclusive.</p></li>
+</ul>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Some SN candidates have associated notes indicating candidates that may have peculiar features or candidates where the typing spectrum was obtained by other groups. Quoting the data release: “We did not search for these peculiar features in a systematic way, but we have noted the likely peculiar features that were found.”</p></li>
+</ul>
+<dl class="simple">
+<dt>The photometric flags are given in Table 4 and are as follows:</dt><dd><ul class="simple">
+<li><p><strong>1</strong> - SN typing based on spectra obtained by groups outside SDSS. The spectra used for typing are not included in the data release.</p></li>
+<li><p><strong>2</strong> - Peculiar type Ia SN possibly similar to sn91bg</p></li>
+<li><p><strong>3</strong> - Peculiar type Ia SN possibly similar to sn00cx</p></li>
+<li><p><strong>4</strong> - Peculiar type Ia SN possibly similar to sn02ci</p></li>
+<li><p><strong>5</strong> - Peculiar type Ia SN possibly similar to sn02cx</p></li>
+</ul>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Light curve fits are performed using PSNID, SALT2, and MLCS2k2
+- Only data with a photometric flag less than 1024 is used for the fit. A full overview of the flag values is provided in Holtzman et al. 2008.
+- Epochs earlier than 15 days or later than 45 days in the rest frame are ignored. 152 epochs in 105 SN were also ignored after being visually classified as outliers.
+- Published fits use the SALT2 model as implemented in SNANA version 10.31b and the spectral templates and color law reported in Guy et al. (2010, G10)
+- Fits are performed using the Doi et al. 2010 SDSS filter response curves. These are available online [here](<a class="reference external" href="http://www.ioa.s.u-tokyo.ac.jp/~doi/sdss/SDSSresponse.html">http://www.ioa.s.u-tokyo.ac.jp/~doi/sdss/SDSSresponse.html</a>).</p></li>
+<li><p>The magnitudes in the online data release use the SDSS inverse hyperbolic sine magnitude system. These differ from the standard AB system by an additive constant found in Table 7. The fluxes in the online files have already been converted to the AB system and are given in Micro-Janskies.</p></li>
+</ul>
+</div>
+<div class="section" id="the-des-year-3-cosmology-data-brout-sako-et-al-2019-and-brout-scolnic-et-al-2019">
+<h2>The DES Year 3 Cosmology Data (Brout, Sako et al. 2019 and Brout, Scolnic et al. 2019)<a class="headerlink" href="#the-des-year-3-cosmology-data-brout-sako-et-al-2019-and-brout-scolnic-et-al-2019" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Five year survey from 2013 - 2018 in <em>ugriz</em> within 0.017 &lt; z &lt; 0.849</p></li>
+<li><p>Average cadence of 7 days per filter</p></li>
+<li><p>These results contain the first three years of DES from Sept. 2013 to Feb. 2016
+- Discovered ∼12,000 transients
+- ∼3,000 identified as likely SNe Ia based on their light curves and out of 533 targeted for spectroscopic classification 251 were confirmed (D’Andrea et al. 2018).
+- These papers include a low-z SN sample from CfA3, CfA4, and CSP1. It’s not clear if the numbers above include the low-z sample.</p></li>
+<li><p>The 31.00 zero-point is for internal DES use. The ZP in the public data files is 27.5.</p></li>
+</ul>
+</div>
+<div class="section" id="the-csp-data">
+<h2>The CSP data<a class="headerlink" href="#the-csp-data" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>The official CSP web page for DR3 is [here](<a class="reference external" href="https://csp.obs.carnegiescience.edu/news-items/csp-dr3-photometry-released">https://csp.obs.carnegiescience.edu/news-items/csp-dr3-photometry-released</a>).</p></li>
+<li><p>Spectroscopic classification can be found in [Folatelli et al. (2013)](<a class="reference external" href="https://arxiv.org/abs/1305.6997">https://arxiv.org/abs/1305.6997</a>). Data tables are available from [Vizier](<a class="reference external" href="http://cdsarc.u-strasbg.fr/viz-bin/cat/J/ApJ/773/53">http://cdsarc.u-strasbg.fr/viz-bin/cat/J/ApJ/773/53</a>)</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../api_reference/installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="Classification of Peculiar Supernovae" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Daniel Perrefort
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
