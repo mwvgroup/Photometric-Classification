@@ -7,8 +7,8 @@ from unittest import TestCase
 
 import numpy as np
 
-from analysis_pipeline import models
-from analysis_pipeline.simulation import sncosmo_sims
+from phot_class import models
+from phot_class.models import sncosmo_sims
 
 models.register_sources(force=True)
 

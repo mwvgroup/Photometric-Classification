@@ -5,6 +5,7 @@
 
 import os
 from bisect import bisect
+from warnings import warn
 
 import numpy as np
 import sncosmo
@@ -154,6 +155,8 @@ class ColorInterpolation(sncosmo.Source):
         """
 
         super(ColorInterpolation, self).__init__()
+        warn('The `color_interpolation` version of the 91bg model does not'
+             ' pass our test suite and should be used with caution.')
 
         self.name = 'sn91bg'
         self.version = 'color_interpolation'

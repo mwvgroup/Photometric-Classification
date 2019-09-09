@@ -45,7 +45,8 @@ be assumed that flux is predicted the same way for different model versions.
 | sn91bg | 'color_interpolation'     | Full 1991bg model that interpolates in color space     |
 +--------+---------------------------+--------------------------------------------------------+
 
-
+.. warning:: The ``color_interpolation`` version of the 91bg model does not
+   pass our test suite and should be used with caution.
 
 Usage Example
 -------------

@@ -8,7 +8,7 @@ from unittest import TestCase
 
 import sncosmo
 
-from analysis_pipeline import fit_funcs
+from phot_class import fit_funcs
 
 
 class TestMutation(TestCase):
