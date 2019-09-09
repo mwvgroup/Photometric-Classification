@@ -153,6 +153,7 @@ class TestSplitBands(TestCase):
         self.assertCountEqual(expected_red_bands, red_bands)
 
 
+# Todo: Test cutoff wavelength
 class TestSplitData(TestCase):
     """Tests for utils.split_data"""
 
@@ -166,7 +167,7 @@ class TestSplitData(TestCase):
         band_names = np.array(['u', 'g', 'r', 'i', 'z'])
         lambda_eff = np.array([3550, 4680, 6160, 7480, 8930])
 
-        for z in (0, .18, .55, .78):
+        for redshift in (0, .18, .55, .78):
             rest_frame_cutoff = 5500 * (1 + redshift)
             expected_blue = band_names[lambda_eff < rest_frame_cutoff]
             expected_red = band_names[lambda_eff > rest_frame_cutoff]

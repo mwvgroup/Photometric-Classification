@@ -211,7 +211,8 @@ def tabulate_fit_results(
     out_table.meta['out_path'] = str(out_path)
 
     for data in data_iter:
-        blue_data, red_data = utils.split_data(data, band_names, lambda_eff)
+        blue_data, red_data = utils.split_data(
+            data, band_names, lambda_eff, data.meta['redshift'])
 
         try:
             with utils.timeout(timeout_sec):
