@@ -139,7 +139,11 @@ class PhaseLimited(sncosmo.Source):
             interp_flux[0],
             kx=3, ky=3)
 
-        return amplitude * spline(phase, wave)
+        # Since the spline will extrapolate we enforce bounds
+        flux = amplitude * spline(phase, wave)
+        flux[phase < min(self._phase)] = 0
+        flux[phase > max(self._phase)] = 0
+        return flux
 
 
 class ColorInterpolation(sncosmo.Source):

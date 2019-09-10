@@ -100,6 +100,19 @@ class BaseSourceTestingClass(TestCase):
 
         self.assertEqual(self.source.version, self.source_version)
 
+    def _test_zero_flux_outside_phase_range(self):
+        """Test the modeled flux outside the modeled phase range is zero"""
+
+        min_phase = self.source.minphase()
+        late_phase_flux = self.source.bandflux('sdssg', min_phase - 1)
+        late_phase_zero = np.isclose(0, late_phase_flux, atol=1e-6)
+        self.assertTrue(late_phase_zero, f'Non-zero flux {late_phase_flux}')
+
+        max_phase = self.source.minphase()
+        early_phase_flux = self.source.bandflux('sdssg', max_phase + 1)
+        early_phase_zero = np.isclose(0, early_phase_flux, atol=1e-6)
+        self.assertTrue(early_phase_zero, f'Non-zero flux {early_phase_flux}')
+
 
 class PhaseLimited(BaseSourceTestingClass):
     source_name = 'sn91bg'
@@ -115,10 +128,10 @@ class PhaseLimited(BaseSourceTestingClass):
 
         self._test_correct_version()
 
-    def test_phase_limit(self):
+    def test_phase_matches_salt2(self):
         """Test the model has the correct phase range
 
-        Phase range should match the salt2 model as closly as possible
+        Phase range should match the salt2 model as closely as possible
         """
 
         salt2 = sncosmo.get_source('salt2', version='2.4')
@@ -131,6 +144,11 @@ class PhaseLimited(BaseSourceTestingClass):
 
         self.assertEqual(min_phase, self.source.minphase())
         self.assertEqual(max_phase, self.source.maxphase())
+
+    def test_zero_flux_outside_phase_range(self):
+        """Test the modeled flux outside the modeled phase range is zero"""
+
+        self._test_zero_flux_outside_phase_range()
 
 
 @skipIf(running_in_travis, 'This model is known to fail. Ignore it in Travis')
@@ -147,3 +165,8 @@ class ColorInterpolation(BaseSourceTestingClass):
         """Test the source was registered with the correct version name"""
 
         self._test_correct_version()
+
+    def test_zero_flux_outside_phase_range(self):
+        """Test the modeled flux outside the modeled phase range is zero"""
+
+        self._test_zero_flux_outside_phase_range()

@@ -83,7 +83,7 @@ class TestCalcModelChisq(TestCase):
 
         model = self.model
         data = self.data
-        utils.calc_model_chisq(data, model)
+        utils.calc_model_chisq(data,, model
 
         self.assertTrue(all(data == self.data), 'Data table was mutated')
         self.assertListEqual(
@@ -97,7 +97,7 @@ class TestCalcModelChisq(TestCase):
         # The sncosmo docs assure us that the example data is within
         # range of the salt2 model
         data = self.data
-        expected_chisq, expected_dof = utils.calc_model_chisq(data, self.model)
+        expected_chisq, expected_dof = utils.calc_model_chisq(data,, self.model
 
         # Add values that are out of the model's phase range
         # Columns: 'time', 'band', 'flux', 'fluxerr', 'zp', 'zpsys'
@@ -107,8 +107,7 @@ class TestCalcModelChisq(TestCase):
         # Here we use the H band from CSP
         data.add_row([1, 'csp_dr3_H', 0, 0, 25, 'ab'])
 
-        returned_chisq, returned_dof = utils.calc_model_chisq(data,
-                                                              self.model)
+        returned_chisq, returned_dof = utils.calc_model_chisq(data,, self.model
 
         self.assertEqual(expected_chisq, returned_chisq,
                          'Incorrect chisq value')
@@ -131,10 +130,10 @@ class TestCalcModelChisq(TestCase):
 
         data = self.data
         data.sort('time')
-        initial_chisq = utils.calc_model_chisq(data, self.model)
+        initial_chisq = utils.calc_model_chisq(data,, self.model
 
         data[0], data[-1] = data[-1], data[0]
-        new_chisq = utils.calc_model_chisq(data, self.model)
+        new_chisq = utils.calc_model_chisq(data,, self.model
         self.assertEqual(initial_chisq, new_chisq)
 
 
