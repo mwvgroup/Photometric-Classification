@@ -85,18 +85,18 @@ def fit_results_to_table_row(data, band_set, results, fitted_model):
     new_row = [data.meta['obj_id'], band_set, fitted_model.source.name]
 
     # Determine number of points pre and post maximum
-    t0 = fitted_model.parameters[fitted_model.param_names.index('t0')]
+    t0 = results.parameters[results.param_names.index('t0')]
     pre_max = sum(data['time'] < t0)
     post_max = sum(data['time'] >= t0)
     new_row += [pre_max, post_max]
 
     # Add parameters and their errors to the new row
-    new_row += list(fitted_model.parameters)
-    new_row += [results.errors.get(p, 0) for p in fitted_model.param_names]
+    new_row += list(results.parameters)
+    new_row += [results.errors.get(p, 0) for p in results.param_names]
 
     # Calc chi-squared
     chisq, dof = utils.calc_model_chisq(data, fitted_model)
-    new_row += [chisq, dof]
+    new_row += [np.round(chisq, 2), dof]
 
     # Determine peak magnitude and decline rate
     b_max = fitted_model.source_peakabsmag('bessellb', 'ab')
@@ -104,7 +104,7 @@ def fit_results_to_table_row(data, band_set, results, fitted_model):
     b_0 = fitted_model.source.bandmag('bessellb', 'ab', peak_phase)
     b_15 = fitted_model.source.bandmag('bessellb', 'ab', peak_phase + 15)
     delta_15 = b_15 - b_0
-    new_row += [b_max, delta_15]
+    new_row += [np.round(b_max, 2), np.round(delta_15, 3)]
 
     # Add fitting exit status message. Not all fitting routines include
     # this attribute, se we assign a default value.

@@ -8,7 +8,7 @@ from unittest import TestCase
 import numpy as np
 import sncosmo
 from astropy.table import Table
-
+from sncosmo.utils import Result
 from phot_class import classification
 
 
@@ -56,25 +56,33 @@ class TestTableCreation(TestCase):
 class TestFitsToTableRow(TestCase):
     """Tests for fitting.fit_results_to_table_row"""
 
+    maxDiff = None
+
     def runTest(self):
         """Run fits for data with a known result and check the returned
         row is correct.
         """
 
-        # We use the example data from sncosmo since it is weel behaved
-        data = sncosmo.load_example_data()
+        # Define a mock "fitted model"
+        vparams = ['z', 't0', 'x0', 'x1', 'c']
+        model_params = {'x1': 0.5, 'c': 0.2, 'z': 0.5, 'x0': 1.0, 't0': 55100.0}
         model = sncosmo.Model('salt2')
-        model.update(data.meta)
+        model.update(model_params)
+
+        # Define mock "fit results"
+        result = Result({
+            'param_names': vparams,
+            'vparam_names': vparams,
+            'parameters': [model_params[p] for p in vparams],
+            'errors': {p: .1 * model_params[p] for p in vparams}
+        })
+
+        # Use demo data as mock data
+        data = sncosmo.load_example_data()
         data.meta['obj_id'] = 'dummy_id'
 
-        fit_results, fitted_model = sncosmo.fit_lc(
-            data=data,
-            model=model,
-            vparam_names=['z', 't0', 'x0', 'x1', 'c'],
-            bounds={'z': (0.3, 0.7)})
-
         row = classification.fit_results_to_table_row(
-            data, 'dummy_band_set', fit_results, fitted_model)
+            data, 'dummy_band_set', result, model)
 
         expected_row = [
             'dummy_id',  # obj_id
@@ -82,21 +90,21 @@ class TestFitsToTableRow(TestCase):
             'salt2',  # source
             15,  # pre_max
             25,  # post_max
-            0.5151630264692924,  # z
-            55100.47790767062,  # t0
-            1.1962747082468881e-05,  # x0
-            0.46680671979205146,  # x1
-            0.19392275740112822,  # c
-            0.01541479638843532,  # z_err
-            0.41542130042944336,  # t0_err
-            3.985676691503247e-07,  # x0_err
-            0.3464229401925888,  # x1_err
-            0.03751626613909028,  # c_err
-            3306.312724429728,  # chisq
+            model_params['z'],  # z
+            model_params['t0'],  # t0
+            model_params['x0'],  # x0
+            model_params['x1'],  # x1
+            model_params['c'],  # c
+            result.errors['z'],  # z_err
+            result.errors['t0'],  # t0_err
+            result.errors['x0'],  # x0_err
+            result.errors['x1'],  # x1_err
+            result.errors['c'],  # c_err
+            11844.58,  # chisq
             39,  # ndof
-            -19.565602274514767,  # b_max
-            0.9593115374152568,  # delta_15
-            'Minimization exited successfully.'  # message
+            -31.79,  # b_max
+            0.953,  # delta_15
+            'NONE'  # message
         ]
 
         self.assertCountEqual(expected_row, row)
