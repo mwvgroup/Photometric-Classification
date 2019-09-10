@@ -35,12 +35,13 @@ class timeout:
         signal.alarm(0)
 
 
-def calc_model_chisq(data, model):
+def calc_model_chisq(data, result, model):
     """Calculate the chi-squared for a given data table and model
 
     Args:
-        data  (Table): An SNCosmo input table
-        model (Model): An SNCosmo Model
+        data    (Table): An sncosmo input table
+        model   (Model): An sncosmo Model
+        result (Result): sncosmo fitting result
 
     Returns:
         The un-normalized chi-squared
@@ -70,7 +71,7 @@ def calc_model_chisq(data, model):
 
             residuals = model_flux - data['flux']
             chisq = np.sum((residuals / data['fluxerr']) ** 2)
-            return chisq, len(data)
+            return chisq, len(data) - len(result.vparam_names)
 
 
 def split_bands(bands, lambda_eff):
