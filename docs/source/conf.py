@@ -5,7 +5,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'SNe Constraints'
+project = 'SNe Classification'
 copyright = '2019, Daniel Perrefort'
 author = 'Daniel Perrefort, Yike Zhang'
 version, release = '', ''
