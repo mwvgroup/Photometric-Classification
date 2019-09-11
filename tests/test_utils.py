@@ -13,19 +13,18 @@ from sndata.csp import dr3
 
 from phot_class import utils
 
-dr3.download_module_data()
-dr3.register_filters(force=True)
-
 
 class TestTimeout(TestCase):
-    """Tests for utils.timeout"""
+    """Tests for the utils.timeout context manager"""
 
     @staticmethod
-    def sleep(seconds):
-        """Run time.sleep wrapped with utils.timeout for a given seconds
+    def run_timeout(seconds):
+        """Run time.run_timeout wrapped with utils.timeout for given seconds
+
+        Sleep for one second longer than the timeout context manager.
 
         Args:
-            seconds (int): Number of seconds to sleep for
+            seconds (int): Number of seconds to run_timeout for
         """
 
         with utils.timeout(seconds):
@@ -34,7 +33,7 @@ class TestTimeout(TestCase):
     def test_raises_timeout_error(self):
         """Test a TimeoutError is raised"""
 
-        self.assertRaises(TimeoutError, self.sleep, 2)
+        self.assertRaises(TimeoutError, self.run_timeout, 2)
 
     def test_context_duration(self):
         """Test an error is raised after the correct amount of time"""
@@ -42,31 +41,36 @@ class TestTimeout(TestCase):
         seconds = 1
         start = time.time()
         try:
-            self.sleep(seconds)
+            self.run_timeout(seconds)
 
         except TimeoutError:
             duration = np.round(time.time() - start, 1)
             self.assertEqual(seconds, duration)
 
     def test_error_for_float_arg(self):
-        """Test an error is raised by the context manager when passed a float
+        """Test an error is raised when the context manager is passed a float
 
         The signal manager expects integers, so if a TypeError is not raised
         for a float then make sure you know what is actually going on.
         """
 
-        self.assertRaises(TypeError, self.sleep, 2.1)
+        self.assertRaises(TypeError, self.run_timeout, 2.1)
 
 
 # Todo: Write a test that checks we get the correct value for chisq
 class TestCalcModelChisq(TestCase):
-    """Tests for analysis_pipeline.lc_fitting.calc_chisq"""
+    """Tests for utils.calc_model_chisq"""
+
+    # We define data, model, and result properties to ensure a consistent,
+    # un-mutated set of arguments when testing
 
     @property
     def model(self):
         """The model to use for testing"""
 
-        return sncosmo.Model('salt2')
+        model = sncosmo.Model('salt2')
+        model.set(z=self.data.meta['z'])
+        return model
 
     @property
     def data(self):
@@ -77,15 +81,29 @@ class TestCalcModelChisq(TestCase):
         data['band'] = Column(data['band'], dtype='U15')
         return data
 
+    @property
+    def results(self):
+        """The results of fitting self.data with self.model"""
+
+        vparams = ['t0', 'x0', 'x1', 'c']
+        results, fitted_model = sncosmo.fit_lc(self.data, self.model, vparams)
+        return results
+
     # noinspection PyTypeChecker
     def test_arg_mutation(self):
-        """Test that the input model and data table are not mutated"""
+        """Test the model, data table, and results object are not mutated"""
 
         model = self.model
         data = self.data
-        utils.calc_model_chisq(data,, model
+        results = self.results
 
-        self.assertTrue(all(data == self.data), 'Data table was mutated')
+        utils.calc_model_chisq(data, results, model)
+        self.assertTrue(all(self.data == data), 'Data table was mutated')
+        self.assertListEqual(
+            list(self.results.parameters),
+            list(results.parameters),
+            'Results were mutated')
+
         self.assertListEqual(
             list(self.model.parameters),
             list(model.parameters),
@@ -94,10 +112,9 @@ class TestCalcModelChisq(TestCase):
     def test_out_of_range_data(self):
         """Test that out of range phase values and bands are dropped"""
 
-        # The sncosmo docs assure us that the example data is within
-        # range of the salt2 model
         data = self.data
-        expected_chisq, expected_dof = utils.calc_model_chisq(data,, self.model
+        expected_chisq, expected_dof = utils.calc_model_chisq(
+            data, self.results, self.model)
 
         # Add values that are out of the model's phase range
         # Columns: 'time', 'band', 'flux', 'fluxerr', 'zp', 'zpsys'
@@ -105,14 +122,13 @@ class TestCalcModelChisq(TestCase):
 
         # Add values that are out of the model's wavelength range
         # Here we use the H band from CSP
+        dr3.download_module_data()
+        dr3.register_filters(force=True)
         data.add_row([1, 'csp_dr3_H', 0, 0, 25, 'ab'])
 
-        returned_chisq, returned_dof = utils.calc_model_chisq(data,, self.model
-
-        self.assertEqual(expected_chisq, returned_chisq,
-                         'Incorrect chisq value')
-        self.assertEqual(expected_dof, returned_dof,
-                         'Incorrect number of data points')
+        chisq, dof = utils.calc_model_chisq(data, self.results, self.model)
+        self.assertEqual(expected_chisq, chisq, 'Chisq values are not equal')
+        self.assertEqual(expected_dof, dof, 'Degrees of freedom are not equal')
 
     def test_unregistered_bands(self):
         """Test unregistered band names in the data table cause an error
@@ -122,18 +138,21 @@ class TestCalcModelChisq(TestCase):
         # Add values with an unregistered filter
         data = self.data
         data['band'][0] = 'made up band'
-        self.assertRaises(
-            Exception, utils.calc_model_chisq, data, self.model)
+
+        func = utils.calc_model_chisq
+        args = (data, self.model, self.results)
+        self.assertRaises(Exception, func, *args)
 
     def test_unsorted_times(self):
         """Test the function return is independent of the time order"""
 
         data = self.data
         data.sort('time')
-        initial_chisq = utils.calc_model_chisq(data,, self.model
+        initial_chisq = utils.calc_model_chisq(data, self.results, self.model)
+        print(initial_chisq)
 
         data[0], data[-1] = data[-1], data[0]
-        new_chisq = utils.calc_model_chisq(data,, self.model
+        new_chisq = utils.calc_model_chisq(data, self.results, self.model)
         self.assertEqual(initial_chisq, new_chisq)
 
 
@@ -150,8 +169,8 @@ class TestSplitBands(TestCase):
         expected_red_bands = band_names[1:]
 
         blue_bands, red_bands = utils.split_bands(band_names, lambda_eff)
-        self.assertCountEqual(expected_blue_bands, blue_bands)
-        self.assertCountEqual(expected_red_bands, red_bands)
+        self.assertListEqual(expected_blue_bands, blue_bands.tolist())
+        self.assertListEqual(expected_red_bands, red_bands.tolist())
 
 
 # Todo: Test cutoff wavelength
@@ -169,18 +188,19 @@ class TestSplitData(TestCase):
         lambda_eff = np.array([3550, 4680, 6160, 7480, 8930])
 
         for redshift in (0, .18, .55, .78):
+            # Determine expected blue and red wavelengths
             rest_frame_cutoff = 5500 * (1 + redshift)
-            expected_blue = band_names[lambda_eff < rest_frame_cutoff]
-            expected_red = band_names[lambda_eff > rest_frame_cutoff]
+            expected_blue = band_names[lambda_eff < rest_frame_cutoff].tolist()
+            expected_red = band_names[lambda_eff > rest_frame_cutoff].tolist()
 
+            # Split data according to the given redshift
             data = Table([band_names], names=['band'])
             blue_table, red_table = utils.split_data(
                 data, band_names, lambda_eff, redshift, cutoff=float('inf'))
 
             err_msg = f'Wrongs bands for z={redshift}'
-            print(list(blue_table['band']), list(red_table['band']))
-            self.assertCountEqual(expected_blue, blue_table['band'], err_msg)
-            self.assertCountEqual(expected_red, red_table['band'], err_msg)
+            self.assertListEqual(expected_blue, list(blue_table['band']), err_msg)
+            self.assertListEqual(expected_red, list(red_table['band']), err_msg)
 
     def test_maintains_metadata(self):
         """Test whether passed and returned tables have same metadata"""
@@ -188,32 +208,40 @@ class TestSplitData(TestCase):
         test_data = Table([['u', 'g']], names=['band'])
         test_data.meta['dummy_key'] = 12345
         blue_data, red_data = utils.split_data(
-            test_data, ['u', 'g'], [3550, 4680], 0)
+            data_table=test_data,
+            band_names=['u', 'g'],
+            lambda_eff=[3550, 4680],
+            z=0)
 
-        self.assertIn('dummy_key', blue_data.meta,
-                      'Blue table missing metadata')
+        self.assertIn('dummy_key', blue_data.meta, 'Blue table missing metadata')
         self.assertIn('dummy_key', red_data.meta, 'Red table missing metadata')
 
     def test_missing_effective_wavelength(self):
         """Test a value error is raised for missing effective wavelengths"""
 
         test_data = Table([['u', 'g']], names=['band'])
-        args = test_data, ['u'], [3550], 0
+        args = (test_data, ['u'], [3550], 0)
         self.assertRaises(ValueError, utils.split_data, *args)
 
 
 class TestFilterFactory(TestCase):
     """Tests for utils.classification_filter_factory"""
 
-    def test_is_factory_func(self):
+    def test_return_is_callable(self):
         """Test the returned value is a function"""
 
         dummy_arg = []
         returned_obj = utils.classification_filter_factory(dummy_arg)
         self.assertTrue(callable(returned_obj), 'Returned object not callable')
 
-    def test_no_classification(self):
-        """Test handling of tables without a fitting in the metadata"""
+    def test_no_metadata_classification(self):
+        """Test handling of tables without a classification in the metadata
+
+        The returned filter function relies on the "classification"
+        value from the meta data to filter out targets of different classes.
+        Test the returned filter function returns ``True`` for a table
+        without a classification in the meta data.
+        """
 
         no_classification_table = Table()
         filter_func = utils.classification_filter_factory(['class1'])
@@ -222,7 +250,7 @@ class TestFilterFactory(TestCase):
             "Did not return true for table with no fitting")
 
     def test_filtering(self):
-        """Test the returned filter function correctly filters data table"""
+        """Test the returned filter function correctly filters data tables"""
 
         class1_table, class2_table = Table(), Table()
         class1_table.meta['fitting'] = 'class1'

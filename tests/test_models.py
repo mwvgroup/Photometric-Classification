@@ -16,16 +16,16 @@ running_in_travis = 'TRAVIS' in environ
 
 
 class TemplateLoading(TestCase):
+    """Tests for models.load_template"""
 
-    @classmethod
-    def setUpClass(cls):
-        cls.coordinate_order = ['stretch', 'color', 'phase', 'wave']
+    coord_names = ('stretch', 'color', 'phase', 'wave')
 
-    def test_coordinates(self):
+    # noinspection PyTypeChecker
+    def test_correct_template_coordinates(self):
         """Test the returned template coordinates have the correct values"""
 
         coords, template = models.load_template()
-        self.assertEqual(len(coords), len(self.coordinate_order),
+        self.assertEqual(len(coords), len(self.coord_names),
                          'Wrong number of coordinate arrays')
 
         # Define expected coordinates
@@ -35,23 +35,23 @@ class TemplateLoading(TestCase):
         wave = np.arange(1000, 12001, 10)
         expected_coords = [stretch, color, phase, wave]
 
-        for i in range(len(coords)):
-            self.assertListEqual(
-                coords[i].tolist(), expected_coords[i].tolist(),
-                f'Unexpected {self.coordinate_order[i]} coordinates')
+        test_data = zip(self.coord_names, expected_coords, coords)
+        for coord_name, expected, returned in test_data:
+            self.assertListEqual(expected.tolist(), returned.tolist(),
+                                 f'Incorrect {coord_name} coordinates')
 
     def test_template_dimensions_match_coords(self):
         """Test the flux template dimensions match the number of coordinates"""
 
         coords, template = models.load_template()
-        test_data = zip(self.coordinate_order, coords, template.shape)
+        test_data = zip(self.coord_names, coords, template.shape)
         for coord_name, coord_array, template_len in test_data:
             self.assertEqual(
                 len(coord_array), template_len,
                 f'Shape mismatch for coordinate {coord_name}')
 
     def test_phase_limiting(self):
-        """Test the default phase range extends over the full model"""
+        """Test the returned phase matches the function arguments"""
 
         min_phase = -10
         max_phase = 50
@@ -72,7 +72,7 @@ class TemplateLoading(TestCase):
 
 
 class BaseSourceTestingClass(TestCase):
-    """Test sources return flux values in agreement with their templates"""
+    """Tests for an arbitrary sncosmo Source object"""
 
     @classmethod
     def setUpClass(cls):
@@ -81,7 +81,7 @@ class BaseSourceTestingClass(TestCase):
     def _test_flux_matches_template(self):
         """Test return of model.flux agrees with the source template"""
 
-        # Get template spaning the phase range of the model
+        # Get template spanning the phase range of the model
         (stretch, color, phase, wave), template = models.load_template(
             self.source.minphase(), self.source.maxphase())
 
@@ -101,7 +101,7 @@ class BaseSourceTestingClass(TestCase):
         self.assertEqual(self.source.version, self.source_version)
 
     def _test_zero_flux_outside_phase_range(self):
-        """Test the modeled flux outside the modeled phase range is zero"""
+        """Test the modeled flux outside the model's phase range is zero"""
 
         min_phase = self.source.minphase()
         late_phase_flux = self.source.bandflux('sdssg', min_phase - 1)
@@ -115,6 +115,8 @@ class BaseSourceTestingClass(TestCase):
 
 
 class PhaseLimited(BaseSourceTestingClass):
+    """Tests the 'phase_limited' version of the sn91bg model"""
+
     source_name = 'sn91bg'
     source_version = 'phase_limited'
 
@@ -153,6 +155,8 @@ class PhaseLimited(BaseSourceTestingClass):
 
 @skipIf(running_in_travis, 'This model is known to fail. Ignore it in Travis')
 class ColorInterpolation(BaseSourceTestingClass):
+    """Tests the 'color_interpolation' version of the sn91bg model"""
+
     source_name = 'sn91bg'
     source_version = 'color_interpolation'
 

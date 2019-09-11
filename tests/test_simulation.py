@@ -16,6 +16,7 @@ models.register_sources(force=True)
 # Todo: Test ``sim_bg_params`` and ``generate_lc``
 
 class StretchColorSimulation(TestCase):
+    """Tests for the models.sncosmo_sims.bg_stretch_color function"""
 
     @classmethod
     def setUpClass(cls):
@@ -51,7 +52,7 @@ class StretchColorSimulation(TestCase):
     def test_covariance(self):
         """Test simulated params have correct covariance matrix
 
-        Comparison requires an relative tolerance 10%
+        Comparison requires an relative tolerance of 10%
         """
 
         covariance = np.cov([self.sim_stretch, self.sim_color])
@@ -61,8 +62,8 @@ class StretchColorSimulation(TestCase):
         err_msg = f'Expected {sncosmo_sims.COVARIANCE}, found {covariance}'
         self.assertTrue(is_correct_cov, err_msg)
 
-    def test_sim_bounds(self):
-        """test simulated parameters are within specified boundaries"""
+    def test_simulation_bounds(self):
+        """Test simulated parameters are within specified boundaries"""
 
         # We use arbitrarily chosen boundaries
         min_stretch = 0.5

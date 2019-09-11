@@ -53,32 +53,36 @@ class TestTableCreation(TestCase):
         self.assertEqual(1, len(table), 'Table did not add specified rows')
 
 
-class TestFitsToTableRow(TestCase):
+class TestFitResultsToTableRow(TestCase):
     """Tests for fitting.fit_results_to_table_row"""
 
+    # Don't limit output messages on test failures
     maxDiff = None
 
     def runTest(self):
-        """Run fits for data with a known result and check the returned
-        row is correct.
+        """Run fits for data with a known result and check the results are
+        correctly formatted as a table row.
         """
 
         # Define a mock "fitted model"
-        vparams = ['z', 't0', 'x0', 'x1', 'c']
+        params = ['z', 't0', 'x0', 'x1', 'c']
         model_params = {'x1': 0.5, 'c': 0.2, 'z': 0.5, 'x0': 1.0, 't0': 55100.0}
         model = sncosmo.Model('salt2')
         model.update(model_params)
 
-        # Define mock "fit results"
+        # Define mock fit results for a model fit for the last four parameters
+        # I.e. for a fit where z is specified
         result = Result({
-            'param_names': vparams,
-            'vparam_names': vparams,
-            'parameters': [model_params[p] for p in vparams],
-            'errors': {p: .1 * model_params[p] for p in vparams}
+            'param_names': params,
+            'vparam_names': params[1:],
+            'parameters': [model_params[p] for p in params],
+            'errors': {p: .1 * model_params[p] for p in params}
         })
 
         # Use demo data as mock data
+        # We drop a known data point that is out of the phase range
         data = sncosmo.load_example_data()
+        data = data[data['time'] > model_params['t0'] + 49]
         data.meta['obj_id'] = 'dummy_id'
 
         row = classification.fit_results_to_table_row(
@@ -90,24 +94,24 @@ class TestFitsToTableRow(TestCase):
             'salt2',  # source
             15,  # pre_max
             25,  # post_max
-            model_params['z'],  # z
-            model_params['t0'],  # t0
-            model_params['x0'],  # x0
-            model_params['x1'],  # x1
-            model_params['c'],  # c
-            result.errors['z'],  # z_err
-            result.errors['t0'],  # t0_err
-            result.errors['x0'],  # x0_err
-            result.errors['x1'],  # x1_err
-            result.errors['c'],  # c_err
+            model_params['z'],
+            model_params['t0'],
+            model_params['x0'],
+            model_params['x1'],
+            model_params['c'],
+            result.errors['z'],
+            result.errors['t0'],
+            result.errors['x0'],
+            result.errors['x1'],
+            result.errors['c'],
             11844.58,  # chisq
-            39,  # ndof
+            len(data) - len(result.vparam_names),  # ndof
             -31.79,  # b_max
             0.953,  # delta_15
             'NONE'  # message
         ]
 
-        self.assertCountEqual(expected_row, row)
+        self.assertListEqual(expected_row, row)
 
 
 class TestClassificationCoords(TestCase):

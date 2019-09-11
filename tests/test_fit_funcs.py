@@ -6,12 +6,14 @@
 from copy import deepcopy
 from unittest import TestCase
 
+import numpy as np
 import sncosmo
 
 from phot_class import fit_funcs
 
 
 class BaseTestingClass(TestCase):
+    """Tests for an arbitrary sncosmo model"""
 
     def _test_mutation(self):
         """Test a pipeline fitting function does not mutate arguments"""
@@ -66,53 +68,62 @@ class BaseTestingClass(TestCase):
         bounds = {p: (.9 * v, 1.1 * v) for p, v in data.meta.items()}
         model = sncosmo.Model('salt2')
         model.update(data.meta)
-        print(bounds)
 
         results, _ = self.fit_func(data, model, vparams, bounds=bounds)
         sncosmo_results, _ = sncosmo_func(data, model, vparams, bounds=bounds)
 
-        self.assertLessEqual(sncosmo_results.parameters, results.parameters)
+        sncosmo_params = list(sncosmo_results.parameters)
+        returned_params = list(results.parameters)
+        agrees = np.isclose(sncosmo_params, returned_params, rtol=.1).all()
+        if not agrees:
+            self.assertListEqual(sncosmo_params, returned_params)
 
 
 class SimpleFit(BaseTestingClass):
-    """Test arguments are not mutated by fit functions"""
+    """Test fit_funcs.simple_fit"""
 
-    fit_func = fit_funcs.simple_fit
+    @staticmethod
+    def fit_func(*a, **kw):
+        return fit_funcs.simple_fit(*a, **kw)
 
     def test_mutation(self):
-        """Test fit_funcs.simple_fit"""
+        """Test arguments are not mutated"""
 
         self._test_mutation()
 
-    def test_agrees_with_sncsomo(self):
-        """Test fit_funcs.nest_fit"""
+    def test_agrees_with_sncosmo(self):
+        """Test fit results agree with the equivalent sncosmo function"""
 
         self._test_agrees_with_sncsomo(sncosmo.fit_lc)
 
 
 class NestFit(BaseTestingClass):
-    """Test arguments are not mutated by fit functions"""
+    """Test fit_funcs.nest_fit"""
 
-    fit_func = fit_funcs.nest_fit
+    @staticmethod
+    def fit_func(*a, **kw):
+        return fit_funcs.nest_fit(*a, **kw)
 
     def test_mutation(self):
-        """Test fit_funcs.simple_fit"""
+        """Test arguments are not mutated"""
 
         self._test_mutation()
 
-    def test_agrees_with_sncsomo(self):
-        """Test fit_funcs.nest_fit"""
+    def test_agrees_with_sncosmo(self):
+        """Test fit results agree with the equivalent sncosmo function"""
 
         self._test_agrees_with_sncsomo(sncosmo.nest_lc)
 
 
 class MCMCFit(BaseTestingClass):
-    """Test arguments are not mutated by fit functions"""
+    """Test fit_funcs.mcmc_fit"""
 
-    fit_func = fit_funcs.mcmc_fit
+    @staticmethod
+    def fit_func(*a, **kw):
+        return fit_funcs.mcmc_fit(*a, **kw)
 
     def test_mutation(self):
-        """Test fit_funcs.simple_fit"""
+        """Test arguments are not mutated"""
 
         self._test_mutation()
 
@@ -123,22 +134,26 @@ class MCMCFit(BaseTestingClass):
 
 
 class NestedSimpleFit(BaseTestingClass):
-    """Test arguments are not mutated by fit functions"""
+    """Test fit_funcs.nested_simple_fit"""
 
-    fit_func = fit_funcs.nested_simple_fit
+    @staticmethod
+    def fit_func(*a, **kw):
+        return fit_funcs.nested_simple_fit(*a, **kw)
 
     def test_mutation(self):
-        """Test fit_funcs.simple_fit"""
+        """Test arguments are not mutated"""
 
         self._test_mutation()
 
 
 class NestedMCMCFit(BaseTestingClass):
-    """Test arguments are not mutated by fit functions"""
+    """Test fit_funcs.nested_mcmc_fit"""
 
-    fit_func = fit_funcs.nested_mcmc_fit
+    @staticmethod
+    def fit_func(*a, **kw):
+        return fit_funcs.nested_mcmc_fit(*a, **kw)
 
     def test_mutation(self):
-        """Test fit_funcs.simple_fit"""
+        """Test arguments are not mutated"""
 
         self._test_mutation()
