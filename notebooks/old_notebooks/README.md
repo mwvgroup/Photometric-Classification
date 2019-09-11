@@ -1,0 +1,1 @@
+This directory contains note books left over from an older version of our analysis pipeline. They have not been ported to the new pipeline yet and so are stashed here temporarily. Since we never got the old pipeline working, porting these notebooks is not necessarily trivial.
