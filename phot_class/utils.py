@@ -36,6 +36,7 @@ class timeout:
         signal.alarm(0)
 
 
+# Todo: This signature is confusing. Do we use the model or result parameters?
 def calc_model_chisq(data, result, model):
     """Calculate the chi-squared for a given data table and model
 
@@ -58,7 +59,7 @@ def calc_model_chisq(data, result, model):
         (data['time'] <= model.maxtime()) &
         (lambda_effective >= model.minwave()) &
         (lambda_effective <= model.maxwave())
-    ]
+        ]
 
     if len(data) == 0:
         raise ValueError('No data within model range')
