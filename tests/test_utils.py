@@ -142,13 +142,13 @@ class TestCalcModelChisq(TestCase):
         args = (data, self.model, self.results)
         self.assertRaises(Exception, func, *args)
 
-    def test_unsorted_times(self):
-        """Test an error is not raised when time values are unsorted"""
+    def test_empty_table(self):
+        """Test an error is raised the data table is empty"""
 
-        data = self.data
-        data.sort('time')
-        data[0], data[-1] = data[-1], data[0]
-        utils.calc_model_chisq(data, self.results, self.model)
+        col_names = self.data.colnames
+        empty_table = Table(names=col_names)
+        args = empty_table, self.results, self.model
+        self.assertRaises(ValueError, utils.calc_model_chisq, *args)
 
     def test_correct_chisq(self):
         """Test the correct chisq and dof are returned for simulated data"""
@@ -243,8 +243,7 @@ class TestSplitData(TestCase):
             lambda_eff=[3550, 4680],
             z=0)
 
-        self.assertIn('dummy_key', blue_data.meta,
-                      'Blue table missing metadata')
+        self.assertIn('dummy_key', blue_data.meta, 'Blue table missing metadata')
         self.assertIn('dummy_key', red_data.meta, 'Red table missing metadata')
 
     def test_missing_effective_wavelength(self):
