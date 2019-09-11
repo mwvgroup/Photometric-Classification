@@ -9,6 +9,7 @@ import numpy as np
 import sncosmo
 from astropy.table import Table
 from sncosmo.utils import Result
+
 from phot_class import classification
 
 
@@ -64,25 +65,21 @@ class TestFitResultsToTableRow(TestCase):
         correctly formatted as a table row.
         """
 
-        # Define a mock "fitted model"
+        data = sncosmo.load_example_data()
         params = ['z', 't0', 'x0', 'x1', 'c']
-        model_params = {'x1': 0.5, 'c': 0.2, 'z': 0.5, 'x0': 1.0, 't0': 55100.0}
-        model = sncosmo.Model('salt2')
-        model.update(model_params)
+        param_values = [data.meta[p] for p in params]
 
         # Define mock fit results for a model fit for the last four parameters
         # I.e. for a fit where z is specified
         result = Result({
             'param_names': params,
             'vparam_names': params[1:],
-            'parameters': [model_params[p] for p in params],
-            'errors': {p: .1 * model_params[p] for p in params}
+            'parameters': param_values,
+            'errors': {p: .1 * v for p, v in data.meta.items()}
         })
 
-        # Use demo data as mock data
-        # We drop a known data point that is out of the phase range
-        data = sncosmo.load_example_data()
-        data = data[data['time'] > model_params['t0'] + 49]
+        model = sncosmo.Model('salt2')
+        model.update(data.meta)
         data.meta['obj_id'] = 'dummy_id'
 
         row = classification.fit_results_to_table_row(
@@ -94,19 +91,19 @@ class TestFitResultsToTableRow(TestCase):
             'salt2',  # source
             15,  # pre_max
             25,  # post_max
-            model_params['z'],
-            model_params['t0'],
-            model_params['x0'],
-            model_params['x1'],
-            model_params['c'],
+            result.parameters[0],
+            result.parameters[1],
+            result.parameters[2],
+            result.parameters[3],
+            result.parameters[4],
             result.errors['z'],
             result.errors['t0'],
             result.errors['x0'],
             result.errors['x1'],
             result.errors['c'],
-            11844.58,  # chisq
+            36.44,  # chisq
             len(data) - len(result.vparam_names),  # ndof
-            -31.79,  # b_max
+            -19.5,  # b_max
             0.953,  # delta_15
             'NONE'  # message
         ]

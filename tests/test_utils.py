@@ -57,7 +57,6 @@ class TestTimeout(TestCase):
         self.assertRaises(TypeError, self.run_timeout, 2.1)
 
 
-# Todo: Write a test that checks we get the correct value for chisq
 class TestCalcModelChisq(TestCase):
     """Tests for utils.calc_model_chisq"""
 
@@ -69,7 +68,7 @@ class TestCalcModelChisq(TestCase):
         """The model to use for testing"""
 
         model = sncosmo.Model('salt2')
-        model.set(z=self.data.meta['z'])
+        model.update(self.data.meta)
         return model
 
     @property
@@ -144,23 +143,52 @@ class TestCalcModelChisq(TestCase):
         self.assertRaises(Exception, func, *args)
 
     def test_unsorted_times(self):
-        """Test the function return is independent of the time order"""
+        """Test an error is not raised when time values are unsorted"""
 
         data = self.data
         data.sort('time')
-        initial_chisq = utils.calc_model_chisq(data, self.results, self.model)
-        print(initial_chisq)
-
         data[0], data[-1] = data[-1], data[0]
-        new_chisq = utils.calc_model_chisq(data, self.results, self.model)
-        self.assertEqual(initial_chisq, new_chisq)
+        utils.calc_model_chisq(data, self.results, self.model)
+
+    def test_correct_chisq(self):
+        """Test the correct chisq and dof are returned for simulated data"""
+
+        # Define necessary information to simulate a table of flux data
+        model = self.model
+        t0 = model.parameters[1]
+        zp_system = 'ab'
+        zero_point = 25
+        band_name = 'sdssg'
+        flux_offset = 100  # Difference between "observed" and model flux
+        flux_err_coeff = .1  # flux error / flux
+
+        # Create table of simulated flux
+        phase = np.arange(-10, 30) + t0
+        model_flux = model.bandflux(band_name, phase, zero_point, zp_system)
+        flux = model_flux + flux_offset
+        flux_err = flux * flux_err_coeff
+        band = np.full(len(phase), band_name)
+        zpsys = np.full(len(phase), zp_system)
+        zp = np.full(len(phase), zero_point)
+
+        data = Table(
+            [phase, band, flux, flux_err, zp, zpsys],
+            names=['time', 'band', 'flux', 'fluxerr', 'zp', 'zpsys']
+        )
+
+        result = sncosmo.utils.Result(
+            {'vparam_names': ['t0', 'x0', 'x1', 'c']})
+
+        expected_chisq = np.sum(((flux - model_flux) / flux_err) ** 2)
+        chisq, dof = utils.calc_model_chisq(data, result, model)
+        self.assertEqual(expected_chisq, chisq)
 
 
 class TestSplitBands(TestCase):
     """Tests for utils.split_bands"""
 
     def runTest(self):
-        """Test dummy bands are correctly seperated into blue and red"""
+        """Test dummy bands are correctly separated into blue and red"""
 
         # Define dummy bands and their effective wavelengths
         band_names = ['blue1', 'red1', 'red2']
@@ -199,8 +227,10 @@ class TestSplitData(TestCase):
                 data, band_names, lambda_eff, redshift, cutoff=float('inf'))
 
             err_msg = f'Wrongs bands for z={redshift}'
-            self.assertListEqual(expected_blue, list(blue_table['band']), err_msg)
-            self.assertListEqual(expected_red, list(red_table['band']), err_msg)
+            self.assertListEqual(expected_blue, list(blue_table['band']),
+                                 err_msg)
+            self.assertListEqual(expected_red, list(red_table['band']),
+                                 err_msg)
 
     def test_maintains_metadata(self):
         """Test whether passed and returned tables have same metadata"""
@@ -213,7 +243,8 @@ class TestSplitData(TestCase):
             lambda_eff=[3550, 4680],
             z=0)
 
-        self.assertIn('dummy_key', blue_data.meta, 'Blue table missing metadata')
+        self.assertIn('dummy_key', blue_data.meta,
+                      'Blue table missing metadata')
         self.assertIn('dummy_key', red_data.meta, 'Red table missing metadata')
 
     def test_missing_effective_wavelength(self):

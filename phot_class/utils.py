@@ -7,6 +7,7 @@ import signal
 from copy import deepcopy
 
 import numpy as np
+import sncosmo
 from astropy.table import Table
 
 
@@ -49,29 +50,20 @@ def calc_model_chisq(data, result, model):
     """
 
     data = deepcopy(data)
-    data.sort('time')  # To keep sncosmo happy
 
-    while True:
-        try:
-            # Model flux and keep only non-zero values
-            model_flux = model.bandflux(data['band'], data['time'])
+    # Drop any data that is not withing the model's range
+    lambda_effective = [sncosmo.get_bandpass(b).wave_eff for b in data['band']]
+    data = data[
+        (data['time'] >= model.mintime()) &
+        (data['time'] <= model.maxtime()) &
+        (lambda_effective >= model.minwave()) &
+        (lambda_effective <= model.maxwave())
+    ]
 
-        except ValueError as err:
-            if 'outside spectral range' not in str(err):
-                raise  # Something went wrong that we aren't expecting
+    if len(data) == 0:
+        raise ValueError('No data within model range')
 
-            # sncosmo doesn't like bands that are outside of the model's range
-            data = data[data['band'] != err.args[0].split()[1][1:-1]]
-            if len(data) == 0:
-                raise RuntimeError('Ran out of data inside model range!')
-
-        else:
-            data = data[model_flux > 0]
-            model_flux = model_flux[model_flux > 0]
-
-            residuals = model_flux - data['flux']
-            chisq = np.sum((residuals / data['fluxerr']) ** 2)
-            return chisq, len(data) - len(result.vparam_names)
+    return sncosmo.chisq(data, model), len(data) - len(result.vparam_names)
 
 
 def split_bands(bands, lambda_eff):
@@ -143,7 +135,8 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
 
     # Keep only the specified filters that are within 700 Angstroms of the
     # rest frame effective wavelength
-    is_ok_diff = delta_lambda[min_indx, np.arange(delta_lambda.shape[1])] < cutoff
+    is_ok_diff = delta_lambda[
+                     min_indx, np.arange(delta_lambda.shape[1])] < cutoff
 
     # Split into blue and red band passes
     out_list = []
