@@ -1,7 +1,7 @@
 Installation
 ============
 
-This project uses the ``classification_pipeline`` package which is a
+This project uses the ``phot_class`` package which is a
 proprietary analysis pipeline that is **not** available via a package
 manager. Source code can be downloaded to your local machine from `GitHub`_
 or by using ``git``:
@@ -10,7 +10,7 @@ or by using ``git``:
 
    git clone https://github.com/mwvgroup/sdss-classification/
 
-Dependencies for the ``classification_pipeline`` package in addition to the
+Dependencies for the ``phot_class`` package in addition to the
 package itself can then be installed by running the following from within the
 project repository:
 

@@ -49,20 +49,20 @@ We provide summaries for key files in the project repository::
 
    project parent
    ├── README.md
-   ├── config_files
-   ├── docs
+   ├── config_files/
+   ├── docs/
    │   ├── Makefile
-   │   ├── build
-   │   └── source
+   │   ├── build/
+   │   └── source/
    │
-   ├── notebooks
-   ├── phot_class
+   ├── notebooks/
+   ├── phot_class/
    ├── requirements.txt
-   ├── results
+   ├── results/
    ├── run_pipeline.py
    ├── run_pipeline.sh
    ├── setup.py
-   └── tests
+   └── tests/
 
 
 +----------------------+------------------------------------------------------------------------------+
@@ -70,13 +70,13 @@ We provide summaries for key files in the project repository::
 +======================+==============================================================================+
 | *README.md*          | Github Landing document pointing readers to the online documentation.        |
 +----------------------+------------------------------------------------------------------------------+
-| *config_files*       | Files specifying fitting arguments anf priors for different models/surveys.  |
+| *config_files/*      | Files specifying fitting arguments anf priors for different models/surveys.  |
 +----------------------+------------------------------------------------------------------------------+
 | *docs/*              | Project documentation.                                                       |
 +----------------------+------------------------------------------------------------------------------+
 | *docs/Makefile*      | Make file for generating automatic documentation on Linux machines.          |
 +----------------------+------------------------------------------------------------------------------+
-| *docs/build*         | The built html documentation.                                                |
+| *docs/build/*        | The built html documentation.                                                |
 +----------------------+------------------------------------------------------------------------------+
 | *docs/source/*       | The source code for the documentation in reStructuredText format.            |
 +----------------------+------------------------------------------------------------------------------+
@@ -105,6 +105,8 @@ We provide summaries for key files in the project repository::
    :maxdepth: 1
 
    Overview<self>
+   installation
+   quick_start
 
 .. toctree::
    :hidden:
@@ -119,8 +121,6 @@ We provide summaries for key files in the project repository::
    :maxdepth: 1
    :caption: API Reference:
 
-   api_reference/installation
-   api_reference/cli
    api_reference/overview
    api_reference/fit_funcs
    api_reference/classification
