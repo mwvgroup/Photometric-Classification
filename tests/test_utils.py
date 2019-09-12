@@ -108,7 +108,7 @@ class TestCalcModelChisq(TestCase):
             list(model.parameters),
             'Model parameters were mutated')
 
-    def test_out_of_range_data(self):
+    def test_out_of_range_phase(self):
         """Test that out of range phase values and bands are dropped"""
 
         data = self.data
@@ -116,8 +116,27 @@ class TestCalcModelChisq(TestCase):
             data, self.results, self.model)
 
         # Add values that are out of the model's phase range
-        # Columns: 'time', 'band', 'flux', 'fluxerr', 'zp', 'zpsys'
-        data.add_row([100000000, 'sdssu', 0, 0, 25, 'ab'])
+        # Columns: 'flux', 'fluxerr', 'zp', and 'zpsys' set as dummy values
+        high_phase = self.model.mintime() - 1
+        low_phase = self.model.maxtime() + 1
+        data.add_row([high_phase, 'sdssu', 0, 0, 25, 'ab'])
+        data.add_row([low_phase, 'sdssu', 0, 0, 25, 'ab'])
+
+        chisq, dof = utils.calc_model_chisq(data, self.results, self.model)
+        self.assertEqual(expected_chisq, chisq, 'Chisq values are not equal')
+        self.assertEqual(expected_dof, dof, 'Degrees of freedom are not equal')
+
+    def test_out_of_range_wave(self):
+        """Test that out of range phase values and bands are dropped"""
+
+        self.fail()
+        # Todo:
+        #   Make this more robust by putting only one filter
+        #   wavelength out of range. Do this by defining a custom bandpass
+
+        data = self.data
+        expected_chisq, expected_dof = utils.calc_model_chisq(
+            data, self.results, self.model)
 
         # Add values that are out of the model's wavelength range
         # Here we use the H band from CSP
@@ -243,7 +262,8 @@ class TestSplitData(TestCase):
             lambda_eff=[3550, 4680],
             z=0)
 
-        self.assertIn('dummy_key', blue_data.meta, 'Blue table missing metadata')
+        self.assertIn('dummy_key', blue_data.meta,
+                      'Blue table missing metadata')
         self.assertIn('dummy_key', red_data.meta, 'Red table missing metadata')
 
     def test_missing_effective_wavelength(self):
@@ -301,6 +321,8 @@ class ParseConfigDict(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Define dummy config data to test parsing against"""
+
         cls.test_data = {
             'kwargs': {
                 'global': {
@@ -317,15 +339,39 @@ class ParseConfigDict(TestCase):
             },
 
             'priors': {
-                'global': {
-                    'z': .5
-                },
 
                 'obj_id1': {
-                    't0': 53239.1,
-                }
+                    't0': 53239.1, 'z': .7
+                },
+
             }
         }
 
-    def runTest(self):
+        cls.obj_id1 = (
+            {'t0': 53239.1, 'z': 0.7},
+            {'bounds': {'x0': [0.1, 0.2], 'x1': [0.5, 1.0]}}
+        )
+
+        cls.obj_id2 = (
+            {},
+            {'bounds': {'x0': [.1, .2]}}
+        )
+
+    def test_correct_data_for_id(self):
+        """Test correct config entries are returned for an obj_id"""
+
         self.fail()
+
+    def test_global_resolution_order(self):
+        """Test target specific args supersede global args"""
+
+        self.fail()
+
+    def test_default_returns(self):
+        """Test an empty dict is returned when no data is available
+        for an obj_id
+        """
+
+        priors, kwargs = utils.parse_config_dict('gummy_id', {})
+        self.assertEqual({}, priors)
+        self.assertEqual({}, kwargs)

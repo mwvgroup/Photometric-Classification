@@ -48,11 +48,13 @@ def parse_config_dict(obj_id, config_dict):
         A dictionary of kwargs to use when fitting
     """
 
-    prior = config_dict.get('priors', {}).get(obj_id, {})
-    prior.update(config_dict.get('priors', {}).get('global', {}))
+    priors_data = config_dict.get('priors', {})
+    prior = priors_data.get('global', {})
+    prior.update(priors_data.get(obj_id, {}))
 
-    kwargs = config_dict.get('kwargs', {}).get(obj_id, {})
-    kwargs.update(config_dict.get('kwargs', {}).get('global', {}))
+    kwargs_data = config_dict.get('kwargs', {})
+    kwargs = kwargs_data.get('global', {})
+    kwargs.update(kwargs_data.get(obj_id, {}))
 
     return prior, kwargs
 
@@ -72,14 +74,18 @@ def calc_model_chisq(data, result, model):
     """
 
     data = deepcopy(data)
+    data.meta['model'] = model.source.name
+    data.meta['params'] = model.parameters
+    data.write('test_data.ecsv')
 
     # Drop any data that is not withing the model's range
-    lambda_effective = [sncosmo.get_bandpass(b).wave_eff for b in data['band']]
+    min_band_wave = [sncosmo.get_bandpass(b).minwave() for b in data['band']]
+    max_band_wave = [sncosmo.get_bandpass(b).maxwave() for b in data['band']]
     data = data[
         (data['time'] >= model.mintime()) &
         (data['time'] <= model.maxtime()) &
-        (lambda_effective >= model.minwave()) &
-        (lambda_effective <= model.maxwave())
+        (min_band_wave >= model.minwave()) &
+        (max_band_wave <= model.maxwave())
         ]
 
     if len(data) == 0:

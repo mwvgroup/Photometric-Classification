@@ -176,10 +176,6 @@ def run_classification_fits(
     )
 
 
-# Todo: write tests for parse_config_dict
-
-
-
 def tabulate_fit_results(
         data_iter, band_names, lambda_eff, fit_func, vparams, timeout_sec=90,
         salt2_config=None, sn91bg_config=None, out_path=None):
