@@ -36,6 +36,27 @@ class timeout:
         signal.alarm(0)
 
 
+def parse_config_dict(obj_id, config_dict):
+    """Return the priors and kwargs for a given object from a config file
+
+    Args:
+        obj_id       (str): The object id in the dictionary
+        config_dict (dict): A dictionary with data from a config file
+
+    Returns:
+        A dictionary of with initial parameter values
+        A dictionary of kwargs to use when fitting
+    """
+
+    prior = config_dict.get('priors', {}).get(obj_id, {})
+    prior.update(config_dict.get('priors', {}).get('global', {}))
+
+    kwargs = config_dict.get('kwargs', {}).get(obj_id, {})
+    kwargs.update(config_dict.get('kwargs', {}).get('global', {}))
+
+    return prior, kwargs
+
+
 # Todo: This signature is confusing. Do we use the model or result parameters?
 def calc_model_chisq(data, result, model):
     """Calculate the chi-squared for a given data table and model

@@ -10,6 +10,7 @@ from copy import deepcopy
 import numpy as np
 import sncosmo
 from astropy.table import Table, vstack
+from pandas.core.index import InvalidIndexError
 
 from . import utils
 
@@ -113,9 +114,9 @@ def fit_results_to_table_row(data, band_set, results, fitted_model):
     return new_row
 
 
-def run_fits(blue_data, red_data, vparams, fit_func,
-             priors_s2=None, priors_bg=None,
-             kwargs_s2=None, kwargs_bg=None):
+def run_classification_fits(
+        blue_data, red_data, vparams, fit_func,
+        priors_s2=None, priors_bg=None, kwargs_s2=None, kwargs_bg=None):
     """Run light curve fits on a given target using the normal and 91bg model
 
     Fits are run for all data, ``red_data``, and then ``blue_data`` using
@@ -175,26 +176,33 @@ def run_fits(blue_data, red_data, vparams, fit_func,
     )
 
 
+# Todo: write tests for parse_config_dict
+
+
+
 def tabulate_fit_results(
         data_iter, band_names, lambda_eff, fit_func, vparams, timeout_sec=90,
-        priors_s2=None, priors_bg=None, kwargs_s2=None, kwargs_bg=None,
-        out_path=None):
+        salt2_config=None, sn91bg_config=None, out_path=None):
     """Tabulate fit results for a collection of data tables
 
     Args:
-        data_iter  (iter): Iterable of photometric data for different SN
-        band_names (list): Name of bands included in ``data_iter``
-        lambda_eff (list): Effective wavelength for each band in ``band_names``
-        vparams    (list): Name of parameters to vary
-        fit_func   (func): Function to use to run fits
-        timeout_sec (int): Number of seconds before timeout fitting for target
-        kwargs_s2  (dict): Kwargs to pass ``fit_func`` when fitting salt2
-        kwargs_bg  (dict): Kwargs to pass ``fit_func`` when fitting sn91bg
-        out_path    (str): Optionally cache progressive results to file
+        data_iter     (iter): Iterable of photometric data for different SN
+        band_names    (list): Name of bands included in ``data_iter``
+        lambda_eff    (list): Effective wavelength for bands in ``band_names``
+        vparams       (list): Name of parameters to vary
+        fit_func      (func): Function to use to run fits
+        timeout_sec    (int): Number of seconds before timeout fitting a SN
+        salt2_config  (dict): Specifies priors / kwargs fitting salt2
+        sn91bg_config (dict): Specifies priors / kwargs when fitting sn91bg
+        out_path       (str): Optionally cache progressive results to file
 
     Returns:
        An astropy table with fit results
     """
+
+    # Set default kwargs
+    salt2_config = deepcopy(salt2_config) or dict()
+    sn91bg_config = deepcopy(sn91bg_config) or dict()
 
     # Add arguments to output table meta data
     out_table = create_empty_table()
@@ -203,32 +211,28 @@ def tabulate_fit_results(
     out_table.meta['fit_func'] = fit_func.__name__
     out_table.meta['vparams'] = vparams
     out_table.meta['timeout_sec'] = timeout_sec
-    out_table.meta['kwargs_s2'] = kwargs_s2
-    out_table.meta['kwargs_bg'] = kwargs_bg
     out_table.meta['out_path'] = str(out_path)
 
     for data in data_iter:
         blue_data, red_data = utils.split_data(
             data, band_names, lambda_eff, data.meta['redshift'])
 
-        # Get fitting priors
+        # Get fitting priors and kwargs
         obj_id = data.meta['obj_id']
-        salt2_prior = priors_s2.get(obj_id, {})
-        salt2_prior.update(priors_s2.get('global', {}))
-        sn91bg_prior = priors_bg.get(obj_id, {})
-        sn91bg_prior.update(priors_bg.get('global', {}))
+        salt2_prior, salt2_kwargs = utils.parse_config_dict(obj_id, salt2_config)
+        sn91bg_prior, sn91bg_kwargs = utils.parse_config_dict(obj_id, sn91bg_config)
 
         try:
             with utils.timeout(timeout_sec):
-                fit_results = run_fits(
+                fit_results = run_classification_fits(
                     blue_data=blue_data,
                     red_data=red_data,
                     vparams=vparams,
                     fit_func=fit_func,
                     priors_s2=salt2_prior,
                     priors_bg=sn91bg_prior,
-                    kwargs_s2=kwargs_s2,
-                    kwargs_bg=kwargs_bg)
+                    kwargs_s2=salt2_kwargs,
+                    kwargs_bg=sn91bg_kwargs)
 
         except KeyboardInterrupt:
             raise
@@ -270,7 +274,7 @@ def classify_targets(fits_table, out_path=None):
 
     Args:
         fits_table (Table): A table of fit results
-        out_path    (str): Optionally write results to file
+        out_path     (str): Optionally write results to file
 
     Returns:
         An astropy table of fitting coordinates
@@ -284,33 +288,33 @@ def classify_targets(fits_table, out_path=None):
     out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
     for obj_id in fits_df.index.unique(level='obj_id'):
 
-        # We expect fit for 3 band sets x 3 models = 6 fits total
-        # Less than 6 means one of the fits failed and was dropped by the
-        # `drop_na` call above
-        if len(fits_df.loc[obj_id]) < 4:
+        try:
+
+            salt2_blue_chisq = (
+                    fits_df.loc[obj_id, 'salt2', 'blue']['chisq'] /
+                    fits_df.loc[obj_id, 'salt2', 'blue']['ndof'])
+
+            salt2_red_chisq = (
+                    fits_df.loc[obj_id, 'salt2', 'red']['chisq'] /
+                    fits_df.loc[obj_id, 'salt2', 'red']['ndof'])
+
+            bg_blue_chisq = (
+                    fits_df.loc[obj_id, 'sn91bg', 'blue']['chisq'] /
+                    fits_df.loc[obj_id, 'sn91bg', 'blue']['ndof'])
+
+            bg_red_chisq = (
+                    fits_df.loc[obj_id, 'sn91bg', 'red']['chisq'] /
+                    fits_df.loc[obj_id, 'sn91bg', 'red']['ndof'])
+
+        except InvalidIndexError:
             continue
 
-        salt2_blue_chisq = (
-                fits_df.loc[obj_id, 'salt2', 'blue']['chisq'] /
-                fits_df.loc[obj_id, 'salt2', 'blue']['ndof'])
+        else:
+            x = salt2_blue_chisq - bg_blue_chisq
+            y = salt2_red_chisq - bg_red_chisq
+            out_table.add_row([obj_id, x, y])
 
-        salt2_red_chisq = (
-                fits_df.loc[obj_id, 'salt2', 'red']['chisq'] /
-                fits_df.loc[obj_id, 'salt2', 'red']['ndof'])
-
-        bg_blue_chisq = (
-                fits_df.loc[obj_id, 'sn91bg', 'blue']['chisq'] /
-                fits_df.loc[obj_id, 'sn91bg', 'blue']['ndof'])
-
-        bg_red_chisq = (
-                fits_df.loc[obj_id, 'sn91bg', 'red']['chisq'] /
-                fits_df.loc[obj_id, 'sn91bg', 'red']['ndof'])
-
-        x = salt2_blue_chisq - bg_blue_chisq
-        y = salt2_red_chisq - bg_red_chisq
-        out_table.add_row([obj_id, x, y])
-
-    if out_path:
-        out_table.write(out_path)
+            if out_path:
+                out_table.write(out_path)
 
     return out_table

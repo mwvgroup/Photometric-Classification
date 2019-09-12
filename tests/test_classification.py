@@ -14,7 +14,7 @@ from phot_class import classification
 
 
 # Todo: Test the following functions
-# - run_fits
+# - run_classification_fits
 # - tabulate_fit_results
 
 

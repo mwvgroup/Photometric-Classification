@@ -294,3 +294,38 @@ class TestFilterFactory(TestCase):
         self.assertFalse(
             filter_func(class2_table),
             "Returned True for un-desired fitting")
+
+
+# Todo: Finish this test
+class ParseConfigDict(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.test_data = {
+            'kwargs': {
+                'global': {
+                    'bounds': {'x1': [0.65, 1.25], 'c': [0, 1]}
+                },
+
+                'obj_id1': {
+                    'bounds': {'x0': [.1, .2], 'x1': [0.5, 1.]}
+                },
+
+                'obj_id2': {
+                    'bounds': {'x0': [.1, .2]}
+                }
+            },
+
+            'priors': {
+                'global': {
+                    'z': .5
+                },
+
+                'obj_id1': {
+                    't0': 53239.1,
+                }
+            }
+        }
+
+    def runTest(self):
+        self.fail()
