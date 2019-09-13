@@ -61,10 +61,7 @@ def run(cli_args):
     timeout_sec = cli_args.timeout
 
     # Read in priors and fitting arguments from file
-    salt2_args = load_yaml(
-        cli_args.salt2_args) if cli_args.salt2_args else None
-    sn91bg_args = load_yaml(
-        cli_args.sn91bg_args) if cli_args.sn91bg_args else None
+    config = load_yaml(cli_args.config) if cli_args.config else None
 
     # Run fits
     fit_results = classification.tabulate_fit_results(
@@ -74,9 +71,9 @@ def run(cli_args):
         fit_func=fit_func,
         vparams=vparams,
         timeout_sec=timeout_sec,
-        salt2_config=salt2_args,
-        sn91bg_config=sn91bg_args,
-        out_path=fit_path)
+        config=config,
+        out_path=fit_path
+    )
 
     classification.classify_targets(fit_results, out_path=classification_path)
 
@@ -111,14 +108,7 @@ def create_cli_parser():
         help='What parameters to vary with the fit')
 
     parser.add_argument(
-        '-s2a', '--salt2_args',
-        type=str,
-        required=False,
-        help='Sn91bg fitting arguments.'
-    )
-
-    parser.add_argument(
-        '-bga', '--sn91bg_args',
+        '-c', '--config',
         type=str,
         required=False,
         help='Sn91bg fitting arguments.'

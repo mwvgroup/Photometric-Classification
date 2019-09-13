@@ -10,7 +10,7 @@ from copy import deepcopy
 import numpy as np
 import sncosmo
 from astropy.table import Table, vstack
-from pandas.core.index import InvalidIndexError
+from matplotlib import pyplot
 
 from . import utils
 
@@ -108,37 +108,60 @@ def fit_results_to_table_row(data, band_set, results, fitted_model):
     new_row += [np.round(b_max, 2), np.round(delta_15, 3)]
 
     # Add fitting exit status message. Not all fitting routines include
-    # this attribute, se we assign a default value.
+    # this attribute, so we assign a default value of 'NONE'.
     message = getattr(results, 'message', 'NONE')
     new_row.append(message)
     return new_row
 
 
-def run_classification_fits(
-        blue_data, red_data, vparams, fit_func,
-        priors_s2=None, priors_bg=None, kwargs_s2=None, kwargs_bg=None):
-    """Run light curve fits on a given target using the normal and 91bg model
-
-    Fits are run for all data, ``red_data``, and then ``blue_data`` using
-    the salt2 and then the sn91bg model.
+def _raise_unspecified_params(fixed_params, *priors):
+    """Raise RuntimeError if any fixed parameters are not set in a prior
 
     Args:
-        blue_data (Table): Photometric data in just the 'blue' bands
-        red_data  (Table): Photometric data in just the 'red' bands
+        fixed_params (iter): List of parameter names to assume as fixed
+        *priors      (dict): Dictionary of values from a prior
+    """
+
+    for prior in priors:
+        for p in fixed_params:
+            if p not in prior:
+                raise RuntimeError(
+                    f'Encountered unspecified value for {p} in prior: {prior}')
+
+
+def run_classification_fits(
+        blue_data, red_data, vparams, fit_func,
+        priors_s2=None, priors_bg=None,
+        kwargs_s2=None, kwargs_bg=None,
+        show_plots=False):
+    """Run light curve fits on a given target using the normal and 91bg model
+
+    Fits are run for all data, ``red_data``, and then ``blue_data`` using salt2 and
+    then the sn91bg model (i.e. three Salt2 fits followed by three 91bg fits).
+    If a prior for t0 is not specified for a given value, then the salt2 t0
+    value determined from the +/- 3 days is assumed.
+
+    Args:
+        blue_data (Table): Photometric data in just the 'red' bands
+        red_data  (Table): Photometric data in just the 'blue' bands
         vparams    (iter): Iterable of param names to fit
         fit_func   (func): Function to use to run fits (eg. ``sncosmo.fit_lc``)
-        priors_s2  (dict): Initial parameters when fitting salt2
-        priors_bg  (dict): Initial parameters when fitting sn91bg
+        priors_s2  (dict): Priors to use when fitting salt2
+        priors_bg  (dict): Priors to use when fitting sn91bg
         kwargs_s2  (dict): Kwargs to pass ``fit_func`` when fitting salt2
         kwargs_bg  (dict): Kwargs to pass ``fit_func`` when fitting sn91bg
+        show_plots (bool): Plot and display each individual fit
 
     Returns:
        Fit results and the fitted model for each model / data combination
     """
 
-    # Set default kwargs
-    priors_s2 = priors_s2 or dict()
-    priors_bg = priors_bg or dict()
+    fixed_params = {'z', 't0', 'x0', 'x1', 'c'} - set(vparams)
+    _raise_unspecified_params(fixed_params, priors_s2, priors_bg)
+
+    # Set default kwargs and protect against mutation
+    priors_s2 = deepcopy(priors_s2) or dict()
+    priors_bg = deepcopy(priors_bg) or dict()
     kwargs_s2 = deepcopy(kwargs_s2) if kwargs_s2 else dict()
     kwargs_bg = deepcopy(kwargs_bg) if kwargs_bg else dict()
 
@@ -148,57 +171,62 @@ def run_classification_fits(
     salt2.update(priors_s2)
     sn91bg.update(priors_bg)
 
-    # Run fit on all data with salt2
+    # Build iterator over data and models for each fit we want to run
+    # We rely on the the salt2.4 model and full data table
+    # being first in the iterator
     all_data = vstack([blue_data, red_data])
-    salt2_result, salt2_fit = fit_func(all_data, salt2, vparams, **kwargs_s2)
-    salt2_t0 = salt2_fit.parameters[salt2_fit.param_names.index('t0')]
+    data_tables = 2 * [all_data, blue_data, red_data]
+    models = 3 * [salt2] + 3 * [sn91bg]
+    kwargs = 3 * [kwargs_s2] + 3 * [kwargs_bg]
+    fitting_data = zip(data_tables, models, kwargs)
 
-    # Update models to use salt2 t0 if not already specified in the priors
-    salt2.set(t0=priors_s2.get('t0', salt2_t0))
-    sn91bg.set(t0=priors_bg.get('t0', salt2_t0))
-    kwargs_bg.setdefault('bounds', {})
-    kwargs_bg['bounds'].setdefault('t0', (salt2_t0 - 3, salt2_t0 + 3))
+    out_data = []
+    salt2_t0 = None
+    for data_table, model, kwarg in fitting_data:
+        result, fitted_model = fit_func(data_table, model, vparams, **kwarg)
+        out_data.append((result, fitted_model))
 
-    # Run the remaining fits
-    salt2_result_blue, salt2_fit_blue = fit_func(blue_data, salt2, vparams, **kwargs_s2)
-    salt2_result_red, salt2_fit_red = fit_func(red_data, salt2, vparams, **kwargs_s2)
-    sn91bg_result, sn91bg_fit = fit_func(red_data, sn91bg, vparams, **kwargs_bg)
-    sn91bg_result_blue, sn91bg_fit_blue = fit_func(blue_data, sn91bg, vparams, **kwargs_bg)
-    sn91bg_result_red, sn91bg_fit_red = fit_func(red_data, sn91bg, vparams, **kwargs_bg)
+        # Update models to use salt2 t0 if not already specified in the priors
+        if salt2_t0 is None:
+            salt2_t0 = fitted_model.parameters[
+                fitted_model.param_names.index('t0')]
+            salt2.set(t0=priors_s2.get('t0', salt2_t0))
+            sn91bg.set(t0=priors_bg.get('t0', salt2_t0))
 
-    return (
-        (salt2_result, salt2_fit),
-        (salt2_result_blue, salt2_fit_blue),
-        (salt2_result_red, salt2_fit_red),
-        (sn91bg_result, sn91bg_fit),
-        (sn91bg_result_blue, sn91bg_fit_blue),
-        (sn91bg_result_red, sn91bg_fit_red)
-    )
+            # We could also set default bounds on t0
+            # kwargs_s2.setdefault('bounds', {})
+            # kwargs_s2['bounds'].setdefault('t0', (s2_t0 - 3, s2_t0 + 3))
+            # kwargs_bg.setdefault('bounds', {})
+            # kwargs_bg['bounds'].setdefault('t0', (bg_t0 - 3, bg_t0 + 3))
+
+        if show_plots:
+            sncosmo.plot_lc(data_table, fitted_model)
+            pyplot.show()
+
+    return out_data
 
 
 def tabulate_fit_results(
         data_iter, band_names, lambda_eff, fit_func, vparams, timeout_sec=90,
-        salt2_config=None, sn91bg_config=None, out_path=None):
+        config=None, out_path=None):
     """Tabulate fit results for a collection of data tables
 
     Args:
-        data_iter     (iter): Iterable of photometric data for different SN
-        band_names    (list): Name of bands included in ``data_iter``
-        lambda_eff    (list): Effective wavelength for bands in ``band_names``
-        vparams       (list): Name of parameters to vary
-        fit_func      (func): Function to use to run fits
-        timeout_sec    (int): Number of seconds before timeout fitting a SN
-        salt2_config  (dict): Specifies priors / kwargs fitting salt2
-        sn91bg_config (dict): Specifies priors / kwargs when fitting sn91bg
-        out_path       (str): Optionally cache progressive results to file
+        data_iter   (iter): Iterable of photometric data for different SN
+        band_names  (list): Name of bands included in ``data_iter``
+        lambda_eff  (list): Effective wavelength for bands in ``band_names``
+        vparams     (list): Name of parameters to vary
+        fit_func    (func): Function to use to run fits
+        timeout_sec  (int): Number of seconds before timeout fitting a SN
+        config      (dict): Specifies priors / kwargs for fitting each model
+        out_path     (str): Optionally cache progressive results to file
 
     Returns:
        An astropy table with fit results
     """
 
     # Set default kwargs
-    salt2_config = deepcopy(salt2_config) or dict()
-    sn91bg_config = deepcopy(sn91bg_config) or dict()
+    config = deepcopy(config) or dict()
 
     # Add arguments to output table meta data
     out_table = create_empty_table()
@@ -215,8 +243,8 @@ def tabulate_fit_results(
 
         # Get fitting priors and kwargs
         obj_id = data.meta['obj_id']
-        salt2_prior, salt2_kwargs = utils.parse_config_dict(obj_id, salt2_config)
-        sn91bg_prior, sn91bg_kwargs = utils.parse_config_dict(obj_id, sn91bg_config)
+        salt2_prior, salt2_kwargs, sn91bg_prior, sn91bg_kwargs = \
+            utils.parse_config_dict(obj_id, config)
 
         try:
             with utils.timeout(timeout_sec):
@@ -253,8 +281,21 @@ def tabulate_fit_results(
 
             # Populate the output table
             for bs, dt, (results, fitted_model) in row_data_iter:
-                row = fit_results_to_table_row(dt, bs, results, fitted_model)
-                out_table.add_row(row)
+                try:
+                    row = fit_results_to_table_row(dt, bs, results, fitted_model)
+                    out_table.add_row(row)
+
+                except Exception as e:
+                    # Add a masked row so we have a record in the output table
+                    # indicating something went wrong.
+                    num_cols = len(out_table.colnames)
+                    row = np.full(num_cols, -99).tolist()
+                    mask = np.full(num_cols, True)
+
+                    row[0] = obj_id
+                    row[-1] = str(e).replace('\n', '')
+                    mask[0] = mask[-1] = False
+                    out_table.add_row(row, mask=mask)
 
         if out_path:
             out_table.write(out_path)
@@ -302,7 +343,7 @@ def classify_targets(fits_table, out_path=None):
                     fits_df.loc[obj_id, 'sn91bg', 'red']['chisq'] /
                     fits_df.loc[obj_id, 'sn91bg', 'red']['ndof'])
 
-        except InvalidIndexError:
+        except KeyError:
             continue
 
         else:

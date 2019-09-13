@@ -212,8 +212,13 @@ The number of data points used in the calculation</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dictionary of with initial parameter values
-A dictionary of kwargs to use when fitting</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p>A dictionary with object priors for salt2</p></li>
+<li><p>A dictionary of fitting kwargs for salt2</p></li>
+<li><p>A dictionary with object priors for sn91bg</p></li>
+<li><p>A dictionary of fitting kwargs for sn91bg</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -253,6 +258,7 @@ observation.</p>
 <li><p><strong>band_names</strong> (<em>iter</em>) – List of all bands available in the survey</p></li>
 <li><p><strong>lambda_eff</strong> (<em>iter</em>) – The effective wavelength of each band in band_names</p></li>
 <li><p><strong>z</strong> (<em>float</em>) – The redshift of the observed target</p></li>
+<li><p><strong>cutoff</strong> (<em>float</em>) – The cutoff distance for dropping an observation</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

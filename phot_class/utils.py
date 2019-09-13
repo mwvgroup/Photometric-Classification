@@ -44,19 +44,31 @@ def parse_config_dict(obj_id, config_dict):
         config_dict (dict): A dictionary with data from a config file
 
     Returns:
-        A dictionary of with initial parameter values
-        A dictionary of kwargs to use when fitting
+        - A dictionary with object priors for salt2
+        - A dictionary of fitting kwargs for salt2
+        - A dictionary with object priors for sn91bg
+        - A dictionary of fitting kwargs for sn91bg
     """
 
-    priors_data = config_dict.get('priors', {})
-    prior = priors_data.get('global', {})
-    prior.update(priors_data.get(obj_id, {}))
+    out_data = []
+    for model in ('salt2', 'sn91bg'):
+        for dtype in ('priors', 'kwargs'):
+            # Start with top level, global settings (Note the use of copy
+            object_data = config_dict.get('global', {}).get(dtype, {}).get(obj_id, {}).copy()
 
-    kwargs_data = config_dict.get('kwargs', {})
-    kwargs = kwargs_data.get('global', {})
-    kwargs.update(kwargs_data.get(obj_id, {}))
+            # Update with model level, global settings
+            object_data.update(
+                config_dict.get(model, {}).get(dtype, {}).get('global', {})
+            )
 
-    return prior, kwargs
+            # Update again with model level, object specific settings
+            object_data.update(
+                config_dict.get(model, {}).get(dtype, {}).get(obj_id, {})
+            )
+
+            out_data.append(object_data)
+
+    return tuple(out_data)
 
 
 # Todo: This signature is confusing. Do we use the model or result parameters?
@@ -74,9 +86,6 @@ def calc_model_chisq(data, result, model):
     """
 
     data = deepcopy(data)
-    data.meta['model'] = model.source.name
-    data.meta['params'] = model.parameters
-    data.write('test_data.ecsv')
 
     # Drop any data that is not withing the model's range
     min_band_wave = [sncosmo.get_bandpass(b).minwave() for b in data['band']]
@@ -127,6 +136,7 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
         band_names  (iter): List of all bands available in the survey
         lambda_eff  (iter): The effective wavelength of each band in band_names
         z          (float): The redshift of the observed target
+        cutoff     (float): The cutoff distance for dropping an observation
 
     Returns:
         A SNCosmo input table with only blue bands
@@ -163,14 +173,13 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
 
     # Keep only the specified filters that are within 700 Angstroms of the
     # rest frame effective wavelength
-    is_ok_diff = delta_lambda[
-                     min_indx, np.arange(delta_lambda.shape[1])] < cutoff
+    within_dif_range = delta_lambda[min_indx, np.arange(delta_lambda.shape[1])] < cutoff
 
     # Split into blue and red band passes
     out_list = []
     for bands in split_bands(band_names, lambda_eff):
         is_in_bands = np.isin(rest_frame_filters, bands)
-        indices = np.logical_and(is_in_bands, is_ok_diff)
+        indices = np.logical_and(is_in_bands, within_dif_range)
         out_list.append(data_table[indices])
 
     return out_list

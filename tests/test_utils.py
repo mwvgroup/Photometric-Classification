@@ -57,6 +57,57 @@ class TestTimeout(TestCase):
         self.assertRaises(TypeError, self.run_timeout, 2.1)
 
 
+class ParseConfigDict(TestCase):
+    """Tests for utils.parse_config_dict"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Define dummy config data to test parsing against"""
+
+        test_config = {
+            'global': {
+                'priors': {
+                    '2004dt': {'t0': 1, 'z': 2}
+                }
+            },
+
+            'salt2': {
+                'priors': {
+                    '2004dt': {'t0': 3, 'x0': 4}
+                }
+            },
+
+            'sn91bg': {
+                'priors': {
+                    '2004dt': {'t0': 5, 'x0': 6, 'z': 7}
+                },
+
+                'kwargs': {
+                    '2004dt': {'bounds': {'c': (0, 1)}}
+                }
+
+            }
+        }
+
+        cls.salt2_prior = {'t0': 3, 'z': 2, 'x0': 4}
+        cls.salt2_kwargs = {}
+        cls.sn91bg_prior = {'t0': 5, 'x0': 6, 'z': 7}
+        cls.sn91bg_kwargs = {'bounds': {'c': (0, 1)}}
+        cls.returned_configs = utils.parse_config_dict('2004dt', test_config)
+
+    def test_salt2_prior(self):
+        self.assertEqual(self.salt2_prior, self.returned_configs[0])
+
+    def test_salt2_kwargs(self):
+        self.assertEqual(self.salt2_kwargs, self.returned_configs[1])
+
+    def test_sn91bg_prior(self):
+        self.assertEqual(self.sn91bg_prior, self.returned_configs[2])
+
+    def test_sn91bg_kwargs(self):
+        self.assertEqual(self.sn91bg_kwargs, self.returned_configs[3])
+
+
 class TestCalcModelChisq(TestCase):
     """Tests for utils.calc_model_chisq"""
 
@@ -129,20 +180,27 @@ class TestCalcModelChisq(TestCase):
     def test_out_of_range_wave(self):
         """Test that out of range phase values and bands are dropped"""
 
-        self.fail()
-        # Todo:
-        #   Make this more robust by putting only one filter
-        #   wavelength out of range. Do this by defining a custom bandpass
-
         data = self.data
         expected_chisq, expected_dof = utils.calc_model_chisq(
             data, self.results, self.model)
 
+        # Define wavelength / transmission for bands above and below the
+        # model's wavelength range
+        min_wave = self.model.minwave()
+        max_wave = self.model.maxwave()
+        high_out_of_range = np.arange(min_wave, max_wave + 2)
+        low_out_of_range = np.arange(min_wave - 2, max_wave)
+        transmission = np.ones_like(low_out_of_range)
+
+        # Register the bands with sncosmo
+        high_band = sncosmo.Bandpass(high_out_of_range, transmission, name='high')
+        low_band = sncosmo.Bandpass(high_out_of_range, transmission, name='low')
+        sncosmo.register(high_band, name='high')
+        sncosmo.register(low_band, name='low')
+
         # Add values that are out of the model's wavelength range
-        # Here we use the H band from CSP
-        dr3.download_module_data()
-        dr3.register_filters(force=True)
-        data.add_row([1, 'csp_dr3_H', 0, 0, 25, 'ab'])
+        data.add_row([1, 'high', 0, 0, 25, 'ab'])
+        data.add_row([1, 'low', 0, 0, 25, 'ab'])
 
         chisq, dof = utils.calc_model_chisq(data, self.results, self.model)
         self.assertEqual(expected_chisq, chisq, 'Chisq values are not equal')
@@ -169,7 +227,7 @@ class TestCalcModelChisq(TestCase):
         args = empty_table, self.results, self.model
         self.assertRaises(ValueError, utils.calc_model_chisq, *args)
 
-    def test_correct_chisq(self):
+    def test_correct_chisq_calculation(self):
         """Test the correct chisq and dof are returned for simulated data"""
 
         # Define necessary information to simulate a table of flux data
@@ -246,10 +304,8 @@ class TestSplitData(TestCase):
                 data, band_names, lambda_eff, redshift, cutoff=float('inf'))
 
             err_msg = f'Wrongs bands for z={redshift}'
-            self.assertListEqual(expected_blue, list(blue_table['band']),
-                                 err_msg)
-            self.assertListEqual(expected_red, list(red_table['band']),
-                                 err_msg)
+            self.assertListEqual(expected_blue, list(blue_table['band']), err_msg)
+            self.assertListEqual(expected_red, list(red_table['band']), err_msg)
 
     def test_maintains_metadata(self):
         """Test whether passed and returned tables have same metadata"""
@@ -314,64 +370,3 @@ class TestFilterFactory(TestCase):
         self.assertFalse(
             filter_func(class2_table),
             "Returned True for un-desired fitting")
-
-
-# Todo: Finish this test
-class ParseConfigDict(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        """Define dummy config data to test parsing against"""
-
-        cls.test_data = {
-            'kwargs': {
-                'global': {
-                    'bounds': {'x1': [0.65, 1.25], 'c': [0, 1]}
-                },
-
-                'obj_id1': {
-                    'bounds': {'x0': [.1, .2], 'x1': [0.5, 1.]}
-                },
-
-                'obj_id2': {
-                    'bounds': {'x0': [.1, .2]}
-                }
-            },
-
-            'priors': {
-
-                'obj_id1': {
-                    't0': 53239.1, 'z': .7
-                },
-
-            }
-        }
-
-        cls.obj_id1 = (
-            {'t0': 53239.1, 'z': 0.7},
-            {'bounds': {'x0': [0.1, 0.2], 'x1': [0.5, 1.0]}}
-        )
-
-        cls.obj_id2 = (
-            {},
-            {'bounds': {'x0': [.1, .2]}}
-        )
-
-    def test_correct_data_for_id(self):
-        """Test correct config entries are returned for an obj_id"""
-
-        self.fail()
-
-    def test_global_resolution_order(self):
-        """Test target specific args supersede global args"""
-
-        self.fail()
-
-    def test_default_returns(self):
-        """Test an empty dict is returned when no data is available
-        for an obj_id
-        """
-
-        priors, kwargs = utils.parse_config_dict('gummy_id', {})
-        self.assertEqual({}, priors)
-        self.assertEqual({}, kwargs)
