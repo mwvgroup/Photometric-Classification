@@ -258,6 +258,16 @@ def tabulate_fit_results(
                     kwargs_s2=salt2_kwargs,
                     kwargs_bg=sn91bg_kwargs)
 
+            # Create an iterator over data necessary to make each row
+            band_sets = 2 * ['all', 'blue', 'red']
+            data_tables = 2 * [data, red_data, blue_data]
+            row_data_iter = zip(band_sets, data_tables, fit_results)
+
+            # Populate the output table
+            for bs, dt, (results, fitted_model) in row_data_iter:
+                row = fit_results_to_table_row(dt, bs, results, fitted_model)
+                out_table.add_row(row)
+
         except KeyboardInterrupt:
             raise
 
@@ -272,30 +282,6 @@ def tabulate_fit_results(
             row[-1] = str(e).replace('\n', '')
             mask[0] = mask[-1] = False
             out_table.add_row(row, mask=mask)
-
-        else:
-            # Create an iterator over data necessary to make each row
-            band_sets = 2 * ['all', 'blue', 'red']
-            data_tables = 2 * [data, red_data, blue_data]
-            row_data_iter = zip(band_sets, data_tables, fit_results)
-
-            # Populate the output table
-            for bs, dt, (results, fitted_model) in row_data_iter:
-                try:
-                    row = fit_results_to_table_row(dt, bs, results, fitted_model)
-                    out_table.add_row(row)
-
-                except Exception as e:
-                    # Add a masked row so we have a record in the output table
-                    # indicating something went wrong.
-                    num_cols = len(out_table.colnames)
-                    row = np.full(num_cols, -99).tolist()
-                    mask = np.full(num_cols, True)
-
-                    row[0] = obj_id
-                    row[-1] = str(e).replace('\n', '')
-                    mask[0] = mask[-1] = False
-                    out_table.add_row(row, mask=mask)
 
         if out_path:
             out_table.write(out_path)
