@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Run CSP DR3 and fix redshift to the published value
+# Run CSP DR3 and fix redshift to the prior
 python run_pipeline.py \
     -s csp \
     -r dr3 \
