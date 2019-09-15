@@ -53,20 +53,27 @@ def parse_config_dict(obj_id, config_dict):
     out_data = []
     for model in ('salt2', 'sn91bg'):
         for dtype in ('priors', 'kwargs'):
-            # Start with top level, global settings (Note the use of copy
-            object_data = config_dict.get('global', {}).get(dtype, {}).get(obj_id, {}).copy()
+            all, blue, red = dict(), dict(), dict()
+
+            # Start with top level, global settings (Note the use of copy)
+            global_settings = config_dict.get('global', {}).get(dtype, {}).get(obj_id, {}).copy()
+            for bandset, settings in zip(('all', 'blue', 'blue'), (all, blue, red)):
+                settings.update(global_settings.get('global', {}))
+                settings.update(global_settings.get(bandset, {}))
 
             # Update with model level, global settings
-            object_data.update(
-                config_dict.get(model, {}).get(dtype, {}).get('global', {})
-            )
+            model_settings = config_dict.get(model, {}).get(dtype, {}).get('global', {})
+            for bandset, settings in zip(('all', 'blue', 'blue'), (all, blue, red)):
+                settings.update(model_settings.get('global', {}))
+                settings.update(model_settings.get(bandset, {}))
 
             # Update again with model level, object specific settings
-            object_data.update(
-                config_dict.get(model, {}).get(dtype, {}).get(obj_id, {})
-            )
+            object_settings = config_dict.get(model, {}).get(dtype, {}).get(obj_id, {})
+            for bandset, settings in zip(('all', 'blue', 'blue'), (all, blue, red)):
+                settings.update(object_settings.get('global', {}))
+                settings.update(object_settings.get(bandset, {}))
 
-            out_data.append(object_data)
+            out_data.append({'all': all, 'blue': blue, 'red': red})
 
     return tuple(out_data)
 

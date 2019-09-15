@@ -156,48 +156,43 @@ def run_classification_fits(
        Fit results and the fitted model for each model / data combination
     """
 
+    # Make sure any model parameters that are not being varied are
+    # specified by in the priors
     fixed_params = {'z', 't0', 'x0', 'x1', 'c'} - set(vparams)
-    _raise_unspecified_params(fixed_params, priors_s2, priors_bg)
+    for prior in (priors_s2, priors_bg):
+        _raise_unspecified_params(fixed_params, *prior.values())
 
     # Set default kwargs and protect against mutation
     priors_s2 = deepcopy(priors_s2) or dict()
     priors_bg = deepcopy(priors_bg) or dict()
-    kwargs_s2 = deepcopy(kwargs_s2) if kwargs_s2 else dict()
-    kwargs_bg = deepcopy(kwargs_bg) if kwargs_bg else dict()
-
-    # Load models and set initial guess from priors
-    salt2 = sncosmo.Model('salt2')
-    sn91bg = sncosmo.Model('sn91bg')
-    salt2.update(priors_s2)
-    sn91bg.update(priors_bg)
+    kwargs_s2 = deepcopy(kwargs_s2) or dict()
+    kwargs_bg = deepcopy(kwargs_bg) or dict()
 
     # Build iterator over data and models for each fit we want to run
-    # We rely on the the salt2.4 model and full data table
+    # Later on we rely on the the salt2.4 model and the full data table
     # being first in the iterator
     all_data = vstack([blue_data, red_data])
+    band_sets = ['all', 'blue', 'red']
+
     data_tables = 2 * [all_data, blue_data, red_data]
-    models = 3 * [salt2] + 3 * [sn91bg]
-    kwargs = 3 * [kwargs_s2] + 3 * [kwargs_bg]
-    fitting_data = zip(data_tables, models, kwargs)
+    kwargs = [kwargs_s2[bs] for bs in band_sets] + [kwargs_bg[bs] for bs in band_sets]
+    priors = [priors_s2[bs] for bs in band_sets] + [priors_bg[bs] for bs in band_sets]
+    models = 3 * [sncosmo.Model('salt2')] + 3 * [sncosmo.Model('sn91bg')]
+    fitting_data = zip(data_tables, models, priors, kwargs)
 
     out_data = []
     salt2_t0 = None
-    for data_table, model, kwarg in fitting_data:
+    for data_table, model, prior, kwarg in fitting_data:
+        model.update(prior)
+        if salt2_t0 is not None:  # i.e. if this is not the first fit
+            model.set(t0=prior.get('t0', salt2_t0))
+
         result, fitted_model = fit_func(data_table, model, vparams, **kwarg)
         out_data.append((result, fitted_model))
 
         # Update models to use salt2 t0 if not already specified in the priors
-        if salt2_t0 is None:
-            salt2_t0 = fitted_model.parameters[
-                fitted_model.param_names.index('t0')]
-            salt2.set(t0=priors_s2.get('t0', salt2_t0))
-            sn91bg.set(t0=priors_bg.get('t0', salt2_t0))
-
-            # We could also set default bounds on t0
-            # kwargs_s2.setdefault('bounds', {})
-            # kwargs_s2['bounds'].setdefault('t0', (s2_t0 - 3, s2_t0 + 3))
-            # kwargs_bg.setdefault('bounds', {})
-            # kwargs_bg['bounds'].setdefault('t0', (bg_t0 - 3, bg_t0 + 3))
+        t0_index = fitted_model.param_names.index('t0')
+        salt2_t0 = salt2_t0 or fitted_model.parameters[t0_index]
 
         if show_plots:
             sncosmo.plot_lc(data_table, fitted_model)
@@ -272,6 +267,7 @@ def tabulate_fit_results(
             raise
 
         except Exception as e:
+            raise
             # Add a masked row so we have a record in the output table
             # indicating something went wrong.
             num_cols = len(out_table.colnames)
