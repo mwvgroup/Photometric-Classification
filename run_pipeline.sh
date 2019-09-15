@@ -4,7 +4,15 @@
 python run_pipeline.py \
     -s csp \
     -r dr3 \
+    -f mcmc_fit \
+    -v t0 x0 x1 c \
+    -c 'config_files/csp_band_global.yml' \
+    -o './results';
+
+python run_pipeline.py \
+    -s csp \
+    -r dr3 \
     -f simple_fit \
     -v t0 x0 x1 c \
-    -c 'config_files/csp.yml' \
+    -c 'config_files/csp_band_global.yml' \
     -o './results';
