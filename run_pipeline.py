@@ -32,6 +32,25 @@ def load_yaml(path):
         return yaml.load(infile, Loader=yaml.FullLoader)
 
 
+def get_data_iter(data_module):
+    """Iterate over data tables while removing Y band observations
+
+    This function is a wrapper around ``data_module.iter_data``
+
+    Args:
+        data_module (module): An sndata module
+
+    Yields:
+        Astropy tables
+    """
+
+    data_iter = data_module.iter_data(format_sncosmo=True, verbose=True)
+    for data in data_iter:
+        data = data[data['band'] != 'csp_dr3_Ydw']
+        data = data[data['band'] != 'csp_dr3_Y']
+        yield data
+
+
 def run(cli_args):
     """Run light curve fits using command line args
 
@@ -53,7 +72,7 @@ def run(cli_args):
     data_module.register_filters()
 
     # specify arguments for fitting.tabulate_fit_results
-    data_iter = data_module.iter_data(format_sncosmo=True, verbose=True)
+    data_iter = get_data_iter(data_module)
     band_names = data_module.band_names
     lambda_eff = data_module.lambda_effective
     fit_func = getattr(fit_funcs, cli_args.fit_func)
