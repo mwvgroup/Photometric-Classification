@@ -8,15 +8,28 @@ or by using ``git``:
 
 .. code:: bash
 
-   git clone https://github.com/mwvgroup/sdss-classification/
+   git clone https://github.com/mwvgroup/Photometric-Classification
 
-Dependencies for the ``phot_class`` package in addition to the
-package itself can then be installed by running the following from within the
-project repository:
+To ensure reproducibility and reduce the potential for programmatic errors,
+it is recommended to work within a conda environment. The necessary
+installation dependencies for creating this environment have been specified
+in a configuration file for convenience:
 
 .. code:: bash
 
-   pip install -r requirements.txt
-   python setup.py install --user
+   conda env create --name phot_class --file Photometric-Classification/environment.yml
 
-.. _GitHub: https://github.com/mwvgroup/sdss-classification/
+
+The ``phot_class`` can then be installed as follows:
+
+.. code:: bash
+
+   # Activate the conda environment
+   conda activate phot_class
+
+   python Photometric-Classification/setup.py install --user
+
+   # Optionally, you can then deactivate the conda environment when finished
+   conda deactivate
+
+.. _GitHub: https://github.com/mwvgroup/Photometric-Classification
