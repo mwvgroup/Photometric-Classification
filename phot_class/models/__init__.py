@@ -22,9 +22,9 @@ fluxes using the original and ported models respectively.
 About the 91bg model
 --------------------
 
-The is based on 35 SED templates provided by S. Gonzalez-Gaitan. These SEDs
-are based on the Nugent et al. 2002 templates but have been extended into to
-the UV. They form a 7 by 5 grid covering 7 different stretch and 5 different
+The model is based on 35 SED templates provided by S. Gonzalez-Gaitan. These
+SEDs are based on the Nugent et al. 2002 templates but have been extended into
+to the UV. They form a 7 by 5 grid covering 7 different stretch and 5 different
 color values. The ranges and relations of color and stretch were obtained by
 using `SiFTO <https://iopscience.iop.org/article/10.1086/588518/meta>`_ to fit
 template to multiple 91bg light-curves at low-z.

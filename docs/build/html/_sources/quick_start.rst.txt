@@ -1,5 +1,5 @@
-Command Line Interface
-======================
+Quick Start
+===========
 
 The ``phot_class`` package can be accessed via the command line using
 *run_pipeline.py*.

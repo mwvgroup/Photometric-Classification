@@ -3,6 +3,7 @@
 
 """This module defines the custom SNCosmo Sources for 91bg like supernovae."""
 
+import functools
 import os
 from bisect import bisect
 from warnings import warn

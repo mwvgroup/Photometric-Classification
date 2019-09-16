@@ -1,10 +1,10 @@
 Data
 ====
 
-We primarily consider observations from the Sload Digital Sky Survey (SDSS)
+We primarily consider observations from the Sloan Digital Sky Survey (SDSS)
 Supernova Survey, the Dark Energy Survey (DES) Year 3 Cosmology release, and
-he third data release of the Carnegie Supernova Project (CSP). We rely on the
-``sndata`` python package for programatic access to each of these data sets.
+the third data release of the Carnegie Supernova Project (CSP). We rely on the
+``sndata`` python package for programmatic access to each of these data sets.
 In principle, the pipeline we have built should extend trivially to any data
 set ported into ``sndata``.
 

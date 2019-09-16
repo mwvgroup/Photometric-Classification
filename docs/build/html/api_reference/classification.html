@@ -83,6 +83,8 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Project Notes:</span></p>
 <ul>
@@ -90,8 +92,6 @@
 </ul>
 <p class="caption"><span class="caption-text">API Reference:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">phot_class (Package Overview)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fit_funcs.html">phot_class.fit_funcs</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">phot_class.classification</a></li>
@@ -248,19 +248,22 @@ table format. <code class="docutils literal notranslate"><span class="pre">fitte
 </dd></dl>
 
 <dl class="function">
-<dt id="phot_class.classification.run_fits">
-<code class="sig-prename descclassname">phot_class.classification.</code><code class="sig-name descname">run_fits</code><span class="sig-paren">(</span><em class="sig-param">all_data</em>, <em class="sig-param">blue_data</em>, <em class="sig-param">red_data</em>, <em class="sig-param">vparams</em>, <em class="sig-param">fit_func</em>, <em class="sig-param">kwargs_s2=None</em>, <em class="sig-param">kwargs_bg=None</em>, <em class="sig-param">show_plots=False</em><span class="sig-paren">)</span><a class="headerlink" href="#phot_class.classification.run_fits" title="Permalink to this definition">¶</a></dt>
+<dt id="phot_class.classification.run_classification_fits">
+<code class="sig-prename descclassname">phot_class.classification.</code><code class="sig-name descname">run_classification_fits</code><span class="sig-paren">(</span><em class="sig-param">blue_data</em>, <em class="sig-param">red_data</em>, <em class="sig-param">vparams</em>, <em class="sig-param">fit_func</em>, <em class="sig-param">priors_s2=None</em>, <em class="sig-param">priors_bg=None</em>, <em class="sig-param">kwargs_s2=None</em>, <em class="sig-param">kwargs_bg=None</em>, <em class="sig-param">show_plots=False</em><span class="sig-paren">)</span><a class="headerlink" href="#phot_class.classification.run_classification_fits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run light curve fits on a given target using the normal and 91bg model</p>
-<p>Fits are run for all_data, red_data, and then blue_data using salt2 and
-then the sn91bg model.</p>
+<p>Fits are run for all data, <code class="docutils literal notranslate"><span class="pre">red_data</span></code>, and then <code class="docutils literal notranslate"><span class="pre">blue_data</span></code> using salt2 and
+then the sn91bg model (i.e. three Salt2 fits followed by three 91bg fits).
+If a prior for t0 is not specified for a given value, then the salt2 t0
+value determined from the +/- 3 days is assumed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>all_data</strong> (<em>Table</em>) – Photometric data in all bands</p></li>
 <li><p><strong>blue_data</strong> (<em>Table</em>) – Photometric data in just the ‘red’ bands</p></li>
 <li><p><strong>red_data</strong> (<em>Table</em>) – Photometric data in just the ‘blue’ bands</p></li>
 <li><p><strong>vparams</strong> (<em>iter</em>) – Iterable of param names to fit</p></li>
 <li><p><strong>fit_func</strong> (<em>func</em>) – Function to use to run fits (eg. <code class="docutils literal notranslate"><span class="pre">sncosmo.fit_lc</span></code>)</p></li>
+<li><p><strong>priors_s2</strong> (<em>dict</em>) – Priors to use when fitting salt2</p></li>
+<li><p><strong>priors_bg</strong> (<em>dict</em>) – Priors to use when fitting sn91bg</p></li>
 <li><p><strong>kwargs_s2</strong> (<em>dict</em>) – Kwargs to pass <code class="docutils literal notranslate"><span class="pre">fit_func</span></code> when fitting salt2</p></li>
 <li><p><strong>kwargs_bg</strong> (<em>dict</em>) – Kwargs to pass <code class="docutils literal notranslate"><span class="pre">fit_func</span></code> when fitting sn91bg</p></li>
 <li><p><strong>show_plots</strong> (<em>bool</em>) – Plot and display each individual fit</p></li>
@@ -274,19 +277,18 @@ then the sn91bg model.</p>
 
 <dl class="function">
 <dt id="phot_class.classification.tabulate_fit_results">
-<code class="sig-prename descclassname">phot_class.classification.</code><code class="sig-name descname">tabulate_fit_results</code><span class="sig-paren">(</span><em class="sig-param">data_iter</em>, <em class="sig-param">band_names</em>, <em class="sig-param">lambda_eff</em>, <em class="sig-param">fit_func</em>, <em class="sig-param">vparams</em>, <em class="sig-param">timeout_sec=90</em>, <em class="sig-param">kwargs_s2=None</em>, <em class="sig-param">kwargs_bg=None</em>, <em class="sig-param">out_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phot_class.classification.tabulate_fit_results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">phot_class.classification.</code><code class="sig-name descname">tabulate_fit_results</code><span class="sig-paren">(</span><em class="sig-param">data_iter</em>, <em class="sig-param">band_names</em>, <em class="sig-param">lambda_eff</em>, <em class="sig-param">fit_func</em>, <em class="sig-param">vparams</em>, <em class="sig-param">timeout_sec=90</em>, <em class="sig-param">config=None</em>, <em class="sig-param">out_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phot_class.classification.tabulate_fit_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tabulate fit results for a collection of data tables</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data_iter</strong> (<em>iter</em>) – Iterable of photometric data for different SN</p></li>
 <li><p><strong>band_names</strong> (<em>list</em>) – Name of bands included in <code class="docutils literal notranslate"><span class="pre">data_iter</span></code></p></li>
-<li><p><strong>lambda_eff</strong> (<em>list</em>) – Effective wavelength for each band in <code class="docutils literal notranslate"><span class="pre">band_names</span></code></p></li>
+<li><p><strong>lambda_eff</strong> (<em>list</em>) – Effective wavelength for bands in <code class="docutils literal notranslate"><span class="pre">band_names</span></code></p></li>
 <li><p><strong>vparams</strong> (<em>list</em>) – Name of parameters to vary</p></li>
 <li><p><strong>fit_func</strong> (<em>func</em>) – Function to use to run fits</p></li>
-<li><p><strong>timeout_sec</strong> (<em>int</em>) – Number of seconds before timeout fitting for target</p></li>
-<li><p><strong>kwargs_s2</strong> (<em>dict</em>) – Kwargs to pass <code class="docutils literal notranslate"><span class="pre">fit_func</span></code> when fitting salt2</p></li>
-<li><p><strong>kwargs_bg</strong> (<em>dict</em>) – Kwargs to pass <code class="docutils literal notranslate"><span class="pre">fit_func</span></code> when fitting sn91bg</p></li>
+<li><p><strong>timeout_sec</strong> (<em>int</em>) – Number of seconds before timeout fitting a SN</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Specifies priors / kwargs for fitting each model</p></li>
 <li><p><strong>out_path</strong> (<em>str</em>) – Optionally cache progressive results to file</p></li>
 </ul>
 </dd>

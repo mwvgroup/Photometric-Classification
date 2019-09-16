@@ -36,6 +36,36 @@ class timeout:
         signal.alarm(0)
 
 
+def parse_config_dict(obj_id, config_dict):
+    """Return the priors and kwargs for a given object from a config file
+
+    Args:
+        obj_id       (str): The object id in the dictionary
+        config_dict (dict): A dictionary with data from a config file
+
+    Returns:
+        - A dictionary with object priors for salt2
+        - A dictionary of fitting kwargs for salt2
+        - A dictionary with object priors for sn91bg
+        - A dictionary of fitting kwargs for sn91bg
+    """
+
+    out_data = []
+    for model in ('salt2', 'sn91bg'):
+        for dtype in ('priors', 'kwargs'):
+            all, blue, red = dict(), dict(), dict()
+            if obj_id in config_dict[model]:
+                object_data = config_dict[model][obj_id][dtype]
+                for bandset, settings in zip(('all', 'blue', 'red'), (all, blue, red)):
+                    settings.update(object_data.get('global', {}))
+                    settings.update(object_data.get(bandset, {}))
+
+            out_data.append({'all': all, 'blue': blue, 'red': red})
+
+    return tuple(out_data)
+
+
+# Todo: This signature is confusing. Do we use the model or result parameters?
 def calc_model_chisq(data, result, model):
     """Calculate the chi-squared for a given data table and model
 
@@ -52,13 +82,14 @@ def calc_model_chisq(data, result, model):
     data = deepcopy(data)
 
     # Drop any data that is not withing the model's range
-    lambda_effective = [sncosmo.get_bandpass(b).wave_eff for b in data['band']]
+    min_band_wave = [sncosmo.get_bandpass(b).minwave() for b in data['band']]
+    max_band_wave = [sncosmo.get_bandpass(b).maxwave() for b in data['band']]
     data = data[
         (data['time'] >= model.mintime()) &
         (data['time'] <= model.maxtime()) &
-        (lambda_effective >= model.minwave()) &
-        (lambda_effective <= model.maxwave())
-    ]
+        (min_band_wave >= model.minwave()) &
+        (max_band_wave <= model.maxwave())
+        ]
 
     if len(data) == 0:
         raise ValueError('No data within model range')
@@ -99,6 +130,7 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
         band_names  (iter): List of all bands available in the survey
         lambda_eff  (iter): The effective wavelength of each band in band_names
         z          (float): The redshift of the observed target
+        cutoff     (float): The cutoff distance for dropping an observation
 
     Returns:
         A SNCosmo input table with only blue bands
@@ -135,14 +167,13 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
 
     # Keep only the specified filters that are within 700 Angstroms of the
     # rest frame effective wavelength
-    is_ok_diff = delta_lambda[
-                     min_indx, np.arange(delta_lambda.shape[1])] < cutoff
+    within_dif_range = delta_lambda[min_indx, np.arange(delta_lambda.shape[1])] < cutoff
 
     # Split into blue and red band passes
     out_list = []
     for bands in split_bands(band_names, lambda_eff):
         is_in_bands = np.isin(rest_frame_filters, bands)
-        indices = np.logical_and(is_in_bands, is_ok_diff)
+        indices = np.logical_and(is_in_bands, within_dif_range)
         out_list.append(data_table[indices])
 
     return out_list

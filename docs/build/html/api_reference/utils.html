@@ -83,6 +83,8 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Project Notes:</span></p>
 <ul>
@@ -90,8 +92,6 @@
 </ul>
 <p class="caption"><span class="caption-text">API Reference:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">phot_class (Package Overview)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fit_funcs.html">phot_class.fit_funcs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classification.html">phot_class.classification</a></li>
@@ -201,6 +201,29 @@ The number of data points used in the calculation</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="phot_class.utils.parse_config_dict">
+<code class="sig-prename descclassname">phot_class.utils.</code><code class="sig-name descname">parse_config_dict</code><span class="sig-paren">(</span><em class="sig-param">obj_id</em>, <em class="sig-param">config_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#phot_class.utils.parse_config_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the priors and kwargs for a given object from a config file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj_id</strong> (<em>str</em>) – The object id in the dictionary</p></li>
+<li><p><strong>config_dict</strong> (<em>dict</em>) – A dictionary with data from a config file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>A dictionary with object priors for salt2</p></li>
+<li><p>A dictionary of fitting kwargs for salt2</p></li>
+<li><p>A dictionary with object priors for sn91bg</p></li>
+<li><p>A dictionary of fitting kwargs for sn91bg</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="phot_class.utils.split_bands">
 <code class="sig-prename descclassname">phot_class.utils.</code><code class="sig-name descname">split_bands</code><span class="sig-paren">(</span><em class="sig-param">bands</em>, <em class="sig-param">lambda_eff</em><span class="sig-paren">)</span><a class="headerlink" href="#phot_class.utils.split_bands" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split band-passes into collections of blue and red bands</p>
@@ -235,6 +258,7 @@ observation.</p>
 <li><p><strong>band_names</strong> (<em>iter</em>) – List of all bands available in the survey</p></li>
 <li><p><strong>lambda_eff</strong> (<em>iter</em>) – The effective wavelength of each band in band_names</p></li>
 <li><p><strong>z</strong> (<em>float</em>) – The redshift of the observed target</p></li>
+<li><p><strong>cutoff</strong> (<em>float</em>) – The cutoff distance for dropping an observation</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

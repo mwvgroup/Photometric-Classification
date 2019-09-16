@@ -8,6 +8,7 @@ import warnings
 from pathlib import Path
 
 import sndata
+import yaml
 
 from phot_class import classification
 from phot_class import fit_funcs
@@ -15,6 +16,20 @@ from phot_class import models
 
 warnings.simplefilter('ignore')
 models.register_sources()
+
+
+def load_yaml(path):
+    """Return data from a yaml file using the full loader
+
+    Args:
+        path (str): File path to read from
+
+    Returns:
+        File contents as a dictionary
+    """
+
+    with open(path) as infile:
+        return yaml.load(infile, Loader=yaml.FullLoader)
 
 
 def run(cli_args):
@@ -45,15 +60,20 @@ def run(cli_args):
     vparams = cli_args.vparams
     timeout_sec = cli_args.timeout
 
-    # Todo: this should be specified externally from the CLI somehow
-    kwargs_bg = {'bounds': {
-        'x1': [0.65, 1.25],
-        'c': [0, 1]}
-    }
+    # Read in priors and fitting arguments from file
+    config = load_yaml(cli_args.config) if cli_args.config else None
 
+    # Run fits
     fit_results = classification.tabulate_fit_results(
-        data_iter, band_names, lambda_eff, fit_func, vparams,
-        timeout_sec=timeout_sec, kwargs_bg=kwargs_bg, out_path=fit_path)
+        data_iter=data_iter,
+        band_names=band_names,
+        lambda_eff=lambda_eff,
+        fit_func=fit_func,
+        vparams=vparams,
+        timeout_sec=timeout_sec,
+        config=config,
+        out_path=fit_path
+    )
 
     classification.classify_targets(fit_results, out_path=classification_path)
 
@@ -86,6 +106,13 @@ def create_cli_parser():
         nargs='+',
         required=True,
         help='What parameters to vary with the fit')
+
+    parser.add_argument(
+        '-c', '--config',
+        type=str,
+        required=False,
+        help='Sn91bg fitting arguments.'
+    )
 
     parser.add_argument(
         '-t', '--timeout',

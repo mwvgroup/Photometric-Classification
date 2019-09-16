@@ -9,7 +9,6 @@ from unittest import TestCase
 import numpy as np
 import sncosmo
 from astropy.table import Column, Table
-from sndata.csp import dr3
 
 from phot_class import utils
 
@@ -108,7 +107,7 @@ class TestCalcModelChisq(TestCase):
             list(model.parameters),
             'Model parameters were mutated')
 
-    def test_out_of_range_data(self):
+    def test_out_of_range_phase(self):
         """Test that out of range phase values and bands are dropped"""
 
         data = self.data
@@ -116,14 +115,42 @@ class TestCalcModelChisq(TestCase):
             data, self.results, self.model)
 
         # Add values that are out of the model's phase range
-        # Columns: 'time', 'band', 'flux', 'fluxerr', 'zp', 'zpsys'
-        data.add_row([100000000, 'sdssu', 0, 0, 25, 'ab'])
+        # Columns: 'flux', 'fluxerr', 'zp', and 'zpsys' set as dummy values
+        high_phase = self.model.mintime() - 1
+        low_phase = self.model.maxtime() + 1
+        data.add_row([high_phase, 'sdssu', 0, 0, 25, 'ab'])
+        data.add_row([low_phase, 'sdssu', 0, 0, 25, 'ab'])
+
+        chisq, dof = utils.calc_model_chisq(data, self.results, self.model)
+        self.assertEqual(expected_chisq, chisq, 'Chisq values are not equal')
+        self.assertEqual(expected_dof, dof, 'Degrees of freedom are not equal')
+
+    def test_out_of_range_wave(self):
+        """Test that out of range phase values and bands are dropped"""
+
+        data = self.data
+        expected_chisq, expected_dof = utils.calc_model_chisq(
+            data, self.results, self.model)
+
+        # Define wavelength / transmission for bands above and below the
+        # model's wavelength range
+        min_wave = self.model.minwave()
+        max_wave = self.model.maxwave()
+        high_out_of_range = np.arange(min_wave, max_wave + 2)
+        low_out_of_range = np.arange(min_wave - 2, max_wave)
+        transmission = np.ones_like(low_out_of_range)
+
+        # Register the bands with sncosmo
+        high_band = sncosmo.Bandpass(high_out_of_range, transmission,
+                                     name='high')
+        low_band = sncosmo.Bandpass(high_out_of_range, transmission,
+                                    name='low')
+        sncosmo.register(high_band, name='high')
+        sncosmo.register(low_band, name='low')
 
         # Add values that are out of the model's wavelength range
-        # Here we use the H band from CSP
-        dr3.download_module_data()
-        dr3.register_filters(force=True)
-        data.add_row([1, 'csp_dr3_H', 0, 0, 25, 'ab'])
+        data.add_row([1, 'high', 0, 0, 25, 'ab'])
+        data.add_row([1, 'low', 0, 0, 25, 'ab'])
 
         chisq, dof = utils.calc_model_chisq(data, self.results, self.model)
         self.assertEqual(expected_chisq, chisq, 'Chisq values are not equal')
@@ -150,7 +177,7 @@ class TestCalcModelChisq(TestCase):
         args = empty_table, self.results, self.model
         self.assertRaises(ValueError, utils.calc_model_chisq, *args)
 
-    def test_correct_chisq(self):
+    def test_correct_chisq_calculation(self):
         """Test the correct chisq and dof are returned for simulated data"""
 
         # Define necessary information to simulate a table of flux data
@@ -243,7 +270,8 @@ class TestSplitData(TestCase):
             lambda_eff=[3550, 4680],
             z=0)
 
-        self.assertIn('dummy_key', blue_data.meta, 'Blue table missing metadata')
+        self.assertIn('dummy_key', blue_data.meta,
+                      'Blue table missing metadata')
         self.assertIn('dummy_key', red_data.meta, 'Red table missing metadata')
 
     def test_missing_effective_wavelength(self):
