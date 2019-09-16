@@ -4,7 +4,7 @@
 """Tests for the ``models`` module."""
 
 from os import environ
-from unittest import TestCase, skipIf
+from unittest import TestCase
 
 import numpy as np
 import sncosmo
@@ -69,6 +69,40 @@ class TemplateLoading(TestCase):
         (_, _, phase, _), _ = models.load_template()
         self.assertEqual(min_model_phase, min(phase))
         self.assertEqual(max_model_phase, max(phase))
+
+
+class BisectSearch(TestCase):
+
+    def test_element_in_array(self):
+        """Test the correct index is returned for an element in a list"""
+
+        test_array = np.array([1, 2, 3])
+        test_elt_index = 1
+        test_elt = test_array[test_elt_index]
+
+        self.assertEqual(1, models._sources.bi_search(test_array, test_elt))
+
+    def test_element_in_range(self):
+        """Test correct indices are returned for an element in a list range"""
+
+        test_array = np.array([1, 2, 3])
+        test_elt = 1.5
+        expected_indices = [0, 1]
+
+        self.assertSequenceEqual(
+            expected_indices, models._sources.bi_search(test_array, test_elt))
+
+    def test_element_outside_range(self):
+        """Test an error is raised for a parameter outside the array's range"""
+
+        args = (np.array([1, 2, 3]), 5)
+        self.assertRaises(RuntimeError, models._sources.bi_search, *args)
+
+    def test_unsorted_array(self):
+        """Test an error is raised when an array is not sorted"""
+
+        args = (np.array([1, 3, 2]), 5)
+        self.assertRaises(RuntimeError, models._sources.bi_search, *args)
 
 
 class BaseSourceTestingClass(TestCase):

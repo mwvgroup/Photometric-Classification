@@ -55,16 +55,22 @@ def bi_search(a, x):
     """Binary search for value ``x`` in array ``a``
 
     Args:
-        a (ndarray): The sorted list in which the number x will be searched
-        x     (num): The number to be searched
+        a (array): The sorted list in which the number x will be searched
+        x   (num): The number to be searched
 
     Returns:
         The position of nearest left neighbor of ``x``
         The position of nearest right neighbor of ``x``
     """
 
+    if any(np.diff(a) < 0):
+        raise RuntimeError('Array is not sorted.')
+
+    if not min(a) < x < max(a):
+        raise RuntimeError('Given element outside array range')
+
     if x in a:
-        return a.tolist().index(x)
+        return list(a).index(x)
 
     else:
         index = bisect(a, x)
