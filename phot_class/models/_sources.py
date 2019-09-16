@@ -66,7 +66,7 @@ def bi_search(a, x):
     if any(np.diff(a) < 0):
         raise RuntimeError('Array is not sorted.')
 
-    if not min(a) < x < max(a):
+    if not (min(a) <= x <= max(a)):
         raise RuntimeError('Given element outside array range')
 
     if x in a:
