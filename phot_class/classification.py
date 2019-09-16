@@ -197,7 +197,7 @@ def run_classification_fits(
         if show_plots:
             sncosmo.plot_lc(data_table, fitted_model)
             xs, d = utils.calc_model_chisq(data_table, result, fitted_model)
-            print(f'chisq / ndof: {xs} / {d} = {xs / d}', flush=True)
+            print(f'chisq / ndof = {xs} / {d} = {xs / d}', flush=True)
             pyplot.show()
 
     return out_data
