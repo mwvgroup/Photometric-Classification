@@ -1,3 +1,5 @@
+# Configuration file for continuous integration testing with travis
+
 language: python
 
 python:
