@@ -4,18 +4,28 @@ python:
   - "3.7-dev"
 
 before_install:
+  # Download and install miniconda
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b -p /home/travis/miniconda
   - export PATH=/home/travis/miniconda/bin:$PATH
+
+  # Update conda and add it to our bashrc file
   - conda update --yes conda
   - conda init bash
   - source /home/travis/.bashrc
 
 install:
+  # Create and instantiate a conda environment.
+  # This includes installing dependencies.
   - conda env create -f environment.yml
   - conda activate phot_class
+
+  # Install the package
   - python setup.py install
 
 script:
-  "pytest"
+  - pytest --cov=phot_class/
+
+after_success:
+  - coveralls
