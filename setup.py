@@ -10,4 +10,5 @@ setup(name='phot_class',
       setup_requires=['pytest-runner'],
       tests_require=['pytest'],
       package_data={'': ['*.npy']},
-      include_pacakge_data=True)
+      include_pacakge_data=True,
+      install_requires=['sncosmo==2.0.0',])
