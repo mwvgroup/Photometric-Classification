@@ -117,8 +117,8 @@ class PhaseLimited(sncosmo.Source):
 
         By default, the phase of this source is reduced to match the phase
         range of the SNCosmo Salt2.4 model. Alternative phase ranges can
-        be specified, but the spectroscopic templates for this source only
-        extend from -18 to 101.
+        be specified, but be aware that the full spectroscopic templates only
+        extends from -18 to 100.
 
         Args:
             min_phase (float): The minimum phase
