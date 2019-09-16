@@ -89,7 +89,7 @@ from ._sources import load_template
 def register_sources(force=False):
     """Register SN 1991bg-like models with SNCosmo
 
-    Versions include: 'phase_limited', 'color_interpolation'
+    Versions include: 'phase_limited', 'full_phase'
 
     Args:
         force (bool): Whether to overwrite an already registered source

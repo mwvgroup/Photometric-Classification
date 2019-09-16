@@ -81,7 +81,7 @@ def bi_search(a, x):
 def SN91bg(name=None, version='phase_limited'):
     """Return a SN 1991bg-like source class for SNCosmo
 
-    Versions include: 'phase_limited', 'color_interpolation'
+    Versions include: 'phase_limited', 'full_phase'
 
     Args:
          name   (None): A dummy argument for compatibility with SNCosmo
