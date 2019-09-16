@@ -72,6 +72,7 @@ class TemplateLoading(TestCase):
 
 
 class BisectSearch(TestCase):
+    """Tests for models._sources.bi_search"""
 
     def test_element_in_array(self):
         """Test the correct index is returned for an element in a list"""
