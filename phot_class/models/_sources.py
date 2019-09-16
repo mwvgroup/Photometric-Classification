@@ -85,6 +85,9 @@ def SN91bg(name=None, version='phase_limited'):
     if version == 'phase_limited':
         return PhaseLimited()
 
+    if version == 'full_phase':
+        return PhaseLimited(-np.inf, np.inf)
+
     else:
         raise ValueError(f"Unidentified version: '{version}'.")
 
