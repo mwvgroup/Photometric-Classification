@@ -4,7 +4,7 @@
 """Tests for the ``models`` module."""
 
 from os import environ
-from unittest import TestCase, skipIf
+from unittest import TestCase
 
 import numpy as np
 import sncosmo
@@ -71,6 +71,41 @@ class TemplateLoading(TestCase):
         self.assertEqual(max_model_phase, max(phase))
 
 
+class BisectSearch(TestCase):
+    """Tests for models._sources.bi_search"""
+
+    def test_element_in_array(self):
+        """Test the correct index is returned for an element in a list"""
+
+        test_array = np.array([1, 2, 3])
+        test_elt_index = 1
+        test_elt = test_array[test_elt_index]
+
+        self.assertEqual(1, models._sources.bi_search(test_array, test_elt))
+
+    def test_element_in_range(self):
+        """Test correct indices are returned for an element in a list range"""
+
+        test_array = np.array([1, 2, 3])
+        test_elt = 1.5
+        expected_indices = [0, 1]
+
+        self.assertSequenceEqual(
+            expected_indices, models._sources.bi_search(test_array, test_elt))
+
+    def test_element_outside_range(self):
+        """Test an error is raised for a parameter outside the array's range"""
+
+        args = (np.array([1, 2, 3]), 5)
+        self.assertRaises(RuntimeError, models._sources.bi_search, *args)
+
+    def test_unsorted_array(self):
+        """Test an error is raised when an array is not sorted"""
+
+        args = (np.array([1, 3, 2]), 5)
+        self.assertRaises(RuntimeError, models._sources.bi_search, *args)
+
+
 class BaseSourceTestingClass(TestCase):
     """Tests for an arbitrary sncosmo Source object"""
 
@@ -91,6 +126,10 @@ class BaseSourceTestingClass(TestCase):
                 model_flux = self.source.flux(phase, wave)
                 template_flux = template[i, j]
                 self.assertTrue(np.all(np.isclose(model_flux, template_flux)))
+
+    def _test_phase_range(self, min_phase, max_phase):
+        self.assertEqual(min_phase, self.source.minphase())
+        self.assertEqual(max_phase, self.source.maxphase())
 
     def _test_correct_version(self):
         """Test the source was registered with the correct version name
@@ -131,21 +170,9 @@ class PhaseLimited(BaseSourceTestingClass):
         self._test_correct_version()
 
     def test_phase_matches_salt2(self):
-        """Test the model has the correct phase range
+        """Test the model has the correct phase range"""
 
-        Phase range should match the salt2 model as closely as possible
-        """
-
-        salt2 = sncosmo.get_source('salt2', version='2.4')
-        (_, _, template_phase, _), _ = models.load_template()
-
-        # The template may not extend to the bounds of the salt2 model.
-        # In that case we use the edge of the template.
-        min_phase = max(salt2.minphase(), min(template_phase))
-        max_phase = min(salt2.maxphase(), max(template_phase))
-
-        self.assertEqual(min_phase, self.source.minphase())
-        self.assertEqual(max_phase, self.source.maxphase())
+        self._test_phase_range(-18, 50)
 
     def test_zero_flux_outside_phase_range(self):
         """Test the modeled flux outside the modeled phase range is zero"""
@@ -153,12 +180,11 @@ class PhaseLimited(BaseSourceTestingClass):
         self._test_zero_flux_outside_phase_range()
 
 
-@skipIf(running_in_travis, 'This model is known to fail. Ignore it in Travis')
-class ColorInterpolation(BaseSourceTestingClass):
-    """Tests the 'color_interpolation' version of the sn91bg model"""
+class FullPhase(BaseSourceTestingClass):
+    """Tests the 'phase_limited' version of the sn91bg model"""
 
     source_name = 'sn91bg'
-    source_version = 'color_interpolation'
+    source_version = 'full_phase'
 
     def test_flux_matches_template(self):
         """Test return of model.flux agrees with the source template"""
@@ -169,6 +195,11 @@ class ColorInterpolation(BaseSourceTestingClass):
         """Test the source was registered with the correct version name"""
 
         self._test_correct_version()
+
+    def test_phase_matches_salt2(self):
+        """Test the model has the correct phase range"""
+
+        self._test_phase_range(-18, 100)
 
     def test_zero_flux_outside_phase_range(self):
         """Test the modeled flux outside the modeled phase range is zero"""

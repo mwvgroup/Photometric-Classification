@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""The ``models`` module defines ``Source`` classes for modeling
+"""The ``models`` module defines a ``Source`` class for modeling
 91bg-like supernovae with ``sncosmo``. The model is based on the 91bg template
 from Nugent et al. 2002 but is extended into the ultra-violet. The model we
 use here was originally intended for use with the FORTRAN package ``SNANA``.
@@ -37,16 +37,15 @@ information on how each version determines the flux for a given set of
 parameters, see the documentation for the given source class. It should **NOT**
 be assumed that flux is predicted the same way for different model versions.
 
-+--------+---------------------------+--------------------------------------------------------+
-| Name   | Version                   | Description                                            |
-+========+===========================+========================================================+
-| sn91bg | 'phase_limited' (Default) | 1991bg model restricted to a phase similar to Salt 2.4 |
-+--------+---------------------------+--------------------------------------------------------+
-| sn91bg | 'color_interpolation'     | Full 1991bg model that interpolates in color space     |
-+--------+---------------------------+--------------------------------------------------------+
-
-.. warning:: The ``color_interpolation`` version of the 91bg model does not
-   pass our test suite and should be used with caution.
++--------+---------------------------+---------------------------------------------------------+
+| Name   | Version                   | Description                                             |
++========+===========================+=========================================================+
+| sn91bg | 'phase_limited' (Default) | 1991bg model restricted to a phase similar to Salt 2.4. |
+|        |                           | This model version extends from -18 to 50 days.         |
++--------+---------------------------+---------------------------------------------------------+
+| sn91bg | 'full_phase'              | 1991bg model extending over to full phase range.        |
+|        |                           | This model version extends from -18 to 100 days.        |
++--------+---------------------------+---------------------------------------------------------+
 
 Usage Example
 -------------
@@ -81,6 +80,8 @@ Module Level Functions
 ----------------------
 """
 
+import sncosmo as _sncosmo
+
 from ._sources import SN91bg as _SN91bg
 from ._sources import load_template
 
@@ -88,24 +89,22 @@ from ._sources import load_template
 def register_sources(force=False):
     """Register SN 1991bg-like models with SNCosmo
 
-    Versions include: 'phase_limited', 'color_interpolation'
+    Versions include: 'phase_limited', 'full_phase'
 
     Args:
         force (bool): Whether to overwrite an already registered source
     """
 
-    import sncosmo
-
-    sncosmo.register_loader(
-        data_class=sncosmo.Source,
+    _sncosmo.register_loader(
+        data_class=_sncosmo.Source,
         name='sn91bg',
         func=_SN91bg,
         version='phase_limited',
         force=force)
 
-    sncosmo.register_loader(
-        data_class=sncosmo.Source,
+    _sncosmo.register_loader(
+        data_class=_sncosmo.Source,
         name='sn91bg',
         func=_SN91bg,
-        version='color_interpolation',
+        version='full_phase',
         force=force)
