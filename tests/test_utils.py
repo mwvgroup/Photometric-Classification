@@ -9,7 +9,6 @@ from unittest import TestCase
 import numpy as np
 import sncosmo
 from astropy.table import Column, Table
-from sndata.csp import dr3
 
 from phot_class import utils
 
@@ -55,57 +54,6 @@ class TestTimeout(TestCase):
         """
 
         self.assertRaises(TypeError, self.run_timeout, 2.1)
-
-
-class ParseConfigDict(TestCase):
-    """Tests for utils.parse_config_dict"""
-
-    @classmethod
-    def setUpClass(cls):
-        """Define dummy config data to test parsing against"""
-
-        test_config = {
-            'global': {
-                'priors': {
-                    '2004dt': {'t0': 1, 'z': 2}
-                }
-            },
-
-            'salt2': {
-                'priors': {
-                    '2004dt': {'t0': 3, 'x0': 4}
-                }
-            },
-
-            'sn91bg': {
-                'priors': {
-                    '2004dt': {'t0': 5, 'x0': 6, 'z': 7}
-                },
-
-                'kwargs': {
-                    '2004dt': {'bounds': {'c': (0, 1)}}
-                }
-
-            }
-        }
-
-        cls.salt2_prior = {'t0': 3, 'z': 2, 'x0': 4}
-        cls.salt2_kwargs = {}
-        cls.sn91bg_prior = {'t0': 5, 'x0': 6, 'z': 7}
-        cls.sn91bg_kwargs = {'bounds': {'c': (0, 1)}}
-        cls.returned_configs = utils.parse_config_dict('2004dt', test_config)
-
-    def test_salt2_prior(self):
-        self.assertEqual(self.salt2_prior, self.returned_configs[0])
-
-    def test_salt2_kwargs(self):
-        self.assertEqual(self.salt2_kwargs, self.returned_configs[1])
-
-    def test_sn91bg_prior(self):
-        self.assertEqual(self.sn91bg_prior, self.returned_configs[2])
-
-    def test_sn91bg_kwargs(self):
-        self.assertEqual(self.sn91bg_kwargs, self.returned_configs[3])
 
 
 class TestCalcModelChisq(TestCase):
@@ -193,8 +141,10 @@ class TestCalcModelChisq(TestCase):
         transmission = np.ones_like(low_out_of_range)
 
         # Register the bands with sncosmo
-        high_band = sncosmo.Bandpass(high_out_of_range, transmission, name='high')
-        low_band = sncosmo.Bandpass(high_out_of_range, transmission, name='low')
+        high_band = sncosmo.Bandpass(high_out_of_range, transmission,
+                                     name='high')
+        low_band = sncosmo.Bandpass(high_out_of_range, transmission,
+                                    name='low')
         sncosmo.register(high_band, name='high')
         sncosmo.register(low_band, name='low')
 
@@ -304,8 +254,10 @@ class TestSplitData(TestCase):
                 data, band_names, lambda_eff, redshift, cutoff=float('inf'))
 
             err_msg = f'Wrongs bands for z={redshift}'
-            self.assertListEqual(expected_blue, list(blue_table['band']), err_msg)
-            self.assertListEqual(expected_red, list(red_table['band']), err_msg)
+            self.assertListEqual(expected_blue, list(blue_table['band']),
+                                 err_msg)
+            self.assertListEqual(expected_red, list(red_table['band']),
+                                 err_msg)
 
     def test_maintains_metadata(self):
         """Test whether passed and returned tables have same metadata"""
