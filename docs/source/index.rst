@@ -1,3 +1,6 @@
+Classification of Peculiar Supernovae
+=====================================
+
 .. |python| image:: https://img.shields.io/badge/python-2.7,%203.5+-blue.svg
     :target: #
 
@@ -18,9 +21,6 @@
    +-------------------------------------------+
    | |python| |travis| |cover| |docs| |binder| |
    +-------------------------------------------+
-
-Classification of Peculiar Supernovae
-=====================================
 
 .. warning:: This is an ongoing project. Results and documentation may be
    subject to frequent change.
