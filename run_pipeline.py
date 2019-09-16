@@ -10,12 +10,7 @@ from pathlib import Path
 import sndata
 import yaml
 
-from phot_class import classification
-from phot_class import fit_funcs
-from phot_class import models
-
 warnings.simplefilter('ignore')
-models.register_sources()
 
 
 def load_yaml(path):
@@ -152,6 +147,12 @@ def create_cli_parser():
 
 # Parse command line input
 if __name__ == '__main__':
+    from phot_class import classification
+    from phot_class import fit_funcs
+    from phot_class import models
+
+    models.register_sources()
+
     parser = create_cli_parser()
     cli_args = parser.parse_args()
     run(cli_args)

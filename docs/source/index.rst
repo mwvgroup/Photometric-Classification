@@ -1,3 +1,24 @@
+.. |python| image:: https://img.shields.io/badge/python-2.7,%203.5+-blue.svg
+    :target: #
+
+.. |travis| image:: https://travis-ci.com/mwvgroup/SDSS-Classification.svg?branch=master
+    :target: https://travis-ci.com/mwvgroup/SDSS-Classification
+
+.. |cover| image:: https://coveralls.io/repos/github/mwvgroup/Photometric-Classification/badge.svg?branch=master
+    :target: https://coveralls.io/github/mwvgroup/Photometric-Classification?branch=master
+
+.. |docs| image:: https://readthedocs.org/projects/photometric-classification/badge/?version=latest
+    :target: https://photometric-classification.readthedocs.io/en/latest/?badge=latest
+
+.. |binder| image:: https://mybinder.org/badge_logo.svg
+    :target: https://mybinder.org/v2/gh/mwvgroup/Photometric-Classification/master?filepath=notebooks%2F
+
+.. rst-class:: badges
+
+   +-------------------------------------------+
+   | |python| |travis| |cover| |docs| |binder| |
+   +-------------------------------------------+
+
 Classification of Peculiar Supernovae
 =====================================
 
@@ -105,6 +126,7 @@ We provide summaries for key files in the project repository::
    :caption: Project Notes:
 
    project_notes/data
+   project_notes/notebooks
 
 
 .. toctree::

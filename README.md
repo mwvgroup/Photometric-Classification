@@ -1,5 +1,6 @@
 # SDSS-Classification
 
+[![Python](https://img.shields.io/badge/python-3.7-blue.svg)](#)
 [![Build Status](https://travis-ci.com/mwvgroup/SDSS-Classification.svg?branch=master)](https://travis-ci.com/mwvgroup/SDSS-Classification)
 [![Coverage Status](https://coveralls.io/repos/github/mwvgroup/Photometric-Classification/badge.svg?branch=master)](https://coveralls.io/github/mwvgroup/Photometric-Classification?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/photometric-classification/badge/?version=latest)](https://photometric-classification.readthedocs.io/en/latest/?badge=latest)
