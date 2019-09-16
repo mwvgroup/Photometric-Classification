@@ -196,6 +196,8 @@ def run_classification_fits(
 
         if show_plots:
             sncosmo.plot_lc(data_table, fitted_model)
+            xs, d = utils.calc_model_chisq(data_table, result, fitted_model)
+            print(f'chisq / ndof: {xs} / {d} = {xs / d}', flush=True)
             pyplot.show()
 
     return out_data
@@ -267,7 +269,6 @@ def tabulate_fit_results(
             raise
 
         except Exception as e:
-            raise
             # Add a masked row so we have a record in the output table
             # indicating something went wrong.
             num_cols = len(out_table.colnames)

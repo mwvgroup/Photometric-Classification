@@ -1,474 +1,3229 @@
-global:
-  priors:
-    2004dt:
-      global:
-        t0: 2453239.6
-        z: 0.01973
+# This configuration file specifies fitting arguments for CSP DR3 targets
+# Redshift values are taken from CSP DR1. Most targets follow the template
+# listed below, with modifications made on a per-supernova basis to ensure
+# good model convergence.
+#
+# salt2:
+#   object_id:
+#     kwargs:
+#       global:
+#         bounds:
+#           t0:
+#             - ? # Typically t0 - 10
+#             - ? # Typically t0 + 10
+#         phase_range:
+#           - -20
+#           - 50
+#     priors:
+#       global:
+#         z: ?
+#         t0: ?
+#
+# sn91bg:
+#   object_id:
+#     kwargs:
+#       global:
+#         bounds:
+#           c:
+#             - 0
+#             - 1
+#           x1:
+#             - 0.65
+#             - 1.25
+#           t0:
+#             - ? # Typically t0 - 10
+#             - ? # Typically t0 + 10
+#         phase_range:
+#           - -20
+#           - 50
+#     priors:
+#       global:
+#         z: ?
+#         t0: ?
 
-    2004ef:
+salt2:
+  2004dt:
+    kwargs:
       global:
-        t0: 2453264.5
-        z: 0.03099
+        bounds:
+          t0:
+            - 2453233
+            - 2453239
+        phase_range:
+          - -20
+          - 50
 
-    2004eo:
+    priors:
       global:
-        t0: 2453278.7
-        z: 0.0157
+        z: 0.01883
+        t0: 2453238
+  2004ef:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453254
+            - 2453274
 
-    2004ey:
-      global:
-        t0: 2453304.4
-        z: 0.01579
+        phase_range:
+          - -20
+          - 50
 
-    2004gc:
+    priors:
       global:
-        t0: 2453325.1
-        z: 0.0307
-
-    2004gs:
+        z: 0.02979
+        t0: 2453264.0
+  2004eo:
+    kwargs:
       global:
-        t0: 2453356.5
-        z: 0.02665
-
-    2004gu:
+        bounds:
+          t0:
+            - 2453268
+            - 2453288
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453363.9
-        z: 0.04586
-
-    2005A:
+        z: 0.01475
+        t0: 2453278
+  2004ey:
+    kwargs:
       global:
-        t0: 2453380.9
-        z: 0.01914
-
-    2005M:
+        bounds:
+          t0:
+            - 2453294
+            - 2453314
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453405.9
-        z: 0.02462
-
-    2005W:
+        z: 0.01464
+        t0: 2453304
+  2004gc:
+    kwargs:
       global:
-        t0: 2453412.3
-        z: 0.00889
-
-    2005ag:
+        bounds:
+          t0:
+            - 2453315
+            - 2453329
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453414.5
-        z: 0.0798
-
-    2005al:
+        z: 0.03074
+        t0: 2453325
+  2004gs:
+    kwargs:
       global:
-        t0: 2453430.4
-        z: 0.0124
-
-    2005am:
+        bounds:
+          t0:
+            - 2453346
+            - 2453358
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453437.1
-        z: 0.0079
-
-    2005be:
+        z: 0.02752
+        t0: 2453356
+  2004gu:
+    kwargs:
       global:
-        t0: 2453461.1
-        z: 0.03502
-
-    2005bg:
+        bounds:
+          t0:
+            - 2453354.0
+            - 2453374.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453471.2
-        z: 0.02309
-
-    2005bl:
+        z: 0.04693
+        t0: 2453364.0
+  2005A:
+    kwargs:
       global:
-        t0: 2453484.7
-        z: 0.02406
-
-    2005bo:
+        bounds:
+          t0:
+            - 2453381
+            - 2453385
+          c: [-2, 2]
+          x1: [-2, 2]
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453480.3
+        z: 0.01835
+        t0: 2453381.0
+  2005M:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453396.0
+            - 2453416.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0256
+        t0: 2453406.0
+  2005W:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453402.0
+            - 2453422.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00796
+        t0: 2453412.0
+  2005ag:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453404.0
+            - 2453424.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0804
+        t0: 2453414.0
+  2005al:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453420.0
+            - 2453440.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01329
+        t0: 2453430.0
+  2005am:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453427.0
+            - 2453447.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00897
+        t0: 2453437.0
+  2005be:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453451.0
+            - 2453471.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03562
+        t0: 2453461.0
+  2005bg:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453465.0
+            - 2453477.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02417
+        t0: 2453471.0
+  2005bl:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453479.0
+            - 2453491.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02513
+        t0: 2453485.0
+  2005bo:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453474.0
+            - 2453486.0
+          c: [-2, 2]
+          x1: [-2, 2]
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01502
+        t0: 2453480.0
+  2005el:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453642.0
+            - 2453654.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0149
+        t0: 2453648.0
+  2005eq:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453649.0
+            - 2453661.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02837
+        t0: 2453655.0
+  2005hc:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453662.0
+            - 2453674.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04501
+        t0: 2453668.0
+  2005hj:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453670.0
+            - 2453682.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.05699
+        t0: 2453676.0
+  2005iq:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453682.0
+            - 2453694.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03295
+        t0: 2453688.0
+  2005kc:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453692.0
+            - 2453704.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
         z: 0.0139
-
-    2005el:
+        t0: 2453698.0
+  2005ke:
+    kwargs:
       global:
-        t0: 2453647.6
-        z: 0.01491
-
-    2005eq:
+        bounds:
+          t0:
+            - 2453693.0
+            - 2453705.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453654.9
-        z: 0.02898
-
-    2005hc:
+        z: 0.00449
+        t0: 2453699.0
+  2005ki:
+    kwargs:
       global:
-        t0: 2453667.6
-        z: 0.04594
-
-    2005hj:
+        bounds:
+          t0:
+            - 2453700.0
+            - 2453712.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453675.7
-        z: 0.05801
-
-    2005iq:
+        z: 0.02038
+        t0: 2453706.0
+  2005ku:
+    kwargs:
       global:
-        t0: 2453688.2
-        z: 0.03404
-
-    2005kc:
+        bounds:
+          t0:
+            - 2453693.0
+            - 2453705.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453698.2
-        z: 0.01512
-
-    2005ke:
+        z: 0.04421
+        t0: 2453699.0
+  2005lu:
+    kwargs:
       global:
-        t0: 2453698.8
-        z: 0.00488
-
-    2005ki:
+        bounds:
+          t0:
+            - 2453706.0
+            - 2453718.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453706.1
-        z: 0.01921
-
-    2005ku:
+        z: 0.03132
+        t0: 2453712.0
+  2005na:
+    kwargs:
       global:
-        t0: 2453698.9
-        z: 0.04544
-
-    2005lu:
+        bounds:
+          t0:
+            - 2453734.0
+            - 2453746.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453712.4
-        z: 0.03201
-
-    2005na:
+        z: 0.02683
+        t0: 2453740.0
+  2006D:
+    kwargs:
       global:
-        t0: 2453740.2
-        z: 0.02632
-
-    2006D:
+        bounds:
+          t0:
+            - 2453752.0
+            - 2453764.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453757.8
-        z: 0.00853
-
-    2006X:
+        z: 0.00965
+        t0: 2453758.0
+  2006X:
+    kwargs:
       global:
-        t0: 2453786.3
-        z: 0.00524
-
-    2006ax:
+        bounds:
+          t0:
+            - 2453780.0
+            - 2453792.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453827.6
-        z: 0.01674
-
-    2006bd:
+        z: 0.00633
+        t0: 2453786.0
+  2006ax:
+    kwargs:
       global:
+        bounds:
+          t0:
+            - 2453822.0
+            - 2453834.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01797
+        t0: 2453828.0
+  2006bd:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453806.0
+            - 2453818.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02681
         t0: 2453812.0
-        z: 0.02572
-
-    2006bh:
+  2006bh:
+    kwargs:
       global:
-        t0: 2453833.9
-        z: 0.01085
-
-    2006br:
+        bounds:
+          t0:
+            - 2453828.0
+            - 2453840.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453851.7
-        z: 0.02459
-
-    2006dd:
+        z: 0.0105
+        t0: 2453834.0
+  2006br:
+    kwargs:
       global:
-        t0: 2453919.9
-        z: 0.00587
-
-    2006ef:
+        bounds:
+          t0:
+            - 2453846.0
+            - 2453858.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453970.2
-        z: 0.01788
-
-    2006ej:
+        z: 0.02554
+        t0: 2453852.0
+  2006dd:
+    kwargs:
       global:
-        t0: 2453976.1
-        z: 0.02045
-
-    2006eq:
+        bounds:
+          t0:
+            - 2453914.0
+            - 2453926.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453977.6
-        z: 0.0495
-
-    2006et:
+        z: 0.00551
+        t0: 2453920.0
+  2006ef:
+    kwargs:
       global:
-        t0: 2453993.5
-        z: 0.02217
-
-    2006ev:
+        bounds:
+          t0:
+            - 2453964.0
+            - 2453976.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2453989.6
-        z: 0.02873
-
-    2006fw:
+        z: 0.01702
+        t0: 2453970.0
+  2006ej:
+    kwargs:
       global:
-        t0: 2454003.2
-        z: 0.083
-
-    2006gj:
+        bounds:
+          t0:
+            - 2453970.0
+            - 2453982.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454000.1
-        z: 0.02835
-
-    2006gt:
+        z: 0.01935
+        t0: 2453976.0
+  2006eq:
+    kwargs:
       global:
+        bounds:
+          t0:
+            - 2453972.0
+            - 2453984.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04839
+        t0: 2453978.0
+  2006et:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453988.0
+            - 2454000.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02119
+        t0: 2453994.0
+  2006ev:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453984.0
+            - 2453996.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02762
+        t0: 2453990.0
+  2006fw:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453997.0
+            - 2454009.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.08204
+        t0: 2454003.0
+  2006gj:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453994.0
+            - 2454006.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02777
+        t0: 2454000.0
+  2006gt:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2453998.0
+            - 2454010.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04367
         t0: 2454004.0
-        z: 0.04477
-
-    2006hb:
+  2006hb:
+    kwargs:
       global:
-        t0: 2453999.2
-        z: 0.01534
-
-    2006hx:
+        bounds:
+          t0:
+            - 2453993.0
+            - 2454005.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454022.6
-        z: 0.04549
-
-    2006is:
+        z: 0.01535
+        t0: 2453999.0
+  2006hx:
+    kwargs:
       global:
-        t0: 2454008.9
+        bounds:
+          t0:
+            - 2454017.0
+            - 2454029.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04444
+        t0: 2454023.0
+  2006is:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454003.0
+            - 2454015.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
         z: 0.0314
-
-    2006kf:
+        t0: 2454009.0
+  2006kf:
+    kwargs:
       global:
-        t0: 2454041.8
-        z: 0.0213
-
-    2006lu:
+        bounds:
+          t0:
+            - 2454036.0
+            - 2454048.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454034.6
-        z: 0.0534
-
-    2006mr:
+        z: 0.02081
+        t0: 2454042.0
+  2006lu:
+    kwargs:
       global:
-        t0: 2454050.6
-        z: 0.00587
-
-    2006ob:
+        bounds:
+          t0:
+            - 2454029.0
+            - 2454041.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454063.9
-        z: 0.05924
-
-    2006os:
+        z: 0.0544
+        t0: 2454035.0
+  2006mr:
+    kwargs:
       global:
-        t0: 2454063.3
-        z: 0.03281
-
-    2006ot:
+        bounds:
+          t0:
+            - 2454045.0
+            - 2454057.0
+          c:
+            - -3
+            - 3
+          x1:
+            - -3
+            - 3
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454062.4
-        z: 0.05294
-
-    2006py:
+        z: 0.00551
+        t0: 2454051.0
+  2006ob:
+    kwargs:
       global:
-        t0: 2454071.1
-        z: 0.0579
-
-    2007A:
+        bounds:
+          t0:
+            - 2454058.0
+            - 2454070.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454113.3
-        z: 0.01765
-
-    2007N:
+        z: 0.0583
+        t0: 2454064.0
+  2006os:
+    kwargs:
       global:
-        t0: 2454124.3
-        z: 0.01288
-
-    2007S:
+        bounds:
+          t0:
+            - 2454057.0
+            - 2454069.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454145.1
-        z: 0.01388
-
-    2007af:
+        z: 0.0321
+        t0: 2454063.0
+  2006ot:
+    kwargs:
       global:
-        t0: 2454174.8
-        z: 0.00546
-
-    2007ai:
+        bounds:
+          t0:
+            - 2454056.0
+            - 2454068.0
+          c:
+            - -3
+            - 3
+          x1:
+            - -3
+            - 3
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454172.3
-        z: 0.03166
-
-    2007al:
-      z: 0.01212
-
-    2007as:
+        z: 0.05219
+        t0: 2454062.0
+  2006py:
+    kwargs:
       global:
-        t0: 2454181.8
-        z: 0.01757
-
-    2007ax:
+        bounds:
+          t0:
+            - 2454065.0
+            - 2454077.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454188.1
-        z: 0.00686
-
-    2007ba:
+        z: 0.05668
+        t0: 2454071.0
+  2007A:
+    kwargs:
       global:
-        t0: 2454197.1
-        z: 0.03851
-
-    2007bc:
+        bounds:
+          t0:
+            - 2454107.0
+            - 2454119.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454200.6
+        z: 0.01648
+        t0: 2454113.0
+  2007N:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454118.0
+            - 2454130.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01401
+        t0: 2454124.0
+  2007S:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454139.0
+            - 2454151.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01503
+        t0: 2454145.0
+  2007af:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454169.0
+            - 2454181.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00629
+        t0: 2454175.0
+  2007ai:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454166.0
+            - 2454178.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03201
+        t0: 2454172.0
+  2007al:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 0.0
+            - 0.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01327
+        t0: 0.0
+  2007as:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454176.0
+            - 2454188.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01791
+        t0: 2454182.0
+  2007ax:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454182.0
+            - 2454194.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00764
+        t0: 2454188.0
+  2007ba:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454191.0
+            - 2454203.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03908
+        t0: 2454197.0
+  2007bc:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454195.0
+            - 2454207.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
         z: 0.02077
-
-    2007bd:
+        t0: 2454201.0
+  2007bd:
+    kwargs:
       global:
-        t0: 2454207.6
-        z: 0.03102
-
-    2007bm:
+        bounds:
+          t0:
+            - 2454202.0
+            - 2454214.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454225.1
+        z: 0.03196
+        t0: 2454208.0
+  2007bm:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454219.0
+            - 2454231.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
         z: 0.00621
-
-    2007ca:
+        t0: 2454225.0
+  2007ca:
+    kwargs:
       global:
-        t0: 2454227.8
-        z: 0.01407
-
-    2007hj:
+        bounds:
+          t0:
+            - 2454222.0
+            - 2454234.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454349.8
-        z: 0.01411
-
-    2007jg:
+        z: 0.01508
+        t0: 2454228.0
+  2007hj:
+    kwargs:
       global:
-        t0: 2454367.7
-        z: 0.03713
-
-    2007jh:
+        bounds:
+          t0:
+            - 2454344.0
+            - 2454356.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454365.8
-        z: 0.0408
-
-    2007le:
+        z: 0.01289
+        t0: 2454350.0
+  2007jg:
+    kwargs:
       global:
-        t0: 2454399.2
-        z: 0.00672
-
-    2007nq:
+        bounds:
+          t0:
+            - 2454362.0
+            - 2454374.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454398.7
-        z: 0.04503
-
-    2007on:
+        z: 0.0366
+        t0: 2454368.0
+  2007jh:
+    kwargs:
       global:
-        t0: 2454420.2
-        z: 0.00649
-
-    2007sr:
+        bounds:
+          t0:
+            - 2454360.0
+            - 2454372.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454448.5
-        z: 0.00548
-
-    2007ux:
+        z: 0.04029
+        t0: 2454366.0
+  2007le:
+    kwargs:
       global:
-        t0: 2454466.9
-        z: 0.03091
-
-    2008C:
+        bounds:
+          t0:
+            - 2454393.0
+            - 2454405.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454466.8
-        z: 0.01662
-
-    2008R:
+        z: 0.00553
+        t0: 2454399.0
+  2007nq:
+    kwargs:
       global:
-        t0: 2454494.8
-        z: 0.0135
-
-    2008ar:
+        bounds:
+          t0:
+            - 2454393.0
+            - 2454405.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454534.7
-        z: 0.02615
-
-    2008bc:
+        z: 0.04393
+        t0: 2454399.0
+  2007on:
+    kwargs:
       global:
-        t0: 2454549.2
-        z: 0.01509
-
-    2008bf:
+        bounds:
+          t0:
+            - 2454414.0
+            - 2454426.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
+        z: 0.00619
+        t0: 2454420.0
+  2007sr:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454442.0
+            - 2454454.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00666
+        t0: 2454448.0
+  2007ux:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454461.0
+            - 2454473.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03202
+        t0: 2454467.0
+  2008C:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454461.0
+            - 2454473.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01708
+        t0: 2454467.0
+  2008R:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454489.0
+            - 2454501.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0129
+        t0: 2454495.0
+  2008ar:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454529.0
+            - 2454541.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02727
+        t0: 2454535.0
+  2008bc:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454543.0
+            - 2454555.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01572
+        t0: 2454549.0
+  2008bf:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454549.0
+            - 2454561.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0251
         t0: 2454555.0
-        z: 0.02403
-
-    2008bq:
+  2008bq:
+    kwargs:
       global:
-        t0: 2454563.4
-        z: 0.034
-
-    2008fp:
+        bounds:
+          t0:
+            - 2454557.0
+            - 2454569.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454730.2
-        z: 0.00566
-
-    2008gl:
+        z: 0.03446
+        t0: 2454563.0
+  2008fp:
+    kwargs:
       global:
-        t0: 2454768.7
-        z: 0.03402
-
-    2008gp:
+        bounds:
+          t0:
+            - 2454724.0
+            - 2454736.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454779.1
-        z: 0.03341
-
-    2008hu:
+        z: 0.00629
+        t0: 2454730.0
+  2008gl:
+    kwargs:
       global:
-        t0: 2454807.1
-        z: 0.0497
-
-    2008hv:
+        bounds:
+          t0:
+            - 2454763.0
+            - 2454775.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454817.3
-        z: 0.01255
-
-    2008ia:
+        z: 0.03297
+        t0: 2454769.0
+  2008gp:
+    kwargs:
       global:
-        t0: 2454813.4
-        z: 0.02171
-
-    2009D:
+        bounds:
+          t0:
+            - 2454773.0
+            - 2454785.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454841.2
-        z: 0.02501
-
-    2009F:
+        z: 0.03285
+        t0: 2454779.0
+  2008hu:
+    kwargs:
       global:
-        t0: 2454842.3
-        z: 0.01296
-
-    2009Y:
+        bounds:
+          t0:
+            - 2454801.0
+            - 2454813.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454876.9
-        z: 0.00935
-
-    2009aa:
+        z: 0.05056
+        t0: 2454807.0
+  2008hv:
+    kwargs:
       global:
-        t0: 2454879.2
-        z: 0.02731
-
-    2009ab:
+        bounds:
+          t0:
+            - 2454811.0
+            - 2454823.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454884.3
-        z: 0.01117
-
-    2009ad:
+        z: 0.01359
+        t0: 2454817.0
+  2008ia:
+    kwargs:
       global:
-        t0: 2454886.6
-        z: 0.0284
-
-    2009ag:
+        bounds:
+          t0:
+            - 2454807.0
+            - 2454819.0
+        phase_range:
+          - -20
+          - 50
+    priors:
       global:
-        t0: 2454889.7
-        z: 0.00864
-
-  kwargs:
-    global:
-      {bounds: {x1: [-5, 5], c: [-2.1, 2.1]}}
+        z: 0.02233
+        t0: 2454813.0
+  2009D:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454835.0
+            - 2454847.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02467
+        t0: 2454841.0
+  2009F:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454836.0
+            - 2454848.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01292
+        t0: 2454842.0
+  2009Y:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454871.0
+            - 2454883.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01011
+        t0: 2454877.0
+  2009aa:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454873.0
+            - 2454885.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0285
+        t0: 2454879.0
+  2009ab:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454878.0
+            - 2454890.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01087
+        t0: 2454884.0
+  2009ad:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454881.0
+            - 2454893.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02834
+        t0: 2454887.0
+  2009ag:
+    kwargs:
+      global:
+        bounds:
+          t0:
+            - 2454884.0
+            - 2454896.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00925
+        t0: 2454890.0
 
 sn91bg:
-  kwargs:
-    global:
+  2004dt:
+    kwargs:
       global:
-        {bounds: {x1: [0.65, 1.25], c: [0, 1]}}
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453240
+            - 2453255
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01883
+        t0: 24532345
+  2004ef:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453254
+            - 2453274
+        phase_range:
+          - -20
+          - 50
+
+    priors:
+      global:
+        z: 0.02979
+        t0: 2453264.0
+  2004eo:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453268
+            - 2453288
+        phase_range:
+          - -20
+          - 50
+
+    priors:
+      global:
+        z: 0.01475
+        t0: 2453278
+  2004ey:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453294
+            - 2453314
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01464
+        t0: 2453304
+  2004gc:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453315
+            - 2453329
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03074
+        t0: 2453325
+  2004gs:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453346
+            - 2453358
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02752
+        t0: 2453356
+  2004gu:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453354.0
+            - 2453374.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04693
+        t0: 2453364.0
+  2005A:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453381
+            - 2453385
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01835
+        t0: 2453381.0
+  2005M:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453396.0
+            - 2453416.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0256
+        t0: 2453406.0
+  2005W:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453402.0
+            - 2453422.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00796
+        t0: 2453412.0
+  2005ag:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453404.0
+            - 2453424.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0804
+        t0: 2453414.0
+  2005al:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453430
+            - 2453434
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01329
+        t0: 2453432.0
+  2005am:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453427.0
+            - 2453447.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00897
+        t0: 2453437.0
+  2005be:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453460.0
+            - 2453471.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03562
+        t0: 2453468
+  2005bg:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453465.0
+            - 2453477.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02417
+        t0: 2453471.0
+  2005bl:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453479.0
+            - 2453491.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02513
+        t0: 2453485.0
+  2005bo:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453474.0
+            - 2453486.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01502
+        t0: 2453480.0
+  2005el:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453642.0
+            - 2453654.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0149
+        t0: 2453648.0
+  2005eq:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453649.0
+            - 2453661.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02837
+        t0: 2453655.0
+  2005hc:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453662.0
+            - 2453674.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04501
+        t0: 2453668.0
+  2005hj:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453670.0
+            - 2453682.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.05699
+        t0: 2453676.0
+  2005iq:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453682.0
+            - 2453694.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03295
+        t0: 2453688.0
+  2005kc:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453692.0
+            - 2453704.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0139
+        t0: 2453698.0
+  2005ke:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453693.0
+            - 2453705.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00449
+        t0: 2453699.0
+  2005ki:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453700.0
+            - 2453712.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02038
+        t0: 2453706.0
+  2005ku:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453693.0
+            - 2453705.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04421
+        t0: 2453699.0
+  2005lu:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453710.0
+            - 2453730.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03132
+        t0: 2453712.0
+  2005na:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453734.0
+            - 2453746.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02683
+        t0: 2453740.0
+  2006D:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453752.0
+            - 2453764.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00965
+        t0: 2453758.0
+  2006X:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453780.0
+            - 2453792.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00633
+        t0: 2453786.0
+  2006ax:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453822.0
+            - 2453834.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01797
+        t0: 2453828.0
+  2006bd:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453806.0
+            - 2453818.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02681
+        t0: 2453812.0
+  2006bh:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453828.0
+            - 2453840.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0105
+        t0: 2453834.0
+  2006br:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453846.0
+            - 2453858.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02554
+        t0: 2453852.0
+  2006dd:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453914.0
+            - 2453926.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00551
+        t0: 2453920.0
+  2006ef:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453970.0
+            - 2453990.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01702
+        t0: 2453972.0
+  2006ej:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453970.0
+            - 2453990.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01935
+        t0: 2453976.0
+  2006eq:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453972.0
+            - 2453984.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04839
+        t0: 2453978.0
+  2006et:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453988.0
+            - 2454000.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02119
+        t0: 2453994.0
+  2006ev:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453984.0
+            - 2453996.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02762
+        t0: 2453990.0
+  2006fw:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453997.0
+            - 2454009.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.08204
+        t0: 2454003.0
+  2006gj:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453994.0
+            - 2454006.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02777
+        t0: 2454000.0
+  2006gt:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453998.0
+            - 2454010.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04367
+        t0: 2454004.0
+  2006hb:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2453993.0
+            - 2454005.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01535
+        t0: 2453999.0
+  2006hx:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454017.0
+            - 2454029.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04444
+        t0: 2454023.0
+  2006is:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454003.0
+            - 2454015.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0314
+        t0: 2454009.0
+  2006kf:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454036.0
+            - 2454048.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02081
+        t0: 2454042.0
+  2006lu:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454031.0
+            - 2454041.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0544
+        t0: 2454035.0
+  2006mr:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454045.0
+            - 2454057.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00551
+        t0: 2454051.0
+  2006ob:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454058.0
+            - 2454070.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0583
+        t0: 2454064.0
+  2006os:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454057.0
+            - 2454069.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0321
+        t0: 2454063.0
+  2006ot:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454056.0
+            - 2454068.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.05219
+        t0: 2454062.0
+  2006py:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454065.0
+            - 2454077.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.05668
+        t0: 2454071.0
+  2007A:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454107.0
+            - 2454119.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01648
+        t0: 2454113.0
+  2007N:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454118.0
+            - 2454130.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01401
+        t0: 2454124.0
+  2007S:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454139.0
+            - 2454151.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01503
+        t0: 2454145.0
+  2007af:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454169.0
+            - 2454181.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00629
+        t0: 2454175.0
+  2007ai:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454170.0
+            - 2454178.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03201
+        t0: 2454172.0
+  2007al:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 0.0
+            - 0.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01327
+        t0: 0.0
+  2007as:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454176.0
+            - 2454188.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01791
+        t0: 2454182.0
+  2007ax:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454182.0
+            - 2454194.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00764
+        t0: 2454188.0
+  2007ba:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454191.0
+            - 2454203.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03908
+        t0: 2454197.0
+  2007bc:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454195.0
+            - 2454207.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02077
+        t0: 2454201.0
+  2007bd:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454202.0
+            - 2454214.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03196
+        t0: 2454208.0
+  2007bm:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454219.0
+            - 2454231.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00621
+        t0: 2454225.0
+  2007ca:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454222.0
+            - 2454234.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01508
+        t0: 2454228.0
+  2007hj:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454344.0
+            - 2454356.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01289
+        t0: 2454350.0
+  2007jg:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454362.0
+            - 2454374.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0366
+        t0: 2454368.0
+  2007jh:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454360.0
+            - 2454372.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04029
+        t0: 2454366.0
+  2007le:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454393.0
+            - 2454405.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00553
+        t0: 2454399.0
+  2007nq:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454393.0
+            - 2454405.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.04393
+        t0: 2454399.0
+  2007on:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454414.0
+            - 2454426.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00619
+        t0: 2454420.0
+  2007sr:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454442.0
+            - 2454454.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00666
+        t0: 2454448.0
+  2007ux:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454461.0
+            - 2454473.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03202
+        t0: 2454467.0
+  2008C:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454461.0
+            - 2454473.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01708
+        t0: 2454467.0
+  2008R:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454489.0
+            - 2454501.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0129
+        t0: 2454495.0
+  2008ar:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454529.0
+            - 2454541.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02727
+        t0: 2454535.0
+  2008bc:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454543.0
+            - 2454555.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01572
+        t0: 2454549.0
+  2008bf:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454549.0
+            - 2454561.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0251
+        t0: 2454555.0
+  2008bq:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454557.0
+            - 2454569.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03446
+        t0: 2454563.0
+  2008fp:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454724.0
+            - 2454736.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00629
+        t0: 2454730.0
+  2008gl:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454763.0
+            - 2454775.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03297
+        t0: 2454769.0
+  2008gp:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454773.0
+            - 2454785.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.03285
+        t0: 2454779.0
+  2008hu:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454801.0
+            - 2454813.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.05056
+        t0: 2454807.0
+  2008hv:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454811.0
+            - 2454823.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01359
+        t0: 2454817.0
+  2008ia:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454807.0
+            - 2454819.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02233
+        t0: 2454813.0
+  2009D:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454835.0
+            - 2454847.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02467
+        t0: 2454841.0
+  2009F:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454836.0
+            - 2454848.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01292
+        t0: 2454842.0
+  2009Y:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454871.0
+            - 2454883.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01011
+        t0: 2454877.0
+  2009aa:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454873.0
+            - 2454885.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.0285
+        t0: 2454879.0
+  2009ab:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454878.0
+            - 2454890.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.01087
+        t0: 2454884.0
+  2009ad:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454881.0
+            - 2454893.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.02834
+        t0: 2454887.0
+  2009ag:
+    kwargs:
+      global:
+        bounds:
+          c:
+            - 0
+            - 1
+          x1:
+            - 0.65
+            - 1.25
+          t0:
+            - 2454884.0
+            - 2454896.0
+        phase_range:
+          - -20
+          - 50
+    priors:
+      global:
+        z: 0.00925
+        t0: 2454890.0
