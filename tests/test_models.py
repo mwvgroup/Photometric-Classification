@@ -72,7 +72,7 @@ class TemplateLoading(TestCase):
 
 
 class BisectSearch(TestCase):
-    """Tests for models._sources.bi_search"""
+    """Tests for models._sources._bi_search"""
 
     def test_element_in_array(self):
         """Test the correct index is returned for an element in a list"""
@@ -81,7 +81,7 @@ class BisectSearch(TestCase):
         test_elt_index = 1
         test_elt = test_array[test_elt_index]
 
-        self.assertEqual(1, models._sources.bi_search(test_array, test_elt))
+        self.assertEqual(1, models._sources._bi_search(test_array, test_elt))
 
     def test_element_in_range(self):
         """Test correct indices are returned for an element in a list range"""
@@ -91,19 +91,19 @@ class BisectSearch(TestCase):
         expected_indices = [0, 1]
 
         self.assertSequenceEqual(
-            expected_indices, models._sources.bi_search(test_array, test_elt))
+            expected_indices, models._sources._bi_search(test_array, test_elt))
 
     def test_element_outside_range(self):
         """Test an error is raised for a parameter outside the array's range"""
 
         args = (np.array([1, 2, 3]), 5)
-        self.assertRaises(RuntimeError, models._sources.bi_search, *args)
+        self.assertRaises(RuntimeError, models._sources._bi_search, *args)
 
     def test_unsorted_array(self):
         """Test an error is raised when an array is not sorted"""
 
         args = (np.array([1, 3, 2]), 5)
-        self.assertRaises(RuntimeError, models._sources.bi_search, *args)
+        self.assertRaises(RuntimeError, models._sources._bi_search, *args)
 
 
 class BaseSourceTestingClass(TestCase):

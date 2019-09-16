@@ -51,7 +51,7 @@ def load_template(phase_min=None, phase_max=None):
     return (stretch, color, phase, wave), modeled_flux
 
 
-def bi_search(a, x):
+def _bi_search(a, x):
     """Binary search for value ``x`` in array ``a``
 
     Args:
@@ -77,32 +77,7 @@ def bi_search(a, x):
         return [index - 1, index]
 
 
-# noinspection PyPep8Naming, PyUnusedLocal
-def SN91bg(name=None, version='phase_limited'):
-    """Return a SN 1991bg-like source class for SNCosmo
-
-    Versions include: 'phase_limited', 'full_phase'
-
-    Args:
-         name   (None): A dummy argument for compatibility with SNCosmo
-         version (str): The version of the template to load
-    """
-
-    if version in 'phase_limited':
-        model = PhaseLimited()
-        model.version = version
-        return model
-
-    if version == 'full_phase':
-        model = PhaseLimited(-np.inf, np.inf)
-        model.version = version
-        return model
-
-    else:
-        raise ValueError(f"Unidentified version: '{version}'.")
-
-
-class PhaseLimited(sncosmo.Source):
+class SN91bg(sncosmo.Source):
     """An SNCosmo Source for SN 1991bg-like supernovae"""
 
     _param_names = param_names_latex = ['x0', 'x1', 'c']
@@ -124,7 +99,7 @@ class PhaseLimited(sncosmo.Source):
             min_phase (float): The minimum phase
         """
 
-        super(PhaseLimited, self).__init__()
+        super(SN91bg, self).__init__()
         self.name = 'sn91bg'
 
         # Define initial parameter values
@@ -178,8 +153,8 @@ class PhaseLimited(sncosmo.Source):
         """
 
         amplitude, x1, c = self._parameters
-        x1_index = bi_search(self._stretch, x1)
-        c_index = bi_search(self._color, c)
+        x1_index = _bi_search(self._stretch, x1)
+        c_index = _bi_search(self._color, c)
         if isinstance(x1_index, int) and isinstance(c_index, int):
             flux = amplitude * self._splines[x1_index, c_index](phase, wave)
 

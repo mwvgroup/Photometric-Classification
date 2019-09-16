@@ -1,28 +1,30 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""Tests for the ``models`` module."""
+"""Tests for the ``simulation.sncosmo_sims`` module."""
 
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 import numpy as np
+import sncosmo
+from astropy.table import Table
 
 from phot_class import models
-from phot_class.models import sncosmo_sims
+from phot_class.simulation import sncosmo_sims
 
 models.register_sources(force=True)
 
 
-# Todo: Test ``sim_bg_params`` and ``generate_lc``
-
 class StretchColorSimulation(TestCase):
-    """Tests for the models.sncosmo_sims.bg_stretch_color function"""
+    """Tests for the bg_stretch_color function"""
 
     @classmethod
     def setUpClass(cls):
         """Simulate a set of parameters to test against"""
 
-        np.random.seed(1)  # So we have consistent test results
+        np.random.seed(1)  # Seed so we have consistent test results
         cls.sim_stretch, cls.sim_color = sncosmo_sims.bg_stretch_color(1e5)
 
     def test_average_stretch(self):
@@ -91,3 +93,65 @@ class StretchColorSimulation(TestCase):
 
         self.assertGreaterEqual(
             max_color, max(color), 'Maximum stretch out of bounds')
+
+
+class LCParameterSimulation(TestCase):
+    """Tests for the ``sim_bg_params`` function."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.zmin = 0
+        cls.zmax = 1
+        cls.tmin = 100
+        cls.tmax = 1000
+
+        np.random.seed(1)  # Seed so we have consistent test results
+        parameter_dicts = sncosmo_sims.sim_bg_params(
+            zmin=cls.zmin, zmax=cls.zmax, tmin=cls.tmin, tmax=cls.tmax)
+
+        cls.parameters = Table(rows=parameter_dicts)
+
+    def test_redshift_range(self):
+        """Test simulated redshifts are all within the specified range"""
+
+        is_in_range = np.logical_and(
+            self.parameters['z'] < self.zmax,
+            self.parameters['z'] > self.zmin).all()
+
+        self.assertTrue(is_in_range)
+
+    def test_time_range(self):
+        """Test simulated times are all within the specified range"""
+
+        is_in_range = np.logical_and(
+            self.parameters['t0'] < self.tmax,
+            self.parameters['t0'] > self.tmin).all()
+
+        self.assertTrue(is_in_range)
+
+
+class GenerateLC(TestCase):
+    """Tests for the ``generate_lc`` function."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.temp_dir = TemporaryDirectory()
+        cls.model = sncosmo.Model('sn91bg')
+        cls.phase_range = (-10, 40)
+        cls.model_params = sncosmo_sims.sim_bg_params(
+            zmin=0, zmax=1, tmin=100, tmax=150
+        )
+
+        sncosmo_sims.generate_lc(
+            cls.model, cls.phase_range, cls.model_params, cls.temp_dir.name)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.temp_dir.cleanup()
+
+    def test_number_simulations(self):
+        """Test one light-curve file exists for every set of parameters"""
+
+        files = list(Path(self.temp_dir.name).glob('*.ecsv'))
+        self.assertGreaterEqual(len(files), 0)
+        self.assertEqual(len(self.model_params), len(files))

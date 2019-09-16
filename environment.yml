@@ -18,6 +18,7 @@ dependencies:
   - sncosmo=2.0.0
 
   - pip:
+      - nestle==0.2.0
       - sndata==0.6.0
       - emcee==2.2.1
       - pyyaml==5.1.2

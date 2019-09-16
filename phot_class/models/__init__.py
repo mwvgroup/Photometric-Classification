@@ -82,8 +82,32 @@ Module Level Functions
 
 import sncosmo as _sncosmo
 
-from ._sources import SN91bg as _SN91bg
-from ._sources import load_template
+from ._sources import SN91bg, load_template
+
+
+# noinspection PyPep8Naming, PyUnusedLocal
+def _load_sn91bg(name=None, version='phase_limited'):
+    """Return a SN 1991bg-like source class for SNCosmo
+
+    Versions include: 'phase_limited', 'full_phase'
+
+    Args:
+         name   (None): A dummy argument for compatibility with SNCosmo
+         version (str): The version of the template to load
+    """
+
+    if version in 'phase_limited':
+        model = SN91bg()
+        model.version = version
+        return model
+
+    if version == 'full_phase':
+        model = SN91bg(-float('inf'), float('inf'))
+        model.version = version
+        return model
+
+    else:
+        raise ValueError(f"Unidentified version: '{version}'.")
 
 
 def register_sources(force=False):
@@ -98,13 +122,13 @@ def register_sources(force=False):
     _sncosmo.register_loader(
         data_class=_sncosmo.Source,
         name='sn91bg',
-        func=_SN91bg,
+        func=_load_sn91bg,
         version='phase_limited',
         force=force)
 
     _sncosmo.register_loader(
         data_class=_sncosmo.Source,
         name='sn91bg',
-        func=_SN91bg,
+        func=_load_sn91bg,
         version='full_phase',
         force=force)

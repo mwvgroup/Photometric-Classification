@@ -1,8 +1,8 @@
 # !/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""The ``models.sncsomo_sims`` module generates light curves using sncosmo and
-write models results to file.
+"""The ``simulation.sncsomo_sims`` module generates light-curves using sncosmo
+and write models results to file.
 """
 
 from pathlib import Path
@@ -63,7 +63,8 @@ def bg_stretch_color(
     return x1, c
 
 
-def sim_bg_params(zmin, zmax, tmin, tmax, area=1., ratefunc=None, cosmo=None):
+def sim_bg_params(
+        zmin, zmax, tmin, tmax, area=1., ratefunc=None, cosmo=None, **kwargs):
     """Simulate parameters for "observed" 91bg light curves
 
     Args:
@@ -79,6 +80,7 @@ def sim_bg_params(zmin, zmax, tmin, tmax, area=1., ratefunc=None, cosmo=None):
         cosmo (Cosmology):
             The cosmology used to determine volume. The default is a
             FlatLambdaCDM cosmology with ``Om0=0.3``, ``H0=70.0``.
+        Any other kwargs for ``bg_stretch_color`` except ``size``
 
     Returns:
         A list of dictionaries with model parameters for each light-curve
@@ -88,9 +90,10 @@ def sim_bg_params(zmin, zmax, tmin, tmax, area=1., ratefunc=None, cosmo=None):
     cosmo = cosmo or FlatLambdaCDM(H0=70.0, Om0=0.3)
 
     # Generated redshifts includes SN rate so we base the number of SNe off z
-    redshifts = sncosmo.zdist(zmin, zmax, (tmax - tmin), area, ratefunc, cosmo)
+    redshifts = list(
+        sncosmo.zdist(zmin, zmax, (tmax - tmin), area, ratefunc, cosmo))
     peakmjd = np.random.uniform(tmin, tmax, len(redshifts))
-    stretch, color = bg_stretch_color(len(redshifts))
+    stretch, color = bg_stretch_color(len(redshifts), **kwargs)
 
     # Following the design of sncosmo, we return data into a list of dicts
     param_iter = zip(redshifts, peakmjd, stretch, color)
@@ -98,30 +101,37 @@ def sim_bg_params(zmin, zmax, tmin, tmax, area=1., ratefunc=None, cosmo=None):
             z, t0, x1, c in param_iter]
 
 
-# Todo: Finish this function
-def generate_lc(model, model_params, out_dir):
-    """Generate 91bg light curves and write to ecsv files
+def generate_lc(model, phase_range, model_params, out_dir):
+    """Generate 91bg light curves in SDSS band passes
+
+    This is a very simple simulation that assumes observations are performed
+    simultaneously at each epoch with a gain of one and zero sky noise.
+    Simulations use SDSS bandpasses
 
     Args:
         model       (Model): The model to be used
+        phase_range (tuple): Phase range to simulate light-curves over
         model_params (list): List of model parameters for each light-curve
         out_dir      (Path): The output directory to write light-curves to
     """
 
-    date = [(t + np.linspace(-13, 100, 20)).tolist() * 5 for t in peakmjd]
-    flt = []
-    for band in 'ugriz':
-        flt = flt + ['sdss' + band] * (int(len(date[0]) / 5))
+    out_dir = Path(out_dir)  # In case out_dir is a string
 
-    obs = [Table({'time': date[i],
-                  'band': flt,
-                  'gain': np.full(len(flt), 1.0),
-                  'skynoise': np.zeros(len(flt)),
-                  'zp': np.full(len(flt), 27.5),
-                  'zpsys': np.full(len(flt), 'ab')}) for i in range(num)]
+    for i, params_dict in enumerate(model_params):
+        time = 5 * (params_dict['t0'] + np.arange(*phase_range).tolist())
+        bands = np.concatenate(
+            [np.full(len(time) // 5, 'sdss' + band) for band in 'ugriz']
+        )
 
-    # generate light-curves and write to file.
-    light_curves = sncosmo.realize_lcs(obs, model, model_params)
-    for i, lc_table in enumerate(light_curves):
-        lc_table.meta.update(model_params[i])
-        lc_table.write(out_dir / f'sn91bg_{i:05d}.ecsv', overwrite=True)
+        table_length = len(time)
+        observations = Table(
+            {'time': time,
+             'band': bands,
+             'gain': np.full(table_length, 1.0),
+             'skynoise': np.zeros(table_length),
+             'zp': np.full(table_length, 27.5),
+             'zpsys': np.full(table_length, 'ab')})
+
+        light_curve = sncosmo.realize_lcs(observations, model, [params_dict])[0]
+        light_curve.meta.update(params_dict)
+        light_curve.write(out_dir / f'sn91bg_{i}.ecsv', overwrite=True)
