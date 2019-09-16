@@ -82,11 +82,15 @@ def SN91bg(name=None, version='phase_limited'):
          version (str): The version of the template to load
     """
 
-    if version == 'phase_limited':
-        return PhaseLimited()
+    if version in 'phase_limited':
+        model = PhaseLimited()
+        model.version = version
+        return model
 
     if version == 'full_phase':
-        return PhaseLimited(-np.inf, np.inf)
+        model = PhaseLimited(-np.inf, np.inf)
+        model.version = version
+        return model
 
     else:
         raise ValueError(f"Unidentified version: '{version}'.")
@@ -97,7 +101,7 @@ class PhaseLimited(sncosmo.Source):
 
     _param_names = param_names_latex = ['x0', 'x1', 'c']
 
-    def __init__(self, min_phase=None, max_phase=None):
+    def __init__(self, min_phase=-18, max_phase=50):
         """An SNCosmo Source for SN 1991bg-like supernovae.
 
         Parameters for this source include 'x0', 'x1', and 'c'
@@ -115,24 +119,33 @@ class PhaseLimited(sncosmo.Source):
         """
 
         super(PhaseLimited, self).__init__()
-
-        salt2_phase = sncosmo.get_source('salt2', version='2.4')._phase
-        min_phase = min_phase or min(salt2_phase)
-        max_phase = max_phase or max(salt2_phase)
-
-        # Define version info and initial parameter values
         self.name = 'sn91bg'
-        self.version = 'phase_limited'
+
+        # Define initial parameter values
         self._parameters = np.array([1., 1., 0.55])
 
-        # Get phase limited 91bg model
+        # Load 91bg model
         coords, self._template = load_template(min_phase, max_phase)
         (self._stretch, self._color, self._phase, self._wave) = coords
         self._splines = self.get_splines(*coords, self._template)
 
-    # @memoize
     @staticmethod
     def get_splines(stretch, color, phase, wave, template):
+        """
+        Fit splines to a flux template for phase and wavelength
+
+        Args:
+            stretch  (ndarray): Stretch coordinates for the flux template
+            color    (ndarray): Color coordinates for the flux template
+            phase    (ndarray): Phase coordinates for the flux template
+            wave     (ndarray): Wave coordinates for the flux template
+            template (ndarray): Template of flux values to fit to
+
+        Returns:
+            A two dimensional array of RectBivariateSpline with shape
+            len(stretch) X len(color)
+        """
+
         splines = np.empty((len(stretch), len(color)), RectBivariateSpline)
         for i, x1 in enumerate(stretch):
             for j, c in enumerate(color):
@@ -155,7 +168,7 @@ class PhaseLimited(sncosmo.Source):
             wave  (ndarray): A list of wavelengths for the desired flux
 
         Returns:
-            A 2d array of flux with shape (<len(phase)>, <len(wave)>)
+            A 2d array of flux with shape len(phase) X len(wave)
         """
 
         amplitude, x1, c = self._parameters

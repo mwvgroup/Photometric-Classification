@@ -41,10 +41,10 @@ be assumed that flux is predicted the same way for different model versions.
 | Name   | Version                   | Description                                             |
 +========+===========================+=========================================================+
 | sn91bg | 'phase_limited' (Default) | 1991bg model restricted to a phase similar to Salt 2.4. |
-| sn91bg |                           | This model version extends from -18 to 50 days.         |
+|        |                           | This model version extends from -18 to 50 days.         |
 +--------+---------------------------+---------------------------------------------------------+
 | sn91bg | 'full_phase'              | 1991bg model extending over to full phase range.        |
-| sn91bg |                           | This model version extends from -18 to 100 days.        |
+|        |                           | This model version extends from -18 to 100 days.        |
 +--------+---------------------------+---------------------------------------------------------+
 
 Usage Example
