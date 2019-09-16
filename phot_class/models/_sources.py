@@ -3,10 +3,8 @@
 
 """This module defines the custom SNCosmo Sources for 91bg like supernovae."""
 
-import functools
 import os
 from bisect import bisect
-from warnings import warn
 
 import numpy as np
 import sncosmo
@@ -53,6 +51,26 @@ def load_template(phase_min=None, phase_max=None):
     return (stretch, color, phase, wave), modeled_flux
 
 
+def bi_search(a, x):
+    """Binary search for value ``x`` in array ``a``
+
+    Args:
+        a (ndarray): The sorted list in which the number x will be searched
+        x     (num): The number to be searched
+
+    Returns:
+        The position of nearest left neighbor of ``x``
+        The position of nearest right neighbor of ``x``
+    """
+
+    if x in a:
+        return a.tolist().index(x)
+
+    else:
+        index = bisect(a, x)
+        return [index - 1, index]
+
+
 # noinspection PyPep8Naming, PyUnusedLocal
 def SN91bg(name=None, version='phase_limited'):
     """Return a SN 1991bg-like source class for SNCosmo
@@ -66,9 +84,6 @@ def SN91bg(name=None, version='phase_limited'):
 
     if version == 'phase_limited':
         return PhaseLimited()
-
-    if version == 'color_interpolation':
-        return ColorInterpolation()
 
     else:
         raise ValueError(f"Unidentified version: '{version}'.")
@@ -108,8 +123,23 @@ class PhaseLimited(sncosmo.Source):
         self._parameters = np.array([1., 1., 0.55])
 
         # Get phase limited 91bg model
-        (self._stretch, self._color, self._phase, self._wave), self._template \
-            = load_template(min_phase, max_phase)
+        coords, self._template = load_template(min_phase, max_phase)
+        (self._stretch, self._color, self._phase, self._wave) = coords
+        self._splines = self.get_splines(*coords, self._template)
+
+    # @memoize
+    @staticmethod
+    def get_splines(stretch, color, phase, wave, template):
+        splines = np.empty((len(stretch), len(color)), RectBivariateSpline)
+        for i, x1 in enumerate(stretch):
+            for j, c in enumerate(color):
+                splines[i][j] = RectBivariateSpline(
+                    phase,
+                    wave,
+                    template[i][j],
+                    kx=3, ky=3)
+
+        return splines
 
     def _flux(self, phase, wave):
         """Return the flux for a given phase and wavelength
@@ -125,124 +155,33 @@ class PhaseLimited(sncosmo.Source):
             A 2d array of flux with shape (<len(phase)>, <len(wave)>)
         """
 
-        amplitude, stretch, color = self._parameters
+        amplitude, x1, c = self._parameters
+        x1_index = bi_search(self._stretch, x1)
+        c_index = bi_search(self._color, c)
+        if isinstance(x1_index, int) and isinstance(c_index, int):
+            flux = amplitude * self._splines[x1_index, c_index](phase, wave)
 
-        # Linearly interpolate template for current stretch and color
-        interp_flux = interpn(
-            points=[self._stretch, self._color],
-            values=self._template,
-            xi=[stretch, color])
+        elif isinstance(x1_index, int):
+            flux = [self._splines[x1_index, i](phase, wave) for i in c_index]
+            flux = amplitude * np.interp(c, self._stretch[c_index], flux)
 
-        # Fit a spline in phase and wavelength space
-        spline = RectBivariateSpline(
-            self._phase,
-            self._wave,
-            interp_flux[0],
-            kx=3, ky=3)
+        elif isinstance(c_index, int):
+            flux = [self._splines[i, c_index](phase, wave) for i in x1_index]
+            flux = amplitude * np.interp(x1, self._stretch[c_index], flux)
+
+        else:
+            # Linearly interpolate template for current stretch and color
+            spline_flux = np.zeros((2, 2, len(phase), len(wave)))
+            for i in range(2):
+                for j in range(2):
+                    spline_flux[i][j] = self._splines[i][j](phase, wave)
+
+            flux = interpn(
+                points=[self._stretch[x1_index], self._color[c_index]],
+                values=spline_flux,
+                xi=[x1, c])[0]
 
         # Since the spline will extrapolate we enforce bounds
-        flux = amplitude * spline(phase, wave)
         flux[phase < min(self._phase)] = 0
         flux[phase > max(self._phase)] = 0
         return flux
-
-
-class ColorInterpolation(sncosmo.Source):
-    """An SNCosmo Source for SN 1991bg-like supernovae"""
-
-    _param_names = param_names_latex = ['x0', 'x1', 'c']
-
-    def __init__(self):
-        """An SNCosmo Source for SN 1991bg-like supernovae.
-
-        Parameters for this source include 'x0', 'x1', and 'c'
-
-        """
-
-        super(ColorInterpolation, self).__init__()
-        warn('The `color_interpolation` version of the 91bg model does not'
-             ' pass our test suite and should be used with caution.')
-
-        self.name = 'sn91bg'
-        self.version = 'color_interpolation'
-
-        # Model spectra and initial guess for stretch, color, and amplitude
-        coords, flux = load_template()
-        self._template = flux[0]
-        self._parameters = np.array([1., 1., 0.55])
-
-        # 4-dimension grid points in the model
-        self._stretch, self._color, self._phase, self._wave = coords
-
-        # Creat bi-cubic spline for phase and wavelength using 5 templates
-        # (stretch: 0.65, color: [0,0.25,0.5,0.75,1.])
-        self._model_flux = np.full(len(self._color), None)
-        for i in range(len(self._color)):
-            self._model_flux[i] = RectBivariateSpline(
-                self._phase,
-                self._wave,
-                self._template[i],
-                kx=3, ky=3)
-
-    @staticmethod
-    def bi_search(a, x):
-        """Binary search for value ``x`` in array ``a``
-
-        Args:
-            a (ndarray): The sorted list in which the number x will be searched
-            x     (num): The number to be searched
-
-        Returns:
-            The position of nearest left neighbor of ``x``
-            The position of nearest right neighbor of ``x``
-        """
-
-        index = bisect(a, x)
-        return index - 1, index
-
-    @staticmethod
-    def linear_interp(x0, x1, f, x):
-        """Linear interpolation
-
-        Args:
-            x0, x1  (num): Grid points
-            x       (num): Coordinates of interpolation point
-            f      (list): The list contains values at x0 and x1
-
-        Returns:
-            Interpolated value
-        """
-
-        return f[0] + ((x - x0) * f[1] - (x - x0) * f[0]) / (x1 - x0)
-
-    def _flux(self, phase, wave):
-        """Return the flux for a given phase and wavelength
-
-        Flux is determined by adjusting the phase for the given stretch value
-        and then using a spline to determine the template for the adjusted
-         phase and wavelength. The resulting values are then linearly
-         interpolated for color.
-
-        Args:
-            phase (ndarray): A list of days till maximum for the desired flux
-            wave  (ndarray): A list of wavelengths for the desired flux
-
-        Returns:
-            A 2d array of flux with shape (<len(phase)>, <len(wave)>)
-        """
-
-        A, st, c = self._parameters
-
-        # Linearly interpolate template flux by color
-        if c in self._color:
-            f = self._model_flux[self._color.tolist().index(c)](
-                phase / (st / 0.65), wave)
-
-        else:
-            c1, c2 = self.bi_search(self._color, c)
-            y = [self._model_flux[c1](phase / (st / 0.65), wave),
-                 self._model_flux[c2](phase / (st / 0.65), wave)]
-
-            f = self.linear_interp(self._color[c1], self._color[c2], y, c)
-
-        return A * f
