@@ -6,5 +6,5 @@ python run_pipeline.py \
     -r dr3 \
     -f simple_fit \
     -v t0 x0 x1 c \
-    -c 'config_files/csp.yml' \
+    -c 'priors_config.yml' \
     -o './results';
