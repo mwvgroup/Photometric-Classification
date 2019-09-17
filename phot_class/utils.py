@@ -53,21 +53,27 @@ def parse_config_dict(obj_id, config_dict):
     out_data = []
     for model in ('salt2', 'sn91bg'):
         for dtype in ('priors', 'kwargs'):
-            all, blue, red = dict(), dict(), dict()
-            if obj_id in config_dict[model]:
-                object_data = config_dict[model][obj_id][dtype]
-                for bandset, settings in zip(('all', 'blue', 'red'), (all, blue, red)):
-                    settings.update(object_data.get('global', {}))
-                    settings.update(object_data.get(bandset, {}))
 
-            out_data.append({'all': all, 'blue': blue, 'red': red})
+            # Define dictionaries of output and input data for model / dtype
+            all_, blue, red = dict(), dict(), dict()
+            object_data = config_dict[model].get(obj_id, {}).get(dtype, {})
+
+            # Populate output dictionaries
+            for bandset, settings in zip(('all', 'blue', 'red'), (all_, blue, red)):
+                settings.update(object_data.get('global', {}))
+                settings.update(object_data.get(bandset, {}))
+
+            out_data.append({'all': all_, 'blue': blue, 'red': red})
 
     return tuple(out_data)
 
 
-# Todo: This signature is confusing. Do we use the model or result parameters?
 def calc_model_chisq(data, result, model):
     """Calculate the chi-squared for a given data table and model
+
+    Chi-squareds are calculated using parameter values from ``model``. Degrees
+    of freedom are calculated using the number of varied parameters specified
+    is the ``result`` object.
 
     Args:
         data    (Table): An sncosmo input table

@@ -252,10 +252,8 @@ class TestSplitData(TestCase):
                 data, band_names, lambda_eff, redshift, cutoff=float('inf'))
 
             err_msg = f'Wrongs bands for z={redshift}'
-            self.assertListEqual(expected_blue, list(blue_table['band']),
-                                 err_msg)
-            self.assertListEqual(expected_red, list(red_table['band']),
-                                 err_msg)
+            self.assertListEqual(expected_blue, list(blue_table['band']), err_msg)
+            self.assertListEqual(expected_red, list(red_table['band']), err_msg)
 
     def test_maintains_metadata(self):
         """Test whether passed and returned tables have same metadata"""
@@ -345,10 +343,12 @@ class ConfigParsing(TestCase):
                 }
             },
             'sn91bg': {
-                'priors': {
-                    'all': {'z': 0},
-                    'blue': {'z': 1},
-                    'red': {'z': 2}
+                'obj_id': {
+                    'priors': {
+                        'all': {'z': 0},
+                        'blue': {'z': 1},
+                        'red': {'z': 2}
+                    }
                 }
             }
         }
@@ -376,7 +376,14 @@ class ConfigParsing(TestCase):
         salt2_prior, salt2_kwargs, sn91bg_prior, sn91bg_kwargs = \
             utils.parse_config_dict('obj_id', config_dict)
 
-        self.assertEqual(expected_salt2_prior, salt2_prior)
-        self.assertEqual(expected_salt2_kwargs, salt2_kwargs)
-        self.assertEqual(expected_sn91bg_prior, sn91bg_prior)
-        self.assertEqual(expected_sn91bg_kwargs, sn91bg_kwargs)
+        self.assertEqual(
+            expected_salt2_prior, salt2_prior, 'Wrong salt2 prior')
+
+        self.assertEqual(
+            expected_salt2_kwargs, salt2_kwargs, 'Wrong salt2 kwargs')
+
+        self.assertEqual(
+            expected_sn91bg_prior, sn91bg_prior, 'Wrong sn91bg prior')
+
+        self.assertEqual(
+            expected_sn91bg_kwargs, sn91bg_kwargs, 'Wrong sn91bg kwargs')

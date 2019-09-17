@@ -142,11 +142,12 @@ class BaseSourceTestingClass(TestCase):
         early_phase_zero = np.isclose(0, early_phase_flux, atol=1e-6)
         self.assertTrue(early_phase_zero, f'Non-zero flux {early_phase_flux}')
 
-    # The following tests target specific sections of code within the source
+    # The tests below target specific sections of code within the source
     # class that handle the interpolation of the flux template. In an effort to
-    # improve minimize the number of calculations, the interpolation is carried
+    # minimize the number of calculations, the interpolation is carried
     # out differently when both, one of, or neither of the stretch or color
     # parameters are equal to the coordinates of the flux template grid.
+    # We test the first two of these cases independently.
 
     def _test_flux_at_coords_matches_template(self):
         """Test return of model.flux agrees with the source template"""
@@ -175,6 +176,10 @@ class BaseSourceTestingClass(TestCase):
         test_stretch = (stretch[0] + stretch[1]) / 2
         test_color = color[1]
         expected_flux = (template[0, 1] + template[1, 1]) / 2
+
+        print(test_stretch, test_color)
+        print(template[0, 1], '\n---\n', template[1, 1], '\n---\n', expected_flux, '\n---\n')
+        print(self.source.flux(phase, wave), '\n---\n')
 
         source = deepcopy(self.source)
         source.set(x1=test_stretch, c=test_color)
@@ -213,18 +218,22 @@ class PhaseLimited(BaseSourceTestingClass):
 
         self._test_flux_at_coords_matches_template()
 
-    def test_stretch_interpolation(self):
-        self._test_stretch_interpolation()
-
-    def test_color_interpolation(self):
-        self._test_color_interpolation()
-
     def test_correct_version(self):
         """Test the source was registered with the correct version name"""
 
         self._test_correct_version()
 
-    def test_phase_matches_salt2(self):
+    def test_stretch_interpolation(self):
+        """Test the model correctly interpolates over stretch"""
+
+        self._test_stretch_interpolation()
+
+    def test_color_interpolation(self):
+        """Test the model correctly interpolates over color"""
+
+        self._test_color_interpolation()
+
+    def test_correct_phase_range(self):
         """Test the model has the correct phase range"""
 
         self._test_phase_range(-18, 50)
@@ -251,7 +260,17 @@ class FullPhase(BaseSourceTestingClass):
 
         self._test_correct_version()
 
-    def test_phase_matches_salt2(self):
+    def test_stretch_interpolation(self):
+        """Test the model correctly interpolates over stretch"""
+
+        self._test_stretch_interpolation()
+
+    def test_color_interpolation(self):
+        """Test the model correctly interpolates over color"""
+
+        self._test_color_interpolation()
+
+    def test_correct_phase_range(self):
         """Test the model has the correct phase range"""
 
         self._test_phase_range(-18, 100)
