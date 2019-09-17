@@ -96,8 +96,7 @@ def fit_results_to_table_row(data, band_set, results, fitted_model):
     new_row += [results.errors.get(p, 0) for p in results.param_names]
 
     # Calc chi-squared
-    chisq, dof = utils.calc_model_chisq(
-        data, fitted_model, results.vparam_names)
+    chisq, dof = utils.calc_model_chisq(data, results, fitted_model)
     new_row += [np.round(chisq, 2), dof]
 
     # Determine peak magnitude and decline rate

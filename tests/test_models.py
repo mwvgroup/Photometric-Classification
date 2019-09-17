@@ -3,7 +3,6 @@
 
 """Tests for the ``models`` module."""
 
-from copy import deepcopy
 from os import environ
 from unittest import TestCase
 
@@ -142,13 +141,6 @@ class BaseSourceTestingClass(TestCase):
         early_phase_zero = np.isclose(0, early_phase_flux, atol=1e-6)
         self.assertTrue(early_phase_zero, f'Non-zero flux {early_phase_flux}')
 
-    # The tests below target specific sections of code within the source
-    # class that handle the interpolation of the flux template. In an effort to
-    # minimize the number of calculations, the interpolation is carried
-    # out differently when both, one of, or neither of the stretch or color
-    # parameters are equal to the coordinates of the flux template grid.
-    # We test the first two of these cases independently.
-
     def _test_flux_at_coords_matches_template(self):
         """Test return of model.flux agrees with the source template"""
 
@@ -163,46 +155,6 @@ class BaseSourceTestingClass(TestCase):
                 template_flux = template[i, j]
                 is_close = np.isclose(model_flux, template_flux)
                 self.assertTrue(is_close.all())
-
-    def _test_stretch_interpolation(self):
-        """Test the flux is interpolated correctly for a color on the template
-        grid coordinates and a stretch in-between the coordinates.
-        """
-
-        # Load the flux template spanning the phase range of the model
-        (stretch, color, phase, wave), template = models.load_template(
-            self.source.minphase(), self.source.maxphase())
-
-        test_stretch = (stretch[0] + stretch[1]) / 2
-        test_color = color[1]
-        expected_flux = (template[0, 1] + template[1, 1]) / 2
-
-        print(test_stretch, test_color)
-        print(template[0, 1], '\n---\n', template[1, 1], '\n---\n', expected_flux, '\n---\n')
-        print(self.source.flux(phase, wave), '\n---\n')
-
-        source = deepcopy(self.source)
-        source.set(x1=test_stretch, c=test_color)
-        is_close = np.isclose(expected_flux, self.source.flux(phase, wave))
-        self.assertTrue(is_close.all())
-
-    def _test_color_interpolation(self):
-        """Test the flux is interpolated correctly for a stretch on the
-        template grid coordinates and a color in-between the coordinates.
-        """
-
-        # Load the flux template spanning the phase range of the model
-        (stretch, color, phase, wave), template = models.load_template(
-            self.source.minphase(), self.source.maxphase())
-
-        test_stretch = stretch[1]
-        test_color = (color[0] + color[1]) / 2
-        expected_flux = (template[1, 0] + template[1, 1]) / 2
-
-        source = deepcopy(self.source)
-        source.set(x1=test_stretch, c=test_color)
-        is_close = np.isclose(expected_flux, self.source.flux(phase, wave))
-        self.assertTrue(is_close.all())
 
 
 class PhaseLimited(BaseSourceTestingClass):
@@ -222,16 +174,6 @@ class PhaseLimited(BaseSourceTestingClass):
         """Test the source was registered with the correct version name"""
 
         self._test_correct_version()
-
-    def test_stretch_interpolation(self):
-        """Test the model correctly interpolates over stretch"""
-
-        self._test_stretch_interpolation()
-
-    def test_color_interpolation(self):
-        """Test the model correctly interpolates over color"""
-
-        self._test_color_interpolation()
 
     def test_correct_phase_range(self):
         """Test the model has the correct phase range"""
@@ -259,16 +201,6 @@ class FullPhase(BaseSourceTestingClass):
         """Test the source was registered with the correct version name"""
 
         self._test_correct_version()
-
-    def test_stretch_interpolation(self):
-        """Test the model correctly interpolates over stretch"""
-
-        self._test_stretch_interpolation()
-
-    def test_color_interpolation(self):
-        """Test the model correctly interpolates over color"""
-
-        self._test_color_interpolation()
 
     def test_correct_phase_range(self):
         """Test the model has the correct phase range"""

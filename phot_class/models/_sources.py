@@ -140,65 +140,32 @@ class SN91bg(sncosmo.Source):
 
     def _flux(self, phase, wave):
         """Return the flux for a given phase and wavelength
-
         Flux is determined by linearly interpolating for stretch and color
         and then using a 2d spline for phase and wavelength.
-
         Args:
             phase (ndarray): A list of days till maximum for the desired flux
             wave  (ndarray): A list of wavelengths for the desired flux
-
         Returns:
-            A 2d array of flux with shape len(phase) X len(wave)
+            A 2d array of flux with shape (<len(phase)>, <len(wave)>)
         """
 
-        amplitude, x1, c = self._parameters
-        x1_index = _bi_search(self._stretch, x1)
-        c_index = _bi_search(self._color, c)
+        amplitude, stretch, color = self._parameters
 
-        if isinstance(x1_index, int) and isinstance(c_index, int):
-            # Model parameters are coordinates on the flux template grid so we
-            # only have to evaluate one spline.
+        # Linearly interpolate template for current stretch and color
+        interp_flux = interpn(
+            points=[self._stretch, self._color],
+            values=self._template,
+            xi=[stretch, color])
 
-            flux = amplitude * self._splines[x1_index, c_index](phase, wave)
-
-        elif isinstance(x1_index, int):
-            # Only stretch is a coordinate on the flux template grid so we
-            # only have to evaluate two splines.
-
-            flux = [self._splines[x1_index, i](phase, wave) for i in c_index]
-            flux = amplitude * interpn(
-                points=[self._color[c_index], phase, wave],
-                values=flux,
-                xi=[[[c, p, w] for w in wave] for p in phase]
-            )
-
-        elif isinstance(c_index, int):
-            # Same as last conditional but for color.
-
-            flux = [self._splines[i, c_index](phase, wave) for i in x1_index]
-            flux = amplitude * interpn(
-                points=[self._stretch[x1_index], phase, wave],
-                values=flux,
-                xi=[[[x1, p, w] for w in wave] for p in phase]
-            )
-
-
-        else:
-            # Neither parameter is a coordinate on the template, so we evaluate
-            # four splines.
-
-            spline_flux = np.zeros((2, 2, len(phase), len(wave)))
-            for i in range(2):
-                for j in range(2):
-                    spline_flux[i][j] = self._splines[i][j](phase, wave)
-
-            flux = interpn(
-                points=[self._stretch[x1_index], self._color[c_index]],
-                values=spline_flux,
-                xi=[x1, c])[0]
+        # Fit a spline in phase and wavelength space
+        spline = RectBivariateSpline(
+            self._phase,
+            self._wave,
+            interp_flux[0],
+            kx=3, ky=3)
 
         # Since the spline will extrapolate we enforce bounds
+        flux = amplitude * spline(phase, wave)
         flux[phase < min(self._phase)] = 0
         flux[phase > max(self._phase)] = 0
         return flux
