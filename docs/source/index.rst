@@ -1,11 +1,11 @@
 Classification of Peculiar Supernovae
 =====================================
 
-.. |python| image:: https://img.shields.io/badge/python-2.7,%203.5+-blue.svg
+.. |python| image:: https://img.shields.io/badge/python-3.7-success.svg
     :target: #
 
-.. |travis| image:: https://travis-ci.com/mwvgroup/SDSS-Classification.svg?branch=master
-    :target: https://travis-ci.com/mwvgroup/SDSS-Classification
+.. |travis| image:: https://travis-ci.com/mwvgroup/Photometric-Classification.svg?branch=master
+    :target: https://travis-ci.com/mwvgroup/Photometric-Classification
 
 .. |cover| image:: https://coveralls.io/repos/github/mwvgroup/Photometric-Classification/badge.svg?branch=master
     :target: https://coveralls.io/github/mwvgroup/Photometric-Classification?branch=master
