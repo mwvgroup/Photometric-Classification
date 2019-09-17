@@ -19,7 +19,7 @@ from phot_class import classification
 
 
 class TestTableCreation(TestCase):
-    """Tests for fitting.create_empty_table"""
+    """Tests for the ``create_empty_table`` function"""
 
     def test_is_empty(self):
         """Test the returned table is empty by default"""
@@ -55,7 +55,7 @@ class TestTableCreation(TestCase):
 
 
 class TestFitResultsToTableRow(TestCase):
-    """Tests for fitting.fit_results_to_table_row"""
+    """Tests for the ``fit_results_to_table_row`` function"""
 
     # Don't limit output messages on test failures
     maxDiff = None
@@ -112,7 +112,7 @@ class TestFitResultsToTableRow(TestCase):
 
 
 class TestClassificationCoords(TestCase):
-    """Tests for fitting.classify_targets"""
+    """Tests for the ``classify_targets`` function"""
 
     expected_input_columns = ['obj_id', 'source', 'band_set', 'chisq', 'ndof']
 

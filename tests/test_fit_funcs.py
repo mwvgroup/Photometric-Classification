@@ -80,7 +80,7 @@ class BaseTestingClass(TestCase):
 
 
 class SimpleFit(BaseTestingClass):
-    """Test fit_funcs.simple_fit"""
+    """Tests for the ``simple_fit`` function"""
 
     @staticmethod
     def fit_func(*a, **kw):
@@ -98,7 +98,7 @@ class SimpleFit(BaseTestingClass):
 
 
 class NestFit(BaseTestingClass):
-    """Test fit_funcs.nest_fit"""
+    """Tests for the ``nest_fit`` function"""
 
     @staticmethod
     def fit_func(*a, **kw):
@@ -116,7 +116,7 @@ class NestFit(BaseTestingClass):
 
 
 class MCMCFit(BaseTestingClass):
-    """Test fit_funcs.mcmc_fit"""
+    """Tests for the ``mcmc_fit`` function"""
 
     @staticmethod
     def fit_func(*a, **kw):
@@ -128,13 +128,13 @@ class MCMCFit(BaseTestingClass):
         self._test_mutation()
 
     def test_agrees_with_sncsomo(self):
-        """Test fit_funcs.nest_fit"""
+        """Test fit results agree with the equivalent sncosmo function"""
 
         self._test_agrees_with_sncsomo(sncosmo.mcmc_lc)
 
 
 class NestedSimpleFit(BaseTestingClass):
-    """Test fit_funcs.nested_simple_fit"""
+    """Tests for the ``nested_simple_fit`` function"""
 
     @staticmethod
     def fit_func(*a, **kw):
@@ -147,7 +147,7 @@ class NestedSimpleFit(BaseTestingClass):
 
 
 class NestedMCMCFit(BaseTestingClass):
-    """Test fit_funcs.nested_mcmc_fit"""
+    """Tests for the ``nested_mcmc_fit`` function"""
 
     @staticmethod
     def fit_func(*a, **kw):

@@ -1,7 +1,7 @@
-# This configuration file specifies fitting arguments for CSP DR3 targets
-# Redshift values are taken from CSP DR1. Most targets follow the template
-# listed below, with modifications made on a per-supernova basis to ensure
-# good model convergence.
+# This configuration file specifies fitting arguments each supernova.
+# Redshift values are taken from the literature where available.
+# Most targets follow the template listed below, with modifications made
+#  on a per-supernova basis to ensure good model convergence.
 #
 # salt2:
 #   object_id:
@@ -42,6 +42,7 @@
 #         t0: ?
 
 salt2:
+  # CSP DR1 targets
   2004dt:
     kwargs:
       global:
@@ -1383,6 +1384,7 @@ salt2:
         t0: 2454890.0
 
 sn91bg:
+  # CSP DR1 targets
   2004dt:
     kwargs:
       global:

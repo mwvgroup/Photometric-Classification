@@ -3,6 +3,7 @@
 
 """Tests for the ``models`` module."""
 
+from copy import deepcopy
 from os import environ
 from unittest import TestCase
 
@@ -16,7 +17,7 @@ running_in_travis = 'TRAVIS' in environ
 
 
 class TemplateLoading(TestCase):
-    """Tests for models.load_template"""
+    """Tests for the ``load_template`` function"""
 
     coord_names = ('stretch', 'color', 'phase', 'wave')
 
@@ -72,10 +73,10 @@ class TemplateLoading(TestCase):
 
 
 class BisectSearch(TestCase):
-    """Tests for models._sources._bi_search"""
+    """Tests for the ``_bi_search`` function"""
 
     def test_element_in_array(self):
-        """Test the correct index is returned for an element in a list"""
+        """Test the correct index is returned for an element in an array"""
 
         test_array = np.array([1, 2, 3])
         test_elt_index = 1
@@ -84,14 +85,15 @@ class BisectSearch(TestCase):
         self.assertEqual(1, models._sources._bi_search(test_array, test_elt))
 
     def test_element_in_range(self):
-        """Test correct indices are returned for an element in a list range"""
+        """Test the correct indices are returned for an element in the
+        range of an array
+        """
 
         test_array = np.array([1, 2, 3])
         test_elt = 1.5
         expected_indices = [0, 1]
-
-        self.assertSequenceEqual(
-            expected_indices, models._sources._bi_search(test_array, test_elt))
+        returned_indices = models._sources._bi_search(test_array, test_elt)
+        self.assertSequenceEqual(expected_indices, returned_indices)
 
     def test_element_outside_range(self):
         """Test an error is raised for a parameter outside the array's range"""
@@ -113,21 +115,9 @@ class BaseSourceTestingClass(TestCase):
     def setUpClass(cls):
         cls.source = sncosmo.get_source(cls.source_name, cls.source_version)
 
-    def _test_flux_matches_template(self):
-        """Test return of model.flux agrees with the source template"""
-
-        # Get template spanning the phase range of the model
-        (stretch, color, phase, wave), template = models.load_template(
-            self.source.minphase(), self.source.maxphase())
-
-        for i, x1 in enumerate(stretch):
-            for j, c in enumerate(color):
-                self.source.set(x1=x1, c=c)
-                model_flux = self.source.flux(phase, wave)
-                template_flux = template[i, j]
-                self.assertTrue(np.all(np.isclose(model_flux, template_flux)))
-
     def _test_phase_range(self, min_phase, max_phase):
+        """Test the model has the expected phase range"""
+
         self.assertEqual(min_phase, self.source.minphase())
         self.assertEqual(max_phase, self.source.maxphase())
 
@@ -152,6 +142,63 @@ class BaseSourceTestingClass(TestCase):
         early_phase_zero = np.isclose(0, early_phase_flux, atol=1e-6)
         self.assertTrue(early_phase_zero, f'Non-zero flux {early_phase_flux}')
 
+    # The following tests target specific sections of code within the source
+    # class that handle the interpolation of the flux template. In an effort to
+    # improve minimize the number of calculations, the interpolation is carried
+    # out differently when both, one of, or neither of the stretch or color
+    # parameters are equal to the coordinates of the flux template grid.
+
+    def _test_flux_at_coords_matches_template(self):
+        """Test return of model.flux agrees with the source template"""
+
+        # Get template spanning the phase range of the model
+        (stretch, color, phase, wave), template = models.load_template(
+            self.source.minphase(), self.source.maxphase())
+
+        for i, x1 in enumerate(stretch):
+            for j, c in enumerate(color):
+                self.source.set(x1=x1, c=c)
+                model_flux = self.source.flux(phase, wave)
+                template_flux = template[i, j]
+                is_close = np.isclose(model_flux, template_flux)
+                self.assertTrue(is_close.all())
+
+    def _test_stretch_interpolation(self):
+        """Test the flux is interpolated correctly for a color on the template
+        grid coordinates and a stretch in-between the coordinates.
+        """
+
+        # Load the flux template spanning the phase range of the model
+        (stretch, color, phase, wave), template = models.load_template(
+            self.source.minphase(), self.source.maxphase())
+
+        test_stretch = (stretch[0] + stretch[1]) / 2
+        test_color = color[1]
+        expected_flux = (template[0, 1] + template[1, 1]) / 2
+
+        source = deepcopy(self.source)
+        source.set(x1=test_stretch, c=test_color)
+        is_close = np.isclose(expected_flux, self.source.flux(phase, wave))
+        self.assertTrue(is_close.all())
+
+    def _test_color_interpolation(self):
+        """Test the flux is interpolated correctly for a stretch on the
+        template grid coordinates and a color in-between the coordinates.
+        """
+
+        # Load the flux template spanning the phase range of the model
+        (stretch, color, phase, wave), template = models.load_template(
+            self.source.minphase(), self.source.maxphase())
+
+        test_stretch = stretch[1]
+        test_color = (color[0] + color[1]) / 2
+        expected_flux = (template[1, 0] + template[1, 1]) / 2
+
+        source = deepcopy(self.source)
+        source.set(x1=test_stretch, c=test_color)
+        is_close = np.isclose(expected_flux, self.source.flux(phase, wave))
+        self.assertTrue(is_close.all())
+
 
 class PhaseLimited(BaseSourceTestingClass):
     """Tests the 'phase_limited' version of the sn91bg model"""
@@ -160,9 +207,17 @@ class PhaseLimited(BaseSourceTestingClass):
     source_version = 'phase_limited'
 
     def test_flux_matches_template(self):
-        """Test return of model.flux agrees with the source template"""
+        """Test return of model.flux agrees with the source template at
+        the template coordinates.
+        """
 
-        self._test_flux_matches_template()
+        self._test_flux_at_coords_matches_template()
+
+    def test_stretch_interpolation(self):
+        self._test_stretch_interpolation()
+
+    def test_color_interpolation(self):
+        self._test_color_interpolation()
 
     def test_correct_version(self):
         """Test the source was registered with the correct version name"""
@@ -181,7 +236,7 @@ class PhaseLimited(BaseSourceTestingClass):
 
 
 class FullPhase(BaseSourceTestingClass):
-    """Tests the 'phase_limited' version of the sn91bg model"""
+    """Tests the 'full_phase' version of the sn91bg model"""
 
     source_name = 'sn91bg'
     source_version = 'full_phase'
@@ -189,7 +244,7 @@ class FullPhase(BaseSourceTestingClass):
     def test_flux_matches_template(self):
         """Test return of model.flux agrees with the source template"""
 
-        self._test_flux_matches_template()
+        self._test_flux_at_coords_matches_template()
 
     def test_correct_version(self):
         """Test the source was registered with the correct version name"""
