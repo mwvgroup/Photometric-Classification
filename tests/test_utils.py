@@ -14,16 +14,16 @@ from phot_class import utils
 
 
 class TestTimeout(TestCase):
-    """Tests for the utils.timeout context manager"""
+    """Tests for the ``timeout`` context manager"""
 
     @staticmethod
     def run_timeout(seconds):
-        """Run time.run_timeout wrapped with utils.timeout for given seconds
+        """Run ``time.sleep`` wrapped with ``utils.timeout`` for given seconds
 
         Sleep for one second longer than the timeout context manager.
 
         Args:
-            seconds (int): Number of seconds to run_timeout for
+            seconds (int): Number of seconds to sleep for
         """
 
         with utils.timeout(seconds):
@@ -57,7 +57,7 @@ class TestTimeout(TestCase):
 
 
 class TestCalcModelChisq(TestCase):
-    """Tests for utils.calc_model_chisq"""
+    """Tests for the ``calc_model_chisq`` function"""
 
     # We define data, model, and result properties to ensure a consistent,
     # un-mutated set of arguments when testing
@@ -81,7 +81,7 @@ class TestCalcModelChisq(TestCase):
 
     @property
     def results(self):
-        """The results of fitting self.data with self.model"""
+        """The results of fitting ``self.data`` with ``self.model``"""
 
         vparams = ['t0', 'x0', 'x1', 'c']
         results, fitted_model = sncosmo.fit_lc(self.data, self.model, vparams)
@@ -141,10 +141,8 @@ class TestCalcModelChisq(TestCase):
         transmission = np.ones_like(low_out_of_range)
 
         # Register the bands with sncosmo
-        high_band = sncosmo.Bandpass(high_out_of_range, transmission,
-                                     name='high')
-        low_band = sncosmo.Bandpass(high_out_of_range, transmission,
-                                    name='low')
+        high_band = sncosmo.Bandpass(high_out_of_range, transmission, name='high')
+        low_band = sncosmo.Bandpass(high_out_of_range, transmission, name='low')
         sncosmo.register(high_band, name='high')
         sncosmo.register(low_band, name='low')
 
@@ -212,7 +210,7 @@ class TestCalcModelChisq(TestCase):
 
 
 class TestSplitBands(TestCase):
-    """Tests for utils.split_bands"""
+    """Tests for the ``split_bands`` function"""
 
     def runTest(self):
         """Test dummy bands are correctly separated into blue and red"""
@@ -230,7 +228,7 @@ class TestSplitBands(TestCase):
 
 # Todo: Test cutoff wavelength
 class TestSplitData(TestCase):
-    """Tests for utils.split_data"""
+    """Tests for the ``split_data`` function"""
 
     def test_redshift_dependency(self):
         """Assert whether correct bands were returned for a given redshift
@@ -254,10 +252,8 @@ class TestSplitData(TestCase):
                 data, band_names, lambda_eff, redshift, cutoff=float('inf'))
 
             err_msg = f'Wrongs bands for z={redshift}'
-            self.assertListEqual(expected_blue, list(blue_table['band']),
-                                 err_msg)
-            self.assertListEqual(expected_red, list(red_table['band']),
-                                 err_msg)
+            self.assertListEqual(expected_blue, list(blue_table['band']), err_msg)
+            self.assertListEqual(expected_red, list(red_table['band']), err_msg)
 
     def test_maintains_metadata(self):
         """Test whether passed and returned tables have same metadata"""
@@ -322,3 +318,72 @@ class TestFilterFactory(TestCase):
         self.assertFalse(
             filter_func(class2_table),
             "Returned True for un-desired fitting")
+
+
+class ConfigParsing(TestCase):
+    """Tests for the ``parse_config_dict`` function"""
+
+    def runTest(self):
+        """Test a parsed dictionary returns expected values"""
+
+        config_dict = {
+            'salt2': {
+                'obj_id': {
+                    'kwargs': {
+                        'global': {
+                            'bounds': {
+                                't0': [100, 110]
+                            },
+                            'phase_range': [-20, 50]}
+                    },
+
+                    'priors': {
+                        'global': {'z': 0.01, 't0': 105}
+                    }
+                }
+            },
+            'sn91bg': {
+                'obj_id': {
+                    'priors': {
+                        'all': {'z': 0},
+                        'blue': {'z': 1},
+                        'red': {'z': 2}
+                    }
+                }
+            }
+        }
+
+        expected_salt2_prior = {
+            'all': {'t0': 105, 'z': 0.01},
+            'blue': {'t0': 105, 'z': 0.01},
+            'red': {'t0': 105, 'z': 0.01}
+        }
+
+        expected_salt2_kwargs = {
+            'all': {'bounds': {'t0': [100, 110]}, 'phase_range': [-20, 50]},
+            'blue': {'bounds': {'t0': [100, 110]}, 'phase_range': [-20, 50]},
+            'red': {'bounds': {'t0': [100, 110]}, 'phase_range': [-20, 50]}
+        }
+
+        expected_sn91bg_prior = {
+            'all': {'z': 0},
+            'blue': {'z': 1},
+            'red': {'z': 2}
+        }
+
+        expected_sn91bg_kwargs = {'all': {}, 'blue': {}, 'red': {}}
+
+        salt2_prior, salt2_kwargs, sn91bg_prior, sn91bg_kwargs = \
+            utils.parse_config_dict('obj_id', config_dict)
+
+        self.assertEqual(
+            expected_salt2_prior, salt2_prior, 'Wrong salt2 prior')
+
+        self.assertEqual(
+            expected_salt2_kwargs, salt2_kwargs, 'Wrong salt2 kwargs')
+
+        self.assertEqual(
+            expected_sn91bg_prior, sn91bg_prior, 'Wrong sn91bg prior')
+
+        self.assertEqual(
+            expected_sn91bg_kwargs, sn91bg_kwargs, 'Wrong sn91bg kwargs')

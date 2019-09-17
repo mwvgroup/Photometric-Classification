@@ -18,7 +18,7 @@ models.register_sources(force=True)
 
 
 class StretchColorSimulation(TestCase):
-    """Tests for the bg_stretch_color function"""
+    """Tests for the ``bg_stretch_color`` function"""
 
     @classmethod
     def setUpClass(cls):

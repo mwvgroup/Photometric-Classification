@@ -106,9 +106,6 @@ def _load_sn91bg(name=None, version='phase_limited'):
         model.version = version
         return model
 
-    else:
-        raise ValueError(f"Unidentified version: '{version}'.")
-
 
 def register_sources(force=False):
     """Register SN 1991bg-like models with SNCosmo

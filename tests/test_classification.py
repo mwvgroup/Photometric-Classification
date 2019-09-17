@@ -18,8 +18,8 @@ from phot_class import classification
 # - tabulate_fit_results
 
 
-class TestTableCreation(TestCase):
-    """Tests for fitting.create_empty_table"""
+class TableCreation(TestCase):
+    """Tests for the ``create_empty_table`` function"""
 
     def test_is_empty(self):
         """Test the returned table is empty by default"""
@@ -54,8 +54,8 @@ class TestTableCreation(TestCase):
         self.assertEqual(1, len(table), 'Table did not add specified rows')
 
 
-class TestFitResultsToTableRow(TestCase):
-    """Tests for fitting.fit_results_to_table_row"""
+class FitResultsToTableRow(TestCase):
+    """Tests for the ``fit_results_to_table_row`` function"""
 
     # Don't limit output messages on test failures
     maxDiff = None
@@ -111,8 +111,28 @@ class TestFitResultsToTableRow(TestCase):
         self.assertListEqual(expected_row, row)
 
 
-class TestClassificationCoords(TestCase):
-    """Tests for fitting.classify_targets"""
+class RaiseUnspecifiedParams(TestCase):
+    """Tests for ``_raise_unspecified_params``"""
+
+    def test_unspecified_param(self):
+        """Test a RuntimeError is raise for an unspecified parameter"""
+
+        fixed_params = ['z']
+        prior = {'t0': 1, 'x1': 1}
+        args = (fixed_params, prior)
+        func = classification._raise_unspecified_params
+        self.assertRaises(RuntimeError, func, *args)
+
+    def test_all_params_specified(self):
+        """Test no error is raised when all fixed params are specified"""
+
+        fixed_params = ['z']
+        prior = {'z': .5, 't0': 1, 'x1': 1}
+        classification._raise_unspecified_params(fixed_params, prior)
+
+
+class ClassificationCoords(TestCase):
+    """Tests for the ``classify_targets`` function"""
 
     expected_input_columns = ['obj_id', 'source', 'band_set', 'chisq', 'ndof']
 
