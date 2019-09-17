@@ -269,6 +269,7 @@ def tabulate_fit_results(
             raise
 
         except Exception as e:
+            raise
             # Add a masked row so we have a record in the output table
             # indicating something went wrong.
             num_cols = len(out_table.colnames)

@@ -155,19 +155,39 @@ class SN91bg(sncosmo.Source):
         amplitude, x1, c = self._parameters
         x1_index = _bi_search(self._stretch, x1)
         c_index = _bi_search(self._color, c)
+
         if isinstance(x1_index, int) and isinstance(c_index, int):
+            # Model parameters are coordinates on the flux template grid so we
+            # only have to evaluate one spline.
+
             flux = amplitude * self._splines[x1_index, c_index](phase, wave)
 
         elif isinstance(x1_index, int):
+            # Only stretch is a coordinate on the flux template grid so we
+            # only have to evaluate two splines.
+
             flux = [self._splines[x1_index, i](phase, wave) for i in c_index]
-            flux = amplitude * np.interp(c, self._stretch[c_index], flux)
+            flux = amplitude * interpn(
+                points=[self._color[c_index], phase, wave],
+                values=flux,
+                xi=[[[c, p, w] for w in wave] for p in phase]
+            )
 
         elif isinstance(c_index, int):
+            # Same as last conditional but for color.
+
             flux = [self._splines[i, c_index](phase, wave) for i in x1_index]
-            flux = amplitude * np.interp(x1, self._stretch[c_index], flux)
+            flux = amplitude * interpn(
+                points=[self._stretch[x1_index], phase, wave],
+                values=flux,
+                xi=[[[x1, p, w] for w in wave] for p in phase]
+            )
+
 
         else:
-            # Linearly interpolate template for current stretch and color
+            # Neither parameter is a coordinate on the template, so we evaluate
+            # four splines.
+
             spline_flux = np.zeros((2, 2, len(phase), len(wave)))
             for i in range(2):
                 for j in range(2):
