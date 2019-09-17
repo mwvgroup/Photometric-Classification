@@ -139,5 +139,4 @@ We provide summaries for key files in the project repository::
    api_reference/classification
    api_reference/utils
    api_reference/models
-   api_reference/models.snana_sims
-   api_reference/models.sncosmo_sims
+   api_reference/sncosmo_sims
