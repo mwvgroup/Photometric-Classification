@@ -6,6 +6,7 @@ python run_pipeline.py \
     -r sn3yr \
     -f simple_fit \
     -v t0 x0 x1 c \
+    -t 120 \
     -c 'priors_config.yml' \
     -o './results';
 
