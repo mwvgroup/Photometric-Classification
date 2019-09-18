@@ -126,6 +126,7 @@ We provide summaries for key files in the project repository::
    :caption: Project Notes:
 
    project_notes/data
+   project_notes/fitters
    project_notes/notebooks
 
 
