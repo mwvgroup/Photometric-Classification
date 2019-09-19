@@ -20,13 +20,12 @@ when two fitters use parameters with the same name, those two parameters are
 not, in fact, the same.
 
 The photometric classification scheme that our project is based on was
-originally implemented with SiFTO. We here outline the approach of different
-fitters relevant to our project and how they work.
+originally implemented with SiFTO. We here outline the approach of various
+third party fitters relevant to our project and how they work.
 
 
-
-SiFTO (`Conley+ 2008 <https://doi.org/10.1086/588518>`_)
---------------------------------------------------------
+SiFTO (`Conley et al. 2008 <https://doi.org/10.1086/588518>`_)
+--------------------------------------------------------------
 
 SiFTO is an empirical light-curve fitter that is similar to SALT2 in the sense
 that it uses magnitude, light curve shape (i.e. stretch), and color to fit
@@ -65,3 +64,45 @@ We note the following warning from Conley+ 2008:
    suited to the rest-frame near-IR (I or redder), where a stretch-like
    prescription does not work well."
 
+
+SALT2 (`Guy et al. 2007 <https://www.aanda.org/htbin/resolve?bibcode=2007A%26A...466...11GFUL>`_)
+-------------------------------------------------------------------------------------------------
+
+SALT2 is intended to fit light curves while accounting for intrinsic variations
+in the supernova population. The original SALT model used the spectral sequence
+of Nugent et al. 2002 in conjunction with the parameters phase, wavelength, and
+stretch. SALT2 takes a similar approach but with several improvements, among
+which include the use of spectroscopic data in the training sample. In addition
+to improving the model's resolution, this allows k-corrections to be handled in
+a consistent way for both photometric and spectroscopic observations.
+
+The SALT2 model is similar to a principal component decomposition times an
+overall color law :math:`CL(\lambda)`.
+
+.. math::
+
+    F = x_0 \times [M_0(phase, \lambda) + x_1 \times M_1(phase, \lambda) +  ...] \times exp[c \times CL(\lambda)]
+
+Here :math:`x_i` are the components of the model, :math:`c` is a color term,
+:math:`M_0` represents the average spectral template, and the remaining
+:math:`M_i` describe the variability of the supernova population. At the time
+it's inception, the data available did not have a sufficiently high sampling
+to perform a full principle component analysis. Furthermore, it was determined
+during the training of the model that the terms for :math:`i>1` could not be
+well constrained.
+
+A total of 176 supernovae were used in the SALT2 training set, Eeach having
+at least two light-curves in different filters. The initial training value for
+:math:`M_0` was chosen to be the original SALT model with a stretch of 1.
+:math:`M_1` was chosen as the difference between :math:`M_0` and SALT with a
+stretch of 1.1.
+
+Guy et al. 2007 outlines three potential use cases for SALT2 or its potential
+successors:
+
+1. The classification of type Ia supernovae via a chi-squared cutoff
+2. The photometric estimation of redshifts
+3. Inspection of the intrinsic variability of supernovae by improving the data
+   set to allow more terms in the principle component analysis. In doing so one
+   could look for correlations between supernova properties and parameter
+   values.
