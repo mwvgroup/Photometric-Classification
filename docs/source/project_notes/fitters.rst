@@ -106,3 +106,37 @@ successors:
    set to allow more terms in the principle component analysis. In doing so one
    could look for correlations between supernova properties and parameter
    values.
+
+Custom sn1991bg-like Model
+--------------------------
+
+The 91bg model used for this project is based on the 91bg template from
+Nugent et al. 2002 but is extended into the ultra-violet. This model was
+originally formatted for use with the FORTRAN package ``SNANA``.
+Care was taken to ensure the model was ported correctly into Python and that
+the predicted fluxes, parameter covariances, etc. are the same.
+
+The model works by interpolating from a grid of SED templates covering 7
+stretch and 5 color values. The ranges and relations of color and stretch were
+obtained by using `SiFTO <https://iopscience.iop.org/article/10.1086/588518/meta>`_
+to fit the template to multiple 91bg light-curves at low-z.
+
+The full phase range of the 91bg template extends from -18 to 100 days. When
+comparing this model against other models (e.g. via a chi-squared value) it is
+sometimes beneficial to limit the phase range of our model to more closely
+resemble what it is being compared to. For this reason the model has been
+specifically programmed so that the template can be arbitrarily limited in
+phase space at instantiation.
+
+.. note::
+  - For more information on the Nugent template see
+    `Nugent et al. 2002 <https://iopscience.iop.org/article/10.1086/341707>`_.
+
+.. note::
+  - For more information on sncosmo and ``Source`` classes see the
+    `sncosmo documentation <https://sncosmo.readthedocs.io/>`_.
+
+.. note::
+  - You will need to to have the ``SNANA`` package install on your
+    machine in order to use the ``snana_sims`` package. For more information on
+    SNANA see the `SNANA documentation <http://snana.uchicago.edu>`_.

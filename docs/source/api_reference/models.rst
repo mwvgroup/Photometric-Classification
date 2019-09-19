@@ -1,5 +1,5 @@
-phot_class.models (Models Overview)
-===================================
+phot_class.models
+=================
 
 .. automodule:: phot_class.models
    :members:
