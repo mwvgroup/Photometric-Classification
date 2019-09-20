@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Run CSP DR3 and fix redshift to the prior
+# Run DES SN3YR and fix redshift to the prior
 python run_pipeline.py \
     -s des \
     -r sn3yr \
@@ -10,6 +10,7 @@ python run_pipeline.py \
     -c 'priors_config.yml' \
     -o './results';
 
+# Run CSP DR3 and fix redshift to the prior
 python run_pipeline.py \
     -s csp \
     -r dr3 \

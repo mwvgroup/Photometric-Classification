@@ -39,7 +39,7 @@ def get_data_iter(data_module):
         Astropy tables
     """
 
-    data_iter = data_module.iter_data(format_sncosmo=True, verbose=True)
+    data_iter = data_module.iter_data(verbose=True)
     for data in data_iter:
         data = data[data['band'] != 'csp_dr3_Ydw']
         data = data[data['band'] != 'csp_dr3_Y']

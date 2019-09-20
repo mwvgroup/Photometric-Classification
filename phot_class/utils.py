@@ -54,8 +54,10 @@ def parse_config_dict(obj_id, config_dict):
     for model in ('salt2', 'sn91bg'):
         for dtype in ('priors', 'kwargs'):
 
-            # Define dictionaries of output and input data for model / dtype
+            # Define dictionaries of output data for the current model / dtype
             all_, blue, red = dict(), dict(), dict()
+
+            # Get input data for given object from config
             object_data = config_dict[model].get(obj_id, {}).get(dtype, {})
 
             # Populate output dictionaries

@@ -66,7 +66,7 @@ def create_empty_table(**kwargs):
     return Table(names=names, dtype=dtype, **kwargs)
 
 
-def fit_results_to_table_row(data, band_set, results, fitted_model):
+def _fit_results_to_table_row(data, band_set, results, fitted_model):
     """Format sncosmo fit results so they can be appended to an astropy table
 
     See the ``create_empty_table`` function for information on the assumed
@@ -156,39 +156,41 @@ def run_classification_fits(
        Fit results and the fitted model for each model / data combination
     """
 
-    # Make sure any model parameters that are not being varied are
-    # specified by in the priors
-    fixed_params = {'z', 't0', 'x0', 'x1', 'c'} - set(vparams)
-    for prior in (priors_s2, priors_bg):
-        _raise_unspecified_params(fixed_params, *prior.values())
-
     # Set default kwargs and protect against mutation
     priors_s2 = deepcopy(priors_s2) or dict()
     priors_bg = deepcopy(priors_bg) or dict()
     kwargs_s2 = deepcopy(kwargs_s2) or dict()
     kwargs_bg = deepcopy(kwargs_bg) or dict()
 
-    # Build iterator over data and models for each fit we want to run
+    all_data = vstack([blue_data, red_data])
+    out_data = create_empty_table()
+
+    # Make sure any model parameters that are not being varied are
+    # specified by in the priors
+    fixed_params = {'z', 't0', 'x0', 'x1', 'c'} - set(vparams)
+    for prior in (priors_s2, priors_bg):
+        _raise_unspecified_params(fixed_params, *prior.values())
+
+
+    # Build an iterator over the data and models for each fit we want to run
     # Later on we rely on the the salt2.4 model and the full data table
     # being first in the iterator
-    all_data = vstack([blue_data, red_data])
     band_sets = ['all', 'blue', 'red']
-
     data_tables = 2 * [all_data, blue_data, red_data]
     kwargs = [kwargs_s2[bs] for bs in band_sets] + [kwargs_bg[bs] for bs in band_sets]
     priors = [priors_s2[bs] for bs in band_sets] + [priors_bg[bs] for bs in band_sets]
     models = 3 * [sncosmo.Model('salt2')] + 3 * [sncosmo.Model('sn91bg')]
-    fitting_data = zip(data_tables, models, priors, kwargs)
+    fitting_data = zip(data_tables, 2 * band_sets, models, priors, kwargs)
 
-    out_data = []
     salt2_t0 = None
-    for data_table, model, prior, kwarg in fitting_data:
+    for data_table, band_set, model, prior, kwarg in fitting_data:
         model.update(prior)
         if salt2_t0 is not None:  # i.e. if this is not the first fit
             model.set(t0=prior.get('t0', salt2_t0))
 
         result, fitted_model = fit_func(data_table, model, vparams, **kwarg)
-        out_data.append((result, fitted_model))
+        row = _fit_results_to_table_row(data_table, band_set, result, fitted_model)
+        out_data.add_row(row)
 
         # Update models to use salt2 t0 if not already specified in the priors
         t0_index = fitted_model.param_names.index('t0')
@@ -253,17 +255,10 @@ def tabulate_fit_results(
                     priors_s2=salt2_prior,
                     priors_bg=sn91bg_prior,
                     kwargs_s2=salt2_kwargs,
-                    kwargs_bg=sn91bg_kwargs)
+                    kwargs_bg=sn91bg_kwargs
+                )
 
-            # Create an iterator over data necessary to make each row
-            band_sets = 2 * ['all', 'blue', 'red']
-            data_tables = 2 * [data, red_data, blue_data]
-            row_data_iter = zip(band_sets, data_tables, fit_results)
-
-            # Populate the output table
-            for bs, dt, (results, fitted_model) in row_data_iter:
-                row = fit_results_to_table_row(dt, bs, results, fitted_model)
-                out_table.add_row(row)
+            out_table = vstack([out_table, fit_results])
 
         except KeyboardInterrupt:
             raise

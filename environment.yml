@@ -19,7 +19,7 @@ dependencies:
 
   - pip:
       - nestle==0.2.0
-      - sndata==0.6.0
+      - sndata==0.7.0
       - emcee==2.2.1
       - pyyaml==5.1.2
       - tqdm==4.35.0
