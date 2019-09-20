@@ -2,32 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 """The ``models`` module defines a ``Source`` class for modeling
-91bg-like supernovae with ``sncosmo``. The model is based on the 91bg template
-from Nugent et al. 2002 but is extended into the ultra-violet. The model we
-use here was originally intended for use with the FORTRAN package ``SNANA``.
-Care was taken to ensure the model was ported correctly into Python and that
-the predicted fluxes, parameter covariances, etc. are the same. To validate
-our efforts, the ``snana_sims`` and ``sncosmo_sims`` submodules simulate
-fluxes using the original and ported models respectively.
-
-.. note::
-  - For more information on the Nugent template see
-    `Nugent et al. 2002 <https://iopscience.iop.org/article/10.1086/341707>`_.
-  - For more information on sncosmo and ``Source`` classes see the
-    `sncosmo documentation <https://sncosmo.readthedocs.io/>`_.
-  - You will need to to have the ``SNANA`` package install on your
-    machine in order to use the ``snana_sims`` package. For more information on
-    SNANA see the `SNANA documentation <http://snana.uchicago.edu>`_.
-
-About the 91bg model
---------------------
-
-The model is based on 35 SED templates provided by S. Gonzalez-Gaitan. These
-SEDs are based on the Nugent et al. 2002 templates but have been extended into
-to the UV. They form a 7 by 5 grid covering 7 different stretch and 5 different
-color values. The ranges and relations of color and stretch were obtained by
-using `SiFTO <https://iopscience.iop.org/article/10.1086/588518/meta>`_ to fit
-template to multiple 91bg light-curves at low-z.
+91bg-like supernovae with ``sncosmo``.
 
 Available Model Versions
 ------------------------

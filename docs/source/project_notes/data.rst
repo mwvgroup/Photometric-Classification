@@ -14,7 +14,7 @@ by developers, and should not be considered a formal reference.
 .. note:: For more information on ``sndata`` see the
   `official documentation <https://sn-data.readthedocs.io/en/latest/>`_
 
-The SDSS-II SN Survey Data (`Sako et al. 2018 <https://iopscience.iop.org/article/10.1088/1538-3873/aab4e0/meta>_`)
+The SDSS-II SN Survey Data (`Sako et al. 2018 <https://iopscience.iop.org/article/10.1088/1538-3873/aab4e0/meta>`_)
 -------------------------------------------------------------------------------------------------------------------
 
 The SDSS-II SN Survey was implemented as an extension to the original SDSS and

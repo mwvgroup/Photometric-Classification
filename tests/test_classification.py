@@ -55,7 +55,7 @@ class TableCreation(TestCase):
 
 
 class FitResultsToTableRow(TestCase):
-    """Tests for the ``fit_results_to_table_row`` function"""
+    """Tests for the ``_fit_results_to_table_row`` function"""
 
     # Don't limit output messages on test failures
     maxDiff = None
@@ -82,7 +82,7 @@ class FitResultsToTableRow(TestCase):
         model.update(data.meta)
         data.meta['obj_id'] = 'dummy_id'
 
-        row = classification.fit_results_to_table_row(
+        row = classification._fit_results_to_table_row(
             data, 'dummy_band_set', result, model)
 
         expected_row = [

@@ -7,7 +7,7 @@ channels:
 
 dependencies:
   - python=3.7.4
-
+  - nb_conda_kernels
   - pip=19.1.1
   - astropy=3.2.1
   - bokeh=1.3.4
@@ -19,7 +19,7 @@ dependencies:
 
   - pip:
       - nestle==0.2.0
-      - sndata==0.6.0
+      - sndata==0.7.0
       - emcee==2.2.1
       - pyyaml==5.1.2
       - tqdm==4.35.0
