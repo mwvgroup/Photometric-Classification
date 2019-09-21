@@ -74,10 +74,10 @@ class VerticalFOM(TestCase):
         """Test the FOM is 1 when evaluated at a known, simulated boundary"""
         
         x, y, truth = create_test_grid((-10, 10), (-10, 10), 'type1')
-        truth[x > 0] = 'type2'
+        truth[y > 0] = 'type2'
 
-        type2_fom = fom.vertical(truth, x, 0, 'type2')
-        type1_fom = fom.vertical(truth, x, 0, 'type1')
+        type2_fom = fom.vertical(truth, y, 0, 'type2')
+        type1_fom = fom.vertical(truth, y, 0, 'type1')
 
         self.assertEqual(type2_fom, 1)
         self.assertEqual(type1_fom, 0)
@@ -90,10 +90,10 @@ class HorizontalFOM(TestCase):
         """Test the FOM is 1 when evaluated at a known, simulated boundary"""
         
         x, y, truth = create_test_grid((-10, 10), (-10, 10), 'type1')
-        truth[y > 0] = 'type2'
+        truth[x > 0] = 'type2'
 
-        type2_fom = fom.horizontal(truth, y, 0, 'type2')
-        type1_fom = fom.horizontal(truth, y, 0, 'type1')
+        type2_fom = fom.horizontal(truth, x, 0, 'type2')
+        type1_fom = fom.horizontal(truth, x, 0, 'type1')
 
         self.assertEqual(type2_fom, 1)
         self.assertEqual(type1_fom, 0)

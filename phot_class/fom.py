@@ -116,7 +116,7 @@ def rectangular(truth, x, y, x_cutoff, y_cutoff, check_type):
     return fom(truth, classification, check_type)
 
 
-def vertical(truth, x, x_cutoff, check_type):
+def horizontal(truth, x, x_cutoff, check_type):
     """Calculate the figure of merit using a vertical lower boundary
     (i.e. using only the x coordinate)
 
@@ -138,7 +138,7 @@ def vertical(truth, x, x_cutoff, check_type):
     return fom(truth, classification, check_type)
 
 
-def horizontal(truth, y, y_cutoff, check_type):
+def vertical(truth, y, y_cutoff, check_type):
     """Calculate the figure of merit using a horizontal lower boundary
     (i.e. using only the y coordinate)
 
