@@ -9,18 +9,17 @@ Available Model Versions
 
 There are multiple versions of the 91bg model included in this package. For
 information on how each version determines the flux for a given set of
-parameters, see the documentation for the given source class. It should **NOT**
-be assumed that flux is predicted the same way for different model versions.
+parameters, see the documentation for the given source class.
 
-+--------+---------------------------+---------------------------------------------------------+
-| Name   | Version                   | Description                                             |
-+========+===========================+=========================================================+
-| sn91bg | 'phase_limited' (Default) | 1991bg model restricted to a phase similar to Salt 2.4. |
-|        |                           | This model version extends from -18 to 50 days.         |
-+--------+---------------------------+---------------------------------------------------------+
-| sn91bg | 'full_phase'              | 1991bg model extending over to full phase range.        |
-|        |                           | This model version extends from -18 to 100 days.        |
-+--------+---------------------------+---------------------------------------------------------+
++--------+------------------+-------------------------------------------------+
+| Name   | Version          | Description                                     |
++========+==================+=================================================+
+| sn91bg | 'phase_limited'  | 1991bg model restricted to a phase similar to   |
+|        | (Default)        | Salt 2.4 (extends from -18 to 50 days).         |
++--------+------------------+-------------------------------------------------+
+| sn91bg | 'full_phase'     | 1991bg model extending over to full available   |
+|        |                  | phase range (-18 to 100 days).                  |
++--------+------------------+-------------------------------------------------+
 
 Usage Example
 -------------
@@ -33,7 +32,7 @@ Usage Example
 >>> # Make sncosmo aware of the 1991bg models
 >>> models.register_sources()
 >>>
->>> # Initialize a model where the version is the model mass
+>>> # Initialize a model
 >>> source = sncosmo.get_source('sn91bg', version='phase_limited')
 >>> model = sncosmo.Model(source=source)
 >>>
@@ -51,7 +50,7 @@ Usage Example
 >>> fig = sncosmo.plot_lc(data, model=fitted_model, errors=result.errors)
 >>> plt.show()
 
-Module Level Functions
+Function Documentation
 ----------------------
 """
 

@@ -1,50 +1,99 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""The ``fom`` module calculates the Figure of Merit (FOM) parameter which is
-used to optimize the classification of targets as either 91bg or normal type
-Ia.
+"""The ``fom`` module calculates the Figure of Merit (FOM) parameter
+defined as:
 
+.. math::
+
+    FOM = \frac{N_{true}}{N_{total}} \times \frac{N_{true}}{N_{true} + N_{false}}
+
+where :math:`N_{true}` is the number of objects correctly classified as a given
+type, :math:`N_{false}` is the number of objects falsely classified as the
+given type, and :math:`N_{total}` is the total number of objects with that
+type.
+
+This module specifically focuses on classification techniques that classify
+targets based on their (x, y) position in some two dimensional phase space.
 Functions are provided for calculating the FOM according to multiple
-classification schemes. This includes the following functions:
+classification schemes:
 
-+----------------------+--------------------------------------------------------------------------------+
-| Function             | Description                                                                    |
-+======================+================================================================================+
-| ``rectangular``      | Uses a pair of rectangular axes to classify targets in the                     |
-|                      | upper right / lower left quadrant as 91bg / normal type Ia                     |
-+----------------------+--------------------------------------------------------------------------------+
-| ``vertical``         | Classifies targets using only the x coordinate (difference in red band chisq)  |
-+----------------------+--------------------------------------------------------------------------------+
-| ``horizontal``       | Classifies targets using only the y coordinate (difference in blue band chisq) |
-+----------------------+--------------------------------------------------------------------------------+
-| ``linear``           | Classifies targets using a diagonal boundary: y = mx + b                       |
-+----------------------+--------------------------------------------------------------------------------+
-| ``diagonal``         | Classifies targets using a diagonal boundary with a slope of 1: y = x + b      |
-+----------------------+--------------------------------------------------------------------------------+
++----------------------+------------------------------------------------------+
+| Function             | Classification Scheme                                |
++======================+======================================================+
+| ``rectangular``      | Uses a pair of rectangular axes to classify targets  |
+|                      | in the upper right quadrant as a given type.         |
++----------------------+------------------------------------------------------+
+| ``vertical``         | Classifies targets with an x coordinate greater than |
+|                      | some value as a given type.                          |
++----------------------+------------------------------------------------------+
+| ``horizontal``       | Classifies targets with a y coordinate greater than  |
+|                      | some value as a given type.                          |
++----------------------+------------------------------------------------------+
+| ``linear``           | Classifies targets above a linear boundary           |
+|                      | y = mx + b as a given type.                          |
++----------------------+------------------------------------------------------+
+| ``diagonal``         | Classifies targets above a diagonal boundary         |
+|                      | y = x + b as a given type. Note the difference in    |
+|                      | slope between this option and the ``linear`` option. |
++----------------------+------------------------------------------------------+
+
+Alternatively, the ``fom`` method can be used to calculate the FOM for a set
+of predetermined classifications, independent of the chosen classification
+technique (i.e. using the results of an already run classification).
+
+Usage Example
+-------------
+
+>>> from phot_class.fom import fom
+>>>
+>>> # The true "spectroscopic" classification of an object
+>>> truth = ['normal', 'normal', 'normal', '91bg', '91bg']
+>>>
+>>> # The result of some classification piepline
+>>> classifications = ['normal', 'normal', '91bg', 'normal', '91bg']
+>>>
+>>> # Classify the FOM for the "91bg" type
+>>> bg_fom = fom(truth, classifications, '91bg')
+>>>
+>>> # Classify the FOM for the "normal" type
+>>> normal_fom = fom(truth, classifications, 'normal')
+
+Function Documentation
+----------------------
 """
 
+import numpy as np
 
-def _fom(equals_truth, equals_class):
+
+def fom(truth, classification, check_type):
     """Calculate the figure of merit for a given set of classifications
 
     Args:
-        equals_truth (ndarray): Whether the true classification of each
-                                 object matches a given type
-        equals_class (ndarray): Whether the derived classification of each
-                                 object matches a given type
+        truth          (ndarray): The true classifications
+        classification (ndarray): The assigned classifications
+        check_type         (str): The type to calculate the FOM for
 
     Returns:
-        (ntrue / ntotal) * (ntrue / (ntrue + nfalse))
+        (n_true / n_total_type) * (n_true / (n_true + n_false))
     """
 
-    ntotal = sum(equals_truth)
-    ntrue = sum(equals_truth & equals_class)
-    nfalse = sum(~equals_truth & equals_class)
+    truth = np.asarray(truth)
+    classification = np.asarray(classification)
+
+    # The total number of objects of the given type
+    ntotal = sum(truth == check_type)
+
+    # The number of objects correctly classified as the given type
+    ntrue = sum((truth == classification) & (classification == check_type))
+
+    # The number of objects incorrectly classified as the given type
+    nfalse = sum((truth != classification) & (classification == check_type))
+
     return (ntrue / ntotal) * (ntrue / (ntrue + nfalse))
 
 
-def rectangular(truth, x, y, x_cutoff, y_cutoff, check_type='91bg'):
+def rectangular(truth, x, y, x_cutoff, y_cutoff, check_type):
     """Calculate the figure of merit using a pair of rectangular lower bounds
 
     Expected classifications are "normal" or "91bg" (case insensitive).
@@ -62,12 +111,12 @@ def rectangular(truth, x, y, x_cutoff, y_cutoff, check_type='91bg'):
         The figure of merit value
     """
 
-    type_matches_truth = (truth == check_type)
-    type_matches_classification = ((x > x_cutoff) & (y > y_cutoff))
-    return _fom(type_matches_truth, type_matches_classification)
+    classification = np.full_like(truth, f'not_{check_type}')
+    classification[(x > x_cutoff) & (y > y_cutoff)] = check_type
+    return fom(truth, classification, check_type)
 
 
-def vertical(truth, x, x_cutoff, check_type='91bg'):
+def vertical(truth, x, x_cutoff, check_type):
     """Calculate the figure of merit using a vertical lower boundary
     (i.e. using only the x coordinate)
 
@@ -84,12 +133,12 @@ def vertical(truth, x, x_cutoff, check_type='91bg'):
         The figure of merit value
     """
 
-    type_matches_truth = (truth == check_type)
-    type_matches_classification = (x > x_cutoff)
-    return _fom(type_matches_truth, type_matches_classification)
+    classification = np.full_like(truth, f'not_{check_type}')
+    classification[x > x_cutoff] = check_type
+    return fom(truth, classification, check_type)
 
 
-def horizontal(truth, y, y_cutoff, check_type='91bg'):
+def horizontal(truth, y, y_cutoff, check_type):
     """Calculate the figure of merit using a horizontal lower boundary
     (i.e. using only the y coordinate)
 
@@ -106,12 +155,12 @@ def horizontal(truth, y, y_cutoff, check_type='91bg'):
         The figure of merit value
     """
 
-    type_matches_truth = (truth == check_type)
-    type_matches_classification = (y > y_cutoff)
-    return _fom(type_matches_truth, type_matches_classification)
+    classification = np.full_like(truth, f'not_{check_type}')
+    classification[y > y_cutoff] = check_type
+    return fom(truth, classification, check_type)
 
 
-def linear(truth, x, y, m, b, check_type='91bg'):
+def linear(truth, x, y, m, b, check_type):
     """Calculate the figure of merit using a diagonal lower bound: y = mx + b
 
     Args:
@@ -123,16 +172,15 @@ def linear(truth, x, y, m, b, check_type='91bg'):
         check_type (str): The classification to calculate the FOM for
 
     Returns:
-    :math:`N_{total}` is the total
-number of objects with that type    The figure of merit value
+        The figure of merit value
     """
 
-    type_matches_truth = (truth == check_type)
-    type_matches_classification = y > (m * x + b)
-    return _fom(type_matches_truth, type_matches_classification)
+    classification = np.full_like(truth, f'not_{check_type}')
+    classification[y > (m * x + b)] = check_type
+    return fom(truth, classification, check_type)
 
 
-def diagonal(truth, x, y, b, check_type='91bg'):
+def diagonal(truth, x, y, b, check_type):
     """Calculate the figure of merit using a diagonal lower bound: y = x + b
 
     Expected classifications are "normal" or "91bg" (case insensitive).
