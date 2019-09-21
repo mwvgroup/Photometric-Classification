@@ -181,7 +181,7 @@ def linear(truth, x, y, m, b, check_type):
 
 
 def diagonal(truth, x, y, b, check_type):
-    """Calculate the figure of merit using a diagonal lower bound: y = x + b
+    """Calculate the figure of merit using a diagonal lower bound: y = -x + b
 
     Expected classifications are "normal" or "91bg" (case insensitive).
     All other classifications are ignored.
@@ -197,4 +197,4 @@ def diagonal(truth, x, y, b, check_type):
         The figure of merit value
     """
 
-    return linear(truth, x, y, m=1, b=b, check_type=check_type)
+    return linear(truth, x, y, m=-1, b=b, check_type=check_type)

@@ -124,7 +124,7 @@ class DiagonalFOM(TestCase):
         
         b = 2
         x, y, truth = create_test_grid((-10, 10), (-10, 10), 'type1')
-        truth[y > x + b] = 'type2'
+        truth[y > -x + b] = 'type2'
 
         type2_fom = fom.diagonal(truth, x, y, b, 'type2')
         type1_fom = fom.diagonal(truth, x, y, b, 'type1')
