@@ -138,6 +138,7 @@ We provide summaries for key files in the project repository::
    api_reference/overview
    api_reference/fit_funcs
    api_reference/classification
+   api_reference/fom
    api_reference/utils
    api_reference/models
    api_reference/sncosmo_sims
