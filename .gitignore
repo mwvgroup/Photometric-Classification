@@ -9,7 +9,7 @@
 *.pyc
 .eggs
 *.egg-info
-build/lib
+build
 dist
 
 # Light Curve Data

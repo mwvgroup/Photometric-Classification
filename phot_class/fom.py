@@ -6,7 +6,7 @@ defined as:
 
 .. math::
 
-    FOM = \frac{N_{true}}{N_{total}} \times \frac{N_{true}}{N_{true} + N_{false}}
+    FOM = \\frac{N_{true}}{N_{total}} \\times \\frac{N_{true}}{N_{true} + N_{false}}
 
 where :math:`N_{true}` is the number of objects correctly classified as a given
 type, :math:`N_{false}` is the number of objects falsely classified as the
