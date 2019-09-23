@@ -125,8 +125,10 @@ We provide summaries for key files in the project repository::
    :maxdepth: 1
    :caption: Project Notes:
 
+   project_notes/classification_scheme
    project_notes/data
    project_notes/fitters
+   project_notes/literature
    project_notes/notebooks
 
 

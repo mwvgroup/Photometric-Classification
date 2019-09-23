@@ -131,12 +131,5 @@ phase space at instantiation.
 .. note::
   - For more information on the Nugent template see
     `Nugent et al. 2002 <https://iopscience.iop.org/article/10.1086/341707>`_.
-
-.. note::
   - For more information on sncosmo and ``Source`` classes see the
     `sncosmo documentation <https://sncosmo.readthedocs.io/>`_.
-
-.. note::
-  - You will need to to have the ``SNANA`` package install on your
-    machine in order to use the ``snana_sims`` package. For more information on
-    SNANA see the `SNANA documentation <http://snana.uchicago.edu>`_.
