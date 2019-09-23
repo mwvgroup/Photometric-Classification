@@ -24,6 +24,8 @@ provided below. Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 |  inspecting_91bg_model.ipynb       | Demonstrates the properties of the 91bg model we use for classification.     |
 +------------------------------------+------------------------------------------------------------------------------+
+|  redshift_distributions.ipynb      | Plots of redshift distributions for various data sets.                       |
++------------------------------------+------------------------------------------------------------------------------+
 |  sncosmo_chisq_bug.ipynb           | Outlines a bug in the calculation of chi-squared in SNCosmo and demonstrates |
 |                                    | that our results do not suffer from this bug.                                |
 +------------------------------------+------------------------------------------------------------------------------+
