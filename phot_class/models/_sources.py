@@ -80,12 +80,12 @@ def _bi_search(a, x):
 class SN91bg(sncosmo.Source):
     """An SNCosmo Source for SN 1991bg-like supernovae"""
 
-    _param_names = param_names_latex = ['x0', 'x1', 'c']
+    _param_names = param_names_latex = ['amplitude', 'x1', 'c']
 
     def __init__(self, min_phase=-18, max_phase=50):
         """An SNCosmo Source for SN 1991bg-like supernovae.
 
-        Parameters for this source include 'x0', 'x1', and 'c'
+        Parameters for this source include 'amplitude', 'x1', and 'c'
 
         Flux for this Source is determined by linearly interpolating for
         stretch and color and then using a 2d spline for phase and wavelength.

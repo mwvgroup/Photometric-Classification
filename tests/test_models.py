@@ -157,11 +157,11 @@ class BaseSourceTestingClass(TestCase):
                 self.assertTrue(is_close.all())
 
 
-class PhaseLimited(BaseSourceTestingClass):
+class Salt2Phase(BaseSourceTestingClass):
     """Tests the 'phase_limited' version of the sn91bg model"""
 
     source_name = 'sn91bg'
-    source_version = 'phase_limited'
+    source_version = 'salt2_phase'
 
     def test_flux_matches_template(self):
         """Test return of model.flux agrees with the source template at
@@ -179,6 +179,35 @@ class PhaseLimited(BaseSourceTestingClass):
         """Test the model has the correct phase range"""
 
         self._test_phase_range(-18, 50)
+
+    def test_zero_flux_outside_phase_range(self):
+        """Test the modeled flux outside the modeled phase range is zero"""
+
+        self._test_zero_flux_outside_phase_range()
+
+
+class HsiaoPhase(BaseSourceTestingClass):
+    """Tests the 'phase_limited' version of the sn91bg model"""
+
+    source_name = 'sn91bg'
+    source_version = 'hsiao_phase'
+
+    def test_flux_matches_template(self):
+        """Test return of model.flux agrees with the source template at
+        the template coordinates.
+        """
+
+        self._test_flux_at_coords_matches_template()
+
+    def test_correct_version(self):
+        """Test the source was registered with the correct version name"""
+
+        self._test_correct_version()
+
+    def test_correct_phase_range(self):
+        """Test the model has the correct phase range"""
+
+        self._test_phase_range(-18, 85)
 
     def test_zero_flux_outside_phase_range(self):
         """Test the modeled flux outside the modeled phase range is zero"""
@@ -211,3 +240,12 @@ class FullPhase(BaseSourceTestingClass):
         """Test the modeled flux outside the modeled phase range is zero"""
 
         self._test_zero_flux_outside_phase_range()
+
+
+class CorrectDefaultVersion(TestCase):
+
+    def runTest(self):
+        """Test the correct default version is returned."""
+
+        source = sncosmo.get_source('sn91bg')
+        self.assertEqual('salt2_phase', source.version)

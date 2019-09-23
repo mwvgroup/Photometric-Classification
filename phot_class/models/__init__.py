@@ -14,8 +14,11 @@ parameters, see the documentation for the given source class.
 +--------+------------------+-------------------------------------------------+
 | Name   | Version          | Description                                     |
 +========+==================+=================================================+
-| sn91bg | 'phase_limited'  | 1991bg model restricted to a phase similar to   |
+| sn91bg | 'salt2_phase'    | 1991bg model restricted to a phase similar to   |
 |        | (Default)        | Salt 2.4 (extends from -18 to 50 days).         |
++--------+------------------+-------------------------------------------------+
+| sn91bg | 'hsiao_phase'    | 1991bg model restricted to a phase similar to   |
+|        |                  | Hsiao 3.0 (extends from -18 to 85 days).        |
 +--------+------------------+-------------------------------------------------+
 | sn91bg | 'full_phase'     | 1991bg model extending over to full available   |
 |        |                  | phase range (-18 to 100 days).                  |
@@ -60,31 +63,39 @@ from ._sources import SN91bg, load_template
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
-def _load_sn91bg(name=None, version='phase_limited'):
+def _load_sn91bg(name=None, version='salt2_phase'):
     """Return a SN 1991bg-like source class for SNCosmo
 
-    Versions include: 'phase_limited', 'full_phase'
+    If ``version='full_phase'`` then return the full model. If ``version``
+    is the name of a model registered with sncosmo, return the model with the
+    the phase limited to not extend past that model's.
 
     Args:
          name   (None): A dummy argument for compatibility with SNCosmo
          version (str): The version of the template to load
     """
 
-    if version in 'phase_limited':
-        model = SN91bg()
-        model.version = version
-        return model
-
     if version == 'full_phase':
-        model = SN91bg(-float('inf'), float('inf'))
-        model.version = version
-        return model
+        source = SN91bg(-float('inf'), float('inf'))
+        source.version = version
+        return source
+
+    try:
+        source_name = version.rstrip('_phase')
+        s = _sncosmo.Model(source_name)
+        source = SN91bg(s.source.minphase(), s.source.maxphase())
+        source.version = version
+        return source
+
+    except Exception:
+        raise ValueError(
+            f'No secondary model found for given version: {source_name}')
 
 
 def register_sources(force=False):
     """Register SN 1991bg-like models with SNCosmo
 
-    Versions include: 'phase_limited', 'full_phase'
+    Versions include: 'salt2_phase', 'hsiao_phase', and 'full_phase'
 
     Args:
         force (bool): Whether to overwrite an already registered source
@@ -94,7 +105,14 @@ def register_sources(force=False):
         data_class=_sncosmo.Source,
         name='sn91bg',
         func=_load_sn91bg,
-        version='phase_limited',
+        version='salt2_phase',
+        force=force)
+
+    _sncosmo.register_loader(
+        data_class=_sncosmo.Source,
+        name='sn91bg',
+        func=_load_sn91bg,
+        version='hsiao_phase',
         force=force)
 
     _sncosmo.register_loader(
