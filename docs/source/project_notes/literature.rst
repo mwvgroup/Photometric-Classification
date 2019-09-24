@@ -1,7 +1,7 @@
 Literature Search
 =================
 
-Notes on some ptentially relevant papers to this project.
+Notes on some potentially relevant papers to this project.
 
 Comparative Analysis of Peculiar Type Ia 1991bg-like Supernovae Spectra (`Doull+ 2011 <https://ui.adsabs.harvard.edu/abs/2011PASP..123..765D/abstract>`_)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ A high peculiarity rate for Type Ia SNe (`Li+ 1999 <https://ui.adsabs.harvard.ed
 Evidence for a Spectroscopic Sequence among Type 1a Supernovae  (`Nugent+ 1995 <https://ui.adsabs.harvard.edu/abs/1995ApJ...455L.147N/abstract>`_)
 --------------------------------------------------------------------------------------------------------------------------------------------------
 
-Determining the Type, Redshift, and Age of a Supernova Spectrum  (Blondin+ ` <https://ui.adsabs.harvard.edu/abs/2007ApJ...666.1024B/abstract>`_
+Determining the Type, Redshift, and Age of a Supernova Spectrum  (`Blondin+ <https://ui.adsabs.harvard.edu/abs/2007ApJ...666.1024B/abstract>`_
 -----------------------------------------------------------------------------------------------------------------------------------------------
 
 .. SNID classifier
