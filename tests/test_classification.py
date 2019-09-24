@@ -55,8 +55,8 @@ class TableCreation(TestCase):
         self.assertEqual(1, len(table), 'Table did not add specified rows')
 
 
-class FitResultsToTableRow(TestCase):
-    """Tests for the ``_fit_results_to_table_row`` function"""
+class FitResultsToDict(TestCase):
+    """Tests for the ``_fit_results_to_dict`` function"""
 
     # Don't limit output messages on test failures
     maxDiff = None
@@ -83,33 +83,33 @@ class FitResultsToTableRow(TestCase):
         model.update(data.meta)
         data.meta['obj_id'] = 'dummy_id'
 
-        row = classification._fit_results_to_table_row(
-            data, 'dummy_band_set', result, model)
+        row = classification._fit_results_to_dict(
+            data, 'dummy_id', 'dummy_band_set', result, model)
 
-        expected_row = [
-            'dummy_id',  # obj_id
-            'dummy_band_set',  # band_set
-            'salt2',  # source
-            15,  # pre_max
-            25,  # post_max
-            result.parameters[0],
-            result.parameters[1],
-            result.parameters[2],
-            result.parameters[3],
-            result.parameters[4],
-            result.errors['z'],
-            result.errors['t0'],
-            result.errors['x0'],
-            result.errors['x1'],
-            result.errors['c'],
-            36.44,  # chisq
-            len(data) - len(result.vparam_names),  # ndof
-            -19.5,  # b_max
-            0.953,  # delta_15
-            'NONE'  # message
-        ]
+        expected_row = {
+            'obj_id': 'dummy_id',
+            'band': 'dummy_band_set',
+            'source': 'salt2',
+            'pre_max': 15,
+            'post_max': 25,
+            'z': result.parameters[0],
+            't0': result.parameters[1],
+            'x0': result.parameters[2],
+            'x1': result.parameters[3],
+            'c': result.parameters[4],
+            'z_err': result.errors['z'],
+            't0_err': result.errors['t0'],
+            'x0_err': result.errors['x0'],
+            'x1_err': result.errors['x1'],
+            'c_err': result.errors['c'],
+            'chisq': 36.44,
+            'ndof': len(data) - len(result.vparam_names),
+            'b_max': -19.5,
+            'delta_15': 0.953,
+            'message': 'NONE'
+        }
 
-        self.assertListEqual(expected_row, row)
+        self.assertEqual(expected_row, row)
 
 
 class RaiseUnspecifiedParams(TestCase):
@@ -135,7 +135,7 @@ class RaiseUnspecifiedParams(TestCase):
 class ClassificationCoords(TestCase):
     """Tests for the ``classify_targets`` function"""
 
-    expected_input_columns = ['obj_id', 'source', 'band_set', 'chisq', 'ndof']
+    expected_input_columns = ['obj_id', 'source', 'band', 'chisq', 'ndof']
 
     def test_correct_coordinates(self):
         """Test correct coordinates are returned for the given input data"""

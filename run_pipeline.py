@@ -72,7 +72,6 @@ def run(cli_args):
     lambda_eff = data_module.lambda_effective
     fit_func = getattr(fit_funcs, cli_args.fit_func)
     vparams = cli_args.vparams
-    timeout_sec = cli_args.timeout
 
     # Read in priors and fitting arguments from file
     config = load_yaml(cli_args.config) if cli_args.config else None
@@ -84,7 +83,6 @@ def run(cli_args):
         lambda_eff=lambda_eff,
         fit_func=fit_func,
         vparams=vparams,
-        timeout_sec=timeout_sec,
         config=config,
         out_path=fit_path
     )
@@ -126,13 +124,6 @@ def create_cli_parser():
         type=str,
         required=False,
         help='Sn91bg fitting arguments.'
-    )
-
-    parser.add_argument(
-        '-t', '--timeout',
-        type=int,
-        default=90,
-        help='Seconds before fitting times out.'
     )
 
     parser.add_argument(

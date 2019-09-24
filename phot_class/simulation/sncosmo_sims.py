@@ -97,7 +97,7 @@ def sim_bg_params(
 
     # Following the design of sncosmo, we return data into a list of dicts
     param_iter = zip(redshifts, peakmjd, stretch, color)
-    return [{'z': z, 'x0': 1e-14, 't0': t0, 'x1': x1, 'c': c} for
+    return [{'z': z, 'amplitude': 1e-14, 't0': t0, 'x1': x1, 'c': c} for
             z, t0, x1, c in param_iter]
 
 
