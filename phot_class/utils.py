@@ -53,19 +53,8 @@ def parse_config_dict(obj_id, config_dict):
     out_data = []
     for model in ('salt2', 'sn91bg'):
         for dtype in ('priors', 'kwargs'):
-
-            # Define dictionaries of output data for the current model / dtype
-            all_, blue, red = dict(), dict(), dict()
-
-            # Get input data for given object from config
             object_data = config_dict[model].get(obj_id, {}).get(dtype, {})
-
-            # Populate output dictionaries
-            for bandset, settings in zip(('all', 'blue', 'red'), (all_, blue, red)):
-                settings.update(object_data.get('global', {}))
-                settings.update(object_data.get(bandset, {}))
-
-            out_data.append({'all': all_, 'blue': blue, 'red': red})
+            out_data.append(object_data)
 
     return tuple(out_data)
 

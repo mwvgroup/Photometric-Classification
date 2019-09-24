@@ -146,8 +146,8 @@ def _plot_lc(data, result, fitted_model, show=True):
 
 def run_classification_fits(
         obj_id, data, vparams, fit_func,
-        priors_s2=None, priors_bg=None,
-        kwargs_s2=None, kwargs_bg=None,
+        priors_hs=None, priors_bg=None,
+        kwargs_hs=None, kwargs_bg=None,
         show_plots=False):
     """Run light curve fits on a given target using the Hsiao and 91bg model
 
@@ -161,9 +161,9 @@ def run_classification_fits(
         data  (DataFrame): Photometric data in just the 'red' bands
         vparams    (iter): Iterable of param names to fit in any of the models
         fit_func   (func): Function to use to run fits (eg. ``fit_funcs.fit_lc``)
-        priors_s2  (dict): Priors to use when fitting salt2
+        priors_hs  (dict): Priors to use when fitting hsiao
         priors_bg  (dict): Priors to use when fitting sn91bg
-        kwargs_s2  (dict): Kwargs to pass ``fit_func`` when fitting salt2
+        kwargs_hs  (dict): Kwargs to pass ``fit_func`` when fitting salt2
         kwargs_bg  (dict): Kwargs to pass ``fit_func`` when fitting sn91bg
         show_plots (bool): Plot and display each individual fit
 
@@ -172,9 +172,9 @@ def run_classification_fits(
     """
 
     # Set default kwargs and protect against mutation
-    priors_s2 = deepcopy(priors_s2) or dict()
+    priors_hs = deepcopy(priors_hs) or dict()
     priors_bg = deepcopy(priors_bg) or dict()
-    kwargs_s2 = deepcopy(kwargs_s2) or dict()
+    kwargs_hs = deepcopy(kwargs_hs) or dict()
     kwargs_bg = deepcopy(kwargs_bg) or dict()
 
     # Define models for normal and 91bg SNe
@@ -186,33 +186,33 @@ def run_classification_fits(
     hsiao_params = set(hsiao.param_names)
     hsiao_vparams = hsiao_params.intersection(vparams)
     hsiao_fixed_params = hsiao_params - hsiao_vparams
-    _raise_unspecified_params(hsiao_fixed_params, *priors_s2.values())
+    _raise_unspecified_params(hsiao_fixed_params, priors_hs)
 
     sn91bg_params = set(sn91bg.param_names)
     sn91bg_vparams = sn91bg_params.intersection(vparams)
     sn91bg_fixed_params = sn91bg_params - sn91bg_vparams
-    _raise_unspecified_params(sn91bg_fixed_params, *priors_bg.values())
+    _raise_unspecified_params(sn91bg_fixed_params, priors_bg)
 
     # Create iterators over the data we need to fit
     model_args = zip(
         (hsiao, sn91bg),  # The models
         (hsiao_vparams, sn91bg_vparams),  # The parameters to vary
-        (priors_s2, priors_bg),  # The priors
-        (kwargs_s2, kwargs_bg))  # The fitting kwargs
+        (priors_hs, priors_bg),  # The priors
+        (kwargs_hs, kwargs_bg))  # The fitting kwargs
 
     # Tabulate fit results for each band
     all_param_names = set(hsiao.param_names).union(sn91bg.param_names)
     out_data = create_empty_table(all_param_names)
     for model, vparams, prior, kwarg in model_args:
-        model.update(prior['all'])
+        model.update(prior)
 
         # Fit data in all bands
-        result, fit = fit_func(data, model, vparams, **kwarg['all'])
-        new_row = _fit_results_to_dict(data, obj_id, 'all', result, fit)
+        result_all, fit_all = fit_func(data, model, vparams, **kwarg)
+        new_row = _fit_results_to_dict(data, obj_id, 'all', result_all, fit_all)
         out_data.add_row(new_row)
 
         if show_plots:
-            _plot_lc(data, result, fit)
+            _plot_lc(data, result_all, fit_all)
 
         # Fix t0 during individual band fits
         band_vparams = deepcopy(vparams)
@@ -222,8 +222,7 @@ def run_classification_fits(
         # Fit data in individual bands
         data = data.group_by('band')
         for band_name, band_data in zip(data.groups.keys['band'], data.groups):
-            # Todo: reformat config parsing so ['all'] isn't necessary
-            result, fit = fit_func(band_data, model, band_vparams, **kwarg['all'])
+            result, fit = fit_func(band_data, fit_all, band_vparams, **kwarg)
             new_row = _fit_results_to_dict(band_data, obj_id, band_name, result, fit)
             out_data.add_row(new_row)
 
@@ -255,7 +254,7 @@ def tabulate_fit_results(
     config = deepcopy(config) or dict()
 
     # Add meta_data to output table meta data
-    out_table = Table()
+    out_table = Table(names=['obj_id', 'message'], dtype=['U20', 'U10000'])
     out_table.meta['band_names'] = band_names
     out_table.meta['lambda_eff'] = lambda_eff
     out_table.meta['fit_func'] = fit_func.__name__
@@ -274,9 +273,9 @@ def tabulate_fit_results(
                 data=data,
                 vparams=vparams,
                 fit_func=fit_func,
-                priors_s2=salt2_prior,
+                priors_hs=salt2_prior,
                 priors_bg=sn91bg_prior,
-                kwargs_s2=salt2_kwargs,
+                kwargs_hs=salt2_kwargs,
                 kwargs_bg=sn91bg_kwargs
             )
 
@@ -321,25 +320,23 @@ def classify_targets(fits_table, out_path=None):
 
     # Convert input table to a DataFrame so we can leverage multi-indexing
     fits_df = fits_table.to_pandas()
-    fits_df.set_index(['obj_id', 'source', 'band'], inplace=True)
-    fits_df.dropna(inplace=True)
+    fits_df.set_index(['obj_id', 'source'], inplace=True)
+    fits_df.dropna(subset=['band'])
 
     out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
     for obj_id in fits_df.index.unique(level='obj_id'):
 
         try:
             hsiao_data = fits_df.loc[obj_id, 'hsiao']
-            hsiao_blue = hsiao_data[hsiao_data['bands'].isin(blue_bands)]
+            hsiao_blue = hsiao_data[hsiao_data['band'].isin(blue_bands)]
+            hsiao_red = hsiao_data[hsiao_data['band'].isin(red_bands)]
             hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue['ndof'].sum()
-
-            hsiao_red = hsiao_data[hsiao_data['bands'].isin(red_bands)]
             hsiao_red_chisq = hsiao_red['chisq'].sum() / hsiao_red['ndof'].sum()
 
-            sn91bg_data = fits_df.loc[obj_id, 'hsiao']
-            sn91bg_blue = sn91bg_data[sn91bg_data['bands'].isin(blue_bands)]
+            sn91bg_data = fits_df.loc[obj_id, 'sn91bg']
+            sn91bg_blue = sn91bg_data[sn91bg_data['band'].isin(blue_bands)]
+            sn91bg_red = sn91bg_data[sn91bg_data['band'].isin(red_bands)]
             sn91bg_blue_chisq = sn91bg_blue['chisq'].sum() / sn91bg_blue['ndof'].sum()
-
-            sn91bg_red = sn91bg_data[sn91bg_data['bands'].isin(red_bands)]
             sn91bg_red_chisq = sn91bg_red['chisq'].sum() / sn91bg_red['ndof'].sum()
 
         except KeyError:
