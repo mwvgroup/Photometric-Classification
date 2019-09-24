@@ -9,7 +9,7 @@ python run_pipeline.py \
     -c 'config_files/des_config.yml' \
     -o './results';
 
-# Run DES SN3YR and fix redshift to the prior
+# Run SDSS Sako 2018 and fix redshift to the prior
 python run_pipeline.py \
     -s sdss \
     -r sako18 \

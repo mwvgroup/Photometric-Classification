@@ -222,7 +222,7 @@ def run_classification_fits(
         # Fit data in individual bands
         data = data.group_by('band')
         for band_name, band_data in zip(data.groups.keys['band'], data.groups):
-            result, fit = fit_func(band_data, fit_all, band_vparams, **kwarg)
+            result, fit = fit_func(band_data, fit_all, band_vparams, guess_amplitude=False, **kwarg)
             new_row = _fit_results_to_dict(band_data, obj_id, band_name, result, fit)
             out_data.add_row(new_row)
 

@@ -164,7 +164,8 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
 
     # Keep only the specified filters that are within 700 Angstroms of the
     # rest frame effective wavelength
-    within_dif_range = delta_lambda[min_indx, np.arange(delta_lambda.shape[1])] < cutoff
+    within_dif_range = delta_lambda[
+                           min_indx, np.arange(delta_lambda.shape[1])] < cutoff
 
     # Split into blue and red band passes
     out_list = []
@@ -177,19 +178,30 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
 
 
 def classification_filter_factory(classifications):
-    """Factory function that returns an sndata filter function
+    """Factory function that returns a filter function for skiping data with
+    a given SDSS classification
 
-    Filter function limits data iterator to targets of a given fitting
+    Filter functions return a boolean signifying whether data should be used
+    in an analysis. The function returned by this factory has signature
+    ``returned_function(table: astropy.Table)`` which returns ``True`` if
+    ``table.meta['classification']`` is not in ``classifications`` and
+    ``table.meta['redshift'] > 0``. If there is no 'classification' key in
+    the meta data, the return is True.
 
     Args:
-         classifications (list[str]): A list of fitting to allow
+         classifications (list[str]): A list of classifications to allow
 
     Returns:
         A filter function for sndata
     """
 
     def filter_func(table):
-        return 'fitting' not in table.meta or \
-               table.meta['fitting'] in classifications
+        if 'classification' not in table.meta:
+            return True
+
+        return (
+            (table.meta['classification'] not in classifications) and
+            (table.meta['redshift'] >= 0)
+        )
 
     return filter_func

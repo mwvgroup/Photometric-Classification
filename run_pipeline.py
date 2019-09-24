@@ -39,7 +39,10 @@ def get_data_iter(data_module):
         Astropy tables
     """
 
-    data_iter = data_module.iter_data(verbose=True)
+    filter_func = utils.classification_filter_factory(
+        ['AGN', 'Variable', 'SNII', 'zSNII', 'pSNII'])
+
+    data_iter = data_module.iter_data(verbose=True, filter_func=filter_func)
     for data in data_iter:
         data = data[data['band'] != 'csp_dr3_Ydw']
         data = data[data['band'] != 'csp_dr3_Y']
@@ -141,6 +144,7 @@ if __name__ == '__main__':
     from phot_class import classification
     from phot_class import fit_funcs
     from phot_class import models
+    from phot_class import utils
 
     models.register_sources()
 
