@@ -3,7 +3,7 @@
 
 """Tests for the ``classification`` module."""
 
-from unittest import TestCase
+from unittest import TestCase, skip
 
 import numpy as np
 import sncosmo
@@ -132,6 +132,23 @@ class RaiseUnspecifiedParams(TestCase):
         classification._raise_unspecified_params(fixed_params, prior)
 
 
+class PlotLc(TestCase):
+    """Tests for the ``_plot_lc`` function"""
+
+    def runTest(self):
+        """Test the returned figure is not empty"""
+
+        data = sncosmo.load_example_data()
+        model = sncosmo.Model(source='salt2')
+        result, fitted_model = sncosmo.fit_lc(
+            data, model,
+            ['z', 't0', 'x0', 'x1', 'c'],
+            bounds={'z': (0.3, 0.7)})
+        fig = classification._plot_lc(data, result, fitted_model, show=False)
+        self.assertTrue(fig.get_axes(), 'Returned figure has no axes')
+
+
+@skip
 class ClassificationCoords(TestCase):
     """Tests for the ``classify_targets`` function"""
 
@@ -141,8 +158,8 @@ class ClassificationCoords(TestCase):
         """Test correct coordinates are returned for the given input data"""
 
         test_data = Table(names=self.expected_input_columns, rows=[
-            ['dummy_id', 'salt2', 'blue', 10, 1],
-            ['dummy_id', 'salt2', 'red', 20, 1],
+            ['dummy_id', 'hsiao', 'blue', 10, 1],
+            ['dummy_id', 'hsiao', 'red', 20, 1],
             ['dummy_id', 'sn91bg', 'blue', 10, 1],
             ['dummy_id', 'sn91bg', 'red', 10, 1]
         ])

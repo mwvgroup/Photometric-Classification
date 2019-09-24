@@ -126,7 +126,7 @@ def _raise_unspecified_params(fixed_params, *priors):
                     f'Encountered unspecified value for {p} in prior: {prior}')
 
 
-def _plot_lc(data, result, fitted_model):
+def _plot_lc(data, result, fitted_model, show=True):
     """Plot fit results
 
     Args:
@@ -135,10 +135,13 @@ def _plot_lc(data, result, fitted_model):
         fitted_model (Model): Model with params set to fitted values
     """
 
-    sncosmo.plot_lc(data, fitted_model)
+    fig = sncosmo.plot_lc(data, fitted_model)
     xs, d = utils.calc_model_chisq(data, result, fitted_model)
     print(f'chisq / ndof = {xs} / {d} = {xs / d}', flush=True)
-    pyplot.show()
+    if show:
+        pyplot.show()
+
+    return fig
 
 
 def run_classification_fits(
@@ -147,6 +150,11 @@ def run_classification_fits(
         kwargs_s2=None, kwargs_bg=None,
         show_plots=False):
     """Run light curve fits on a given target using the Hsiao and 91bg model
+
+    Fits are run using both models for all available bands and then for each
+    band individually. All parameters specified in ``vparams`` are allowed to
+    vary during all fits except for `t0` which is fixed to the value
+    determined by fitting all available bands.
 
     Args:
         obj_id      (str): Id of the object being fitted
@@ -292,8 +300,12 @@ def tabulate_fit_results(
 def classify_targets(fits_table, out_path=None):
     """Tabulate fitting coordinates for SNe based on their fit results
 
-    See the ``create_empty_table`` function for information on the assumed
-    input table format.
+    Assumed columns in ``fits_table`` include 'obj_id', 'source', 'band',
+    'chisq', and 'ndof'.  Values in the 'source' column should be either
+    'hsiao' or  'sn91bg'.
+
+    Assumed values in ``fits_table.meta`` include 'band_names' and
+    'lambda_eff'.
 
     Args:
         fits_table (Table): A table of fit results

@@ -80,16 +80,11 @@ def _load_sn91bg(name=None, version='salt2_phase'):
         source.version = version
         return source
 
-    try:
-        source_name = version.rstrip('_phase')
-        s = _sncosmo.Model(source_name)
-        source = SN91bg(s.source.minphase(), s.source.maxphase())
-        source.version = version
-        return source
-
-    except Exception:
-        raise ValueError(
-            f'No secondary model found for given version: {source_name}')
+    source_name = version.rstrip('_phase')
+    s = _sncosmo.Model(source_name)
+    source = SN91bg(s.source.minphase(), s.source.maxphase())
+    source.version = version
+    return source
 
 
 def register_sources(force=False):
