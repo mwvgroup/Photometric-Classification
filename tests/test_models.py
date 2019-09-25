@@ -240,12 +240,3 @@ class FullPhase(BaseSourceTestingClass):
         """Test the modeled flux outside the modeled phase range is zero"""
 
         self._test_zero_flux_outside_phase_range()
-
-
-class CorrectDefaultVersion(TestCase):
-
-    def runTest(self):
-        """Test the correct default version is returned."""
-
-        source = sncosmo.get_source('sn91bg')
-        self.assertEqual('salt2_phase', source.version)
