@@ -4,7 +4,7 @@
 """The ``fit_funcs`` module provides wrappers that combine the the various
 minimization routines from ``sncosmo``. Importantly, the fitting functions
 in this module guarantee that arguments will not be mutated, which is not
-true for ``sncosmo`` in general (at least not at the time of writing).
+true for ``sncosmo`` in general (at least for sncosmo 2.0.0 and earlier).
 
 Usage Example
 -------------

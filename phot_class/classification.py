@@ -296,7 +296,8 @@ def tabulate_fit_results(
     return out_table
 
 
-def classify_targets(fits_table, out_path=None):
+def classify_targets(
+        fits_table, band_names=None, lambda_eff=None, out_path=None):
     """Tabulate fitting coordinates for SNe based on their fit results
 
     Assumed columns in ``fits_table`` include 'obj_id', 'source', 'band',
@@ -314,8 +315,10 @@ def classify_targets(fits_table, out_path=None):
         An astropy table of fitting coordinates
     """
 
-    band_names = fits_table.meta['band_names']
-    lambda_eff = fits_table.meta['lambda_eff']
+    if band_names is None or lambda_eff is None:
+        band_names = fits_table.meta['band_names']
+        lambda_eff = fits_table.meta['lambda_eff']
+
     blue_bands, red_bands = utils.split_bands(band_names, lambda_eff)
 
     # Convert input table to a DataFrame so we can leverage multi-indexing

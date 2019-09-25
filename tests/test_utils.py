@@ -301,23 +301,43 @@ class TestFilterFactory(TestCase):
         filter_func = utils.classification_filter_factory(['class1'])
         self.assertTrue(
             filter_func(no_classification_table),
-            "Did not return true for table with no fitting")
+            "Did not return True for table with no fitting")
 
-    def test_filtering(self):
+    def test_classification_filtering(self):
         """Test the returned filter function correctly filters data tables"""
 
         class1_table, class2_table = Table(), Table()
-        class1_table.meta['fitting'] = 'class1'
-        class2_table.meta['fitting'] = 'class2'
+        class1_table.meta['classification'] = 'class1'
+        class2_table.meta['classification'] = 'class2'
+        class1_table.meta['redshift'] = class2_table.meta['redshift'] = 1
 
         filter_func = utils.classification_filter_factory(['class1'])
-        self.assertTrue(
-            filter_func(class1_table),
-            "Returned False for desired fitting")
-
         self.assertFalse(
+            filter_func(class1_table),
+            "Returned True for undesired classification")
+
+        self.assertTrue(
             filter_func(class2_table),
-            "Returned True for un-desired fitting")
+            "Returned False for desired classification")
+
+    def test_redshift_filtering(self):
+        """Test the returned filter function correctly filters data tables"""
+
+        class1_table, class2_table = Table(), Table()
+        class1_table.meta['classification'] = 'class1'
+        class2_table.meta['classification'] = 'class2'
+
+        class1_table.meta['redshift'] = -1
+        class2_table.meta['redshift'] = 1
+
+        filter_func = utils.classification_filter_factory([])
+        self.assertFalse(
+            filter_func(class1_table),
+            "Returned True for undesired classification")
+
+        self.assertTrue(
+            filter_func(class2_table),
+            "Returned False for desired classification")
 
 
 class ConfigParsing(TestCase):
