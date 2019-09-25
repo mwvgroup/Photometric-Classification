@@ -135,7 +135,7 @@ def _plot_lc(data, result, fitted_model, show=True):
         fitted_model (Model): Model with params set to fitted values
     """
 
-    fig = sncosmo.plot_lc(data, fitted_model)
+    fig = sncosmo.plot_lc(data, fitted_model, color='blue')
     xs, d = utils.calc_model_chisq(data, result, fitted_model)
     print(f'chisq / ndof = {xs} / {d} = {xs / d}', flush=True)
     if show:

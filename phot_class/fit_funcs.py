@@ -19,7 +19,7 @@ Usage Example
 >>>
 >>> result, fitted_model = fit_funcs.simple_fit(
 >>>     data, model,
->>>     ['t0', 'x0', 'x1', 'x'],  # parameters of model to vary
+>>>     ['z', 't0', 'x0', 'x1', 'c'],  # parameters of model to vary
 >>>     bounds={'z':(0.3, 0.7)})  # bounds on parameters (if any)
 >>>
 >>> # Plot results
