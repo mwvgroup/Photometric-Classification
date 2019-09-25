@@ -350,48 +350,28 @@ class ConfigParsing(TestCase):
             'salt2': {
                 'obj_id': {
                     'kwargs': {
-                        'global': {
-                            'bounds': {
-                                't0': [100, 110]
-                            },
-                            'phase_range': [-20, 50]}
+                        'bounds': {'t0': [100, 110]},
+                        'phase_range': [-20, 50]
                     },
-
                     'priors': {
-                        'global': {'z': 0.01, 't0': 105}
+                        'z': 0.01,
+                        't0': 105
                     }
                 }
             },
             'sn91bg': {
                 'obj_id': {
-                    'priors': {
-                        'all': {'z': 0},
-                        'blue': {'z': 1},
-                        'red': {'z': 2}
-                    }
+                    'priors': {'z': 0},
                 }
             }
         }
 
-        expected_salt2_prior = {
-            'all': {'t0': 105, 'z': 0.01},
-            'blue': {'t0': 105, 'z': 0.01},
-            'red': {'t0': 105, 'z': 0.01}
-        }
+        expected_salt2_prior = {'t0': 105, 'z': 0.01}
+        expected_salt2_kwargs = {'bounds': {'t0': [100, 110]},
+                                 'phase_range': [-20, 50]}
 
-        expected_salt2_kwargs = {
-            'all': {'bounds': {'t0': [100, 110]}, 'phase_range': [-20, 50]},
-            'blue': {'bounds': {'t0': [100, 110]}, 'phase_range': [-20, 50]},
-            'red': {'bounds': {'t0': [100, 110]}, 'phase_range': [-20, 50]}
-        }
-
-        expected_sn91bg_prior = {
-            'all': {'z': 0},
-            'blue': {'z': 1},
-            'red': {'z': 2}
-        }
-
-        expected_sn91bg_kwargs = {'all': {}, 'blue': {}, 'red': {}}
+        expected_sn91bg_prior = {'z': 0}
+        expected_sn91bg_kwargs = {}
 
         salt2_prior, salt2_kwargs, sn91bg_prior, sn91bg_kwargs = \
             utils.parse_config_dict('obj_id', config_dict)
