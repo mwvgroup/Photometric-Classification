@@ -26,8 +26,8 @@ built in ``hsiao`` model (version 3.0) but with an added stretch parameter.
 |          |               | phase range (-18 to 100 days).                  |
 +----------+---------------+-------------------------------------------------+
 | hsiao_x1 | '3.0.x1'      | The same as sncosmo's built in ``hsiao``        |
-|          |               | model (version 3.0) but with an added           |
-|          |               | stretch parameter.                              |
+|          |               | model (version 3.0) but with an added stretch   |
+|          |               | parameter and limited to -18 to 85 days.        |
 +----------+---------------+-------------------------------------------------+
 
 Usage Example

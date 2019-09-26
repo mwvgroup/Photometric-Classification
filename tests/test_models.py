@@ -176,7 +176,7 @@ class BaseSourceTestingClass(TestCase):
         late_phase_zero = np.isclose(0, early_phase_flux, atol=1e-6)
         self.assertTrue(late_phase_zero, f'Non-zero flux {early_phase_flux}')
 
-        max_phase = self.source.minphase()
+        max_phase = self.source.maxphase()
         late_phase_flux = self.source.bandflux('sdssg', max_phase + 1)
         early_phase_zero = np.isclose(0, late_phase_flux, atol=1e-6)
         self.assertTrue(early_phase_zero, f'Non-zero flux {late_phase_flux}')
@@ -273,11 +273,15 @@ class HsiaoX1(BaseSourceTestingClass):
     source_name = 'hsiao_x1'
     source_version = '3.0.x1'
 
+    def test_zero_flux_outside_phase_range(self):
+        """Test the modeled flux outside the modeled phase range is zero"""
+
+        self._test_zero_flux_outside_phase_range()
+
     def test_correct_phase_range(self):
         """Test the model has a phase range matching the original model"""
 
-        hsiao = sncosmo.get_source('hsiao')
-        self._test_phase_range(hsiao.minphase(), hsiao.maxphase())
+        self._test_phase_range(-18, 85)
 
     def test_matches_original_model(self):
         """Test the flux of our custom model at x1=default matches hsiao 3.0"""
@@ -285,7 +289,7 @@ class HsiaoX1(BaseSourceTestingClass):
         custom = sncosmo.get_source(self.source_name, self.source_version)
         original = sncosmo.get_source('hsiao', '3.0')
 
-        phase_arr = np.arange(original.minphase(), original.maxphase())
+        phase_arr = np.arange(-18, 85)
         wave_arr = np.arange(original.minwave(), original.maxwave())
 
         custom_flux = custom.flux(phase_arr, wave_arr)

@@ -190,9 +190,11 @@ class HsiaoStretch(sncosmo.Source):
         self._parent = sncosmo.get_source('hsiao')
         self.name = 'hsiao_x1'
         self.version = '3.0.x1'
-        self._phase = self._parent._phase
         self._wave = self._parent._wave
         self._parameters = np.array([1., 0])
+
+        hsiao_phase = self._parent._phase
+        self._phase = hsiao_phase[(hsiao_phase >= -18) & (hsiao_phase <= 85)]
 
     def _flux(self, phase, wave):
         """Return the flux for a given phase and wavelength
@@ -215,6 +217,7 @@ class HsiaoStretch(sncosmo.Source):
         stretched_phase = phase / (1 - x1)
         flux = amplitude * self._parent.flux(stretched_phase, wave)
 
-        flux[phase < np.min(self._phase)] = 0
-        flux[phase > np.max(self._phase)] = 0
+        print(phase)
+        flux[phase < -18] = 0
+        flux[phase > 85] = 0
         return flux
