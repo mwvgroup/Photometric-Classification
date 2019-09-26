@@ -99,7 +99,7 @@ class SN91bg(sncosmo.Source):
             min_phase (float): The minimum phase
         """
 
-        super(SN91bg, self).__init__()
+        super().__init__()
         self.name = 'sn91bg'
 
         # Define initial parameter values
@@ -142,9 +142,11 @@ class SN91bg(sncosmo.Source):
         """Return the flux for a given phase and wavelength
         Flux is determined by linearly interpolating for stretch and color
         and then using a 2d spline for phase and wavelength.
+
         Args:
             phase (ndarray): A list of days till maximum for the desired flux
             wave  (ndarray): A list of wavelengths for the desired flux
+
         Returns:
             A 2d array of flux with shape (<len(phase)>, <len(wave)>)
         """
@@ -168,4 +170,51 @@ class SN91bg(sncosmo.Source):
         flux = amplitude * spline(phase, wave)
         flux[phase < min(self._phase)] = 0
         flux[phase > max(self._phase)] = 0
+        return flux
+
+
+class HsiaoStretch(sncosmo.Source):
+    """A version of sncosmo's built in Hsiao model but with a x1 parameter"""
+
+    _param_names = ['amplitude', 'x1']
+    param_names_latex = ['A', 'x1']  # used in plotting display
+
+    def __init__(self):
+        """A version of the Hsiao model with an added stretch parameter
+
+        This source class is equivalent to that of the default Hsiao model,
+        except an additional parameter ``x1`` has been included.
+        """
+
+        super().__init__()
+        self._parent = sncosmo.get_source('hsiao')
+        self.name = 'hsiao_x1'
+        self.version = '3.0.x1'
+        self._phase = self._parent._phase
+        self._wave = self._parent._wave
+        self._parameters = np.array([1., 0])
+
+    def _flux(self, phase, wave):
+        """Return the flux for a given phase and wavelength
+
+        Args:
+            phase (ndarray): A list of days till maximum for the desired flux
+            wave  (ndarray): A list of wavelengths for the desired flux
+
+        Returns:
+            A 2d array of flux with shape (<len(phase)>, <len(wave)>)
+        """
+
+        amplitude, x1 = self._parameters
+        if not (-1 < x1 < 1):
+            raise ValueError(f'Parameter x1 is our of range (-1, 1): x1={x1}')
+
+        self._parent.update(dict(zip(self.param_names[:-1], self.parameters[:-1])))
+
+        phase = np.array(phase)
+        stretched_phase = phase / (1 - x1)
+        flux = amplitude * self._parent.flux(stretched_phase, wave)
+
+        flux[phase < np.min(self._phase)] = 0
+        flux[phase > np.max(self._phase)] = 0
         return flux
