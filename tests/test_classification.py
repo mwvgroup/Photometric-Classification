@@ -3,19 +3,15 @@
 
 """Tests for the ``classification`` module."""
 
-from unittest import TestCase, skip
+from copy import deepcopy
+from unittest import TestCase
 
 import numpy as np
 import sncosmo
 from astropy.table import Table
 from sncosmo.utils import Result
 
-from phot_class import classification
-
-
-# Todo: Test the following functions
-# - run_classification_fits
-# - tabulate_fit_results
+from phot_class import classification, models
 
 
 class TableCreation(TestCase):
@@ -148,58 +144,97 @@ class PlotLc(TestCase):
         self.assertTrue(fig.get_axes(), 'Returned figure has no axes')
 
 
-@skip
+class BandFits(TestCase):
+    """Tests for the ``run_band_fits`` function"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Define default arguments for running a successful set of fits"""
+
+        models.register_sources(force=True)
+        cls.data = sncosmo.load_example_data()
+        cls.default_args = dict(
+            obj_id='dummy_id',
+            data=cls.data,
+            vparams=['amplitude', 'x1', 'c'],
+            fit_func=sncosmo.fit_lc,
+            priors_hs={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
+            priors_bg={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
+            kwargs_hs={'bounds': {'x1': (-1, 1)}},
+            kwargs_bg={'bounds': {'x1': (0.65, 1.25), 'c': (0, 1)}},
+        )
+
+        cls.returned = classification.run_band_fits(**cls.default_args)
+
+    def test_returned_bands(self):
+        """Test the returned table has two fits per band"""
+
+        # Remember we fit each band with two models, but also fit all bands
+        expected_bands = 2 * (list(set(self.data['band'])) + ['all'])
+        self.assertCountEqual(expected_bands, self.returned['band'])
+
+    def test_unconstrained_param(self):
+        """Test an error is raised for missing values in priors"""
+
+        # Missing param for hsiao_x1 model
+        missing_hs_t0 = deepcopy(self.default_args)
+        del missing_hs_t0['priors_hs']['t0']
+        self.assertRaises(
+            RuntimeError, classification.run_band_fits, **missing_hs_t0)
+
+        # Missing param for sn91bg model
+        missing_bg_t0 = deepcopy(self.default_args)
+        del missing_bg_t0['priors_bg']['t0']
+        self.assertRaises(
+            RuntimeError, classification.run_band_fits, **missing_bg_t0)
+
+
+# Todo test redshift dependence
 class ClassificationCoords(TestCase):
     """Tests for the ``classify_targets`` function"""
 
     expected_input_columns = ['obj_id', 'source', 'band', 'chisq', 'ndof']
 
-    def test_correct_coordinates(self):
+    def test_coordinate_calculation(self):
         """Test correct coordinates are returned for the given input data"""
 
+        h_chisq_u, h_dof_u = 10, 1
+        h_chisq_g, h_dof_g = 20, 1
+        h_chisq_i, h_dof_i = 30, 2
+        h_chisq_z, h_dof_z = 40, 2
+
+        b_chisq_u, b_dof_u = 1, 1
+        b_chisq_g, b_dof_g = 2, 1
+        b_chisq_i, b_dof_i = 3, 2
+        b_chisq_z, b_dof_z = 4, 2
+
+        expected_x = (
+                ((h_chisq_u + h_chisq_g) / (h_dof_u + h_dof_g))
+                - ((b_chisq_u + b_chisq_g) / (b_dof_u + b_dof_g))
+        )
+
+        expected_y = (
+                ((h_chisq_i + h_chisq_z) / (h_dof_i + h_dof_z))
+                - ((b_chisq_i + b_chisq_z) / (b_dof_i + b_dof_z))
+        )
+
         test_data = Table(names=self.expected_input_columns, rows=[
-            ['dummy_id', 'hsiao', 'blue', 10, 1],
-            ['dummy_id', 'hsiao', 'red', 20, 1],
-            ['dummy_id', 'sn91bg', 'blue', 10, 1],
-            ['dummy_id', 'sn91bg', 'red', 10, 1]
+            ['dummy_id', 'hsiao_x1', 'sdssu', h_chisq_u, h_dof_u],
+            ['dummy_id', 'hsiao_x1', 'sdssg', h_chisq_g, h_dof_g],
+            ['dummy_id', 'hsiao_x1', 'sdssi', h_chisq_i, h_dof_i],
+            ['dummy_id', 'hsiao_x1', 'sdssz', h_chisq_z, h_dof_z],
+
+            ['dummy_id', 'sn91bg', 'sdssu', b_chisq_u, b_dof_u],
+            ['dummy_id', 'sn91bg', 'sdssg', b_chisq_g, b_dof_g],
+            ['dummy_id', 'sn91bg', 'sdssi', b_chisq_i, b_dof_i],
+            ['dummy_id', 'sn91bg', 'sdssz', b_chisq_z, b_dof_z],
         ])
 
-        expected_row = ['dummy_id', 0, 10]
+        test_data.meta['band_names'] = ['sdssu', 'sdssg', 'sdssi', 'sdssz']
+        test_data.meta['lambda_eff'] = \
+            [sncosmo.get_bandpass(b).wave_eff for b in
+             test_data.meta['band_names']]
+
+        expected_row = ['dummy_id', expected_x, expected_y]
         class_coordinates = classification.classify_targets(test_data)
         self.assertListEqual(list(class_coordinates[0]), expected_row)
-
-    def test_masked_values(self):
-        """Test handling of masked data"""
-
-        test_data = Table(names=self.expected_input_columns, rows=[
-            ['dummy_id', 'salt2', 'blue', 10, 1],
-            ['dummy_id', 'salt2', 'red', 20, 1],  # Second row
-            ['dummy_id', 'sn91bg', 'blue', 10, 1],
-            ['dummy_id', 'sn91bg', 'red', 10, 1]
-        ], masked=True)
-
-        # Mask data in the second row
-        test_data.mask = [
-            [False, True, False, False],
-            [False, True, False, False],
-            [False, True, False, False],
-            [False, True, False, False],
-            [False, True, False, False]
-        ]
-
-        class_coordinates = classification.classify_targets(test_data)
-        self.assertEqual(0, len(class_coordinates))
-
-    def test_failed_fits(self):
-        """Test handling of rows with NAN values"""
-
-        # Instantiate a table representing a failed 91bg fit
-        test_data = Table(names=self.expected_input_columns, rows=[
-            ['dummy_id', 'salt2', 'blue', 10, 1],
-            ['dummy_id', 'salt2', 'red', 20, 1],
-            ['dummy_id', 'sn91bg', 'blue', np.NAN, np.NAN],
-            ['dummy_id', 'sn91bg', 'red', np.NAN, np.NAN]
-        ])
-
-        class_coordinates = classification.classify_targets(test_data)
-        self.assertEqual(0, len(class_coordinates))

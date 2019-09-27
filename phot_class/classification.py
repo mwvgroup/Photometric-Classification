@@ -143,7 +143,7 @@ def _plot_lc(data, result, fitted_model, show=True):
     return fig
 
 
-def run_classification_fits(
+def run_band_fits(
         obj_id, data, vparams, fit_func,
         priors_hs=None, priors_bg=None,
         kwargs_hs=None, kwargs_bg=None,
@@ -268,7 +268,7 @@ def tabulate_fit_results(
             utils.parse_config_dict(obj_id, config)
 
         try:
-            fit_results = run_classification_fits(
+            fit_results = run_band_fits(
                 obj_id=obj_id,
                 data=data,
                 vparams=vparams,
@@ -302,13 +302,15 @@ def classify_targets(
 
     Assumed columns in ``fits_table`` include 'obj_id', 'source', 'band',
     'chisq', and 'ndof'.  Values in the 'source' column should be either
-    'hsiao' or  'sn91bg'.
+    'hsiao_x1' or 'sn91bg'.
 
-    Assumed values in ``fits_table.meta`` include 'band_names' and
-    'lambda_eff'.
+    If ``band_names`` or ``lambda_eff`` are not given, they are taken from
+    ``fits_table.meta``.
 
     Args:
         fits_table (Table): A table of fit results
+        band_names  (list): List of band names used when fitting
+        lambda_eff  (list): The effective wavelength of each band in angstroms
         out_path     (str): Optionally write results to file
 
     Returns:
@@ -319,6 +321,7 @@ def classify_targets(
         band_names = fits_table.meta['band_names']
         lambda_eff = fits_table.meta['lambda_eff']
 
+    # Todo: this needs to take redshift into account
     blue_bands, red_bands = utils.split_bands(band_names, lambda_eff)
 
     # Convert input table to a DataFrame so we can leverage multi-indexing
