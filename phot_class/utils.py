@@ -51,7 +51,7 @@ def parse_config_dict(obj_id, config_dict):
     """
 
     out_data = []
-    for model in ('salt2', 'sn91bg'):
+    for model in ('hsiao_x1', 'sn91bg'):
         for dtype in ('priors', 'kwargs'):
             object_data = config_dict[model].get(obj_id, {}).get(dtype, {})
             out_data.append(object_data)

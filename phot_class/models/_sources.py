@@ -217,7 +217,6 @@ class HsiaoStretch(sncosmo.Source):
         stretched_phase = phase / (1 - x1)
         flux = amplitude * self._parent.flux(stretched_phase, wave)
 
-        print(phase)
         flux[phase < -18] = 0
         flux[phase > 85] = 0
         return flux

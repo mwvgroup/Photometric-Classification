@@ -178,7 +178,7 @@ def run_classification_fits(
     kwargs_bg = deepcopy(kwargs_bg) or dict()
 
     # Define models for normal and 91bg SNe
-    hsiao = sncosmo.Model('hsiao')
+    hsiao = sncosmo.Model('hsiao_x1')
     sn91bg = sncosmo.Model(sncosmo.get_source('sn91bg', version='hsiao_phase'))
 
     # Make sure any model parameters that are not being varied are
@@ -198,7 +198,8 @@ def run_classification_fits(
         (hsiao, sn91bg),  # The models
         (hsiao_vparams, sn91bg_vparams),  # The parameters to vary
         (priors_hs, priors_bg),  # The priors
-        (kwargs_hs, kwargs_bg))  # The fitting kwargs
+        (kwargs_hs, kwargs_bg)  # The fitting kwargs
+    )
 
     # Tabulate fit results for each band
     all_param_names = set(hsiao.param_names).union(sn91bg.param_names)

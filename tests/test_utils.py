@@ -347,7 +347,7 @@ class ConfigParsing(TestCase):
         """Test a parsed dictionary returns expected values"""
 
         config_dict = {
-            'salt2': {
+            'hsiao_x1': {
                 'obj_id': {
                     'kwargs': {
                         'bounds': {'t0': [100, 110]},
