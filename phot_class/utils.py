@@ -94,20 +94,24 @@ def calc_model_chisq(data, result, model):
     return sncosmo.chisq(data, model), len(data) - len(result.vparam_names)
 
 
-def split_bands(bands, lambda_eff):
+def split_bands(bands, lambda_eff, redshift=0):
     """Split band-passes into collections of blue and red bands
 
-    Blue bands have an effective wavelength < 5500 Ang. Red bands have an
-    effective wavelength >= 5500 Ang.
+    Blue bands have an rest frame effective wavelength < 5500 Ang. Red bands
+    have a rest frame effective wavelength >= 5500 Ang.
 
     Args:
         bands        (array[str]): Name of band-passes
         lambda_eff (array[float]): Effective wavelength of band-passes
+        redshift          (float): The redshift of the rest frame
 
     Returns:
         An array of blue filter names
         An array of red filter names
     """
+
+    # Blueshift wavelengths to rest frame
+    lambda_eff = np.array(lambda_eff) / (1 + redshift)
 
     is_blue = np.array(lambda_eff) < 5500
     band_array = np.array(bands)

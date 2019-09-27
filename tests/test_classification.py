@@ -193,7 +193,7 @@ class BandFits(TestCase):
 class ClassificationCoords(TestCase):
     """Tests for the ``classify_targets`` function"""
 
-    expected_input_columns = ['obj_id', 'source', 'band', 'chisq', 'ndof']
+    expected_input_columns = ['obj_id', 'source', 'band', 'chisq', 'ndof', 'z']
 
     def test_coordinate_calculation(self):
         """Test correct coordinates are returned for the given input data"""
@@ -219,15 +219,16 @@ class ClassificationCoords(TestCase):
         )
 
         test_data = Table(names=self.expected_input_columns, rows=[
-            ['dummy_id', 'hsiao_x1', 'sdssu', h_chisq_u, h_dof_u],
-            ['dummy_id', 'hsiao_x1', 'sdssg', h_chisq_g, h_dof_g],
-            ['dummy_id', 'hsiao_x1', 'sdssi', h_chisq_i, h_dof_i],
-            ['dummy_id', 'hsiao_x1', 'sdssz', h_chisq_z, h_dof_z],
+            ['dummy_id', 'hsiao_x1', 'all', 0, 0, 0],
+            ['dummy_id', 'hsiao_x1', 'sdssu', h_chisq_u, h_dof_u, 0],
+            ['dummy_id', 'hsiao_x1', 'sdssg', h_chisq_g, h_dof_g, 0],
+            ['dummy_id', 'hsiao_x1', 'sdssi', h_chisq_i, h_dof_i, 0],
+            ['dummy_id', 'hsiao_x1', 'sdssz', h_chisq_z, h_dof_z, 0],
 
-            ['dummy_id', 'sn91bg', 'sdssu', b_chisq_u, b_dof_u],
-            ['dummy_id', 'sn91bg', 'sdssg', b_chisq_g, b_dof_g],
-            ['dummy_id', 'sn91bg', 'sdssi', b_chisq_i, b_dof_i],
-            ['dummy_id', 'sn91bg', 'sdssz', b_chisq_z, b_dof_z],
+            ['dummy_id', 'sn91bg', 'sdssu', b_chisq_u, b_dof_u, 0],
+            ['dummy_id', 'sn91bg', 'sdssg', b_chisq_g, b_dof_g, 0],
+            ['dummy_id', 'sn91bg', 'sdssi', b_chisq_i, b_dof_i, 0],
+            ['dummy_id', 'sn91bg', 'sdssz', b_chisq_z, b_dof_z, 0],
         ])
 
         test_data.meta['band_names'] = ['sdssu', 'sdssg', 'sdssi', 'sdssz']

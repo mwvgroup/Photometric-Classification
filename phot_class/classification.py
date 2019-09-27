@@ -321,9 +321,6 @@ def classify_targets(
         band_names = fits_table.meta['band_names']
         lambda_eff = fits_table.meta['lambda_eff']
 
-    # Todo: this needs to take redshift into account
-    blue_bands, red_bands = utils.split_bands(band_names, lambda_eff)
-
     # Convert input table to a DataFrame so we can leverage multi-indexing
     fits_df = fits_table.to_pandas()
     fits_df.set_index(['obj_id', 'source'], inplace=True)
@@ -332,8 +329,12 @@ def classify_targets(
     out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
     for obj_id in fits_df.index.unique(level='obj_id'):
 
+        hsiao_data = fits_df.loc[obj_id, 'hsiao_x1']
+        redshift = hsiao_data[hsiao_data['band'] == 'all']['z'][0]
+        blue_bands, red_bands = utils.split_bands(
+            band_names, lambda_eff, redshift)
+
         try:
-            hsiao_data = fits_df.loc[obj_id, 'hsiao_x1']
             hsiao_blue = hsiao_data[hsiao_data['band'].isin(blue_bands)]
             hsiao_red = hsiao_data[hsiao_data['band'].isin(red_bands)]
             hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue['ndof'].sum()
