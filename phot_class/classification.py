@@ -60,8 +60,7 @@ def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
     """Format sncosmo fit results so they can be appended to an astropy table
 
     See the ``create_empty_table`` function for information on the assumed
-    table format. ``fitted_model`` is assumed to have the parameters 'z', 't0',
-    'x0', 'x1', and 'c' (in order).
+    table format.
 
     Args:
         data         (Table): The data used in the fit
@@ -158,7 +157,7 @@ def run_classification_fits(
 
     Args:
         obj_id      (str): Id of the object being fitted
-        data  (DataFrame): Photometric data in just the 'red' bands
+        data      (Table): Table of photometric data
         vparams    (iter): Iterable of param names to fit in any of the models
         fit_func   (func): Function to use to run fits (eg. ``fit_funcs.fit_lc``)
         priors_hs  (dict): Priors to use when fitting hsiao
@@ -331,7 +330,7 @@ def classify_targets(
     for obj_id in fits_df.index.unique(level='obj_id'):
 
         try:
-            hsiao_data = fits_df.loc[obj_id, 'hsiao']
+            hsiao_data = fits_df.loc[obj_id, 'hsiao_x1']
             hsiao_blue = hsiao_data[hsiao_data['band'].isin(blue_bands)]
             hsiao_red = hsiao_data[hsiao_data['band'].isin(red_bands)]
             hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue['ndof'].sum()
