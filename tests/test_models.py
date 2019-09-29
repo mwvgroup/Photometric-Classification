@@ -295,3 +295,13 @@ class HsiaoX1(BaseSourceTestingClass):
         custom_flux = custom.flux(phase_arr, wave_arr)
         original_flux = original.flux(phase_arr, wave_arr)
         self.assertListEqual(original_flux.tolist(), custom_flux.tolist())
+
+    def test_stretch_limits(self):
+        """Test an error is raised for stretch outside the range [-.5, .5]"""
+
+        hsiao = sncosmo.get_source('hsiao_x1')
+        hsiao.set(x1=.5001)
+        self.assertRaises(ValueError, hsiao.flux, phase=0, wave=10000)
+
+        hsiao.set(x1=-.5001)
+        self.assertRaises(ValueError, hsiao.flux, phase=0, wave=10000)

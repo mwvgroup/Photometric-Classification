@@ -329,12 +329,12 @@ def classify_targets(
     out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
     for obj_id in fits_df.index.unique(level='obj_id'):
 
-        hsiao_data = fits_df.loc[obj_id, 'hsiao_x1']
-        redshift = hsiao_data[hsiao_data['band'] == 'all']['z'][0]
-        blue_bands, red_bands = utils.split_bands(
-            band_names, lambda_eff, redshift)
-
         try:
+            hsiao_data = fits_df.loc[obj_id, 'hsiao_x1']
+            redshift = hsiao_data[hsiao_data['band'] == 'all']['z'][0]
+            blue_bands, red_bands = utils.split_bands(
+                band_names, lambda_eff, redshift)
+
             hsiao_blue = hsiao_data[hsiao_data['band'].isin(blue_bands)]
             hsiao_red = hsiao_data[hsiao_data['band'].isin(red_bands)]
             hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue['ndof'].sum()

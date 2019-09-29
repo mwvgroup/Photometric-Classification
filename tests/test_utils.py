@@ -330,7 +330,7 @@ class TestFilterFactory(TestCase):
         class1_table.meta['redshift'] = -1
         class2_table.meta['redshift'] = 1
 
-        filter_func = utils.classification_filter_factory([])
+        filter_func = utils.classification_filter_factory(['class1', 'class2'])
         self.assertFalse(
             filter_func(class1_table),
             "Returned True for undesired classification")
