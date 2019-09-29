@@ -1,7 +1,7 @@
 Literature Search
 =================
 
-Notes on some potentially relevant papers to this project.
+Notes on some *potentially* relevant papers to this project.
 
 Comparative Analysis of Peculiar Type Ia 1991bg-like Supernovae Spectra (`Doull+ 2011 <https://ui.adsabs.harvard.edu/abs/2011PASP..123..765D/abstract>`_)
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -95,6 +95,37 @@ The Birth Rate of Subluminous and Overluminous Type Ia Supernovae (`meng+ 2011 <
 
 Comparative Direct Analysis of Type Ia Supernova Spectra. II. Maximum Light (`Branch+ 2006 <https://ui.adsabs.harvard.edu/abs/2006PASP..118..560B/abstract>`_)
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+This paper identifies classifications of SNe Ia using spectrograph observations
+taken within three days of maximum (the time cutoff is chosen such that
+the spectral evolution will be minimal while ensuring there are a sufficient
+number of targets to be scientifically interesting). To simplify the process
+of feature comparison, spectra are first tilted by multiplying the flux by
+:math:`\\lambda^\\alpha` where :math:`\\alpha` is chosen such that the peak
+flux at 4600 and 6300 A are equal. The Equivalent widths are then plotted for
+the feature at 5750 A vs the feature at 6100 A. After applying a nearest
+neighbor algorithm, four groups emerged: shallow silicon, core-normal,
+broad line, and cool (which includes SN 1991bg).
+
+broad-line SNe Ia have absorption features at 6100 A absorptions that are
+broader and deeper than core-normal SNe Ia. However, SNe in this category do
+not appear to follow a simple one-dimensional sequence based on their distance
+from the core-normal population.
+
+The shallow silicon group are not (necessarily) very different from the core
+normal group. Other than a narrower Si feature, they look remarkably similar.
+The primary reason for the spectroscopic differences seems to be the lower
+temperature, as indicated by low temperature ion signatures (e.g. Ti).
+Otherwise, they have the same ions evident in their spectra, just at very
+different optical depths. This aligns with their lower temperatures since "as
+noted by Hatano et al. (2002) and Ho ̈flich et al. (2002), there is a
+temperature threshold below which, owing to abrupt changes in key ionization
+ratios, line optical depths change abruptly (Hatano et al. 1999)."
+
+The core-normal subgroup have a very high degree of similarity, suggesting
+a standard, common physical mechanism involving no large inhomogeneities near
+the characteristic photospheric velocity of 12,000 km/s.
+
 
 A high peculiarity rate for Type Ia SNe (`Li+ 1999 <https://ui.adsabs.harvard.edu/abs/2000AIPC..522...91L/abstract>`_)
 ----------------------------------------------------------------------------------------------------------------------
