@@ -40,7 +40,16 @@ def get_data_iter(data_module):
     """
 
     filter_func = utils.classification_filter_factory(
-        ['AGN', 'Variable', 'SNII', 'zSNII', 'pSNII'])
+        ['SLSN',
+         'SNIa',
+         'SNIa?',
+         'SNIb',
+         'SNIc',
+         'pSNIa',
+         'pSNIbc',
+         'zSNIa',
+         'zSNIbc']
+    )
 
     data_iter = data_module.iter_data(verbose=True, filter_func=filter_func)
     for data in data_iter:

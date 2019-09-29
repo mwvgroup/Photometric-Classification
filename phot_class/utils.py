@@ -204,7 +204,7 @@ def classification_filter_factory(classifications):
             return True
 
         return (
-            (table.meta['classification'] not in classifications) and
+            (table.meta['classification'] in classifications) and
             (table.meta['redshift'] >= 0)
         )
 
