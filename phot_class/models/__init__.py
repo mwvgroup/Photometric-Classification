@@ -1,25 +1,34 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""The ``models`` module defines a ``Source`` class for modeling
-91bg-like supernovae with ``sncosmo``.
+"""The ``models`` module defines custom ``Source`` classes for modeling
+supernovae with ``sncosmo``.
 
 Available Model Versions
 ------------------------
 
-There are multiple versions of the 91bg model included in this package. For
-information on how each version determines the flux for a given set of
-parameters, see the documentation for the given source class.
+There are multiple versions of a SN 1991bg-like model included in this package.
+For information on how each version determines the flux for a given set of
+parameters, see the documentation for the given source class. A modified
+version of the Hsiao model is also available, which is the same as sncosmo's
+built in ``hsiao`` model (version 3.0) but with an added stretch parameter.
 
-+--------+------------------+-------------------------------------------------+
-| Name   | Version          | Description                                     |
-+========+==================+=================================================+
-| sn91bg | 'phase_limited'  | 1991bg model restricted to a phase similar to   |
-|        | (Default)        | Salt 2.4 (extends from -18 to 50 days).         |
-+--------+------------------+-------------------------------------------------+
-| sn91bg | 'full_phase'     | 1991bg model extending over to full available   |
-|        |                  | phase range (-18 to 100 days).                  |
-+--------+------------------+-------------------------------------------------+
++----------+---------------+-------------------------------------------------+
+| Name     | Version       | Description                                     |
++==========+=================+===============================================+
+| sn91bg   | 'salt2_phase' | 1991bg model restricted to a phase similar to   |
+|          | (Default)     | Salt 2.4 (extends from -18 to 50 days).         |
++----------+---------------+-------------------------------------------------+
+| sn91bg   | 'hsiao_phase' | 1991bg model restricted to a phase similar to   |
+|          |               | Hsiao 3.0 (extends from -18 to 85 days).        |
++----------+---------------+-------------------------------------------------+
+| sn91bg   | 'full_phase'  | 1991bg model extending over to full available   |
+|          |               | phase range (-18 to 100 days).                  |
++----------+---------------+-------------------------------------------------+
+| hsiao_x1 | '3.0.x1'      | The same as sncosmo's built in ``hsiao``        |
+|          |               | model (version 3.0) but with an added stretch   |
+|          |               | parameter and limited to -18 to 85 days.        |
++----------+---------------+-------------------------------------------------+
 
 Usage Example
 -------------
@@ -60,31 +69,38 @@ from ._sources import SN91bg, load_template
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
-def _load_sn91bg(name=None, version='phase_limited'):
-    """Return a SN 1991bg-like source class for SNCosmo
-
-    Versions include: 'phase_limited', 'full_phase'
+def _load_source(name, version):
+    """Return an instantiated Source class
 
     Args:
-         name   (None): A dummy argument for compatibility with SNCosmo
-         version (str): The version of the template to load
+         name    (str): The name of the source to load
+         version (str): The version of the source to load
     """
 
-    if version in 'phase_limited':
-        model = SN91bg()
-        model.version = version
-        return model
+    if name == 'sn91bg':
+        if version == 'full_phase':
+            source = SN91bg(-float('inf'), float('inf'))
+            source.version = version
+            return source
 
-    if version == 'full_phase':
-        model = SN91bg(-float('inf'), float('inf'))
-        model.version = version
-        return model
+        source_name = version.rstrip('_phase')
+        s = _sncosmo.Model(source_name)
+        source = SN91bg(s.source.minphase(), s.source.maxphase())
+        source.version = version
+        return source
+
+    elif name == 'hsiao_x1':
+        return _sources.HsiaoStretch()
+
+    else:
+        raise ValueError(f'Unknown source {name} / {version}')
 
 
 def register_sources(force=False):
-    """Register SN 1991bg-like models with SNCosmo
+    """Register custom models with SNCosmo
 
-    Versions include: 'phase_limited', 'full_phase'
+    See the documentation of the parent module for more information on the
+    available models.
 
     Args:
         force (bool): Whether to overwrite an already registered source
@@ -93,13 +109,27 @@ def register_sources(force=False):
     _sncosmo.register_loader(
         data_class=_sncosmo.Source,
         name='sn91bg',
-        func=_load_sn91bg,
-        version='phase_limited',
+        func=_load_source,
+        version='salt2_phase',
         force=force)
 
     _sncosmo.register_loader(
         data_class=_sncosmo.Source,
         name='sn91bg',
-        func=_load_sn91bg,
+        func=_load_source,
+        version='hsiao_phase',
+        force=force)
+
+    _sncosmo.register_loader(
+        data_class=_sncosmo.Source,
+        name='sn91bg',
+        func=_load_source,
         version='full_phase',
+        force=force)
+
+    _sncosmo.register_loader(
+        data_class=_sncosmo.Source,
+        name='hsiao_x1',
+        func=_load_source,
+        version='3.0.x1',
         force=force)

@@ -4,10 +4,13 @@ Data
 We primarily consider observations from the Sloan Digital Sky Survey (SDSS)
 Supernova Survey, the Dark Energy Survey (DES) Year 3 Cosmology release
 (SN3YR), and the third data release of the Carnegie Supernova Project
-(CSP DR3). We rely on the ``sndata`` python package for programmatic access to
+(CSP DR3). We note that just because a data set is considered here or
+elsewhere in our preliminary exploration, it is not guaranteed to be used
+in our final work.
+
+We rely on the ``sndata`` python package for programmatic access to
 each of these data sets. In principle, the pipeline we have built should
 extend trivially to any data set ported into ``sndata``.
-
 Some notes are included below for each data set. These are included for use
 by developers, and should not be considered a formal reference.
 

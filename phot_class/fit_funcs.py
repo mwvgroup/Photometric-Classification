@@ -4,7 +4,7 @@
 """The ``fit_funcs`` module provides wrappers that combine the the various
 minimization routines from ``sncosmo``. Importantly, the fitting functions
 in this module guarantee that arguments will not be mutated, which is not
-true for ``sncosmo`` in general (at least not at the time of writing).
+true for ``sncosmo`` in general (at least for sncosmo 2.0.0 and earlier).
 
 Usage Example
 -------------
@@ -19,7 +19,7 @@ Usage Example
 >>>
 >>> result, fitted_model = fit_funcs.simple_fit(
 >>>     data, model,
->>>     ['t0', 'x0', 'x1', 'x'],  # parameters of model to vary
+>>>     ['z', 't0', 'x0', 'x1', 'c'],  # parameters of model to vary
 >>>     bounds={'z':(0.3, 0.7)})  # bounds on parameters (if any)
 >>>
 >>> # Plot results

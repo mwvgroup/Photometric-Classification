@@ -51,21 +51,10 @@ def parse_config_dict(obj_id, config_dict):
     """
 
     out_data = []
-    for model in ('salt2', 'sn91bg'):
+    for model in ('hsiao_x1', 'sn91bg'):
         for dtype in ('priors', 'kwargs'):
-
-            # Define dictionaries of output data for the current model / dtype
-            all_, blue, red = dict(), dict(), dict()
-
-            # Get input data for given object from config
             object_data = config_dict[model].get(obj_id, {}).get(dtype, {})
-
-            # Populate output dictionaries
-            for bandset, settings in zip(('all', 'blue', 'red'), (all_, blue, red)):
-                settings.update(object_data.get('global', {}))
-                settings.update(object_data.get(bandset, {}))
-
-            out_data.append({'all': all_, 'blue': blue, 'red': red})
+            out_data.append(object_data)
 
     return tuple(out_data)
 
@@ -105,20 +94,24 @@ def calc_model_chisq(data, result, model):
     return sncosmo.chisq(data, model), len(data) - len(result.vparam_names)
 
 
-def split_bands(bands, lambda_eff):
+def split_bands(bands, lambda_eff, redshift=0):
     """Split band-passes into collections of blue and red bands
 
-    Blue bands have an effective wavelength < 5500 Ang. Red bands have an
-    effective wavelength >= 5500 Ang.
+    Blue bands have an rest frame effective wavelength < 5500 Ang. Red bands
+    have a rest frame effective wavelength >= 5500 Ang.
 
     Args:
         bands        (array[str]): Name of band-passes
         lambda_eff (array[float]): Effective wavelength of band-passes
+        redshift          (float): The redshift of the rest frame
 
     Returns:
         An array of blue filter names
         An array of red filter names
     """
+
+    # Blueshift wavelengths to rest frame
+    lambda_eff = np.array(lambda_eff) / (1 + redshift)
 
     is_blue = np.array(lambda_eff) < 5500
     band_array = np.array(bands)
@@ -175,7 +168,8 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
 
     # Keep only the specified filters that are within 700 Angstroms of the
     # rest frame effective wavelength
-    within_dif_range = delta_lambda[min_indx, np.arange(delta_lambda.shape[1])] < cutoff
+    within_dif_range = delta_lambda[
+                           min_indx, np.arange(delta_lambda.shape[1])] < cutoff
 
     # Split into blue and red band passes
     out_list = []
@@ -188,19 +182,30 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
 
 
 def classification_filter_factory(classifications):
-    """Factory function that returns an sndata filter function
+    """Factory function that returns a filter function for skiping data with
+    a given SDSS classification
 
-    Filter function limits data iterator to targets of a given fitting
+    Filter functions return a boolean signifying whether data should be used
+    in an analysis. The function returned by this factory has signature
+    ``returned_function(table: astropy.Table)`` which returns ``True`` if
+    ``table.meta['classification']`` is not in ``classifications`` and
+    ``table.meta['redshift'] > 0``. If there is no 'classification' key in
+    the meta data, the return is True.
 
     Args:
-         classifications (list[str]): A list of fitting to allow
+         classifications (list[str]): A list of classifications to allow
 
     Returns:
         A filter function for sndata
     """
 
     def filter_func(table):
-        return 'fitting' not in table.meta or \
-               table.meta['fitting'] in classifications
+        if 'classification' not in table.meta:
+            return True
+
+        return (
+            (table.meta['classification'] in classifications) and
+            (table.meta['redshift'] >= 0)
+        )
 
     return filter_func

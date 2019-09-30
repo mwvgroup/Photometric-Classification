@@ -3,6 +3,7 @@
 
 """Tests for the ``classification`` module."""
 
+from copy import deepcopy
 from unittest import TestCase
 
 import numpy as np
@@ -10,12 +11,7 @@ import sncosmo
 from astropy.table import Table
 from sncosmo.utils import Result
 
-from phot_class import classification
-
-
-# Todo: Test the following functions
-# - run_classification_fits
-# - tabulate_fit_results
+from phot_class import classification, models
 
 
 class TableCreation(TestCase):
@@ -24,15 +20,16 @@ class TableCreation(TestCase):
     def test_is_empty(self):
         """Test the returned table is empty by default"""
 
-        num_rows = len(classification.create_empty_table())
+        num_rows = len(classification.create_empty_table([]))
         self.assertEqual(0, num_rows, 'Table is not empty')
 
     def test_correct_columns(self):
         """Test the returned table has the correct columns"""
 
-        returned = classification.create_empty_table().colnames
+        parameters = ['z', 't0', 'x0', 'x1', 'c']
+        returned = classification.create_empty_table(parameters).colnames
         expected = [
-            'obj_id', 'band_set', 'source', 'pre_max', 'post_max',
+            'obj_id', 'band', 'source', 'pre_max', 'post_max',
             'z', 't0', 'x0', 'x1', 'c',
             'z_err', 't0_err', 'x0_err', 'x1_err', 'c_err',
             'chisq', 'ndof', 'b_max', 'delta_15', 'message', ]
@@ -42,20 +39,20 @@ class TableCreation(TestCase):
     def test_is_masked(self):
         """Test the returned table is a masked Table by default"""
 
-        is_masked = classification.create_empty_table().masked
+        is_masked = classification.create_empty_table([]).masked
         self.assertTrue(is_masked, 'Table has no mask')
 
     def test_accepts_kwargs(self):
         """Test that the table constructor uses the kwargs"""
 
-        num_columns = len(classification.create_empty_table().colnames)
+        num_columns = len(classification.create_empty_table([]).colnames)
         dummy_row = np.ones(num_columns)
-        table = classification.create_empty_table(rows=[dummy_row])
+        table = classification.create_empty_table([], rows=[dummy_row])
         self.assertEqual(1, len(table), 'Table did not add specified rows')
 
 
-class FitResultsToTableRow(TestCase):
-    """Tests for the ``_fit_results_to_table_row`` function"""
+class FitResultsToDict(TestCase):
+    """Tests for the ``_fit_results_to_dict`` function"""
 
     # Don't limit output messages on test failures
     maxDiff = None
@@ -82,33 +79,33 @@ class FitResultsToTableRow(TestCase):
         model.update(data.meta)
         data.meta['obj_id'] = 'dummy_id'
 
-        row = classification._fit_results_to_table_row(
-            data, 'dummy_band_set', result, model)
+        row = classification._fit_results_to_dict(
+            data, 'dummy_id', 'dummy_band_set', result, model)
 
-        expected_row = [
-            'dummy_id',  # obj_id
-            'dummy_band_set',  # band_set
-            'salt2',  # source
-            15,  # pre_max
-            25,  # post_max
-            result.parameters[0],
-            result.parameters[1],
-            result.parameters[2],
-            result.parameters[3],
-            result.parameters[4],
-            result.errors['z'],
-            result.errors['t0'],
-            result.errors['x0'],
-            result.errors['x1'],
-            result.errors['c'],
-            36.44,  # chisq
-            len(data) - len(result.vparam_names),  # ndof
-            -19.5,  # b_max
-            0.953,  # delta_15
-            'NONE'  # message
-        ]
+        expected_row = {
+            'obj_id': 'dummy_id',
+            'band': 'dummy_band_set',
+            'source': 'salt2',
+            'pre_max': 15,
+            'post_max': 25,
+            'z': result.parameters[0],
+            't0': result.parameters[1],
+            'x0': result.parameters[2],
+            'x1': result.parameters[3],
+            'c': result.parameters[4],
+            'z_err': result.errors['z'],
+            't0_err': result.errors['t0'],
+            'x0_err': result.errors['x0'],
+            'x1_err': result.errors['x1'],
+            'c_err': result.errors['c'],
+            'chisq': 36.44,
+            'ndof': len(data) - len(result.vparam_names),
+            'b_max': -19.5,
+            'delta_15': 0.953,
+            'message': 'NONE'
+        }
 
-        self.assertListEqual(expected_row, row)
+        self.assertEqual(expected_row, row)
 
 
 class RaiseUnspecifiedParams(TestCase):
@@ -131,57 +128,114 @@ class RaiseUnspecifiedParams(TestCase):
         classification._raise_unspecified_params(fixed_params, prior)
 
 
+class PlotLc(TestCase):
+    """Tests for the ``_plot_lc`` function"""
+
+    def runTest(self):
+        """Test the returned figure is not empty"""
+
+        data = sncosmo.load_example_data()
+        model = sncosmo.Model(source='salt2')
+        result, fitted_model = sncosmo.fit_lc(
+            data, model,
+            ['z', 't0', 'x0', 'x1', 'c'],
+            bounds={'z': (0.3, 0.7)})
+        fig = classification._plot_lc(data, result, fitted_model, show=False)
+        self.assertTrue(fig.get_axes(), 'Returned figure has no axes')
+
+
+class BandFits(TestCase):
+    """Tests for the ``run_band_fits`` function"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Define default arguments for running a successful set of fits"""
+
+        models.register_sources(force=True)
+        cls.data = sncosmo.load_example_data()
+        cls.default_args = dict(
+            obj_id='dummy_id',
+            data=cls.data,
+            vparams=['amplitude', 'x1', 'c'],
+            fit_func=sncosmo.fit_lc,
+            priors_hs={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
+            priors_bg={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
+            kwargs_hs={'bounds': {'x1': (-1, 1)}},
+            kwargs_bg={'bounds': {'x1': (0.65, 1.25), 'c': (0, 1)}},
+        )
+
+        cls.returned = classification.run_band_fits(**cls.default_args)
+
+    def test_returned_bands(self):
+        """Test the returned table has two fits per band"""
+
+        # Remember we fit each band with two models, but also fit all bands
+        expected_bands = 2 * (list(set(self.data['band'])) + ['all'])
+        self.assertCountEqual(expected_bands, self.returned['band'])
+
+    def test_unconstrained_param(self):
+        """Test an error is raised for missing values in priors"""
+
+        # Missing param for hsiao_x1 model
+        missing_hs_t0 = deepcopy(self.default_args)
+        del missing_hs_t0['priors_hs']['t0']
+        self.assertRaises(
+            RuntimeError, classification.run_band_fits, **missing_hs_t0)
+
+        # Missing param for sn91bg model
+        missing_bg_t0 = deepcopy(self.default_args)
+        del missing_bg_t0['priors_bg']['t0']
+        self.assertRaises(
+            RuntimeError, classification.run_band_fits, **missing_bg_t0)
+
+
+# Todo test redshift dependence
 class ClassificationCoords(TestCase):
     """Tests for the ``classify_targets`` function"""
 
-    expected_input_columns = ['obj_id', 'source', 'band_set', 'chisq', 'ndof']
+    expected_input_columns = ['obj_id', 'source', 'band', 'chisq', 'ndof', 'z']
 
-    def test_correct_coordinates(self):
+    def test_coordinate_calculation(self):
         """Test correct coordinates are returned for the given input data"""
 
+        h_chisq_u, h_dof_u = 10, 1
+        h_chisq_g, h_dof_g = 20, 1
+        h_chisq_i, h_dof_i = 30, 2
+        h_chisq_z, h_dof_z = 40, 2
+
+        b_chisq_u, b_dof_u = 1, 1
+        b_chisq_g, b_dof_g = 2, 1
+        b_chisq_i, b_dof_i = 3, 2
+        b_chisq_z, b_dof_z = 4, 2
+
+        expected_x = (
+                ((h_chisq_u + h_chisq_g) / (h_dof_u + h_dof_g))
+                - ((b_chisq_u + b_chisq_g) / (b_dof_u + b_dof_g))
+        )
+
+        expected_y = (
+                ((h_chisq_i + h_chisq_z) / (h_dof_i + h_dof_z))
+                - ((b_chisq_i + b_chisq_z) / (b_dof_i + b_dof_z))
+        )
+
         test_data = Table(names=self.expected_input_columns, rows=[
-            ['dummy_id', 'salt2', 'blue', 10, 1],
-            ['dummy_id', 'salt2', 'red', 20, 1],
-            ['dummy_id', 'sn91bg', 'blue', 10, 1],
-            ['dummy_id', 'sn91bg', 'red', 10, 1]
+            ['dummy_id', 'hsiao_x1', 'all', 0, 0, 0],
+            ['dummy_id', 'hsiao_x1', 'sdssu', h_chisq_u, h_dof_u, 0],
+            ['dummy_id', 'hsiao_x1', 'sdssg', h_chisq_g, h_dof_g, 0],
+            ['dummy_id', 'hsiao_x1', 'sdssi', h_chisq_i, h_dof_i, 0],
+            ['dummy_id', 'hsiao_x1', 'sdssz', h_chisq_z, h_dof_z, 0],
+
+            ['dummy_id', 'sn91bg', 'sdssu', b_chisq_u, b_dof_u, 0],
+            ['dummy_id', 'sn91bg', 'sdssg', b_chisq_g, b_dof_g, 0],
+            ['dummy_id', 'sn91bg', 'sdssi', b_chisq_i, b_dof_i, 0],
+            ['dummy_id', 'sn91bg', 'sdssz', b_chisq_z, b_dof_z, 0],
         ])
 
-        expected_row = ['dummy_id', 0, 10]
+        test_data.meta['band_names'] = ['sdssu', 'sdssg', 'sdssi', 'sdssz']
+        test_data.meta['lambda_eff'] = \
+            [sncosmo.get_bandpass(b).wave_eff for b in
+             test_data.meta['band_names']]
+
+        expected_row = ['dummy_id', expected_x, expected_y]
         class_coordinates = classification.classify_targets(test_data)
         self.assertListEqual(list(class_coordinates[0]), expected_row)
-
-    def test_masked_values(self):
-        """Test handling of masked data"""
-
-        test_data = Table(names=self.expected_input_columns, rows=[
-            ['dummy_id', 'salt2', 'blue', 10, 1],
-            ['dummy_id', 'salt2', 'red', 20, 1],  # Second row
-            ['dummy_id', 'sn91bg', 'blue', 10, 1],
-            ['dummy_id', 'sn91bg', 'red', 10, 1]
-        ], masked=True)
-
-        # Mask data in the second row
-        test_data.mask = [
-            [False, True, False, False],
-            [False, True, False, False],
-            [False, True, False, False],
-            [False, True, False, False],
-            [False, True, False, False]
-        ]
-
-        class_coordinates = classification.classify_targets(test_data)
-        self.assertEqual(0, len(class_coordinates))
-
-    def test_failed_fits(self):
-        """Test handling of rows with NAN values"""
-
-        # Instantiate a table representing a failed 91bg fit
-        test_data = Table(names=self.expected_input_columns, rows=[
-            ['dummy_id', 'salt2', 'blue', 10, 1],
-            ['dummy_id', 'salt2', 'red', 20, 1],
-            ['dummy_id', 'sn91bg', 'blue', np.NAN, np.NAN],
-            ['dummy_id', 'sn91bg', 'red', np.NAN, np.NAN]
-        ])
-
-        class_coordinates = classification.classify_targets(test_data)
-        self.assertEqual(0, len(class_coordinates))

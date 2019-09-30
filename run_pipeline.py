@@ -39,7 +39,19 @@ def get_data_iter(data_module):
         Astropy tables
     """
 
-    data_iter = data_module.iter_data(verbose=True)
+    filter_func = utils.classification_filter_factory(
+        ['SLSN',
+         'SNIa',
+         'SNIa?',
+         'SNIb',
+         'SNIc',
+         'pSNIa',
+         'pSNIbc',
+         'zSNIa',
+         'zSNIbc']
+    )
+
+    data_iter = data_module.iter_data(verbose=True, filter_func=filter_func)
     for data in data_iter:
         data = data[data['band'] != 'csp_dr3_Ydw']
         data = data[data['band'] != 'csp_dr3_Y']
@@ -72,7 +84,6 @@ def run(cli_args):
     lambda_eff = data_module.lambda_effective
     fit_func = getattr(fit_funcs, cli_args.fit_func)
     vparams = cli_args.vparams
-    timeout_sec = cli_args.timeout
 
     # Read in priors and fitting arguments from file
     config = load_yaml(cli_args.config) if cli_args.config else None
@@ -84,7 +95,6 @@ def run(cli_args):
         lambda_eff=lambda_eff,
         fit_func=fit_func,
         vparams=vparams,
-        timeout_sec=timeout_sec,
         config=config,
         out_path=fit_path
     )
@@ -129,13 +139,6 @@ def create_cli_parser():
     )
 
     parser.add_argument(
-        '-t', '--timeout',
-        type=int,
-        default=90,
-        help='Seconds before fitting times out.'
-    )
-
-    parser.add_argument(
         '-o', '--out_dir',
         type=str,
         required=True,
@@ -150,6 +153,7 @@ if __name__ == '__main__':
     from phot_class import classification
     from phot_class import fit_funcs
     from phot_class import models
+    from phot_class import utils
 
     models.register_sources()
 

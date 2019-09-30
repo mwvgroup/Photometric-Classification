@@ -1,5 +1,11 @@
-Classification Scheme (González-Gaitán et al. 2014)
-===================================================
+Classification Scheme
+=====================
+
+We here discuss the classification we wish to apply, which is originally
+presented in `González-Gaitán et al. 2014 <https://ui.adsabs.harvard.edu/abs/2014ApJ...795..142G/abstract>`_
+
+Background
+----------
 
 Despite being surprisingly homogeneous, type Ia Supernovae (SNe Ia) are in fact
 a heterogeneous collection of events who's variety is well parameterized by
@@ -11,6 +17,7 @@ provide a framework from which we can further build and explore theoretical
 explanations.
 
 Sub-types of Type Ia SNe include:
+
 - SN 1991T-like (Filippenko+ 1992a; Phillips+ 1992; Maza+ 1994)
 - SN 1991bg-like (Filippenko+ 1992b; Leibundgut+ 1993; Hamuy+ 1994)
 - 2002cx-like SNe or “SNe Iax” (e.g. Li+ 2003; Foley+ 2013)
@@ -98,8 +105,8 @@ stretch values (using either the normal or 91bg template). However, this
 sufferes from a similar problem where highly reddened, normal Ia's at low
 stretch would look like Ia's.
 
-Some Details
-------------
+Some Additional Details
+-----------------------
 
 - The normal Ia template used is the Hsiao+ 2007 template
 - The 91bg template is the Nugent+ 2002 template

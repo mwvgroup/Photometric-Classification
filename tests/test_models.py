@@ -107,6 +107,54 @@ class BisectSearch(TestCase):
         self.assertRaises(RuntimeError, models._sources._bi_search, *args)
 
 
+class Registration(TestCase):
+    """Models are correctly registered with sncosmo"""
+
+    def test_source_loading(self):
+        """Test the correct source object is returned for different args"""
+
+        bg_full_phase = models._load_source('sn91bg', version='full_phase')
+        self.assertEqual('sn91bg', bg_full_phase.name)
+        self.assertEqual('full_phase', bg_full_phase.version)
+
+        bg_salt2_phase = models._load_source('sn91bg', version='salt2_phase')
+        self.assertEqual('sn91bg', bg_salt2_phase.name)
+        self.assertEqual('salt2_phase', bg_salt2_phase.version)
+
+        bg_hsiao_phase = models._load_source('sn91bg', version='hsiao_phase')
+        self.assertEqual('sn91bg', bg_hsiao_phase.name)
+        self.assertEqual('hsiao_phase', bg_hsiao_phase.version)
+
+        hsiao_x1 = models._load_source('hsiao_x1', version='shouldn\'t matter')
+        self.assertEqual('hsiao_x1', hsiao_x1.name)
+        self.assertEqual('3.0.x1', hsiao_x1.version)
+
+        # Test an error is raised for an unknown source
+        args = 'dummy_name', 'dummy_version'
+        self.assertRaises(ValueError, models._load_source, *args)
+
+    def test_registration(self):
+        """Test the correct default version is returned."""
+
+        bg_default = sncosmo.get_source('sn91bg')
+        self.assertEqual('salt2_phase', bg_default.version)
+
+        bg_full_phase = sncosmo.get_source('sn91bg', version='full_phase')
+        self.assertEqual('full_phase', bg_full_phase.version)
+
+        bg_salt2_phase = sncosmo.get_source('sn91bg', version='salt2_phase')
+        self.assertEqual('salt2_phase', bg_salt2_phase.version)
+
+        bg_hsiao_phase = sncosmo.get_source('sn91bg', version='hsiao_phase')
+        self.assertEqual('hsiao_phase', bg_hsiao_phase.version)
+
+        hsiao_default = sncosmo.get_source('hsiao')
+        self.assertEqual('3.0', hsiao_default.version)
+
+        hsiao_x1 = sncosmo.get_source('hsiao_x1')
+        self.assertEqual('3.0.x1', hsiao_x1.version)
+
+
 class BaseSourceTestingClass(TestCase):
     """Tests for an arbitrary sncosmo Source object"""
 
@@ -120,26 +168,18 @@ class BaseSourceTestingClass(TestCase):
         self.assertEqual(min_phase, self.source.minphase())
         self.assertEqual(max_phase, self.source.maxphase())
 
-    def _test_correct_version(self):
-        """Test the source was registered with the correct version name
-
-        This ensures that ``sncosmo.get_source`` returns the correct version.
-        """
-
-        self.assertEqual(self.source.version, self.source_version)
-
     def _test_zero_flux_outside_phase_range(self):
         """Test the modeled flux outside the model's phase range is zero"""
 
         min_phase = self.source.minphase()
-        late_phase_flux = self.source.bandflux('sdssg', min_phase - 1)
-        late_phase_zero = np.isclose(0, late_phase_flux, atol=1e-6)
-        self.assertTrue(late_phase_zero, f'Non-zero flux {late_phase_flux}')
+        early_phase_flux = self.source.bandflux('sdssg', min_phase - 1)
+        late_phase_zero = np.isclose(0, early_phase_flux, atol=1e-6)
+        self.assertTrue(late_phase_zero, f'Non-zero flux {early_phase_flux}')
 
-        max_phase = self.source.minphase()
-        early_phase_flux = self.source.bandflux('sdssg', max_phase + 1)
-        early_phase_zero = np.isclose(0, early_phase_flux, atol=1e-6)
-        self.assertTrue(early_phase_zero, f'Non-zero flux {early_phase_flux}')
+        max_phase = self.source.maxphase()
+        late_phase_flux = self.source.bandflux('sdssg', max_phase + 1)
+        early_phase_zero = np.isclose(0, late_phase_flux, atol=1e-6)
+        self.assertTrue(early_phase_zero, f'Non-zero flux {late_phase_flux}')
 
     def _test_flux_at_coords_matches_template(self):
         """Test return of model.flux agrees with the source template"""
@@ -157,11 +197,11 @@ class BaseSourceTestingClass(TestCase):
                 self.assertTrue(is_close.all())
 
 
-class PhaseLimited(BaseSourceTestingClass):
+class SN91bgSalt2Phase(BaseSourceTestingClass):
     """Tests the 'phase_limited' version of the sn91bg model"""
 
     source_name = 'sn91bg'
-    source_version = 'phase_limited'
+    source_version = 'salt2_phase'
 
     def test_flux_matches_template(self):
         """Test return of model.flux agrees with the source template at
@@ -169,11 +209,6 @@ class PhaseLimited(BaseSourceTestingClass):
         """
 
         self._test_flux_at_coords_matches_template()
-
-    def test_correct_version(self):
-        """Test the source was registered with the correct version name"""
-
-        self._test_correct_version()
 
     def test_correct_phase_range(self):
         """Test the model has the correct phase range"""
@@ -186,7 +221,31 @@ class PhaseLimited(BaseSourceTestingClass):
         self._test_zero_flux_outside_phase_range()
 
 
-class FullPhase(BaseSourceTestingClass):
+class SN91bgHsiaoPhase(BaseSourceTestingClass):
+    """Tests the 'phase_limited' version of the sn91bg model"""
+
+    source_name = 'sn91bg'
+    source_version = 'hsiao_phase'
+
+    def test_flux_matches_template(self):
+        """Test return of model.flux agrees with the source template at
+        the template coordinates.
+        """
+
+        self._test_flux_at_coords_matches_template()
+
+    def test_correct_phase_range(self):
+        """Test the model has the correct phase range"""
+
+        self._test_phase_range(-18, 85)
+
+    def test_zero_flux_outside_phase_range(self):
+        """Test the modeled flux outside the modeled phase range is zero"""
+
+        self._test_zero_flux_outside_phase_range()
+
+
+class SN91bgFullPhase(BaseSourceTestingClass):
     """Tests the 'full_phase' version of the sn91bg model"""
 
     source_name = 'sn91bg'
@@ -197,11 +256,6 @@ class FullPhase(BaseSourceTestingClass):
 
         self._test_flux_at_coords_matches_template()
 
-    def test_correct_version(self):
-        """Test the source was registered with the correct version name"""
-
-        self._test_correct_version()
-
     def test_correct_phase_range(self):
         """Test the model has the correct phase range"""
 
@@ -211,3 +265,43 @@ class FullPhase(BaseSourceTestingClass):
         """Test the modeled flux outside the modeled phase range is zero"""
 
         self._test_zero_flux_outside_phase_range()
+
+
+class HsiaoX1(BaseSourceTestingClass):
+    """Tests the 'phase_limited' version of the sn91bg model"""
+
+    source_name = 'hsiao_x1'
+    source_version = '3.0.x1'
+
+    def test_zero_flux_outside_phase_range(self):
+        """Test the modeled flux outside the modeled phase range is zero"""
+
+        self._test_zero_flux_outside_phase_range()
+
+    def test_correct_phase_range(self):
+        """Test the model has a phase range matching the original model"""
+
+        self._test_phase_range(-18, 85)
+
+    def test_matches_original_model(self):
+        """Test the flux of our custom model at x1=default matches hsiao 3.0"""
+
+        custom = sncosmo.get_source(self.source_name, self.source_version)
+        original = sncosmo.get_source('hsiao', '3.0')
+
+        phase_arr = np.arange(-18, 85)
+        wave_arr = np.arange(original.minwave(), original.maxwave())
+
+        custom_flux = custom.flux(phase_arr, wave_arr)
+        original_flux = original.flux(phase_arr, wave_arr)
+        self.assertListEqual(original_flux.tolist(), custom_flux.tolist())
+
+    def test_stretch_limits(self):
+        """Test an error is raised for stretch outside the range [-.5, .5]"""
+
+        hsiao = sncosmo.get_source('hsiao_x1')
+        hsiao.set(x1=.5001)
+        self.assertRaises(ValueError, hsiao.flux, phase=0, wave=10000)
+
+        hsiao.set(x1=-.5001)
+        self.assertRaises(ValueError, hsiao.flux, phase=0, wave=10000)

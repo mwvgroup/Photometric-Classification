@@ -1,6 +1,10 @@
 Notebooks
 =========
 
+.. warning:: This is an ongoing project. Notebooks are not guaranteed to run
+   as ongoing progress may be underway that temporarily breaks some
+   functionality.
+
 Although the ``phot_class`` package houses the core logic of our analysis, the
 visualization and interaction with results from the package is performed using
 Jupyter Notebooks. Descriptions of each notebook and what they inspect are
