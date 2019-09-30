@@ -118,7 +118,7 @@ The primary reason for the spectroscopic differences seems to be the lower
 temperature, as indicated by low temperature ion signatures (e.g. Ti).
 Otherwise, they have the same ions evident in their spectra, just at very
 different optical depths. This aligns with their lower temperatures since "as
-noted by Hatano et al. (2002) and Ho ̈flich et al. (2002), there is a
+noted by Hatano et al. (2002) and Ho flich et al. (2002), there is a
 temperature threshold below which, owing to abrupt changes in key ionization
 ratios, line optical depths change abruptly (Hatano et al. 1999)."
 
