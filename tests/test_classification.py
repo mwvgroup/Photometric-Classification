@@ -156,7 +156,6 @@ class BandFits(TestCase):
         cls.default_args = dict(
             obj_id='dummy_id',
             data=cls.data,
-            vparams=['amplitude', 'x1', 'c'],
             fit_func=sncosmo.fit_lc,
             priors_hs={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
             priors_bg={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
@@ -172,21 +171,6 @@ class BandFits(TestCase):
         # Remember we fit each band with two models, but also fit all bands
         expected_bands = 2 * (list(set(self.data['band'])) + ['all'])
         self.assertCountEqual(expected_bands, self.returned['band'])
-
-    def test_unconstrained_param(self):
-        """Test an error is raised for missing values in priors"""
-
-        # Missing param for hsiao_x1 model
-        missing_hs_t0 = deepcopy(self.default_args)
-        del missing_hs_t0['priors_hs']['t0']
-        self.assertRaises(
-            RuntimeError, classification.run_band_fits, **missing_hs_t0)
-
-        # Missing param for sn91bg model
-        missing_bg_t0 = deepcopy(self.default_args)
-        del missing_bg_t0['priors_bg']['t0']
-        self.assertRaises(
-            RuntimeError, classification.run_band_fits, **missing_bg_t0)
 
 
 # Todo test redshift dependence
