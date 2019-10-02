@@ -161,7 +161,6 @@ def run_band_fits(
     Args:
         obj_id      (str): Id of the object being fitted
         data      (Table): Table of photometric data
-        vparams    (iter): Iterable of param names to fit in any of the models
         fit_func   (func): Function to use to run fits (eg. ``fit_funcs.fit_lc``)
         priors_hs  (dict): Priors to use when fitting hsiao
         priors_bg  (dict): Priors to use when fitting sn91bg
@@ -246,7 +245,6 @@ def tabulate_fit_results(
         data_iter  (iter): Iterable of photometric data for different SN
         band_names (list): Name of bands included in ``data_iter``
         lambda_eff (list): Effective wavelength for bands in ``band_names``
-        vparams    (list): Name of parameters to vary
         fit_func   (func): Function to use to run fits
         config     (dict): Specifies priors / kwargs for fitting each model
         out_path    (str): Optionally cache progressive results to file

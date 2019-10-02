@@ -3,7 +3,6 @@
 
 """Tests for the ``classification`` module."""
 
-from copy import deepcopy
 from unittest import TestCase
 
 import numpy as np
