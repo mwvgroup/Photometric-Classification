@@ -69,7 +69,7 @@ def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
         fitted_model (Model): A fitted ``sncosmo`` model
 
     Returns:
-        Fit results as a list formatted for addition to an astropy table
+        Fit results as a dictionary
     """
 
     new_row = {
@@ -144,16 +144,19 @@ def _plot_lc(data, result, fitted_model, show=True):
 
 
 def run_band_fits(
-        obj_id, data, vparams, fit_func,
+        obj_id, data, fit_func,
         priors_hs=None, priors_bg=None,
         kwargs_hs=None, kwargs_bg=None,
         show_plots=False):
     """Run light curve fits on a given target using the Hsiao and 91bg model
 
-    Fits are run using both models for all available bands and then for each
-    band individually. All parameters specified in ``vparams`` are allowed to
-    vary during all fits except for `t0` which is fixed to the value
-    determined by fitting all available bands.
+    Fits are run using both the ``hsiao_x1`` and ``sn91bg`` models for all
+    available bands and then for each band individually.
+
+    Varied parameters include ``z``, ``t0``, ``amplitude``, ``x1``, and ``c``.
+    If the ``z`` is specified in the priors for both models, it is not varied
+    in any fit. The parameters ``t0`` and ``z`` are not varied in the
+    individual band fits.
 
     Args:
         obj_id      (str): Id of the object being fitted
@@ -167,7 +170,7 @@ def run_band_fits(
         show_plots (bool): Plot and display each individual fit
 
     Returns:
-       Fit results and the fitted model for each model / data combination
+       A table with results each model / dataset combination
     """
 
     # Set default kwargs and protect against mutation
@@ -179,6 +182,10 @@ def run_band_fits(
     # Define models for normal and 91bg SNe
     hsiao = sncosmo.Model('hsiao_x1')
     sn91bg = sncosmo.Model(sncosmo.get_source('sn91bg', version='hsiao_phase'))
+
+    vparams = {'z', 't0', 'amplitude', 'x1', 'c'}
+    if 'z' in priors_bg and 'z' in priors_hs:
+        vparams -= {'z'}
 
     # Make sure any model parameters that are not being varied are
     # specified in the priors
@@ -215,9 +222,7 @@ def run_band_fits(
             _plot_lc(data, result_all, fit_all)
 
         # Fix t0 during individual band fits
-        band_vparams = deepcopy(vparams)
-        if 't0' in band_vparams:
-            band_vparams -= {'t0'}
+        band_vparams = deepcopy(vparams) - {'t0', 'z'}
 
         # Fit data in individual bands
         data = data.group_by('band')
@@ -233,7 +238,7 @@ def run_band_fits(
 
 
 def tabulate_fit_results(
-        data_iter, band_names, lambda_eff, fit_func, vparams,
+        data_iter, band_names, lambda_eff, fit_func,
         config=None, out_path=None):
     """Tabulate fit results for a collection of data tables
 
@@ -258,7 +263,6 @@ def tabulate_fit_results(
     out_table.meta['band_names'] = band_names
     out_table.meta['lambda_eff'] = lambda_eff
     out_table.meta['fit_func'] = fit_func.__name__
-    out_table.meta['vparams'] = vparams
     out_table.meta['out_path'] = str(out_path)
 
     for data in data_iter:
@@ -271,7 +275,6 @@ def tabulate_fit_results(
             fit_results = run_band_fits(
                 obj_id=obj_id,
                 data=data,
-                vparams=vparams,
                 fit_func=fit_func,
                 priors_hs=salt2_prior,
                 priors_bg=sn91bg_prior,

@@ -83,7 +83,6 @@ def run(cli_args):
     band_names = data_module.band_names
     lambda_eff = data_module.lambda_effective
     fit_func = getattr(fit_funcs, cli_args.fit_func)
-    vparams = cli_args.vparams
 
     # Read in priors and fitting arguments from file
     config = load_yaml(cli_args.config) if cli_args.config else None
@@ -94,7 +93,6 @@ def run(cli_args):
         band_names=band_names,
         lambda_eff=lambda_eff,
         fit_func=fit_func,
-        vparams=vparams,
         config=config,
         out_path=fit_path
     )
@@ -123,13 +121,6 @@ def create_cli_parser():
         type=str,
         default='simple_fit',
         help='Which fitting function to use')
-
-    parser.add_argument(
-        '-v', '--vparams',
-        type=str,
-        nargs='+',
-        required=True,
-        help='What parameters to vary with the fit')
 
     parser.add_argument(
         '-c', '--config',

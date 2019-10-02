@@ -182,7 +182,7 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
 
 
 def classification_filter_factory(classifications):
-    """Factory function that returns a filter function for skiping data with
+    """Factory function that returns a filter function for skipping data with
     a given SDSS classification
 
     Filter functions return a boolean signifying whether data should be used
@@ -203,9 +203,6 @@ def classification_filter_factory(classifications):
         if 'classification' not in table.meta:
             return True
 
-        return (
-            (table.meta['classification'] in classifications) and
-            (table.meta['redshift'] >= 0)
-        )
+        return table.meta['classification'] in classifications
 
     return filter_func
