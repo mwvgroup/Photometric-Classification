@@ -291,12 +291,10 @@ def classify_targets(
         fits_table, band_names=None, lambda_eff=None, out_path=None):
     """Tabulate fitting coordinates for SNe based on their fit results
 
-    Assumed columns in ``fits_table`` include 'obj_id', 'source', 'band',
-    'chisq', and 'ndof'.  Values in the 'source' column should be either
-    'hsiao_x1' or 'sn91bg'.
-
+    See the ``create_empty_table`` function for the assumed input table format.
     If ``band_names`` or ``lambda_eff`` are not given, they are taken from
-    ``fits_table.meta``.
+    ``fits_table.meta``. Any targets having one or more fits with the string
+    'failed' in the message are skipped (case insensitive).
 
     Args:
         fits_table (Table): A table of fit results
@@ -315,7 +313,10 @@ def classify_targets(
     # Convert input table to a DataFrame so we can leverage multi-indexing
     fits_df = fits_table.to_pandas()
     fits_df.set_index(['obj_id', 'source'], inplace=True)
-    fits_df.dropna(subset=['band'])
+
+    failed_fits = fits_df['message'].str.lower().str.contains('failed')
+    failed_ids = failed_fits[failed_fits].index  # Index of entries with True
+    fits_df.drop(failed_ids, inplace=True)
 
     out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
     for obj_id in fits_df.index.unique(level='obj_id'):
