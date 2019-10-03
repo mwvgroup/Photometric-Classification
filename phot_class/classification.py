@@ -25,6 +25,7 @@ def create_empty_table(parameters, **kwargs):
         - source
         - pre_max
         - post_max
+        - num_params
         - *parameters
         - *parameters + _err
         - chisq
@@ -42,12 +43,12 @@ def create_empty_table(parameters, **kwargs):
     """
 
     # Specify column names
-    names = ['obj_id', 'band', 'source', 'pre_max', 'post_max']
+    names = ['obj_id', 'band', 'source', 'pre_max', 'post_max', 'num_params']
     names += list(parameters) + [param + '_err' for param in parameters]
     names += ['chisq', 'ndof', 'b_max', 'delta_15', 'message']
 
     # Specify column data types
-    dtype = ['U20', 'U100', 'U100', int, int]
+    dtype = ['U20', 'U100', 'U100', int, int, int]
     dtype += [float for _ in range(2 * len(parameters))]
     dtype += [float, float, float, float, 'U10000']
 
@@ -65,6 +66,7 @@ def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
 
     Args:
         data         (Table): The data used in the fit
+        obj_id         (str): The id of the object that was fit
         band_set       (str): The name of the band set ('all', 'blue', 'red')
         results     (Result): Fitting results returned by ``sncosmo``
         fitted_model (Model): A fitted ``sncosmo`` model
@@ -76,7 +78,8 @@ def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
     new_row = {
         'obj_id': obj_id,
         'band': band_set,
-        'source': fitted_model.source.name
+        'source': fitted_model.source.name,
+        'num_params': len(results.vparam_names)
     }
 
     # Determine number of points pre and post maximum
