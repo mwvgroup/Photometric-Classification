@@ -6,6 +6,7 @@ determines the corresponding fitting coordinates.
 """
 
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 import sncosmo
@@ -220,13 +221,15 @@ def tabulate_fit_results(
         config=None, out_path=None):
     """Tabulate fit results for a collection of data tables
 
+    Results already writting to out_path are skipped.
+
     Args:
         data_iter  (iter): Iterable of photometric data for different SN
         band_names (list): Name of bands included in ``data_iter``
         lambda_eff (list): Effective wavelength for bands in ``band_names``
         fit_func   (func): Function to use to run fits
         config     (dict): Specifies priors / kwargs for fitting each model
-        out_path    (str): Optionally cache progressive results to file
+        out_path    (str): Optionally cache results to file
 
     Returns:
        An astropy table with fit results
@@ -236,7 +239,12 @@ def tabulate_fit_results(
     config = deepcopy(config) or dict()
 
     # Add meta_data to output table meta data
-    out_table = Table(names=['obj_id', 'message'], dtype=['U20', 'U10000'])
+    if Path(out_path).exists():
+        out_table = Table.read(out_path)
+
+    else:
+        out_table = Table(names=['obj_id', 'message'], dtype=['U20', 'U10000'])
+
     out_table.meta['band_names'] = band_names
     out_table.meta['lambda_eff'] = lambda_eff
     out_table.meta['fit_func'] = fit_func.__name__
@@ -245,6 +253,9 @@ def tabulate_fit_results(
     for data in data_iter:
         # Get fitting priors and kwargs
         obj_id = data.meta['obj_id']
+        if obj_id in out_table['obj_id']:
+            continue
+
         salt2_prior, salt2_kwargs, sn91bg_prior, sn91bg_kwargs = \
             utils.parse_config_dict(obj_id, config)
 
