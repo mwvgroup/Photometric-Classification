@@ -87,6 +87,7 @@ class FitResultsToDict(TestCase):
             'source': 'salt2',
             'pre_max': 15,
             'post_max': 25,
+            'num_params': 4,  # 4 parameters since we varied t0, x0, x1, and c
             'z': result.parameters[0],
             't0': result.parameters[1],
             'x0': result.parameters[2],
@@ -151,6 +152,9 @@ class BandFits(TestCase):
         expected_bands = 2 * (list(set(self.data['band'])) + ['all'])
         self.assertCountEqual(expected_bands, self.returned['band'])
 
+    # Todo:
+    # def test_correct_num_parameters(self):
+
 
 # Todo test redshift dependence
 class ClassificationCoords(TestCase):
@@ -181,7 +185,8 @@ class ClassificationCoords(TestCase):
         )
 
         cls.test_data = Table(
-            names=['obj_id', 'source', 'band', 'chisq', 'ndof', 'z', 'message'],
+            names=['obj_id', 'source', 'band', 'chisq', 'ndof', 'z',
+                   'message'],
             dtype=['U10', 'U10', 'U10', float, float, float, 'U10'],
             rows=[
                 ['dummy_id', 'hsiao_x1', 'all', 0, 0, 0, ''],
@@ -199,7 +204,8 @@ class ClassificationCoords(TestCase):
 
         cls.test_data.meta['band_names'] = ['sdssu', 'sdssg', 'sdssi', 'sdssz']
         cls.test_data.meta['lambda_eff'] = \
-            [sncosmo.get_bandpass(b).wave_eff for b in cls.test_data.meta['band_names']]
+            [sncosmo.get_bandpass(b).wave_eff for b in
+             cls.test_data.meta['band_names']]
 
         cls.expected_row = ['dummy_id', expected_x, expected_y]
 
