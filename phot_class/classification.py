@@ -321,7 +321,7 @@ def classify_targets(
     for obj_id in good_fits.index.unique(level='obj_id'):
 
         try:
-            hsiao_data = fits_df.loc[obj_id, 'hsiao_x1']
+            hsiao_data = good_fits.loc[obj_id, 'hsiao_x1']
             redshift = hsiao_data[hsiao_data['band'] == 'all']['z'][0]
             blue_bands, red_bands = utils.split_bands(
                 band_names, lambda_eff, redshift)
@@ -331,7 +331,7 @@ def classify_targets(
             hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue['ndof'].sum()
             hsiao_red_chisq = hsiao_red['chisq'].sum() / hsiao_red['ndof'].sum()
 
-            sn91bg_data = fits_df.loc[obj_id, 'sn91bg']
+            sn91bg_data = good_fits.loc[obj_id, 'sn91bg']
             sn91bg_blue = sn91bg_data[sn91bg_data['band'].isin(blue_bands)]
             sn91bg_red = sn91bg_data[sn91bg_data['band'].isin(red_bands)]
             sn91bg_blue_chisq = sn91bg_blue['chisq'].sum() / sn91bg_blue['ndof'].sum()
