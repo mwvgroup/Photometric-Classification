@@ -2,7 +2,7 @@ Installation
 ============
 
 This project uses the ``phot_class`` package which is a
-proprietary analysis pipeline that is **not** available via a package
+custom analysis pipeline that is **not** available via a package
 manager. Source code can be downloaded to your local machine from `GitHub`_
 or by using ``git``:
 

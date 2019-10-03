@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""Command line interface for the ``phot_class`` Python package."""
+"""Command line interface for the ``phot_class`` package."""
 
 import argparse
 import warnings
@@ -102,31 +102,31 @@ def run(cli_args):
 
 def create_cli_parser():
     parser = argparse.ArgumentParser(
-        description='Command line interface for the ``phot_class`` Python package.')
+        description='Arguments for the command line interface are as follows:')
 
     parser.add_argument(
         '-s', '--survey',
         type=str,
         required=True,
-        help='Survey name (e.g. csp)')
+        help='The name of the survey to analyze. This should be the name of a survey in the sndata package (e.g. csp).')
 
     parser.add_argument(
         '-r', '--release',
         type=str,
         required=True,
-        help='Release name (e.g. dr3)')
+        help='The name of the survey\'s data release. This should also match the sndata package (e.g. csp).')
 
     parser.add_argument(
         '-f', '--fit_func',
         type=str,
         default='simple_fit',
-        help='Which fitting function to use')
+        help='The name of the fitting routine to use (simple_fit, nest_fit, mcmc_fit, nested_simple_fit, nested_mcmc_fit).')
 
     parser.add_argument(
         '-c', '--config',
         type=str,
         required=False,
-        help='Sn91bg fitting arguments.'
+        help='Path of the yaml config file.'
     )
 
     parser.add_argument(

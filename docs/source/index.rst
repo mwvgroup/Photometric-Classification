@@ -53,13 +53,13 @@ parameters stretch and color.
 Using this Documentation
 ------------------------
 
-Source code for this project can be found online via `GitHub`_. Included with
-this code is the `phot_class` package which handles the fitting and
-classification of light curves. The **Project Notes** section documents
-this project from a scientific perspective. It it provided to ensure
+This documentation serves as a complete project writeup and is a complete
+collection of the developers thoughts/decisions. The **Project Notes** section
+documents this project from a scientific perspective. It it provided to ensure
 reproducibility of the results and to clarify various design decisions.
-The **API Reference** documents how to use the `phot_class` along with
-various technical clarifications as to out implementation.
+The **API Reference** documents how to use the project's code base along with
+various technical clarifications. Source code for this project
+can be found online via `GitHub`_.
 
 .. _GitHub: https://github.com/mwvgroup/sdss-classification/
 
@@ -117,8 +117,6 @@ We provide summaries for key files in the project repository::
    :maxdepth: 1
 
    Overview<self>
-   installation
-   quick_start
 
 .. toctree::
    :hidden:
@@ -130,6 +128,14 @@ We provide summaries for key files in the project repository::
    project_notes/fitters
    project_notes/literature
    project_notes/notebooks
+
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+   :caption: Getting Running:
+
+   getting_running/installation
+   getting_running/quick_start
 
 
 .. toctree::

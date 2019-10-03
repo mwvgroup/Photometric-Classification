@@ -28,7 +28,7 @@ Sub-types of Type Ia SNe include:
 - Ca-rich SNe (Perets+ 2010, 2011b; Valenti+ 2013a; Kasliwal+ 2012)
 
 .. note:: See `Gal-Yam 2017 <https://link.springer.com/referenceworkentry/10.1007/978-3-319-21846-5_35>`_
-   for a comprehensive discussion)
+   for a comprehensive discussion.
 
 We are primarily focused on the identification of SN 1991-bg like objects
 (91bgs). These tend to be around 1.1 mag fainter and decline notably faster
@@ -111,6 +111,7 @@ Some Additional Details
 - The normal Ia template used is the Hsiao+ 2007 template
 - The 91bg template is the Nugent+ 2002 template
 - Data cuts were implemented as follows:
+
   1. Exclude targets without observations in at least two filters, each with
      at least one data point between -15 and 0 days and one between 0 and 25 days.
   2. Data past 85 days was ignored

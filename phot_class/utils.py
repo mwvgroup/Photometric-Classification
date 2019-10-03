@@ -44,10 +44,10 @@ def parse_config_dict(obj_id, config_dict):
         config_dict (dict): A dictionary with data from a config file
 
     Returns:
-        - A dictionary with object priors for salt2
-        - A dictionary of fitting kwargs for salt2
-        - A dictionary with object priors for sn91bg
-        - A dictionary of fitting kwargs for sn91bg
+        - A dictionary with object priors for the hsiao_x1 model
+        - A dictionary of fitting kwargs for the hsiao_x1 model
+        - A dictionary with object priors for the sn91bg model
+        - A dictionary of fitting kwargs for the sn91bg model
     """
 
     out_data = []
