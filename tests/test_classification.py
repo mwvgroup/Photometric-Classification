@@ -28,7 +28,7 @@ class TableCreation(TestCase):
         parameters = ['z', 't0', 'x0', 'x1', 'c']
         returned = classification.create_empty_table(parameters).colnames
         expected = [
-            'obj_id', 'band', 'source', 'pre_max', 'post_max',
+            'obj_id', 'band', 'source', 'pre_max', 'post_max', 'num_params',
             'z', 't0', 'x0', 'x1', 'c',
             'z_err', 't0_err', 'x0_err', 'x1_err', 'c_err',
             'chisq', 'ndof', 'b_max', 'delta_15', 'message', ]
@@ -152,8 +152,26 @@ class BandFits(TestCase):
         expected_bands = 2 * (list(set(self.data['band'])) + ['all'])
         self.assertCountEqual(expected_bands, self.returned['band'])
 
-    # Todo:
-    # def test_correct_num_parameters(self):
+    def test_correct_num_parameters(self):
+        """Test the correct number of parameters are varied"""
+
+        returned_df = self.returned.to_pandas()
+        returned_df.set_index(['source', 'band'], inplace=True)
+
+        # Get the number of fitted parameters used by both models
+        # for all bands and individuals bands
+        hsiao_all = returned_df.loc['hsiao_x1', 'all']['num_params']
+        hsiao_r = returned_df.loc['hsiao_x1', 'sdssr']['num_params']
+        sn91bg_all = returned_df.loc['sn91bg', 'all']['num_params']
+        sn91bg_r = returned_df.loc['sn91bg', 'sdssr']['num_params']
+
+        # The hsiao_x1 model has parameters z, t0, x0, and x1
+        self.assertEqual(3, hsiao_all)  # z given in prior -> should be fixed
+        self.assertEqual(2, hsiao_r)  # z and t0 should always be fixed
+
+        # The hsiao_x1 model has parameters z, t0, x0, x1, and c
+        self.assertEqual(4, sn91bg_all)  # z given in prior -> should be fixed
+        self.assertEqual(3, sn91bg_r)  # z and t0 should always be fixed
 
 
 # Todo test redshift dependence
