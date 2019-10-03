@@ -221,7 +221,7 @@ def tabulate_fit_results(
         config=None, out_path=None):
     """Tabulate fit results for a collection of data tables
 
-    Results already writting to out_path are skipped.
+    Results already written to out_path are skipped.
 
     Args:
         data_iter  (iter): Iterable of photometric data for different SN
@@ -310,16 +310,15 @@ def classify_targets(
         band_names = fits_table.meta['band_names']
         lambda_eff = fits_table.meta['lambda_eff']
 
-    # Convert input table to a DataFrame so we can leverage multi-indexing
+    # Keep only objects that don't have failed fits in any band
     fits_df = fits_table.to_pandas()
-    fits_df.set_index(['obj_id', 'source'], inplace=True)
-
     failed_fits = fits_df['message'].str.lower().str.contains('failed')
-    failed_ids = failed_fits[failed_fits].index  # Index of entries with True
-    fits_df.drop(failed_ids, inplace=True)
+    failed_ids = fits_df[failed_fits].obj_id.unique()
+    good_fits = fits_df[~fits_df.obj_id.isin(failed_ids)]
+    good_fits.set_index(['obj_id', 'source'], inplace=True)
 
     out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
-    for obj_id in fits_df.index.unique(level='obj_id'):
+    for obj_id in good_fits.index.unique(level='obj_id'):
 
         try:
             hsiao_data = fits_df.loc[obj_id, 'hsiao_x1']
