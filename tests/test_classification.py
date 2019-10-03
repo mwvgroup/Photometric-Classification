@@ -107,26 +107,6 @@ class FitResultsToDict(TestCase):
         self.assertEqual(expected_row, row)
 
 
-class RaiseUnspecifiedParams(TestCase):
-    """Tests for ``_raise_unspecified_params``"""
-
-    def test_unspecified_param(self):
-        """Test a RuntimeError is raise for an unspecified parameter"""
-
-        fixed_params = ['z']
-        prior = {'t0': 1, 'x1': 1}
-        args = (fixed_params, prior)
-        func = classification._raise_unspecified_params
-        self.assertRaises(RuntimeError, func, *args)
-
-    def test_all_params_specified(self):
-        """Test no error is raised when all fixed params are specified"""
-
-        fixed_params = ['z']
-        prior = {'z': .5, 't0': 1, 'x1': 1}
-        classification._raise_unspecified_params(fixed_params, prior)
-
-
 class PlotLc(TestCase):
     """Tests for the ``_plot_lc`` function"""
 

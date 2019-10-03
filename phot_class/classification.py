@@ -110,21 +110,6 @@ def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
     return new_row
 
 
-def _raise_unspecified_params(fixed_params, *priors):
-    """Raise RuntimeError if any fixed parameters are not set in a prior
-
-    Args:
-        fixed_params (iter): List of parameter names to assume as fixed
-        *priors      (dict): Dictionary of values from a prior
-    """
-
-    for prior in priors:
-        for p in fixed_params:
-            if p not in prior:
-                raise RuntimeError(
-                    f'Encountered unspecified value for {p} in prior: {prior}')
-
-
 def _plot_lc(data, result, fitted_model, show=True):
     """Plot fit results
 
@@ -182,21 +167,17 @@ def run_band_fits(
     hsiao = sncosmo.Model('hsiao_x1')
     sn91bg = sncosmo.Model(sncosmo.get_source('sn91bg', version='hsiao_phase'))
 
+    # Determine what parameters to vary for each model
     vparams = {'z', 't0', 'amplitude', 'x1', 'c'}
+    out_data = create_empty_table(vparams)
     if 'z' in priors_bg and 'z' in priors_hs:
         vparams -= {'z'}
 
-    # Make sure any model parameters that are not being varied are
-    # specified in the priors
     hsiao_params = set(hsiao.param_names)
     hsiao_vparams = hsiao_params.intersection(vparams)
-    hsiao_fixed_params = hsiao_params - hsiao_vparams
-    _raise_unspecified_params(hsiao_fixed_params, priors_hs)
 
     sn91bg_params = set(sn91bg.param_names)
     sn91bg_vparams = sn91bg_params.intersection(vparams)
-    sn91bg_fixed_params = sn91bg_params - sn91bg_vparams
-    _raise_unspecified_params(sn91bg_fixed_params, priors_bg)
 
     # Create iterators over the data we need to fit
     model_args = zip(
@@ -207,8 +188,6 @@ def run_band_fits(
     )
 
     # Tabulate fit results for each band
-    all_param_names = set(hsiao.param_names).union(sn91bg.param_names)
-    out_data = create_empty_table(all_param_names)
     for model, vparams, prior, kwarg in model_args:
         model.update(prior)
 
