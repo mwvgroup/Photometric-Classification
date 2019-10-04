@@ -1,31 +1,32 @@
+.. _fitters:
+
+Implementation
+==============
+
+We here discuss various implementation details related to how we fit and
+classify light-curves.
+
+
 Light-Curve Fitters
-===================
+-------------------
 
 Light-curve fitters are an extremely common tool used in supernova analyses,
 particularly in cosmological studies. Perhaps not surprisingly, there exist
 a multitude of available fitting routines each with its own unique goals,
-approaches, and implementations. Some examples of this diversity include:
-
- - MLCS/MLCS2k2 (Riess+ 1996, Jha+ 2007)
- - stretch (Perlmutter+ 1997; Goldhaber+ 2001; Knop+ 2003)
- - super stretch (Wang+ 2006)
- - DM15 (Hamuy+ 1996b; Prieto+ 2006)
- - BATM (Tonry+ 2003),
- - CMAGIC (Wang+ 2003),
- - SALT/SALT2 (Guy+ 2005, 2007)
-
-It is important to distinguish between the different parameters offered by
-each light curve fitter, and more important still to acknowledge that even
-when two fitters use parameters with the same name, those two parameters are
-not, in fact, the same.
+approaches, and implementations. It is important to distinguish between the
+different options offered by each light curve fitter.
 
 The photometric classification scheme that our project is based on was
-originally implemented with SiFTO. We here outline the approach of various
-third party fitters relevant to our project and how they work.
+originally implemented with SiFTO. We have chosen to instead work with SNCosmo
+so that we can use a different set of models. We here outline the approach of
+both fitters and how they work.
 
 
 SiFTO (`Conley et al. 2008 <https://doi.org/10.1086/588518>`_)
---------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. important:: SiFTO is not used at any stage of our analysis. We consider it
+   here because understanding it is necessary for completeness.
 
 SiFTO is an empirical light-curve fitter that is similar to SALT2 in the sense
 that it uses magnitude, light curve shape (i.e. stretch), and color to fit
@@ -65,8 +66,32 @@ We note the following warning from Conley+ 2008:
    prescription does not work well."
 
 
+SNCosmo (`sncosmo.readthedocs.io <https://sncosmo.readthedocs.io>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``sncosmo`` is a Python package built for supernova cosmology. At it's core,
+the package is designed so users can customize their analysis with purpose
+built models, filters, minimization routines, etc.. There are a number of
+built in minimization routines that can be used to fit light-curves. However,
+all of the built in routines are designed to simultaneously fit multiple
+band-passes - a very different approach to SiFTO.
+
+There is no single set of parameters used by ``sncosmo``. Generally, the
+parameters are determined by the model that is being fit. Additional
+parameters can also be added to any model to represent external effects like
+extinction. These effects can be implimented at either the rest or observed
+frame.
+
+
+Models
+------
+
+We consider multiple light curve models in our analysis, including SALT2,
+a modified version of the Hsiao model, and a custom 91bg model.
+
+
 SALT2 (`Guy et al. 2007 <https://www.aanda.org/htbin/resolve?bibcode=2007A%26A...466...11GFUL>`_)
--------------------------------------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 SALT2 is intended to fit light curves while accounting for intrinsic variations
 in the supernova population. The original SALT model used the spectral sequence
@@ -107,8 +132,31 @@ successors:
    could look for correlations between supernova properties and parameter
    values.
 
-Custom sn1991bg-like Model
---------------------------
+
+Custom Hsiao-like Model (`Hsiao et al. 2007 <https://doi.org/10.1086/518232>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Hsiao model has a similar light-curve profile to that of SALT2, but has
+several major differences. First, the model is trained on a more diverse set
+of SNe than the SALT2 model. This makes it a better representation of
+spectroscopically normal SNe Ia since it includes more of that subtype's
+intrinsic diversity. It also covers a much broader phase and wavelength range,
+allowing us to fit using a larger subset of the measured photometry.
+
+The Hsiao model built in to ``sncosmo`` also only has three parameters: ``z``,
+``t0``, and ``amplitude``. We add an additional "stretch" parameter called
+``x1`` for convenience. This parameter is used to stretch the light-curve phase
+as
+
+.. math::
+
+    stretched phase = phase / (1 - x1)
+
+We intrinsically bound :math:`-.5 \leq x1 \leq .5` within the model.
+
+
+Custom sn1991bg-like Model (`Nugent et al. 2002 <https://iopscience.iop.org/article/10.1086/341707>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The 91bg model used for this project is based on the 91bg template from
 Nugent et al. 2002 but is extended into the ultra-violet. This model was
@@ -128,8 +176,32 @@ resemble what it is being compared to. For this reason the model has been
 specifically programmed so that the template can be arbitrarily limited in
 phase space at instantiation.
 
-.. note::
-  - For more information on the Nugent template see
-    `Nugent et al. 2002 <https://iopscience.iop.org/article/10.1086/341707>`_.
-  - For more information on sncosmo and ``Source`` classes see the
-    `sncosmo documentation <https://sncosmo.readthedocs.io/>`_.
+
+.. _lc-fitting:
+
+Fitting and Classification
+--------------------------
+
+Our implementation of the classification method is as follows.
+
+  0. The Milky Way extinction is determined for each target using the
+     `Schlegel, Finkbeiner & Davis (1998) <https://doi.org/10.1086/305772>`_
+     dust map and the `Fitzpatrik 99 <https://doi.org/10.1086/316293>`_
+     extinction law. This value is never varied in any fit, and is fixed to
+     the given value. We can also optionally set the extinction to zero.
+  1. Each light curve is fit using both models and all available band passes.
+     At this step ``t0``, ``amplitude``, ``x1``, and ``c`` are always varied.
+     ``z`` is only varied if it is not specified by a prior (i.e. if it is
+     not available from a spectroscopic observation). Results from this fit
+     are used to determine the characteristic parameters for the given
+     light-curve (The values one might publish in a summary table).
+  2. Each bandpass is fit independently using both models. Here, ``z`` and `
+     `t0`` are fixed to the value determined when fitting all bands
+     simultaneously.
+  3. Any fits that fail are dropped from our sample.
+  4. The bandpasses are separated into the rest-frame blue and red
+     (blue/redward of 5500 Angstroms.)
+  5. The chi-squard values from the band-by-band fits are summed for each
+     model in both the red and blue bandpasses. These values are used to
+     determine the position of each target on the classification plot
+     (see the :ref:`classification` section).

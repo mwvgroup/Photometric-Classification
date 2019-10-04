@@ -4,7 +4,14 @@ Classification Scheme
 =====================
 
 We here discuss the classification we wish to apply, which is originally
-presented in `González-Gaitán et al. 2014 <https://ui.adsabs.harvard.edu/abs/2014ApJ...795..142G/abstract>`_
+presented in `González-Gaitán et al. 2014 <https://ui.adsabs.harvard.edu/abs/2014ApJ...795..142G/abstract>`_.
+
+.. important:: GG14 relies on the SiFTO light-curve fitter. We here instead apply the
+   `sncosmo`_ package. In their default setup, these two packages are very
+   different, but we intentionally implement `sncosmo` in a way that mimmicks
+   the SiFTO approach. See the :ref:`fitters` section for more details.
+
+.. _sncosmo: http://sncosmo.readthedocs.io/
 
 Background
 ----------
@@ -59,8 +66,8 @@ targets picked from the literature, the data is primarily taken from:
 No initial cuts are applied to the data.
 
 
-The Approach
-------------
+The General Approach
+--------------------
 
 91bg's can be photometrically distinguished from normal Ia's by the morphology
 of their light-curve - particularly in then redder bands (as described above).
@@ -104,13 +111,13 @@ and a chi-squared for all bands could be used. Although this works, it does not
 work as well since there may be some normal SNe with lower stretch or redder
 colors. It is also possible to use a simple cut on the fitted color and/or
 stretch values (using either the normal or 91bg template). However, this
-sufferes from a similar problem where highly reddened, normal Ia's at low
+suffers from a similar problem where highly reddened, normal Ia's at low
 stretch would look like Ia's.
 
 Some Additional Details
 -----------------------
 
-- The normal Ia template used is the Hsiao+ 2007 template
+- The normal Ia template used in GG14 is the Hsiao+ 2007 template
 - The 91bg template is the Nugent+ 2002 template
 - Data cuts were implemented as follows:
 
@@ -119,5 +126,3 @@ Some Additional Details
   2. Data past 85 days was ignored
   3. If observations are available in duplicate filters (e.g. the same filter
      from different surveys) the filter with the most data points is used.
-
-

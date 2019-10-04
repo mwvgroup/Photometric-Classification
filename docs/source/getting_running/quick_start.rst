@@ -53,7 +53,7 @@ the pipeline:
   - ``mwebv`` is never varied in any fit, and is fixed to the given value. If no
     value is given, the default value is 0.
 
-See the :ref:`classification` for more information on how we fit targets.
+See the :ref:`lc-fitting` section for more information on how we fit targets.
 
 Specifying Kwargs
 ^^^^^^^^^^^^^^^^^
