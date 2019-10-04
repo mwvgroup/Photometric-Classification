@@ -28,7 +28,7 @@ class TableCreation(TestCase):
         parameters = ['z', 't0', 'x0', 'x1', 'c']
         returned = classification.create_empty_table(parameters).colnames
         expected = [
-            'obj_id', 'band', 'source', 'pre_max', 'post_max', 'num_params',
+            'obj_id', 'band', 'source', 'pre_max', 'post_max', 'vparams',
             'z', 't0', 'x0', 'x1', 'c',
             'z_err', 't0_err', 'x0_err', 'x1_err', 'c_err',
             'chisq', 'ndof', 'b_max', 'delta_15', 'message', ]
@@ -67,9 +67,10 @@ class FitResultsToDict(TestCase):
 
         # Define mock fit results for a model fit for the last four parameters
         # I.e. for a fit where z is specified
+        vparams = params[1:]
         result = Result({
             'param_names': params,
-            'vparam_names': params[1:],
+            'vparam_names': vparams,
             'parameters': param_values,
             'errors': {p: .1 * v for p, v in data.meta.items()}
         })
@@ -87,7 +88,7 @@ class FitResultsToDict(TestCase):
             'source': 'salt2',
             'pre_max': 15,
             'post_max': 25,
-            'num_params': 4,  # 4 parameters since we varied t0, x0, x1, and c
+            'vparams': ','.join(vparams),
             'z': result.parameters[0],
             't0': result.parameters[1],
             'x0': result.parameters[2],
@@ -124,6 +125,7 @@ class PlotLc(TestCase):
         self.assertTrue(fig.get_axes(), 'Returned figure has no axes')
 
 
+# Todo: Test extinction handling
 class BandFits(TestCase):
     """Tests for the ``run_band_fits`` function"""
 
@@ -152,7 +154,7 @@ class BandFits(TestCase):
         expected_bands = 2 * (list(set(self.data['band'])) + ['all'])
         self.assertCountEqual(expected_bands, self.returned['band'])
 
-    def test_correct_num_parameters(self):
+    def test_correct_varied_parameters(self):
         """Test the correct number of parameters are varied"""
 
         returned_df = self.returned.to_pandas()
@@ -160,18 +162,21 @@ class BandFits(TestCase):
 
         # Get the number of fitted parameters used by both models
         # for all bands and individuals bands
-        hsiao_all = returned_df.loc['hsiao_x1', 'all']['num_params']
-        hsiao_r = returned_df.loc['hsiao_x1', 'sdssr']['num_params']
-        sn91bg_all = returned_df.loc['sn91bg', 'all']['num_params']
-        sn91bg_r = returned_df.loc['sn91bg', 'sdssr']['num_params']
+        hsiao_all = returned_df.loc['hsiao_x1', 'all']['vparams']
+        hsiao_r = returned_df.loc['hsiao_x1', 'sdssr']['vparams']
+        sn91bg_all = returned_df.loc['sn91bg', 'all']['vparams']
+        sn91bg_r = returned_df.loc['sn91bg', 'sdssr']['vparams']
 
         # The hsiao_x1 model has parameters z, t0, x0, and x1
-        self.assertEqual(3, hsiao_all)  # z given in prior -> should be fixed
-        self.assertEqual(2, hsiao_r)  # z and t0 should always be fixed
+        # z given in prior -> should be fixed
+        self.assertEqual('t0,amplitude,x1', hsiao_all)
+
+        # z and t0 should always be fixed for band fits
+        self.assertEqual('amplitude,x1', hsiao_r)
 
         # The hsiao_x1 model has parameters z, t0, x0, x1, and c
-        self.assertEqual(4, sn91bg_all)  # z given in prior -> should be fixed
-        self.assertEqual(3, sn91bg_r)  # z and t0 should always be fixed
+        self.assertEqual('t0,amplitude,x1,c', sn91bg_all)
+        self.assertEqual('amplitude,x1,c', sn91bg_r)
 
 
 # Todo test redshift dependence

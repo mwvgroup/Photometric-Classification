@@ -45,12 +45,12 @@ def create_empty_table(parameters, **kwargs):
     """
 
     # Specify column names
-    names = ['obj_id', 'band', 'source', 'pre_max', 'post_max', 'num_params']
+    names = ['obj_id', 'band', 'source', 'pre_max', 'post_max', 'vparams']
     names += list(parameters) + [param + '_err' for param in parameters]
     names += ['chisq', 'ndof', 'b_max', 'delta_15', 'message']
 
     # Specify column data types
-    dtype = ['U20', 'U100', 'U100', int, int, int]
+    dtype = ['U20', 'U100', 'U100', int, int, 'U100']
     dtype += [float for _ in range(2 * len(parameters))]
     dtype += [float, float, float, float, 'U10000']
 
@@ -81,7 +81,7 @@ def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
         'obj_id': obj_id,
         'band': band_set,
         'source': fitted_model.source.name,
-        'num_params': len(results.vparam_names)
+        'vparams': ','.join(results.vparam_names)
     }
 
     # Determine number of points pre and post maximum
