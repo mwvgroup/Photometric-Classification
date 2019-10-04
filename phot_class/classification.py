@@ -176,16 +176,14 @@ def run_band_fits(
     hsiao = sncosmo.Model('hsiao_x1', **dust_kw)
 
     # Determine what parameters to vary for each model
+    # Hsiao does not have a c parameter. We don't vary mwebv
     vparams = {'z', 't0', 'amplitude', 'x1', 'c'}
-    out_data = create_empty_table(vparams)
+    out_data = create_empty_table(vparams.union({'mwebv'}))
     if 'z' in priors_bg and 'z' in priors_hs:
         vparams -= {'z'}
 
-    hsiao_params = set(hsiao.param_names)
-    hsiao_vparams = hsiao_params.intersection(vparams)
-
-    sn91bg_params = set(sn91bg.param_names)
-    sn91bg_vparams = sn91bg_params.intersection(vparams)
+    hsiao_vparams = set(hsiao.param_names).intersection(vparams)
+    sn91bg_vparams = set(sn91bg.param_names).intersection(vparams)
 
     # Create iterators over the data we need to fit
     model_args = zip(
