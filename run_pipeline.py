@@ -114,7 +114,7 @@ def create_cli_parser():
         '-r', '--release',
         type=str,
         required=True,
-        help='The name of the survey\'s data release. This should also match the sndata package (e.g. csp).')
+        help='The name of the survey\'s data release. This should also match the sndata package (e.g. dr3).')
 
     parser.add_argument(
         '-f', '--fit_func',
