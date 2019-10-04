@@ -15,6 +15,8 @@ from matplotlib import pyplot
 
 from . import utils
 
+DUST = sncosmo.F99Dust()
+
 
 def create_empty_table(parameters, **kwargs):
     """Create an empty table for storing fit results
@@ -167,9 +169,11 @@ def run_band_fits(
     kwargs_hs = deepcopy(kwargs_hs) or dict()
     kwargs_bg = deepcopy(kwargs_bg) or dict()
 
-    # Define models for normal and 91bg SNe
-    hsiao = sncosmo.Model('hsiao_x1')
-    sn91bg = sncosmo.Model(sncosmo.get_source('sn91bg', version='hsiao_phase'))
+    # Define models for normal and 91bg SNe with host galaxy dust
+    dust_kw = dict(effects=[DUST], effect_names=['mw'], effect_frames=['obs'])
+    bg_source = sncosmo.get_source('sn91bg', version='hsiao_phase')
+    sn91bg = sncosmo.Model(bg_source, **dust_kw)
+    hsiao = sncosmo.Model('hsiao_x1', **dust_kw)
 
     # Determine what parameters to vary for each model
     vparams = {'z', 't0', 'amplitude', 'x1', 'c'}
