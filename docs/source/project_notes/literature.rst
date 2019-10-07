@@ -52,8 +52,8 @@ González-Gaitán+, 2011). However, there is significant disagreement when it
 comes to rate of 91bg-like events. Recent rate estimates using SNe observed by
 the Lick Observatory Supernova Search (LOSS) range from 11 to 15% of the SNe
 Ia population (Ganeshalingam+ 2010, Li, Leaman+ 2011). Alternatively,
-González-Gaitán et al. (2011) and Silverman et al. (2012) estimated 91bg-like
-SNe make up a mor modest 6 to 9%. However, González-Gaitán et al. (2011)
+González-Gaitán+ (2011) and Silverman+ (2012) estimated 91bg-like
+SNe make up a mor modest 6 to 9%. However, González-Gaitán+ (2011)
 does note that their estimates increase dramatically with the inclusion
 of transitional 86G-like SNe.
 
@@ -74,6 +74,23 @@ which is driven by the :math:`^{56}\text{Ni}` mass.
 SNe Classification
 ------------------
 
+A list of machine learning classifiers:
+
+ - Richards+ 2012
+ - Ishida & de Souza 2013
+ - Karpenka+ 2013
+ - Varughese+ 2015
+ - Lochner+ 2016
+ - Möller+ 2016
+ - Dai+ 2018
+ - muthukrishna+ 2019
+ - `Pasquet+ 2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...627A..21P/abstract>`_
+
+We note that Pasquet+ 2019 performed well when trained on and tested against
+data from the Supernova Classification Challenge (Kessler+ 2010a) but
+performed notably worse when applied to the SDSS SN sample due to the training
+sample not being as representative.
+
 Quantitative Classification of Type I Supernovae Using Spectroscopic Features at Maximum Brightness (`Fengwu+ 2006 <https://ui.adsabs.harvard.edu/abs/2017arXiv170702543S/abstract>`_)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -85,7 +102,7 @@ qualities near peak luminosity. As a quick recap on the evolution of Type I
 classification:
 
  - Minkowski (1941): Introduces type I/II
- - Wheeler & Levreault (1985) and Elias et al. (1985): Introduces type Ib
+ - Wheeler & Levreault (1985) and Elias+ (1985): Introduces type Ib
  - Wheeler & Harkness (1990): Introduces type Ic
 
 Fengwu+ presents a quantified set of classification criteria based on the
@@ -188,17 +205,13 @@ The primary reason for the spectroscopic differences seems to be the lower
 temperature, as indicated by low temperature ion signatures (e.g. Ti).
 Otherwise, they have the same ions evident in their spectra, just at very
 different optical depths. This aligns with their lower temperatures since "as
-noted by Hatano et al. (2002) and Ho Flich et al. (2002), there is a
+noted by Hatano+ (2002) and Ho Flich+ (2002), there is a
 temperature threshold below which, owing to abrupt changes in key ionization
-ratios, line optical depths change abruptly (Hatano et al. 1999)."
+ratios, line optical depths change abruptly (Hatano+ 1999)."
 
 The core-normal subgroup have a very high degree of similarity, suggesting
 a standard, common physical mechanism involving no large inhomogeneities near
 the characteristic photosphere velocity of 12,000 km/s.
-
-
-PELICAN: deeP architecture for the LIght Curve ANalysis (`Pasquet+ 2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...627A..21P/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Previous works using SDSS
 -------------------------
