@@ -38,8 +38,8 @@ with the most common SNe Ia (the core-normals). The lowest density regions
 would contain SNe Ia with less stable parameters. The SNe in between would be
 transition regions.
 
-(`Taubenberger 2017 <https://ui.adsabs.harvard.edu/abs/arXiv:1703.00528>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The Extremes of Thermonuclear Supernovae (`Taubenberger 2017 <https://ui.adsabs.harvard.edu/abs/arXiv:1703.00528>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This paper provides an overview of peculiar SNe, and is fairly expansive.
 For our purposes here, we pull out a few useful references.
@@ -188,7 +188,6 @@ the characteristic photosphere velocity of 12,000 km/s.
 
 PELICAN: deeP architecture for the LIght Curve ANalysis (`Pasquet+ 2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...627A..21P/abstract>`_)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 
 Previous works using SDSS
 -------------------------
