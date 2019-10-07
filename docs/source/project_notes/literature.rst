@@ -50,8 +50,9 @@ are determined using the average wavelength interval :math:`\Delta \lambda` as
 
 ..  math::
 
-  w = s \\times int(\\frac{50}{\\Delta \\lambda}) + 1
-  o = max(3, \\frac{w - 1}{2})
+  w = s \times int(\frac{50}{\Delta \lambda}) + 1
+
+  o = max(3, \frac{w - 1}{2})
 
 After smoothing the spectra, the boundaries for both features are determined by
 eye. Identifying the feature boundaries can be difficult since the high ejecta
@@ -73,7 +74,7 @@ calculated as:
 
 .. math::
 
-   a = max(1 - \frac{F_\\lambda}{F_{\\lambda, continuum}})
+   a = max(1 - \frac{F_\lambda}{F_{\lambda, continuum}})
 
 The paper finds that peculiar Type Ia's generally have shallower Si II 6355
 lines. The same cannot be said for O I 7774, where the normal and combined
@@ -83,14 +84,14 @@ of O I optical depths in SNe Ia photospheres.
 
 Although the paper struggles to confidently distinguishing the normal and
 peculiar subsets, they are able to find significant differences between SNe
-Ib and Ic using the ratio :math:`r = a(λ6150 A) / a(OIλ7774 A)`. The Ib and Ic
+Ib and Ic using the ratio r = a(6150) / a(7774). The Ib and Ic
 populations are entirely separated by a line near :math:`r=1`.
 
 The concluded classification criteria is as follows:
 
- 1. SNe Ia (including normal Ia, Ia-1991bg and Ia-1999aa): :math:`a(6150 A) > 0.35`
- 2. SNe Ib: :math:`a(6150 A) > 0.35` and :math:`a(6150 A) / a(7774 A) > 1`
- 3. SNe Ic (except for Ic-BL): :math:`a(6150 A)<0.35` and :math:`a(6150 A) / a(7774 A) < 1`
+ 1. SNe Ia (including normal Ia, Ia-1991bg and Ia-1999aa): a(6150 A) > 0.35
+ 2. SNe Ib: a(6150 A) > 0.35 and a(6150) / a(7774) > 1
+ 3. SNe Ic (except for Ic-BL): a(6150)<0.35 and a(6150) / a(7774) < 1
 
 
 The Birth Rate of Subluminous and Overluminous Type Ia Supernovae (`meng+ 2011 <https://ui.adsabs.harvard.edu/abs/2011A%26A...525A.129M/abstract>`_)
@@ -104,7 +105,7 @@ taken within three days of maximum (the time cutoff is chosen such that
 the spectral evolution will be minimal while ensuring there are a sufficient
 number of targets to be scientifically interesting). To simplify the process
 of feature comparison, spectra are first tilted by multiplying the flux by
-:math:`\\lambda^\\alpha` where :math:`\\alpha` is chosen such that the peak
+:math:`\lambda^\alpha` where :math:`\alpha` is chosen such that the peak
 flux at 4600 and 6300 A are equal. The Equivalent widths are then plotted for
 the feature at 5750 A vs the feature at 6100 A. After applying a nearest
 neighbor algorithm, four groups emerged: shallow silicon, core-normal,

@@ -3,7 +3,6 @@
 
 """Tests for the ``classification`` module."""
 
-from copy import deepcopy
 from unittest import TestCase
 
 import numpy as np
@@ -29,7 +28,7 @@ class TableCreation(TestCase):
         parameters = ['z', 't0', 'x0', 'x1', 'c']
         returned = classification.create_empty_table(parameters).colnames
         expected = [
-            'obj_id', 'band', 'source', 'pre_max', 'post_max',
+            'obj_id', 'band', 'source', 'pre_max', 'post_max', 'vparams',
             'z', 't0', 'x0', 'x1', 'c',
             'z_err', 't0_err', 'x0_err', 'x1_err', 'c_err',
             'chisq', 'ndof', 'b_max', 'delta_15', 'message', ]
@@ -68,9 +67,10 @@ class FitResultsToDict(TestCase):
 
         # Define mock fit results for a model fit for the last four parameters
         # I.e. for a fit where z is specified
+        vparams = params[1:]
         result = Result({
             'param_names': params,
-            'vparam_names': params[1:],
+            'vparam_names': vparams,
             'parameters': param_values,
             'errors': {p: .1 * v for p, v in data.meta.items()}
         })
@@ -88,6 +88,7 @@ class FitResultsToDict(TestCase):
             'source': 'salt2',
             'pre_max': 15,
             'post_max': 25,
+            'vparams': ','.join(vparams),
             'z': result.parameters[0],
             't0': result.parameters[1],
             'x0': result.parameters[2],
@@ -108,26 +109,6 @@ class FitResultsToDict(TestCase):
         self.assertEqual(expected_row, row)
 
 
-class RaiseUnspecifiedParams(TestCase):
-    """Tests for ``_raise_unspecified_params``"""
-
-    def test_unspecified_param(self):
-        """Test a RuntimeError is raise for an unspecified parameter"""
-
-        fixed_params = ['z']
-        prior = {'t0': 1, 'x1': 1}
-        args = (fixed_params, prior)
-        func = classification._raise_unspecified_params
-        self.assertRaises(RuntimeError, func, *args)
-
-    def test_all_params_specified(self):
-        """Test no error is raised when all fixed params are specified"""
-
-        fixed_params = ['z']
-        prior = {'z': .5, 't0': 1, 'x1': 1}
-        classification._raise_unspecified_params(fixed_params, prior)
-
-
 class PlotLc(TestCase):
     """Tests for the ``_plot_lc`` function"""
 
@@ -144,6 +125,7 @@ class PlotLc(TestCase):
         self.assertTrue(fig.get_axes(), 'Returned figure has no axes')
 
 
+# Todo: Test extinction handling
 class BandFits(TestCase):
     """Tests for the ``run_band_fits`` function"""
 
@@ -156,7 +138,6 @@ class BandFits(TestCase):
         cls.default_args = dict(
             obj_id='dummy_id',
             data=cls.data,
-            vparams=['amplitude', 'x1', 'c'],
             fit_func=sncosmo.fit_lc,
             priors_hs={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
             priors_bg={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
@@ -173,30 +154,38 @@ class BandFits(TestCase):
         expected_bands = 2 * (list(set(self.data['band'])) + ['all'])
         self.assertCountEqual(expected_bands, self.returned['band'])
 
-    def test_unconstrained_param(self):
-        """Test an error is raised for missing values in priors"""
+    def test_correct_varied_parameters(self):
+        """Test the correct number of parameters are varied"""
 
-        # Missing param for hsiao_x1 model
-        missing_hs_t0 = deepcopy(self.default_args)
-        del missing_hs_t0['priors_hs']['t0']
-        self.assertRaises(
-            RuntimeError, classification.run_band_fits, **missing_hs_t0)
+        returned_df = self.returned.to_pandas()
+        returned_df.set_index(['source', 'band'], inplace=True)
 
-        # Missing param for sn91bg model
-        missing_bg_t0 = deepcopy(self.default_args)
-        del missing_bg_t0['priors_bg']['t0']
-        self.assertRaises(
-            RuntimeError, classification.run_band_fits, **missing_bg_t0)
+        # Get the number of fitted parameters used by both models
+        # for all bands and individuals bands
+        hsiao_all = returned_df.loc['hsiao_x1', 'all']['vparams']
+        hsiao_r = returned_df.loc['hsiao_x1', 'sdssr']['vparams']
+        sn91bg_all = returned_df.loc['sn91bg', 'all']['vparams']
+        sn91bg_r = returned_df.loc['sn91bg', 'sdssr']['vparams']
+
+        # The hsiao_x1 model has parameters z, t0, x0, and x1
+        # z given in prior -> should be fixed
+        self.assertEqual('t0,amplitude,x1', hsiao_all)
+
+        # z and t0 should always be fixed for band fits
+        self.assertEqual('amplitude,x1', hsiao_r)
+
+        # The hsiao_x1 model has parameters z, t0, x0, x1, and c
+        self.assertEqual('t0,amplitude,x1,c', sn91bg_all)
+        self.assertEqual('amplitude,x1,c', sn91bg_r)
 
 
 # Todo test redshift dependence
 class ClassificationCoords(TestCase):
     """Tests for the ``classify_targets`` function"""
 
-    expected_input_columns = ['obj_id', 'source', 'band', 'chisq', 'ndof', 'z']
-
-    def test_coordinate_calculation(self):
-        """Test correct coordinates are returned for the given input data"""
+    @classmethod
+    def setUpClass(cls):
+        """Define some moke data for testing"""
 
         h_chisq_u, h_dof_u = 10, 1
         h_chisq_g, h_dof_g = 20, 1
@@ -218,24 +207,41 @@ class ClassificationCoords(TestCase):
                 - ((b_chisq_i + b_chisq_z) / (b_dof_i + b_dof_z))
         )
 
-        test_data = Table(names=self.expected_input_columns, rows=[
-            ['dummy_id', 'hsiao_x1', 'all', 0, 0, 0],
-            ['dummy_id', 'hsiao_x1', 'sdssu', h_chisq_u, h_dof_u, 0],
-            ['dummy_id', 'hsiao_x1', 'sdssg', h_chisq_g, h_dof_g, 0],
-            ['dummy_id', 'hsiao_x1', 'sdssi', h_chisq_i, h_dof_i, 0],
-            ['dummy_id', 'hsiao_x1', 'sdssz', h_chisq_z, h_dof_z, 0],
+        cls.test_data = Table(
+            names=['obj_id', 'source', 'band', 'chisq', 'ndof', 'z',
+                   'message'],
+            dtype=['U10', 'U10', 'U10', float, float, float, 'U10'],
+            rows=[
+                ['dummy_id', 'hsiao_x1', 'all', 0, 0, 0, ''],
+                ['dummy_id', 'hsiao_x1', 'sdssu', h_chisq_u, h_dof_u, 0, ''],
+                ['dummy_id', 'hsiao_x1', 'sdssg', h_chisq_g, h_dof_g, 0, ''],
+                ['dummy_id', 'hsiao_x1', 'sdssi', h_chisq_i, h_dof_i, 0, ''],
+                ['dummy_id', 'hsiao_x1', 'sdssz', h_chisq_z, h_dof_z, 0, ''],
 
-            ['dummy_id', 'sn91bg', 'sdssu', b_chisq_u, b_dof_u, 0],
-            ['dummy_id', 'sn91bg', 'sdssg', b_chisq_g, b_dof_g, 0],
-            ['dummy_id', 'sn91bg', 'sdssi', b_chisq_i, b_dof_i, 0],
-            ['dummy_id', 'sn91bg', 'sdssz', b_chisq_z, b_dof_z, 0],
-        ])
+                ['dummy_id', 'sn91bg', 'sdssu', b_chisq_u, b_dof_u, 0, ''],
+                ['dummy_id', 'sn91bg', 'sdssg', b_chisq_g, b_dof_g, 0, ''],
+                ['dummy_id', 'sn91bg', 'sdssi', b_chisq_i, b_dof_i, 0, ''],
+                ['dummy_id', 'sn91bg', 'sdssz', b_chisq_z, b_dof_z, 0, ''],
+            ]
+        )
 
-        test_data.meta['band_names'] = ['sdssu', 'sdssg', 'sdssi', 'sdssz']
-        test_data.meta['lambda_eff'] = \
+        cls.test_data.meta['band_names'] = ['sdssu', 'sdssg', 'sdssi', 'sdssz']
+        cls.test_data.meta['lambda_eff'] = \
             [sncosmo.get_bandpass(b).wave_eff for b in
-             test_data.meta['band_names']]
+             cls.test_data.meta['band_names']]
 
-        expected_row = ['dummy_id', expected_x, expected_y]
+        cls.expected_row = ['dummy_id', expected_x, expected_y]
+
+    def test_coordinate_calculation(self):
+        """Test correct coordinates are returned for the given input data"""
+
+        class_coordinates = classification.classify_targets(self.test_data)
+        self.assertListEqual(list(class_coordinates[0]), self.expected_row)
+
+    def test_failed_fits(self):
+        """Test failed fits are ignored"""
+
+        test_data = self.test_data.copy()
+        test_data[0]['message'] = 'Failed'
         class_coordinates = classification.classify_targets(test_data)
-        self.assertListEqual(list(class_coordinates[0]), expected_row)
+        self.assertEqual(0, len(class_coordinates))

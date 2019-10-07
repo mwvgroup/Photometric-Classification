@@ -6,6 +6,7 @@ determines the corresponding fitting coordinates.
 """
 
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 import sncosmo
@@ -13,6 +14,8 @@ from astropy.table import Table, vstack
 from matplotlib import pyplot
 
 from . import utils
+
+DUST = sncosmo.F99Dust()
 
 
 def create_empty_table(parameters, **kwargs):
@@ -24,6 +27,7 @@ def create_empty_table(parameters, **kwargs):
         - source
         - pre_max
         - post_max
+        - num_params
         - *parameters
         - *parameters + _err
         - chisq
@@ -41,12 +45,12 @@ def create_empty_table(parameters, **kwargs):
     """
 
     # Specify column names
-    names = ['obj_id', 'band', 'source', 'pre_max', 'post_max']
+    names = ['obj_id', 'band', 'source', 'pre_max', 'post_max', 'vparams']
     names += list(parameters) + [param + '_err' for param in parameters]
     names += ['chisq', 'ndof', 'b_max', 'delta_15', 'message']
 
     # Specify column data types
-    dtype = ['U20', 'U100', 'U100', int, int]
+    dtype = ['U20', 'U100', 'U100', int, int, 'U100']
     dtype += [float for _ in range(2 * len(parameters))]
     dtype += [float, float, float, float, 'U10000']
 
@@ -64,18 +68,20 @@ def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
 
     Args:
         data         (Table): The data used in the fit
+        obj_id         (str): The id of the object that was fit
         band_set       (str): The name of the band set ('all', 'blue', 'red')
         results     (Result): Fitting results returned by ``sncosmo``
         fitted_model (Model): A fitted ``sncosmo`` model
 
     Returns:
-        Fit results as a list formatted for addition to an astropy table
+        Fit results as a dictionary
     """
 
     new_row = {
         'obj_id': obj_id,
         'band': band_set,
-        'source': fitted_model.source.name
+        'source': fitted_model.source.name,
+        'vparams': ','.join(results.vparam_names)
     }
 
     # Determine number of points pre and post maximum
@@ -110,21 +116,6 @@ def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
     return new_row
 
 
-def _raise_unspecified_params(fixed_params, *priors):
-    """Raise RuntimeError if any fixed parameters are not set in a prior
-
-    Args:
-        fixed_params (iter): List of parameter names to assume as fixed
-        *priors      (dict): Dictionary of values from a prior
-    """
-
-    for prior in priors:
-        for p in fixed_params:
-            if p not in prior:
-                raise RuntimeError(
-                    f'Encountered unspecified value for {p} in prior: {prior}')
-
-
 def _plot_lc(data, result, fitted_model, show=True):
     """Plot fit results
 
@@ -144,21 +135,23 @@ def _plot_lc(data, result, fitted_model, show=True):
 
 
 def run_band_fits(
-        obj_id, data, vparams, fit_func,
+        obj_id, data, fit_func,
         priors_hs=None, priors_bg=None,
         kwargs_hs=None, kwargs_bg=None,
         show_plots=False):
     """Run light curve fits on a given target using the Hsiao and 91bg model
 
-    Fits are run using both models for all available bands and then for each
-    band individually. All parameters specified in ``vparams`` are allowed to
-    vary during all fits except for `t0` which is fixed to the value
-    determined by fitting all available bands.
+    Fits are run using both the ``hsiao_x1`` and ``sn91bg`` models for all
+    available bands and then for each band individually.
+
+    Varied parameters include ``z``, ``t0``, ``amplitude``, ``x1``, and ``c``.
+    If the ``z`` is specified in the priors for both models, it is not varied
+    in any fit. The parameters ``t0`` and ``z`` are not varied in the
+    individual band fits.
 
     Args:
         obj_id      (str): Id of the object being fitted
         data      (Table): Table of photometric data
-        vparams    (iter): Iterable of param names to fit in any of the models
         fit_func   (func): Function to use to run fits (eg. ``fit_funcs.fit_lc``)
         priors_hs  (dict): Priors to use when fitting hsiao
         priors_bg  (dict): Priors to use when fitting sn91bg
@@ -167,7 +160,7 @@ def run_band_fits(
         show_plots (bool): Plot and display each individual fit
 
     Returns:
-       Fit results and the fitted model for each model / data combination
+       A table with results each model / dataset combination
     """
 
     # Set default kwargs and protect against mutation
@@ -176,21 +169,21 @@ def run_band_fits(
     kwargs_hs = deepcopy(kwargs_hs) or dict()
     kwargs_bg = deepcopy(kwargs_bg) or dict()
 
-    # Define models for normal and 91bg SNe
-    hsiao = sncosmo.Model('hsiao_x1')
-    sn91bg = sncosmo.Model(sncosmo.get_source('sn91bg', version='hsiao_phase'))
+    # Define models for normal and 91bg SNe with host galaxy dust
+    dust_kw = dict(effects=[DUST], effect_names=['mw'], effect_frames=['obs'])
+    bg_source = sncosmo.get_source('sn91bg', version='hsiao_phase')
+    sn91bg = sncosmo.Model(bg_source, **dust_kw)
+    hsiao = sncosmo.Model('hsiao_x1', **dust_kw)
 
-    # Make sure any model parameters that are not being varied are
-    # specified in the priors
-    hsiao_params = set(hsiao.param_names)
-    hsiao_vparams = hsiao_params.intersection(vparams)
-    hsiao_fixed_params = hsiao_params - hsiao_vparams
-    _raise_unspecified_params(hsiao_fixed_params, priors_hs)
+    # Determine what parameters to vary for each model
+    # Hsiao does not have a c parameter. We don't vary mwebv
+    vparams = {'z', 't0', 'amplitude', 'x1', 'c'}
+    out_data = create_empty_table(vparams.union({'mwebv'}))
+    if 'z' in priors_bg and 'z' in priors_hs:
+        vparams -= {'z'}
 
-    sn91bg_params = set(sn91bg.param_names)
-    sn91bg_vparams = sn91bg_params.intersection(vparams)
-    sn91bg_fixed_params = sn91bg_params - sn91bg_vparams
-    _raise_unspecified_params(sn91bg_fixed_params, priors_bg)
+    hsiao_vparams = set(hsiao.param_names).intersection(vparams)
+    sn91bg_vparams = set(sn91bg.param_names).intersection(vparams)
 
     # Create iterators over the data we need to fit
     model_args = zip(
@@ -201,8 +194,6 @@ def run_band_fits(
     )
 
     # Tabulate fit results for each band
-    all_param_names = set(hsiao.param_names).union(sn91bg.param_names)
-    out_data = create_empty_table(all_param_names)
     for model, vparams, prior, kwarg in model_args:
         model.update(prior)
 
@@ -215,9 +206,7 @@ def run_band_fits(
             _plot_lc(data, result_all, fit_all)
 
         # Fix t0 during individual band fits
-        band_vparams = deepcopy(vparams)
-        if 't0' in band_vparams:
-            band_vparams -= {'t0'}
+        band_vparams = deepcopy(vparams) - {'t0', 'z'}
 
         # Fit data in individual bands
         data = data.group_by('band')
@@ -233,18 +222,19 @@ def run_band_fits(
 
 
 def tabulate_fit_results(
-        data_iter, band_names, lambda_eff, fit_func, vparams,
+        data_iter, band_names, lambda_eff, fit_func,
         config=None, out_path=None):
     """Tabulate fit results for a collection of data tables
+
+    Results already written to out_path are skipped.
 
     Args:
         data_iter  (iter): Iterable of photometric data for different SN
         band_names (list): Name of bands included in ``data_iter``
         lambda_eff (list): Effective wavelength for bands in ``band_names``
-        vparams    (list): Name of parameters to vary
         fit_func   (func): Function to use to run fits
         config     (dict): Specifies priors / kwargs for fitting each model
-        out_path    (str): Optionally cache progressive results to file
+        out_path    (str): Optionally cache results to file
 
     Returns:
        An astropy table with fit results
@@ -254,16 +244,23 @@ def tabulate_fit_results(
     config = deepcopy(config) or dict()
 
     # Add meta_data to output table meta data
-    out_table = Table(names=['obj_id', 'message'], dtype=['U20', 'U10000'])
+    if Path(out_path).exists():
+        out_table = Table.read(out_path)
+
+    else:
+        out_table = Table(names=['obj_id', 'message'], dtype=['U20', 'U10000'])
+
     out_table.meta['band_names'] = band_names
     out_table.meta['lambda_eff'] = lambda_eff
     out_table.meta['fit_func'] = fit_func.__name__
-    out_table.meta['vparams'] = vparams
     out_table.meta['out_path'] = str(out_path)
 
     for data in data_iter:
         # Get fitting priors and kwargs
         obj_id = data.meta['obj_id']
+        if obj_id in out_table['obj_id']:
+            continue
+
         salt2_prior, salt2_kwargs, sn91bg_prior, sn91bg_kwargs = \
             utils.parse_config_dict(obj_id, config)
 
@@ -271,7 +268,6 @@ def tabulate_fit_results(
             fit_results = run_band_fits(
                 obj_id=obj_id,
                 data=data,
-                vparams=vparams,
                 fit_func=fit_func,
                 priors_hs=salt2_prior,
                 priors_bg=sn91bg_prior,
@@ -300,12 +296,10 @@ def classify_targets(
         fits_table, band_names=None, lambda_eff=None, out_path=None):
     """Tabulate fitting coordinates for SNe based on their fit results
 
-    Assumed columns in ``fits_table`` include 'obj_id', 'source', 'band',
-    'chisq', and 'ndof'.  Values in the 'source' column should be either
-    'hsiao_x1' or 'sn91bg'.
-
+    See the ``create_empty_table`` function for the assumed input table format.
     If ``band_names`` or ``lambda_eff`` are not given, they are taken from
-    ``fits_table.meta``.
+    ``fits_table.meta``. Any targets having one or more fits with the string
+    'failed' in the message are skipped (case insensitive).
 
     Args:
         fits_table (Table): A table of fit results
@@ -321,16 +315,18 @@ def classify_targets(
         band_names = fits_table.meta['band_names']
         lambda_eff = fits_table.meta['lambda_eff']
 
-    # Convert input table to a DataFrame so we can leverage multi-indexing
+    # Keep only objects that don't have failed fits in any band
     fits_df = fits_table.to_pandas()
-    fits_df.set_index(['obj_id', 'source'], inplace=True)
-    fits_df.dropna(subset=['band'])
+    failed_fits = fits_df['message'].str.lower().str.contains('failed')
+    failed_ids = fits_df[failed_fits].obj_id.unique()
+    good_fits = fits_df[~fits_df.obj_id.isin(failed_ids)]
+    good_fits.set_index(['obj_id', 'source'], inplace=True)
 
     out_table = Table(names=['obj_id', 'x', 'y'], dtype=['U100', float, float])
-    for obj_id in fits_df.index.unique(level='obj_id'):
+    for obj_id in good_fits.index.unique(level='obj_id'):
 
         try:
-            hsiao_data = fits_df.loc[obj_id, 'hsiao_x1']
+            hsiao_data = good_fits.loc[obj_id, 'hsiao_x1']
             redshift = hsiao_data[hsiao_data['band'] == 'all']['z'][0]
             blue_bands, red_bands = utils.split_bands(
                 band_names, lambda_eff, redshift)
@@ -340,7 +336,7 @@ def classify_targets(
             hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue['ndof'].sum()
             hsiao_red_chisq = hsiao_red['chisq'].sum() / hsiao_red['ndof'].sum()
 
-            sn91bg_data = fits_df.loc[obj_id, 'sn91bg']
+            sn91bg_data = good_fits.loc[obj_id, 'sn91bg']
             sn91bg_blue = sn91bg_data[sn91bg_data['band'].isin(blue_bands)]
             sn91bg_red = sn91bg_data[sn91bg_data['band'].isin(red_bands)]
             sn91bg_blue_chisq = sn91bg_blue['chisq'].sum() / sn91bg_blue['ndof'].sum()

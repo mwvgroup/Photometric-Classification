@@ -63,6 +63,7 @@ templates and color law reported in Guy et al. (2010, G10). Fits were
 performed using the Doi et al. 2010 SDSS filter response curves. These are
 available online [here](http://www.ioa.s.u-tokyo.ac.jp/~doi/sdss/SDSSresponse.html).
 The following cuts were applied to the photometric data.
+
   - Only data with a photometric flag less than 1024 is used for the fit.
     A full overview of the flag values is provided in Holtzman et al. 2008.
   - Epochs earlier than 15 days or later than 45 days in the rest frame are

@@ -320,25 +320,6 @@ class TestFilterFactory(TestCase):
             filter_func(class2_table),
             "Returned False for desired classification")
 
-    def test_redshift_filtering(self):
-        """Test the returned filter function correctly filters data tables"""
-
-        class1_table, class2_table = Table(), Table()
-        class1_table.meta['classification'] = 'class1'
-        class2_table.meta['classification'] = 'class2'
-
-        class1_table.meta['redshift'] = -1
-        class2_table.meta['redshift'] = 1
-
-        filter_func = utils.classification_filter_factory(['class1', 'class2'])
-        self.assertFalse(
-            filter_func(class1_table),
-            "Returned True for undesired classification")
-
-        self.assertTrue(
-            filter_func(class2_table),
-            "Returned False for desired classification")
-
 
 class ConfigParsing(TestCase):
     """Tests for the ``parse_config_dict`` function"""

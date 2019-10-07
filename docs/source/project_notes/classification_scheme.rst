@@ -1,8 +1,17 @@
+.. _classification:
+
 Classification Scheme
 =====================
 
 We here discuss the classification we wish to apply, which is originally
-presented in `González-Gaitán et al. 2014 <https://ui.adsabs.harvard.edu/abs/2014ApJ...795..142G/abstract>`_
+presented in `González-Gaitán et al. 2014 <https://ui.adsabs.harvard.edu/abs/2014ApJ...795..142G/abstract>`_.
+
+.. important:: GG14 relies on the SiFTO light-curve fitter. We here instead apply the
+   `sncosmo`_ package. In their default setup, these two packages are very
+   different, but we intentionally implement `sncosmo` in a way that mimmicks
+   the SiFTO approach. See the :ref:`fitters` section for more details.
+
+.. _sncosmo: http://sncosmo.readthedocs.io/
 
 Background
 ----------
@@ -28,7 +37,7 @@ Sub-types of Type Ia SNe include:
 - Ca-rich SNe (Perets+ 2010, 2011b; Valenti+ 2013a; Kasliwal+ 2012)
 
 .. note:: See `Gal-Yam 2017 <https://link.springer.com/referenceworkentry/10.1007/978-3-319-21846-5_35>`_
-   for a comprehensive discussion)
+   for a comprehensive discussion.
 
 We are primarily focused on the identification of SN 1991-bg like objects
 (91bgs). These tend to be around 1.1 mag fainter and decline notably faster
@@ -57,8 +66,8 @@ targets picked from the literature, the data is primarily taken from:
 No initial cuts are applied to the data.
 
 
-The Approach
-------------
+The General Approach
+--------------------
 
 91bg's can be photometrically distinguished from normal Ia's by the morphology
 of their light-curve - particularly in then redder bands (as described above).
@@ -102,19 +111,18 @@ and a chi-squared for all bands could be used. Although this works, it does not
 work as well since there may be some normal SNe with lower stretch or redder
 colors. It is also possible to use a simple cut on the fitted color and/or
 stretch values (using either the normal or 91bg template). However, this
-sufferes from a similar problem where highly reddened, normal Ia's at low
+suffers from a similar problem where highly reddened, normal Ia's at low
 stretch would look like Ia's.
 
 Some Additional Details
 -----------------------
 
-- The normal Ia template used is the Hsiao+ 2007 template
+- The normal Ia template used in GG14 is the Hsiao+ 2007 template
 - The 91bg template is the Nugent+ 2002 template
 - Data cuts were implemented as follows:
+
   1. Exclude targets without observations in at least two filters, each with
      at least one data point between -15 and 0 days and one between 0 and 25 days.
   2. Data past 85 days was ignored
   3. If observations are available in duplicate filters (e.g. the same filter
      from different surveys) the filter with the most data points is used.
-
-
