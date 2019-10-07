@@ -1,7 +1,7 @@
 Literature Search
 =================
 
-Notes on some *potentially* relevant papers to this project.
+Notes on a few particular papers relevant to this project.
 
 Properties of 91bg-like SNe
 ---------------------------
@@ -38,19 +38,27 @@ with the most common SNe Ia (the core-normals). The lowest density regions
 would contain SNe Ia with less stable parameters. The SNe in between would be
 transition regions.
 
+(`Taubenberger 2017 <https://ui.adsabs.harvard.edu/abs/arXiv:1703.00528>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The Birth Rate of Subluminous and Overluminous Type Ia Supernovae (`meng+ 2011 <https://ui.adsabs.harvard.edu/abs/2011A%26A...525A.129M/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This paper provides an overview of peculiar SNe, and is fairly expansive.
+For our purposes here, we pull out a few useful references.
 
-(`Li+ 2010 <>`_)
-^^^^^^^^^^^^^^^^
+There is agreement in the literature that SN 1991bg-like SNe tend to be
+found in massive elliptical (S0 type) galaxies with low star-formation
+rates (:math:`~10^{−9} M_\odot yr^{−1}`; Howell, 2001; Neill+, 2009;
+González-Gaitán+, 2011). However, there is significant disagreement when it
+comes to rate of 91bg-like events. Recent rate estimates using SNe observed by
+the Lick Observatory Supernova Search (LOSS) range from 11 to 15% of the SNe
+Ia population (Ganeshalingam+ 2010, Li, Leaman+ 2011). Alternatively,
+González-Gaitán et al. (2011) and Silverman et al. (2012) estimated 91bg-like
+SNe make up a mor modest 6 to 9%. However, González-Gaitán et al. (2011)
+does note that their estimates increase dramatically with the inclusion
+of transitional 86G-like SNe.
+
 
 Evidence for a Spectroscopic Sequence among Type Ia Supernovae  (`Nugent+ 1995 <https://ui.adsabs.harvard.edu/abs/1995ApJ...455L.147N/abstract>`_)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Determining the Type, Redshift, and Age of a Supernova Spectrum  (`Blondin+ <https://ui.adsabs.harvard.edu/abs/2007ApJ...666.1024B/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 
 SNe Classification
 ------------------
@@ -193,5 +201,3 @@ Spectral properties of type Ia supernovae up to z ∼ 0.3 (`Nordin+ 2011a <https
 
 Evidence For A Correlation Between The Si Ii Λ4000 Width And Type Ia Supernova Color (`Nordin+ 2011b <https://iopscience.iop.org/article/10.1088/0004-637X/734/1/42>`_)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
