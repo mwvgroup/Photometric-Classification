@@ -3,14 +3,63 @@ Literature Search
 
 Notes on some *potentially* relevant papers to this project.
 
-SN1991bg properties and peculiar classification
------------------------------------------------
+Properties of 91bg-like SNe
+---------------------------
 
 Comparative Analysis of Peculiar Type Ia 1991bg-like Supernovae Spectra (`Doull+ 2011 <https://ui.adsabs.harvard.edu/abs/2011PASP..123..765D/abstract>`_)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. note:: **TLDR:** Several 91bg-like spectra are fit with SYNOW and common
+   ions are identified.
+
+Several 91bg-like spectra are selected according to the Branch 2006 sub-typing
+method and are fit with the SYNOW spectral fitter. These SNe have an unusually
+deep and wide absorption around 4200 A and very strong Si II at 5972 A. Nine
+Ions fit most of the observed features well at all epochs: O I, Na I, Mg II,
+Si II, S II, Ca II, Ti II, Cr II, and Fe II. At early times Ca I also seems
+to play a role.
+
+The 4200 A absorption feature is well fit by a combination of Ti II and Mg II.
+This is indicative of a cooler temperature. As the spectra evolve to around
+20 days, the absorptions and emissions become more extreme, and the
+photosphere velocity begins to decrees. For phases beyond this, assumptions
+of the SYNOW fitter begin to play a noticeable effect.
+
+Some of the spectral diversity may be due to differences in viewing angle on
+an asymmetric explosion (see Maeda+ 2010). The spectral similarities indicate
+SNe are a continuous distribution and it is possible the heterogeneity of SNe
+Ia is not due to fundamental differences in the underlying physical mechanism.
+Instead, there may be a set of primary, stable parameters for the explosion
+followed by secondary sets of slightly less stable parameters.
+
+This explanation would explain the structure we see in Branch style W-W plots.
+The most stable parameters would result in the highest density regions
+with the most common SNe Ia (the core-normals). The lowest density regions
+would contain SNe Ia with less stable parameters. The SNe in between would be
+transition regions.
+
+
+The Birth Rate of Subluminous and Overluminous Type Ia Supernovae (`meng+ 2011 <https://ui.adsabs.harvard.edu/abs/2011A%26A...525A.129M/abstract>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+(`Li+ 2010 <>`_)
+^^^^^^^^^^^^^^^^
+
+Evidence for a Spectroscopic Sequence among Type Ia Supernovae  (`Nugent+ 1995 <https://ui.adsabs.harvard.edu/abs/1995ApJ...455L.147N/abstract>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Determining the Type, Redshift, and Age of a Supernova Spectrum  (`Blondin+ <https://ui.adsabs.harvard.edu/abs/2007ApJ...666.1024B/abstract>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+SNe Classification
+------------------
+
 Quantitative Classification of Type I Supernovae Using Spectroscopic Features at Maximum Brightness (`Fengwu+ 2006 <https://ui.adsabs.harvard.edu/abs/2017arXiv170702543S/abstract>`_)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note:: **TLDR:** A quantitative definition of what feature strengths
+   indicate a Ia, Ib, and Ic.
 
 The evolution of SNe classification is based on unquantified spectroscopic
 qualities near peak luminosity. As a quick recap on the evolution of Type I
@@ -62,7 +111,7 @@ small enough, and the inspection duration is quick enough, that the
 introduction of human bias is negligible so long as only one person is used.
 
 Non-intrinsic features that overlap with the features we are interested in are
-replaced with a psedo continuum (linear interpolation) between the
+replaced with a pseudo continuum (linear interpolation) between the
 contaminating feature's start and end points. Since the paper is interesting
 in feature depth and not width, the effects of this de-resolution are negligible.
 
@@ -90,28 +139,26 @@ populations are entirely separated by a line near :math:`r=1`.
 The concluded classification criteria is as follows:
 
  1. SNe Ia (including normal Ia, Ia-1991bg and Ia-1999aa): a(6150 A) > 0.35
- 2. SNe Ib: a(6150 A) > 0.35 and a(6150) / a(7774) > 1
+ 2. SNe Ib: a(6150 A) < 0.35 and a(6150) / a(7774) > 1
  3. SNe Ic (except for Ic-BL): a(6150)<0.35 and a(6150) / a(7774) < 1
 
 
-The Birth Rate of Subluminous and Overluminous Type Ia Supernovae (`meng+ 2011 <https://ui.adsabs.harvard.edu/abs/2011A%26A...525A.129M/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Comparative Direct Analysis of Type Ia Supernova Spectra II. Maximum Light (`Branch+ 2006 <https://ui.adsabs.harvard.edu/abs/2006PASP..118..560B/abstract>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Comparative Direct Analysis of Type Ia Supernova Spectra. II. Maximum Light (`Branch+ 2006 <https://ui.adsabs.harvard.edu/abs/2006PASP..118..560B/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. note:: **TLDR:** SNe Ia are subclassed into shallow silicon, core-normal,
+   broad line, and cool groups based on the strength 5750 A vs 6100 A.
 
-This paper identifies classifications of SNe Ia using spectrograph observations
-taken within three days of maximum (the time cutoff is chosen such that
-the spectral evolution will be minimal while ensuring there are a sufficient
-number of targets to be scientifically interesting). To simplify the process
-of feature comparison, spectra are first tilted by multiplying the flux by
-:math:`\lambda^\alpha` where :math:`\alpha` is chosen such that the peak
-flux at 4600 and 6300 A are equal. The Equivalent widths are then plotted for
-the feature at 5750 A vs the feature at 6100 A. After applying a nearest
-neighbor algorithm, four groups emerged: shallow silicon, core-normal,
+This paper identifies classifications of SNe Ia using the width of the 5750
+and 6100 features (usually attributed to Si ii at 5972 and 6355). To simplify
+the process of feature comparison, spectra are first tilted by multiplying
+the flux by :math:`\lambda^\alpha` where :math:`\alpha` is chosen such that
+the peak flux near 4600 and 6300 A are equal. The Equivalent widths are then
+plotted for the feature at 5750 A vs the feature at 6100 A. After applying a
+nearest neighbor algorithm, four groups emerged: shallow silicon, core-normal,
 broad line, and cool (which includes SN 1991bg).
 
-broad-line SNe Ia have absorption features at 6100 A absorptions that are
+Broad-line SNe Ia have absorption features at 6100 A absorptions that are
 broader and deeper than core-normal SNe Ia. However, SNe in this category do
 not appear to follow a simple one-dimensional sequence based on their distance
 from the core-normal population.
@@ -122,23 +169,18 @@ The primary reason for the spectroscopic differences seems to be the lower
 temperature, as indicated by low temperature ion signatures (e.g. Ti).
 Otherwise, they have the same ions evident in their spectra, just at very
 different optical depths. This aligns with their lower temperatures since "as
-noted by Hatano et al. (2002) and Ho flich et al. (2002), there is a
+noted by Hatano et al. (2002) and Ho Flich et al. (2002), there is a
 temperature threshold below which, owing to abrupt changes in key ionization
 ratios, line optical depths change abruptly (Hatano et al. 1999)."
 
 The core-normal subgroup have a very high degree of similarity, suggesting
 a standard, common physical mechanism involving no large inhomogeneities near
-the characteristic photospheric velocity of 12,000 km/s.
+the characteristic photosphere velocity of 12,000 km/s.
 
 
-A high peculiarity rate for Type Ia SNe (`Li+ 1999 <https://ui.adsabs.harvard.edu/abs/2000AIPC..522...91L/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PELICAN: deeP architecture for the LIght Curve ANalysis (`Pasquet+ 2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...627A..21P/abstract>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Evidence for a Spectroscopic Sequence among Type 1a Supernovae  (`Nugent+ 1995 <https://ui.adsabs.harvard.edu/abs/1995ApJ...455L.147N/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Determining the Type, Redshift, and Age of a Supernova Spectrum  (`Blondin+ <https://ui.adsabs.harvard.edu/abs/2007ApJ...666.1024B/abstract>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Previous works using SDSS
 -------------------------
@@ -147,11 +189,9 @@ Line Profiles of Intermediate Redshift Type Ia Supernovae (`Konishi+ 2011 <https
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Spectral properties of type Ia supernovae up to z ∼ 0.3 (`Nordin+ 2011a <https://ui.adsabs.harvard.edu/abs/2011A%26A...526A.119N/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Evidence For A Correlation Between The Si Ii Λ4000 Width And Type Ia Supernova Color (`Nordin+ 2011b <https://iopscience.iop.org/article/10.1088/0004-637X/734/1/42>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-PELICAN: deeP architecturE for the LIght Curve ANalysis (Pasquet+ 2019 `<https://ui.adsabs.harvard.edu/abs/2019A%26A...627A..21P/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
