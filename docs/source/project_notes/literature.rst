@@ -139,3 +139,19 @@ Evidence for a Spectroscopic Sequence among Type 1a Supernovae  (`Nugent+ 1995 <
 
 Determining the Type, Redshift, and Age of a Supernova Spectrum  (`Blondin+ <https://ui.adsabs.harvard.edu/abs/2007ApJ...666.1024B/abstract>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Previous works using SDSS
+-------------------------
+
+Line Profiles of Intermediate Redshift Type Ia Supernovae (`Konishi+ 2011 <https://ui.adsabs.harvard.edu/abs/2011arXiv1103.2497K/abstract>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Spectral properties of type Ia supernovae up to z ∼ 0.3 (`Nordin+ 2011a <https://ui.adsabs.harvard.edu/abs/2011A%26A...526A.119N/abstract>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Evidence For A Correlation Between The Si Ii Λ4000 Width And Type Ia Supernova Color (`Nordin+ 2011b <https://iopscience.iop.org/article/10.1088/0004-637X/734/1/42>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+PELICAN: deeP architecturE for the LIght Curve ANalysis (Pasquet+ 2019 `<https://ui.adsabs.harvard.edu/abs/2019A%26A...627A..21P/abstract>`_)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
