@@ -24,6 +24,8 @@ provided below. Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 |  compare_fits_to_published.ipynb   | Compares fit results from our pipeline against published values.             |
 +------------------------------------+------------------------------------------------------------------------------+
+| creating_config_files.ipynb        | Creates config files for CSP, DES, and SDSS.                                 |
++------------------------------------+------------------------------------------------------------------------------+
 |  fit_inspection.ipynb              | Inspects fit results for individual light curves.                            |
 +------------------------------------+------------------------------------------------------------------------------+
 |  inspecting_91bg_model.ipynb       | Demonstrates the properties of the 91bg model we use for classification.     |

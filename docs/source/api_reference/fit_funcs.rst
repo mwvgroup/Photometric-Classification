@@ -1,3 +1,5 @@
+.. _fit-functions:
+
 phot_class.fit_funcs
 ====================
 

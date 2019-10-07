@@ -1,0 +1,5 @@
+This directory contains some residual work that was performed when porting
+the sn91bg model from it's original format (intended for use by the
+SNANA Fortran package) into python. The intent was to compare the original
+and ported models to ensure they were consistent. What is contained in this
+directory is meant for reference only.
