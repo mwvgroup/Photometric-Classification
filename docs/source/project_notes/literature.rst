@@ -60,6 +60,16 @@ of transitional 86G-like SNe.
 Evidence for a Spectroscopic Sequence among Type Ia Supernovae  (`Nugent+ 1995 <https://ui.adsabs.harvard.edu/abs/1995ApJ...455L.147N/abstract>`_)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. note:: **TLDR:** The continuity of photometric properties in SNe Ia is
+   equally present in spectroscopic observations.
+
+Although heterogeneous, SNe tend to follow a continuous distribution of
+photometric properties instead of falling into well defined subgroups.
+Using a sample of sixe SNe, it is shown that this continuity is equally well
+represented in spectroscopic observations. Synthetic spectra also indicate
+that these differences are primarily due to variations in temperature,
+which is driven by the :math:`^{56}\text{Ni}` mass.
+
 SNe Classification
 ------------------
 
