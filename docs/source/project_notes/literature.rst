@@ -212,12 +212,3 @@ ratios, line optical depths change abruptly (Hatano+ 1999)."
 The core-normal subgroup have a very high degree of similarity, suggesting
 a standard, common physical mechanism involving no large inhomogeneities near
 the characteristic photosphere velocity of 12,000 km/s.
-
-Previous works using SDSS
--------------------------
-
-Spectral properties of type Ia supernovae up to z ∼ 0.3 (`Nordin+ 2011a <https://ui.adsabs.harvard.edu/abs/2011A%26A...526A.119N/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Evidence For A Correlation Between The Si Ii Λ4000 Width And Type Ia Supernova Color (`Nordin+ 2011b <https://iopscience.iop.org/article/10.1088/0004-637X/734/1/42>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
