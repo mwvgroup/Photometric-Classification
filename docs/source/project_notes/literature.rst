@@ -216,9 +216,6 @@ the characteristic photosphere velocity of 12,000 km/s.
 Previous works using SDSS
 -------------------------
 
-Line Profiles of Intermediate Redshift Type Ia Supernovae (`Konishi+ 2011 <https://ui.adsabs.harvard.edu/abs/2011arXiv1103.2497K/abstract>`_)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 Spectral properties of type Ia supernovae up to z ∼ 0.3 (`Nordin+ 2011a <https://ui.adsabs.harvard.edu/abs/2011A%26A...526A.119N/abstract>`_)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
