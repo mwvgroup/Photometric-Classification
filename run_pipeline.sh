@@ -5,35 +5,43 @@ python run_pipeline.py \
     -s des \
     -r sn3yr \
     -f simple_fit \
-    -c 'config_files/des_config_noebv.yml' \
-    -o './results/no_ext';
+    -c 'config_files/des_config_noext.yml' \
+    -o './results/band_fits/no_ext';
 
 python run_pipeline.py \
     -s des \
     -r sn3yr \
     -f simple_fit \
-    -c 'config_files/des_config.yml' \
-    -o './results/with_ext';
+    -c 'config_files/des_config_ext.yml' \
+    -o './results/band_fits/with_ext';
 
 python run_pipeline.py \
     -s des \
     -r sn3yr \
     -f simple_fit \
     -m collective \
-    -c 'config_files/des_config.yml' \
-    -o './results/with_ext_coll';
+    -c 'config_files/des_config_ext.yml' \
+    -o './results/collective_fits/with_ext';
 
 # Run SDSS Sako 2018
 python run_pipeline.py \
     -s sdss \
     -r sako18 \
     -f simple_fit \
-    -c 'config_files/sdss_config_noebv.yml' \
-    -o './results/no_ext';
+    -c 'config_files/sdss_config_noext.yml' \
+    -o './results/band_fits/no_ext';
 
 python run_pipeline.py \
     -s sdss \
     -r sako18 \
     -f simple_fit \
-    -c 'config_files/sdss_config.yml' \
-    -o './results/with_ext';
+    -c 'config_files/sdss_config_ext.yml' \
+    -o './results/band_fits/with_ext';
+
+python run_pipeline.py \
+    -s sdss \
+    -r sako18 \
+    -f simple_fit \
+    -m collective \
+    -c 'config_files/sdss_config_ext.yml' \
+    -o './results/collective_fits/with_ext';
