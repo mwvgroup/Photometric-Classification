@@ -144,7 +144,7 @@ We provide summaries for key files in the project repository::
    :caption: API Reference:
 
    api_reference/overview
-   api_reference/fit_funcs
+   api_reference/fit_func_wraps
    api_reference/classification
    api_reference/fom
    api_reference/utils

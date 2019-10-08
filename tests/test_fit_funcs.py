@@ -9,7 +9,7 @@ from unittest import TestCase
 import numpy as np
 import sncosmo
 
-from phot_class import fit_funcs
+from phot_class import fit_func_wraps
 
 
 class BaseTestingClass(TestCase):
@@ -84,7 +84,7 @@ class SimpleFit(BaseTestingClass):
 
     @staticmethod
     def fit_func(*a, **kw):
-        return fit_funcs.simple_fit(*a, **kw)
+        return fit_func_wraps.simple_fit(*a, **kw)
 
     def test_mutation(self):
         """Test arguments are not mutated"""
@@ -102,7 +102,7 @@ class NestFit(BaseTestingClass):
 
     @staticmethod
     def fit_func(*a, **kw):
-        return fit_funcs.nest_fit(*a, **kw)
+        return fit_func_wraps.nest_fit(*a, **kw)
 
     def test_mutation(self):
         """Test arguments are not mutated"""
@@ -120,7 +120,7 @@ class MCMCFit(BaseTestingClass):
 
     @staticmethod
     def fit_func(*a, **kw):
-        return fit_funcs.mcmc_fit(*a, **kw)
+        return fit_func_wraps.mcmc_fit(*a, **kw)
 
     def test_mutation(self):
         """Test arguments are not mutated"""
@@ -138,7 +138,7 @@ class NestedSimpleFit(BaseTestingClass):
 
     @staticmethod
     def fit_func(*a, **kw):
-        return fit_funcs.nested_simple_fit(*a, **kw)
+        return fit_func_wraps.nested_simple_fit(*a, **kw)
 
     def test_mutation(self):
         """Test arguments are not mutated"""
@@ -151,7 +151,7 @@ class NestedMCMCFit(BaseTestingClass):
 
     @staticmethod
     def fit_func(*a, **kw):
-        return fit_funcs.nested_mcmc_fit(*a, **kw)
+        return fit_func_wraps.nested_mcmc_fit(*a, **kw)
 
     def test_mutation(self):
         """Test arguments are not mutated"""

@@ -82,7 +82,7 @@ def run(cli_args):
     data_iter = get_data_iter(data_module)
     band_names = data_module.band_names
     lambda_eff = data_module.lambda_effective
-    fit_func = getattr(fit_funcs, cli_args.fit_func)
+    fit_func = getattr(fit_func_wraps, cli_args.fit_func)
 
     # Read in priors and fitting arguments from file
     config = load_yaml(cli_args.config) if cli_args.config else None
@@ -142,7 +142,7 @@ def create_cli_parser():
 # Parse command line input
 if __name__ == '__main__':
     from phot_class import classification
-    from phot_class import fit_funcs
+    from phot_class import fit_func_wraps
     from phot_class import models
     from phot_class import utils
 

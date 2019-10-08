@@ -12,12 +12,12 @@ Usage Example
 >>> import sncosmo
 >>> from matplotlib import pyplot as plt
 >>>
->>> from phot_class import fit_funcs
+>>> from phot_class import fit_func_wraps
 >>>
 >>> model = sncosmo.Model('salt2')
 >>> data = sncosmo.load_example_data()
 >>>
->>> result, fitted_model = fit_funcs.simple_fit(
+>>> result, fitted_model = fit_func_wraps.simple_fit(
 >>>     data, model,
 >>>     ['z', 't0', 'x0', 'x1', 'c'],  # parameters of model to vary
 >>>     bounds={'z':(0.3, 0.7)})  # bounds on parameters (if any)
