@@ -244,6 +244,7 @@ def run_band_fits(
 
 def run_collective_fits(
         obj_id, data, fit_func,
+        band_names, lambda_eff,
         priors_hs=None, priors_bg=None,
         kwargs_hs=None, kwargs_bg=None,
         show_plots=False):

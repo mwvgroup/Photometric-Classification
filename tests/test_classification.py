@@ -3,6 +3,7 @@
 
 """Tests for the ``classification`` module."""
 
+from functools import partial
 from unittest import TestCase
 
 import sncosmo
@@ -21,7 +22,8 @@ class GetFittingMethod(TestCase):
         self.assertEqual(fitting.run_band_fits, band_return)
 
         collective_return = classification._get_fitting_func('collective')
-        self.assertEqual(fitting.run_collective_fits, collective_return)
+        self.assertIsInstance(collective_return, partial)
+        self.assertEqual(fitting.run_collective_fits, collective_return.func)
 
     def test_case_insensitive(self):
         """Test the function is insensitive to argument case"""

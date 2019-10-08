@@ -2,12 +2,14 @@ from copy import deepcopy
 from pathlib import Path
 
 from astropy.table import Table, vstack
+import numpy as np
 
 from . import fitting
+from functools import partial
 from . import utils
 
 
-def _get_fitting_func(fitting_method):
+def _get_fitting_func(fitting_method, band_names=None, lambda_eff=None):
     """Get the correct fitting function to match the described fittingmethod
 
     Args:
@@ -21,7 +23,9 @@ def _get_fitting_func(fitting_method):
         return fitting.run_band_fits
 
     elif fitting_method.lower() == 'collective':
-        return fitting.run_collective_fits
+        return partial(fitting.run_collective_fits,
+                       band_names=band_names,
+                       lambda_eff=lambda_eff)
 
     else:
         raise ValueError(
@@ -50,7 +54,7 @@ def tabulate_fit_results(
 
     # Set default kwargs
     config = deepcopy(config) or dict()
-    fitting_func = _get_fitting_func(fitting_method)
+    fitting_func = _get_fitting_func(fitting_method, band_names, lambda_eff)
 
     # Add meta_data to output table meta data
     if Path(out_path).exists():
@@ -141,8 +145,8 @@ def classify_targets(
             blue_bands, red_bands = utils.split_bands(
                 band_names, lambda_eff, redshift)
 
-            blue_bands += ['blue']
-            red_bands += ['red']
+            blue_bands = np.concatenate([blue_bands, ['blue']])
+            red_bands = np.concatenate([red_bands, ['red']])
 
             hsiao_blue = hsiao_data[hsiao_data['band'].isin(blue_bands)]
             hsiao_red = hsiao_data[hsiao_data['band'].isin(red_bands)]

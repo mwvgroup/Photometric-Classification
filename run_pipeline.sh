@@ -15,6 +15,14 @@ python run_pipeline.py \
     -c 'config_files/des_config.yml' \
     -o './results/with_ext';
 
+python run_pipeline.py \
+    -s des \
+    -r sn3yr \
+    -f simple_fit \
+    -m collective \
+    -c 'config_files/des_config.yml' \
+    -o './results/with_ext_coll';
+
 # Run SDSS Sako 2018
 python run_pipeline.py \
     -s sdss \
