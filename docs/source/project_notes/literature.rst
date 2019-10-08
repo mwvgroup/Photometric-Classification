@@ -48,12 +48,12 @@ For our purposes here, we pull out a few useful references.
 There is agreement in the literature that SN 1991bg-like SNe tend to be
 found in massive elliptical (S0 type) galaxies with low star-formation
 rates (:math:`~10^{−9} M_\odot yr^{−1}`; Howell, 2001; Neill+, 2009;
-González-Gaitán+, 2011). However, there is significant disagreement when it
+González-Gaitán+, 2011). However, there is significant disagreement when it
 comes to rate of 91bg-like events. Recent rate estimates using SNe observed by
 the Lick Observatory Supernova Search (LOSS) range from 11 to 15% of the SNe
 Ia population (Ganeshalingam+ 2010, Li, Leaman+ 2011). Alternatively,
-González-Gaitán+ (2011) and Silverman+ (2012) estimated 91bg-like
-SNe make up a mor modest 6 to 9%. However, González-Gaitán+ (2011)
+González-Gaitán+ (2011) and Silverman+ (2012) estimated 91bg-like
+SNe make up a mor modest 6 to 9%. However, González-Gaitán+ (2011)
 does note that their estimates increase dramatically with the inclusion
 of transitional 86G-like SNe.
 
@@ -81,7 +81,7 @@ A list of machine learning classifiers:
  - Karpenka+ 2013
  - Varughese+ 2015
  - Lochner+ 2016
- - Möller+ 2016
+ - Möller+ 2016
  - Dai+ 2018
  - muthukrishna+ 2019
  - `Pasquet+ 2019 <https://ui.adsabs.harvard.edu/abs/2019A%26A...627A..21P/abstract>`_
