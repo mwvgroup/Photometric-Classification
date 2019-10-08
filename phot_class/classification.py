@@ -3,11 +3,34 @@ from pathlib import Path
 
 from astropy.table import Table, vstack
 
+from . import fitting
 from . import utils
 
 
+def _get_fitting_func(fitting_method):
+    """Get the correct fitting function to match the described fittingmethod
+
+    Args:
+        fitting_method (str): Desired fitting method ('band' or 'collective')
+
+    Returns:
+        A callable from the ``fitting`` module
+    """
+
+    if fitting_method.lower() == 'band':
+        return fitting.run_band_fits
+
+    elif fitting_method.lower() == 'collective':
+        return fitting.run_collective_fits
+
+    else:
+        raise ValueError(
+            f"Fitting method should be 'band' "
+            f"or 'collective' not {fitting_method}")
+
+
 def tabulate_fit_results(
-        data_iter, band_names, lambda_eff, fit_func,
+        data_iter, band_names, lambda_eff, fit_func, fitting_method='band',
         config=None, out_path=None):
     """Tabulate fit results for a collection of data tables
 
@@ -27,6 +50,7 @@ def tabulate_fit_results(
 
     # Set default kwargs
     config = deepcopy(config) or dict()
+    fitting_func = _get_fitting_func(fitting_method)
 
     # Add meta_data to output table meta data
     if Path(out_path).exists():
@@ -50,7 +74,7 @@ def tabulate_fit_results(
             utils.parse_config_dict(obj_id, config)
 
         try:
-            fit_results = run_band_fits(
+            fit_results = fitting_func(
                 obj_id=obj_id,
                 data=data,
                 fit_func=fit_func,
@@ -77,6 +101,7 @@ def tabulate_fit_results(
     return out_table
 
 
+# noinspection PyPep8
 def classify_targets(
         fits_table, band_names=None, lambda_eff=None, out_path=None):
     """Tabulate fitting coordinates for SNe based on their fit results
@@ -116,20 +141,19 @@ def classify_targets(
             blue_bands, red_bands = utils.split_bands(
                 band_names, lambda_eff, redshift)
 
+            blue_bands += ['blue']
+            red_bands += ['red']
+
             hsiao_blue = hsiao_data[hsiao_data['band'].isin(blue_bands)]
             hsiao_red = hsiao_data[hsiao_data['band'].isin(red_bands)]
-            hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue[
-                'ndof'].sum()
-            hsiao_red_chisq = hsiao_red['chisq'].sum() / hsiao_red[
-                'ndof'].sum()
+            hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue['ndof'].sum()
+            hsiao_red_chisq = hsiao_red['chisq'].sum() / hsiao_red['ndof'].sum()
 
             sn91bg_data = good_fits.loc[obj_id, 'sn91bg']
             sn91bg_blue = sn91bg_data[sn91bg_data['band'].isin(blue_bands)]
             sn91bg_red = sn91bg_data[sn91bg_data['band'].isin(red_bands)]
-            sn91bg_blue_chisq = sn91bg_blue['chisq'].sum() / sn91bg_blue[
-                'ndof'].sum()
-            sn91bg_red_chisq = sn91bg_red['chisq'].sum() / sn91bg_red[
-                'ndof'].sum()
+            sn91bg_blue_chisq = sn91bg_blue['chisq'].sum() / sn91bg_blue['ndof'].sum()
+            sn91bg_red_chisq = sn91bg_red['chisq'].sum() / sn91bg_red['ndof'].sum()
 
         except KeyError:
             continue

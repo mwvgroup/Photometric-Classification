@@ -8,7 +8,33 @@ from unittest import TestCase
 import sncosmo
 from astropy.table import Table
 
-from phot_class import classification
+from phot_class import classification, fitting
+
+
+class GetFittingMethod(TestCase):
+    """Tests for the ``_get_fitting_func`` function"""
+
+    def test_function_matches_method(self):
+        """Test the correct function is returned for given args"""
+
+        band_return = classification._get_fitting_func('band')
+        self.assertEqual(fitting.run_band_fits, band_return)
+
+        collective_return = classification._get_fitting_func('collective')
+        self.assertEqual(fitting.run_collective_fits, collective_return)
+
+    def test_case_insensitive(self):
+        """Test the function is insensitive to argument case"""
+
+        upper_return = classification._get_fitting_func('BAND')
+        lower_return = classification._get_fitting_func('band')
+        self.assertEqual(lower_return, upper_return)
+
+    def test_unknown_method(self):
+        """Test an error is raise for unknown args"""
+
+        self.assertRaises(
+            ValueError, classification._get_fitting_func, 'dummy_arg')
 
 
 # Todo test redshift dependence

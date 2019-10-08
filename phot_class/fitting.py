@@ -299,40 +299,46 @@ def run_collective_fits(
     return out_data
 
 
-def run_single_model_fits(
-        obj_id, data, model, fit_prior, fit_kwargs, show_plots=False):
-    """Run light curve fits on a given target using a single model
-
-    Args:
-        obj_id      (str): Id of the object being fitted
-        data      (Table): Table of photometric data
-        model     (Model): The model to use while fitting
-        fit_prior  (dict): Priors to use when fitting the model
-        fit_kwargs (dict): Kwargs to use when fitting the model
-        show_plots (bool): Plot and display each individual fit
-
-    Returns:
-       Fit results and the fitted model for each model / data combination
-    """
-
-    fit_kwargs = deepcopy(fit_kwargs) if fit_kwargs else None
-    model = deepcopy(model)
-    model.update(fit_prior)
-
-    vparams = set(model.param_names) - {'mwebv'}
-    if 'z' in fit_prior:
-        vparams -= {'z'}
-
-    # Fit data using all bands
-    fit_kwargs.setdefault('warn', False)
-    results, fitted_model = sncosmo.fit_lc(data, model, vparams, **fit_kwargs)
-
-    # Format results as a Table
-    out_data = create_empty_table(model.param_names)
-    new_row = _fit_results_to_dict(data, obj_id, 'all', results, fitted_model)
-    out_data.add_row(new_row)
-
-    if show_plots:
-        _plot_lc(data, results, fitted_model)
-
-    return out_data
+# We may eventually want to make it so the pipeline can run a simple set of
+# fits on all the data with a single model. This can be done more simply
+# outside the framework of our pipeline, but if we were feeling particularly
+# froggy, then here is some reference code as a starting point
+#
+# def run_single_model_fits(
+#         obj_id, data, model, fit_prior, fit_kwargs, show_plots=False):
+#     """Run light curve fits on a given target using a single model
+#
+#     Args:
+#         obj_id      (str): Id of the object being fitted
+#         data      (Table): Table of photometric data
+#         model     (Model): The model to use while fitting
+#         fit_prior  (dict): Priors to use when fitting the model
+#         fit_kwargs (dict): Kwargs to use when fitting the model
+#         show_plots (bool): Plot and display each individual fit
+#
+#     Returns:
+#        Fit results and the fitted model for each model / data combination
+#     """
+#
+#     fit_kwargs = deepcopy(fit_kwargs) if fit_kwargs else None
+#     model = deepcopy(model)#
+#     model.update(fit_prior)
+#
+#     vparams = set(model.param_names) - {'mwebv'}
+#     if 'z' in fit_prior:
+#         vparams -= {'z'}
+#
+#     # Fit data using all bands
+#     fit_kwargs.setdefault('warn', False)
+#     results, fit_model = sncosmo.fit_lc(data, model, vparams, **fit_kwargs)
+#
+#     # Format results as a Table
+#     out_data = create_empty_table(model.param_names)
+#     new_row = _fit_results_to_dict(data, obj_id, 'all', results, fit_model)
+#     out_data.add_row(new_row)
+#
+#     if show_plots:
+#         _plot_lc(data, results, fit_model)
+#
+#     return out_data
+#
