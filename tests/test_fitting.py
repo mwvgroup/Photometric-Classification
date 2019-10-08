@@ -124,7 +124,6 @@ class PlotLc(TestCase):
         self.assertTrue(fig.get_axes(), 'Returned figure has no axes')
 
 
-# Todo: Test extinction handling
 class BandFits(TestCase):
     """Tests for the ``run_band_fits`` function"""
 
@@ -169,10 +168,65 @@ class BandFits(TestCase):
         # The hsiao_x1 model has parameters z, t0, x0, and x1
         # z given in prior -> should be fixed
         self.assertEqual('t0,amplitude,x1', hsiao_all)
+        self.assertEqual('t0,amplitude,x1,c', sn91bg_all)
 
         # z and t0 should always be fixed for band fits
         self.assertEqual('amplitude,x1', hsiao_r)
+        self.assertEqual('amplitude,x1,c', sn91bg_r)
 
-        # The hsiao_x1 model has parameters z, t0, x0, x1, and c
+
+class CollectiveFits(TestCase):
+    """Tests for the ``run_collective_fits`` function"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Define default arguments for running a successful set of fits"""
+
+        models.register_sources(force=True)
+        cls.data = sncosmo.load_example_data()
+
+        # Demo data is from sdss
+        bands = ['sdss' + b for b in 'ugriz']
+        lambda_eff = [sncosmo.get_bandpass(b).wave_eff for b in bands]
+
+        cls.default_args = dict(
+            obj_id='dummy_id',
+            data=cls.data,
+            fit_func=sncosmo.fit_lc,
+            priors_hs={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
+            priors_bg={'z': cls.data.meta['z'], 't0': cls.data.meta['t0']},
+            kwargs_hs={'bounds': {'x1': (-1, 1)}},
+            kwargs_bg={'bounds': {'x1': (0.65, 1.25), 'c': (0, 1)}},
+            band_names=bands,
+            lambda_eff=lambda_eff
+        )
+
+        cls.returned = fitting.run_collective_fits(**cls.default_args)
+
+    def test_returned_bands(self):
+        """Test the returned table has two fits per band"""
+
+        expected_bands = 2 * ['all', 'blue', 'red']
+        self.assertCountEqual(expected_bands, self.returned['band'])
+
+    def test_correct_varied_parameters(self):
+        """Test the correct number of parameters are varied"""
+
+        returned_df = self.returned.to_pandas()
+        returned_df.set_index(['source', 'band'], inplace=True)
+
+        # Get the number of fitted parameters used by both models
+        # for all bands and individuals bands
+        hsiao_all = returned_df.loc['hsiao_x1', 'all']['vparams']
+        hsiao_r = returned_df.loc['hsiao_x1', 'blue']['vparams']
+        sn91bg_all = returned_df.loc['sn91bg', 'all']['vparams']
+        sn91bg_r = returned_df.loc['sn91bg', 'red']['vparams']
+
+        # The hsiao_x1 model has parameters z, t0, x0, and x1
+        # z given in prior -> should be fixed
+        self.assertEqual('t0,amplitude,x1', hsiao_all)
         self.assertEqual('t0,amplitude,x1,c', sn91bg_all)
+
+        # z and t0 should always be fixed for red and blue fits
+        self.assertEqual('amplitude,x1', hsiao_r)
         self.assertEqual('amplitude,x1,c', sn91bg_r)
