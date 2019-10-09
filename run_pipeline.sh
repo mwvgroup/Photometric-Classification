@@ -20,6 +20,14 @@ python run_pipeline.py \
     -r sn3yr \
     -f simple_fit \
     -m collective \
+    -c 'config_files/des_config_noext.yml' \
+    -o './results/collective_fits/no_ext';
+
+python run_pipeline.py \
+    -s des \
+    -r sn3yr \
+    -f simple_fit \
+    -m collective \
     -c 'config_files/des_config_ext.yml' \
     -o './results/collective_fits/with_ext';
 
