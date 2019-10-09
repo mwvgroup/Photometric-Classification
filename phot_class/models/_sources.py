@@ -211,7 +211,9 @@ class HsiaoStretch(sncosmo.Source):
         if not (-.5 <= x1 <= .5):
             raise ValueError(f'Parameter x1 is our of range (-1, 1): x1={x1}')
 
-        self._parent.update(dict(zip(self.param_names[:-1], self.parameters[:-1])))
+        self._parent.update(
+            dict(zip(self.param_names[:-1], self.parameters[:-1]))
+        )
 
         phase = np.array(phase)
         stretched_phase = phase / (1 - x1)

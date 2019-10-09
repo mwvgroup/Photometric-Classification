@@ -132,6 +132,7 @@ def generate_lc(model, phase_range, model_params, out_dir):
              'zp': np.full(table_length, 27.5),
              'zpsys': np.full(table_length, 'ab')})
 
-        light_curve = sncosmo.realize_lcs(observations, model, [params_dict])[0]
+        light_curve = sncosmo.realize_lcs(observations, model, [params_dict])[
+            0]
         light_curve.meta.update(params_dict)
         light_curve.write(out_dir / f'sn91bg_{i}.ecsv', overwrite=True)

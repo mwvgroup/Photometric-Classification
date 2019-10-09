@@ -1,11 +1,23 @@
+#!/usr/bin/env python3.7
+# -*- coding: UTF-8 -*-
+
+"""The ``classification`` module tabulates light-curve fits for a given survey
+and determines the corresponding classification coordinates:
+
+.. math::
+
+    x \def \chi^2_{blue}(Ia) - \chi^2_{blue}(91bg)
+    y \def \chi^2_{red}(Ia) - \chi^2_{red}(91bg)
+"""
+
 from copy import deepcopy
+from functools import partial
 from pathlib import Path
 
-from astropy.table import Table, vstack
 import numpy as np
+from astropy.table import Table, vstack
 
 from . import fitting
-from functools import partial
 from . import utils
 
 
@@ -150,14 +162,18 @@ def classify_targets(
 
             hsiao_blue = hsiao_data[hsiao_data['band'].isin(blue_bands)]
             hsiao_red = hsiao_data[hsiao_data['band'].isin(red_bands)]
-            hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue['ndof'].sum()
-            hsiao_red_chisq = hsiao_red['chisq'].sum() / hsiao_red['ndof'].sum()
+            hsiao_blue_chisq = hsiao_blue['chisq'].sum() / hsiao_blue[
+                'ndof'].sum()
+            hsiao_red_chisq = hsiao_red['chisq'].sum() / hsiao_red[
+                'ndof'].sum()
 
             sn91bg_data = good_fits.loc[obj_id, 'sn91bg']
             sn91bg_blue = sn91bg_data[sn91bg_data['band'].isin(blue_bands)]
             sn91bg_red = sn91bg_data[sn91bg_data['band'].isin(red_bands)]
-            sn91bg_blue_chisq = sn91bg_blue['chisq'].sum() / sn91bg_blue['ndof'].sum()
-            sn91bg_red_chisq = sn91bg_red['chisq'].sum() / sn91bg_red['ndof'].sum()
+            sn91bg_blue_chisq = sn91bg_blue['chisq'].sum() / sn91bg_blue[
+                'ndof'].sum()
+            sn91bg_red_chisq = sn91bg_red['chisq'].sum() / sn91bg_red[
+                'ndof'].sum()
 
         except KeyError:
             continue

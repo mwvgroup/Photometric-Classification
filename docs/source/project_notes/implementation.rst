@@ -4,7 +4,7 @@ Implementation
 ==============
 
 We here discuss various implementation details related to how we fit and
-classify light-curves.
+classify light-curves. This includes the tools we use and how they are applied.
 
 
 Light-Curve Fitters
@@ -106,7 +106,7 @@ overall color law :math:`CL(\lambda)`.
 
 .. math::
 
-    F = x_0 \times [M_0(phase, \lambda) + x_1 \times M_1(phase, \lambda) +  ...] \times exp[c \times CL(\lambda)]
+    F = x_0 \times [M_0(\text{phase}, \lambda) + x_1 \times M_1(\text{phase}, \lambda) +  ...] \times \exp[c \times CL(\lambda)]
 
 Here :math:`x_i` are the components of the model, :math:`c` is a color term,
 :math:`M_0` represents the average spectral template, and the remaining
@@ -150,7 +150,7 @@ as
 
 .. math::
 
-    stretched phase = phase / (1 - x1)
+    \text{stretched phase} = \frac{\text{phase}}{1 - x1}
 
 We intrinsically bound :math:`-.5 \leq x1 \leq .5` within the model.
 
@@ -182,7 +182,13 @@ phase space at instantiation.
 Fitting and Classification
 --------------------------
 
-Our implementation of the classification method is as follows.
+We implement and compare two approaches to fitting and classifying
+light-curves. In one approach we fit each bandpass independently to mimic the
+behavior of SiFTO. In the second approach, we fit blue and red observations
+sep[eratly but as collective sets.
+
+Method 1: Band-by-Band Fitting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   0. The Milky Way extinction is determined for each target using the
      `Schlegel, Finkbeiner & Davis (1998) <https://doi.org/10.1086/305772>`_
@@ -192,11 +198,12 @@ Our implementation of the classification method is as follows.
   1. Each light curve is fit using both models and all available band passes.
      At this step ``t0``, ``amplitude``, ``x1``, and ``c`` are always varied.
      ``z`` is only varied if it is not specified by a prior (i.e. if it is
-     not available from a spectroscopic observation). Results from this fit
-     are used to determine the characteristic parameters for the given
-     light-curve (The values one might publish in a summary table).
-  2. Each bandpass is fit independently using both models. Here, ``z`` and `
-     `t0`` are fixed to the value determined when fitting all bands
+     not available from a from the data release - photometrically or
+     spectroscopically). Results from this fit are used to determine the
+     characteristic parameters for the given light-curve (The values one
+     might publish in a summary table).
+  2. Each bandpass is fit independently using both models. Here, ``z`` and
+     ``t0`` are fixed to the value determined when fitting all bands
      simultaneously.
   3. Any fits that fail are dropped from our sample.
   4. The bandpasses are separated into the rest-frame blue and red
@@ -205,3 +212,20 @@ Our implementation of the classification method is as follows.
      model in both the red and blue bandpasses. These values are used to
      determine the position of each target on the classification plot
      (see the :ref:`classification` section).
+
+
+Method 2: Collective Fitting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  0-1. The first two steps in this approach are the same as the first method.
+
+  2. Using the redshift determined in step 1, the observations are broken up
+     into two sets. Observations in a bandpass with a **rest frame** effective
+     wavelength less than 5500 Angstroms are called "blue". Remaining
+     observations are called "red".
+  3. The blue and red observations are fit independently of one another. As in
+     the previous method, both ``z`` and ``t0`` are fixed to the value
+     determined in step 1.
+  4. The chi-squared value from the blue and red fits are used to determine
+     the position of each target on the classification plot
+

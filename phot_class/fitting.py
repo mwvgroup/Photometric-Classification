@@ -1,8 +1,10 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""The ``classification`` module fits light curves, tabulates results, and
-determines the corresponding fitting coordinates.
+"""The ``fitting`` module runs a series of fits on individual light-curves and
+tabulates the results. This includes the ability to fit each bandpass
+independently (like in SiFTO) or to fit restframe blue/red band passes os
+separate, collective sets.
 """
 
 from copy import deepcopy
@@ -133,7 +135,7 @@ def _plot_lc(data, result, fitted_model, show=True):
     return fig
 
 
-def create_fit_data_iter(priors_hs, priors_bg, kwargs_hs, kwargs_bg):
+def _create_fit_data_iter(priors_hs, priors_bg, kwargs_hs, kwargs_bg):
     """Create an iterable of data used to run light-curve fits
 
     Args:
@@ -209,7 +211,7 @@ def run_band_fits(
        A table with results each model / dataset combination
     """
 
-    model_args, out_data = create_fit_data_iter(
+    model_args, out_data = _create_fit_data_iter(
         priors_hs, priors_bg, kwargs_hs, kwargs_bg)
 
     # Tabulate fit results for each band
@@ -218,7 +220,8 @@ def run_band_fits(
 
         # Fit data in all bands
         result_all, fit_all = fit_func(data, model, vparams, **kwarg)
-        new_row = _fit_results_to_dict(data, obj_id, 'all', result_all, fit_all)
+        new_row = _fit_results_to_dict(data, obj_id, 'all', result_all,
+                                       fit_all)
         out_data.add_row(new_row)
 
         if show_plots:
@@ -233,7 +236,8 @@ def run_band_fits(
             # Using amplitude from all data fit as initial guess works better
             kwarg['guess_amplitude'] = False
             result, fit = fit_func(band_data, fit_all, band_vparams, **kwarg)
-            new_row = _fit_results_to_dict(band_data, obj_id, band_name, result, fit)
+            new_row = _fit_results_to_dict(band_data, obj_id, band_name,
+                                           result, fit)
             out_data.add_row(new_row)
 
             if show_plots:
@@ -265,7 +269,7 @@ def run_collective_fits(
        A table with results each model / dataset combination
     """
 
-    model_args, out_data = create_fit_data_iter(
+    model_args, out_data = _create_fit_data_iter(
         priors_hs, priors_bg, kwargs_hs, kwargs_bg)
 
     # Tabulate fit results for each band
@@ -274,7 +278,8 @@ def run_collective_fits(
 
         # Fit data in all bands
         result_all, fit_all = fit_func(data, model, vparams, **kwarg)
-        new_row = _fit_results_to_dict(data, obj_id, 'all', result_all, fit_all)
+        new_row = _fit_results_to_dict(data, obj_id, 'all', result_all,
+                                       fit_all)
         out_data.add_row(new_row)
 
         if show_plots:
@@ -287,18 +292,19 @@ def run_collective_fits(
         z = fit_all.parameters[fit_all.param_names.index('z')]
         blue_data, red_data = utils.split_data(data, band_names, lambda_eff, z)
 
-        for band_name, band_data in zip(('blue', 'red'), (blue_data, red_data)):
+        for band_name, band_data in zip(('blue', 'red'),
+                                        (blue_data, red_data)):
             # Using amplitude from all data fit as initial guess works better
             kwarg['guess_amplitude'] = False
             result, fit = fit_func(band_data, fit_all, band_vparams, **kwarg)
-            new_row = _fit_results_to_dict(band_data, obj_id, band_name, result, fit)
+            new_row = _fit_results_to_dict(band_data, obj_id, band_name,
+                                           result, fit)
             out_data.add_row(new_row)
 
             if show_plots:
                 _plot_lc(band_data, result, fit)
 
     return out_data
-
 
 # We may eventually want to make it so the pipeline can run a simple set of
 # fits on all the data with a single model. This can be done more simply
