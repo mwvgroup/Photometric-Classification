@@ -74,6 +74,6 @@ Running the Analysis
 --------------------
 
 .. argparse::
-   :filename: ../run_pipeline.py
+   :filename: ../../run_pipeline.py
    :func: create_cli_parser
    :prog: run_pipeline.py
