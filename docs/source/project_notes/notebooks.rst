@@ -28,6 +28,9 @@ provided below. Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 |  fit_inspection.ipynb              | Inspects fit results for individual light curves.                            |
 +------------------------------------+------------------------------------------------------------------------------+
+| fitting_method_comparison.ipynb    | Comparison of classifcation results when using band-by-band vs. collective   |
+|                                    | fitting.                                                                     |
++------------------------------------+------------------------------------------------------------------------------+
 |  inspecting_91bg_model.ipynb       | Demonstrates the properties of the 91bg model we use for classification.     |
 +------------------------------------+------------------------------------------------------------------------------+
 |  redshift_distributions.ipynb      | Plots of redshift distributions for various data sets.                       |

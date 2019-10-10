@@ -6,6 +6,10 @@ environment or via the command line using *run_pipeline.py*. For interacting
 within an environment, see the API documentation. We here outline how to use
 the command line interface.
 
+See *run_pipeline.sh* for a **complete** list of commands that were run as
+part of our analysis. In principle, all light curve fits considered by this
+project can be reproduced by running ``bash run_pipeline.sh``.
+
 Creating a Config File
 ----------------------
 
@@ -53,7 +57,8 @@ the pipeline:
   - ``mwebv`` is never varied in any fit, and is fixed to the given value. If no
     value is given, the default value is 0.
 
-See the :ref:`lc-fitting` section for more information on how we fit targets.
+See the :ref:`lc-fitting` section for more information on how the pipeline
+handles light-curve fitting.
 
 Specifying Kwargs
 ^^^^^^^^^^^^^^^^^
@@ -61,8 +66,9 @@ Specifying Kwargs
 Valid keyword arguments depend slightly on the fitting function that is being
 used, but are overwhelmingly uniform across the available functions. Each
 fitting function is a simple wrapper around an ``sncosmo`` minimization
-routine (The wrapping is just to avoid an argument mutation bug). For more
-information on the available fitting routines, see :ref:`fit-functions`.
+routine (the wrapping is just to avoid an argument mutation bug in
+``sncosmo``). For more information on the available fitting routines,
+see :ref:`fit-functions`.
 
 Running the Analysis
 --------------------

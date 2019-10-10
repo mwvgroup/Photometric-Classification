@@ -73,7 +73,7 @@ def run(cli_args):
     fit_path = out_dir / (file_prefix + 'fits.ecsv')
     classification_path = out_dir / (file_prefix + 'class.ecsv')
 
-    # Download and register data for fitting
+    # Get the sndata module - download and register data for fitting
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
     data_module.register_filters()
@@ -82,7 +82,7 @@ def run(cli_args):
     data_iter = get_data_iter(data_module)
     band_names = data_module.band_names
     lambda_eff = data_module.lambda_effective
-    fit_func = getattr(fit_funcs, cli_args.fit_func)
+    fit_func = getattr(fit_func_wraps, cli_args.fit_func)
 
     # Read in priors and fitting arguments from file
     config = load_yaml(cli_args.config) if cli_args.config else None
@@ -93,6 +93,7 @@ def run(cli_args):
         band_names=band_names,
         lambda_eff=lambda_eff,
         fit_func=fit_func,
+        fitting_method=cli_args.method,
         config=config,
         out_path=fit_path
     )
@@ -108,19 +109,29 @@ def create_cli_parser():
         '-s', '--survey',
         type=str,
         required=True,
-        help='The name of the survey to analyze. This should be the name of a survey in the sndata package (e.g. csp).')
+        help='The name of the survey to analyze. This should be the name of a survey in the sndata package (e.g. csp).'
+    )
 
     parser.add_argument(
         '-r', '--release',
         type=str,
         required=True,
-        help='The name of the survey\'s data release. This should also match the sndata package (e.g. dr3).')
+        help='The name of the survey\'s data release. This should also match the sndata package (e.g. dr3).'
+    )
 
     parser.add_argument(
         '-f', '--fit_func',
         type=str,
         default='simple_fit',
-        help='The name of the fitting routine to use (simple_fit, nest_fit, mcmc_fit, nested_simple_fit, nested_mcmc_fit).')
+        help='The name of the fitting routine to use (simple_fit, nest_fit, mcmc_fit, nested_simple_fit, nested_mcmc_fit).'
+    )
+
+    parser.add_argument(
+        '-m', '--method',
+        type=str,
+        default='band',
+        help="Whether to fit bands independently ('band') or as red and blue sets ('collective')"
+    )
 
     parser.add_argument(
         '-c', '--config',
@@ -142,7 +153,7 @@ def create_cli_parser():
 # Parse command line input
 if __name__ == '__main__':
     from phot_class import classification
-    from phot_class import fit_funcs
+    from phot_class import fit_func_wraps
     from phot_class import models
     from phot_class import utils
 
