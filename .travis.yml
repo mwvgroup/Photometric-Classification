@@ -13,7 +13,7 @@ before_install:
   - export PATH=/home/travis/miniconda/bin:$PATH
 
   # Update conda and add it to our bashrc file
-  - conda update --yes conda
+  # - conda update --yes conda
   - conda init bash
   - source /home/travis/.bashrc
 
