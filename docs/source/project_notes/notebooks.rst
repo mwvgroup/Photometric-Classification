@@ -22,8 +22,6 @@ provided below. Online interactive versions are provided for each notebook via
 |  classifying_single_target.ipynb   | Demonstrates the classification technique of Gonzalez-Gaitan+ 14 on          |
 |                                    | a single supernova.                                                          |
 +------------------------------------+------------------------------------------------------------------------------+
-|  compare_fits_to_published.ipynb   | Compares fit results from our pipeline against published values.             |
-+------------------------------------+------------------------------------------------------------------------------+
 | creating_config_files.ipynb        | Creates config files for CSP, DES, and SDSS.                                 |
 +------------------------------------+------------------------------------------------------------------------------+
 |  fit_inspection.ipynb              | Inspects fit results for individual light curves.                            |
@@ -33,7 +31,7 @@ provided below. Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 |  inspecting_91bg_model.ipynb       | Demonstrates the properties of the 91bg model we use for classification.     |
 +------------------------------------+------------------------------------------------------------------------------+
-|  redshift_distributions.ipynb      | Plots of redshift distributions for various data sets.                       |
+|  sdss_redshift_distribution.ipynb  | Plots of redshift distributions for the SNe data set.                        |
 +------------------------------------+------------------------------------------------------------------------------+
 |  sncosmo_chisq_bug.ipynb           | Outlines a bug in the calculation of chi-squared in SNCosmo and demonstrates |
 |                                    | that our results do not suffer from this bug.                                |
