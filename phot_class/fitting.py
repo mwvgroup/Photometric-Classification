@@ -91,7 +91,7 @@ def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
     new_row['post_max'] = sum(data['time'] >= t0)
 
     # Add parameters and their errors
-    params = {p: v for p, v in zip(results.param_names, results.parameters)}
+    params = {p: v for p, v in zip(results.param_names, results.parameters) if p in results.vparam_names}
     new_row.update(params)
     for param, error in results.errors.items():
         new_row[param + '_err'] = error
@@ -253,7 +253,6 @@ def run_collective_fits(
         kwargs_hs=None, kwargs_bg=None,
         show_plots=False):
     """Run light curve fits on a given target using the Hsiao and 91bg model
-
 
     Args:
         obj_id      (str): Id of the object being fitted

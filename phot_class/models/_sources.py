@@ -106,14 +106,12 @@ class SN91bg(sncosmo.Source):
         self._parameters = np.array([1., 1., 0.55])
 
         # Load 91bg model
-        coords, self._template = load_template(min_phase, max_phase)
-        (self._stretch, self._color, self._phase, self._wave) = coords
-        self._splines = self.get_splines(*coords, self._template)
+        (self._stretch, self._color, self._phase, self._wave), self._template = \
+            load_template(min_phase, max_phase)
 
     @staticmethod
     def get_splines(stretch, color, phase, wave, template):
-        """
-        Fit splines to a flux template for phase and wavelength
+        """Fit splines to a flux template for phase and wavelength
 
         Args:
             stretch  (ndarray): Stretch coordinates for the flux template
@@ -140,6 +138,7 @@ class SN91bg(sncosmo.Source):
 
     def _flux(self, phase, wave):
         """Return the flux for a given phase and wavelength
+
         Flux is determined by linearly interpolating for stretch and color
         and then using a 2d spline for phase and wavelength.
 
