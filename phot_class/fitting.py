@@ -13,6 +13,7 @@ import numpy as np
 import sncosmo
 from astropy.table import Table
 from matplotlib import pyplot
+from tqdm import tqdm
 
 from . import utils
 
@@ -126,7 +127,7 @@ def _plot_lc(data, result, fitted_model, show=True):
         fitted_model (Model): Model with params set to fitted values
     """
 
-    fig = sncosmo.plot_lc(data, fitted_model, color='blue')
+    fig = sncosmo.plot_lc(data, fitted_model, errors=result.errors)
     xs, d = utils.calc_model_chisq(data, result, fitted_model)
     print(f'chisq / ndof = {xs} / {d} = {xs / d}', flush=True)
     if show:
@@ -217,6 +218,8 @@ def run_band_fits(
     # Tabulate fit results for each band
     for model, vparams, prior, kwarg in model_args:
         model.update(prior)
+        kwarg['bounds'] = \
+            {p: v for p, v in kwarg.get('bounds', {}).items() if p in vparams}
 
         # Fit data in all bands
         result_all, fit_all = fit_func(data, model, vparams, **kwarg)
@@ -229,6 +232,8 @@ def run_band_fits(
 
         # Fix t0 and z during individual band fits
         band_vparams = deepcopy(vparams) - {'t0', 'z'}
+        kwarg['bounds'].pop('t0', None)
+        kwarg['bounds'].pop('z', None)
 
         # Fit data in individual bands
         data = data.group_by('band')
@@ -274,6 +279,8 @@ def run_collective_fits(
     # Tabulate fit results for each band
     for model, vparams, prior, kwarg in model_args:
         model.update(prior)
+        kwarg['bounds'] = \
+            {p: v for p, v in kwarg.get('bounds', {}).items() if p in vparams}
 
         # Fit data in all bands
         result_all, fit_all = fit_func(data, model, vparams, **kwarg)
@@ -286,6 +293,8 @@ def run_collective_fits(
 
         # Fix t0 during individual band fits
         band_vparams = deepcopy(vparams) - {'t0', 'z'}
+        kwarg['bounds'].pop('t0', None)
+        kwarg['bounds'].pop('z', None)
 
         # Get red and blue data
         z = fit_all.parameters[fit_all.param_names.index('z')]
