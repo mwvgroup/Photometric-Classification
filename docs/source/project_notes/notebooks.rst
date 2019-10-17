@@ -29,6 +29,8 @@ provided below. Online interactive versions are provided for each notebook via
 | fitting_method_comparison.ipynb    | Comparison of classifcation results when using band-by-band vs. collective   |
 |                                    | fitting.                                                                     |
 +------------------------------------+------------------------------------------------------------------------------+
+| iminuit_vs_emcee.ipynb             | A simple comparison of the fit_lc and mcmc_lc minimization routines.         |
++------------------------------------+------------------------------------------------------------------------------+
 |  inspecting_91bg_model.ipynb       | Demonstrates the properties of the 91bg model we use for classification.     |
 +------------------------------------+------------------------------------------------------------------------------+
 |  sdss_redshift_distribution.ipynb  | Plots of redshift distributions for the SNe data set.                        |
