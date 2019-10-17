@@ -138,6 +138,7 @@ class SN91bg(sncosmo.Source):
 
         return splines
 
+    # noinspection PyTypeChecker
     def _flux(self, phase, wave):
         """Return the flux for a given phase and wavelength
 
@@ -152,15 +153,47 @@ class SN91bg(sncosmo.Source):
             A 2d array of flux with shape (<len(phase)>, <len(wave)>)
         """
 
-        evaluated_splines = \
-            [[f(phase, wave) for f in sp_arr] for sp_arr in self._splines]
-
-        # Linearly interpolate template for current stretch and color
         amplitude, stretch, color = self._parameters
-        interp_flux = interpn(
-            points=[self._stretch, self._color],
-            values=evaluated_splines,
-            xi=[stretch, color])[0]
+
+        # If the current parameters are coordinates on the spectral template
+        # grid, we only evaluate that spline
+        if (stretch in self._stretch) and (color in self._color):
+            stretch_index = list(self._stretch).index(stretch)
+            color_index = list(self._color).index(color)
+            spline = self._splines[stretch_index, color_index]
+            interp_flux = spline(phase, wave)
+
+        # If only one coordinate is on the grid, we don't bother optimizing
+        # and evaluate all of the splines.
+        elif (stretch in self._stretch) or (color in self._color):
+            evaluated_splines = \
+                [[f(phase, wave) for f in sp_arr] for sp_arr in self._splines]
+
+            # Linearly interpolate template for current stretch and color
+            interp_flux = interpn(
+                points=[self._stretch, self._color],
+                values=evaluated_splines,
+                xi=[stretch, color])[0]
+
+        # If the parameters are not coordinates on the template grid
+        # determine the neighboring two grid coordinates and only evaluate
+        # splines for the neighboring four coordinates
+        else:
+            stretch_indices = _bi_search(self._stretch, stretch)
+            color_indices = _bi_search(self._color, color)
+            points = [self._stretch[stretch_indices], self._color[color_indices]]
+            evaluated_splines = [
+                [self._splines[stretch_indices[0], color_indices[0]](phase, wave),
+                 self._splines[stretch_indices[0], color_indices[1]](phase, wave)],
+                [self._splines[stretch_indices[1], color_indices[0]](phase, wave),
+                 self._splines[stretch_indices[1], color_indices[1]](phase, wave)],
+            ]
+
+            # Linearly interpolate template for current stretch and color
+            interp_flux = interpn(
+                points=points,
+                values=evaluated_splines,
+                xi=[stretch, color])[0]
 
         # Since the spline will extrapolate we enforce bounds
         flux = amplitude * interp_flux
