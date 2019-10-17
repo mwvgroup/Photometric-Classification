@@ -13,7 +13,6 @@ import numpy as np
 import sncosmo
 from astropy.table import Table
 from matplotlib import pyplot
-from tqdm import tqdm
 
 from . import utils
 
