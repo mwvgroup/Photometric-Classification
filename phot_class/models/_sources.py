@@ -106,8 +106,10 @@ class SN91bg(sncosmo.Source):
         self._parameters = np.array([1., 1., 0.55])
 
         # Load 91bg model
-        (self._stretch, self._color, self._phase, self._wave), self._template = \
-            load_template(min_phase, max_phase)
+        coordinates, self._template = load_template(min_phase, max_phase)
+        (self._stretch, self._color, self._phase, self._wave) = coordinates
+
+        self._splines = self.get_splines(*coordinates, self._template)
 
     @staticmethod
     def get_splines(stretch, color, phase, wave, template):
@@ -150,23 +152,18 @@ class SN91bg(sncosmo.Source):
             A 2d array of flux with shape (<len(phase)>, <len(wave)>)
         """
 
-        amplitude, stretch, color = self._parameters
+        evaluated_splines = \
+            [[f(phase, wave) for f in sp_arr] for sp_arr in self._splines]
 
         # Linearly interpolate template for current stretch and color
+        amplitude, stretch, color = self._parameters
         interp_flux = interpn(
             points=[self._stretch, self._color],
-            values=self._template,
-            xi=[stretch, color])
-
-        # Fit a spline in phase and wavelength space
-        spline = RectBivariateSpline(
-            self._phase,
-            self._wave,
-            interp_flux[0],
-            kx=3, ky=3)
+            values=evaluated_splines,
+            xi=[stretch, color])[0]
 
         # Since the spline will extrapolate we enforce bounds
-        flux = amplitude * spline(phase, wave)
+        flux = amplitude * interp_flux
         flux[phase < min(self._phase)] = 0
         flux[phase > max(self._phase)] = 0
         return flux
