@@ -1,10 +1,6 @@
 Notebooks
 =========
 
-.. warning:: This is an ongoing project. Notebooks are not guaranteed to run
-   as ongoing progress may be underway that temporarily breaks some
-   functionality.
-
 Although the ``phot_class`` package houses the core logic of our analysis, the
 visualization and interaction with results from the package is performed using
 Jupyter Notebooks. Descriptions of each notebook and what they inspect are
@@ -24,18 +20,20 @@ provided below. Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 | creating_config_files.ipynb        | Creates config files for CSP, DES, and SDSS.                                 |
 +------------------------------------+------------------------------------------------------------------------------+
-|  fit_inspection.ipynb              | Inspects fit results for individual light curves.                            |
+| fit_inspection.ipynb               | Inspects fit results for individual light curves.                            |
 +------------------------------------+------------------------------------------------------------------------------+
 | fitting_method_comparison.ipynb    | Comparison of classifcation results when using band-by-band vs. collective   |
 |                                    | fitting.                                                                     |
 +------------------------------------+------------------------------------------------------------------------------+
 | iminuit_vs_emcee.ipynb             | A simple comparison of the fit_lc and mcmc_lc minimization routines.         |
 +------------------------------------+------------------------------------------------------------------------------+
-|  inspecting_91bg_model.ipynb       | Demonstrates the properties of the 91bg model we use for classification.     |
+| inspecting_91bg_model.ipynb        | Demonstrates the properties of the 91bg model we use for classification.     |
 +------------------------------------+------------------------------------------------------------------------------+
-|  sdss_redshift_distribution.ipynb  | Plots of redshift distributions for the SNe data set.                        |
+| salt2_fit_results.ipynb            | Minimal investigation of fit results from the Salt2 model.                   |
 +------------------------------------+------------------------------------------------------------------------------+
-|  sncosmo_chisq_bug.ipynb           | Outlines a bug in the calculation of chi-squared in SNCosmo and demonstrates |
+| sdss_redshift_distribution.ipynb   | Plots of redshift distributions for the SNe data set.                        |
++------------------------------------+------------------------------------------------------------------------------+
+| sncosmo_chisq_bug.ipynb            | Outlines a bug in the calculation of chi-squared in SNCosmo and demonstrates |
 |                                    | that our results do not suffer from this bug.                                |
 +------------------------------------+------------------------------------------------------------------------------+
 

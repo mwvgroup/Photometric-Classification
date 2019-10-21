@@ -22,8 +22,6 @@ Classification of Peculiar Supernovae
    | |python| |travis| |cover| |docs| |binder| |
    +-------------------------------------------+
 
-.. warning:: This is an ongoing project. Results and documentation may be
-   subject to frequent change.
 
 With the discovery of the accelerating expansion of the universe, type Ia
 supernovae (SNe Ia) have been used increasingly to determine cosmological
@@ -41,32 +39,20 @@ identifying dim, fast-declining SNe, but can also identify other peculiar
 transients such as SNe Iax-like, SN 2006bt-like, and super-Chandrasekhar
 SNe Ia.
 
-We here apply the same classification technique to a larger target sample with
-two significant changes. The first is the use of a newer model for 91bg-like
-SN that has been extended further into the near infra-red (NIR) and
-ultraviolet (UV). By using this extended model we are able to apply the
-classification to a larger, higher-redshift sample of SNe Ia. The second
-change is the inclusion of improved covariance values between the model
-parameters stretch and color.
+In Perrefort et al. 2020 we apply the same classification technique to the
+SDSS Supernova Survey. The following documentation is provided as a
+technical reference for the published work, and serves as a complete project
+writeup for all programmatic aspects of the project. The **Project Notes**
+section documents the project from a scientific perspective. It it provided
+to ensure reproducibility of the results and to clarify various design
+decisions. The **API Reference** documents how to use the project's code
+base along with various technical clarifications.
 
+Source Code and Repository Structure
+------------------------------------
 
-Using this Documentation
-------------------------
-
-This documentation serves as a complete project writeup and is a total
-overview of all scientific and programmatic aspects of the project. The
-**Project Notes** section documents this project from a scientific
-perspective. It it provided to ensure reproducibility of the results and to
-clarify various design decisions. The **API Reference** documents how to use
-the project's code base along with various technical clarifications. Source
-code for this project can be found online via `GitHub`_.
-
-.. _GitHub: https://github.com/mwvgroup/sdss-classification/
-
-Project Repository Structure
-----------------------------
-
-We provide summaries for key files in the project repository::
+Source code for this project can be found online via `GitHub`_. We provide
+summaries below for key files in the project repository::
 
    project parent
    ├── config_files/
@@ -151,3 +137,5 @@ We provide summaries for key files in the project repository::
    api_reference/fom
    api_reference/utils
    api_reference/sncosmo_sims
+
+.. _GitHub: https://github.com/mwvgroup/sdss-classification/
