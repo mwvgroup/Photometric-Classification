@@ -39,18 +39,10 @@ def get_data_iter(data_module):
         Astropy tables
     """
 
+    # Other classifications:
+    # 'SLSN', 'SNIb', 'SNIc', 'pSNIbc', 'zSNIbc', 'Unknown', 'AGN', 'Variable'
     filter_func = utils.classification_filter_factory(
-        [
-            # 'SLSN',
-            'SNIa',
-            'SNIa?',
-            # 'SNIb',
-            # 'SNIc',
-            'pSNIa',
-            # 'pSNIbc',
-            'zSNIa',
-            # 'zSNIbc'
-        ]
+        ['SNIa', 'SNIa?', 'pSNIa', 'zSNIa']
     )
 
     data_iter = data_module.iter_data(verbose=True, filter_func=filter_func)
