@@ -262,6 +262,8 @@ def run_collective_fits(
         obj_id      (str): Id of the object being fitted
         data      (Table): Table of photometric data
         fit_func   (func): Function to use to run fits (eg. ``fit_funcs.fit_lc``)
+        band_names (list): Name of bands included in ``data_iter``
+        lambda_eff (list): Effective wavelength for bands in ``band_names``
         priors_hs  (dict): Priors to use when fitting hsiao
         priors_bg  (dict): Priors to use when fitting sn91bg
         kwargs_hs  (dict): Kwargs to pass ``fit_func`` when fitting salt2
