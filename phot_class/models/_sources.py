@@ -106,14 +106,14 @@ class SN91bg(sncosmo.Source):
         self._parameters = np.array([1., 1., 0.55])
 
         # Load 91bg model
-        coords, self._template = load_template(min_phase, max_phase)
-        (self._stretch, self._color, self._phase, self._wave) = coords
-        self._splines = self.get_splines(*coords, self._template)
+        coordinates, self._template = load_template(min_phase, max_phase)
+        (self._stretch, self._color, self._phase, self._wave) = coordinates
+
+        self._splines = self.get_splines(*coordinates, self._template)
 
     @staticmethod
     def get_splines(stretch, color, phase, wave, template):
-        """
-        Fit splines to a flux template for phase and wavelength
+        """Fit splines to a flux template for phase and wavelength
 
         Args:
             stretch  (ndarray): Stretch coordinates for the flux template
@@ -138,8 +138,10 @@ class SN91bg(sncosmo.Source):
 
         return splines
 
+    # noinspection PyTypeChecker
     def _flux(self, phase, wave):
         """Return the flux for a given phase and wavelength
+
         Flux is determined by linearly interpolating for stretch and color
         and then using a 2d spline for phase and wavelength.
 
@@ -153,21 +155,48 @@ class SN91bg(sncosmo.Source):
 
         amplitude, stretch, color = self._parameters
 
-        # Linearly interpolate template for current stretch and color
-        interp_flux = interpn(
-            points=[self._stretch, self._color],
-            values=self._template,
-            xi=[stretch, color])
+        # If the current parameters are coordinates on the spectral template
+        # grid, we only evaluate that spline
+        if (stretch in self._stretch) and (color in self._color):
+            stretch_index = list(self._stretch).index(stretch)
+            color_index = list(self._color).index(color)
+            spline = self._splines[stretch_index, color_index]
+            interp_flux = spline(phase, wave)
 
-        # Fit a spline in phase and wavelength space
-        spline = RectBivariateSpline(
-            self._phase,
-            self._wave,
-            interp_flux[0],
-            kx=3, ky=3)
+        # If only one coordinate is on the grid, we don't bother optimizing
+        # and evaluate all of the splines.
+        elif (stretch in self._stretch) or (color in self._color):
+            evaluated_splines = \
+                [[f(phase, wave) for f in sp_arr] for sp_arr in self._splines]
+
+            # Linearly interpolate template for current stretch and color
+            interp_flux = interpn(
+                points=[self._stretch, self._color],
+                values=evaluated_splines,
+                xi=[stretch, color])[0]
+
+        # If the parameters are not coordinates on the template grid
+        # determine the neighboring two grid coordinates and only evaluate
+        # splines for the neighboring four coordinates
+        else:
+            stretch_indices = _bi_search(self._stretch, stretch)
+            color_indices = _bi_search(self._color, color)
+            points = [self._stretch[stretch_indices], self._color[color_indices]]
+            evaluated_splines = [
+                [self._splines[stretch_indices[0], color_indices[0]](phase, wave),
+                 self._splines[stretch_indices[0], color_indices[1]](phase, wave)],
+                [self._splines[stretch_indices[1], color_indices[0]](phase, wave),
+                 self._splines[stretch_indices[1], color_indices[1]](phase, wave)],
+            ]
+
+            # Linearly interpolate template for current stretch and color
+            interp_flux = interpn(
+                points=points,
+                values=evaluated_splines,
+                xi=[stretch, color])[0]
 
         # Since the spline will extrapolate we enforce bounds
-        flux = amplitude * spline(phase, wave)
+        flux = amplitude * interp_flux
         flux[phase < min(self._phase)] = 0
         flux[phase > max(self._phase)] = 0
         return flux
@@ -216,7 +245,7 @@ class HsiaoStretch(sncosmo.Source):
         )
 
         phase = np.array(phase)
-        stretched_phase = phase / (1 - x1)
+        stretched_phase = phase / (1 + x1)
         flux = amplitude * self._parent.flux(stretched_phase, wave)
 
         flux[phase < -18] = 0

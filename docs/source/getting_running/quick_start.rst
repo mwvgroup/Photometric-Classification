@@ -10,6 +10,11 @@ See *run_pipeline.sh* for a **complete** list of commands that were run as
 part of our analysis. In principle, all light curve fits considered by this
 project can be reproduced by running ``bash run_pipeline.sh``.
 
+.. important:: ``bash run_pipeline.sh`` includes a mix of commands that can
+   vary dramatically in runtime and redundancy. You probably only want to run
+   a subset of commands (if any since the results are cached in the
+   project repository).
+
 Creating a Config File
 ----------------------
 
@@ -74,6 +79,6 @@ Running the Analysis
 --------------------
 
 .. argparse::
-   :filename: ../../run_pipeline.py
+   :filename: ../run_pipeline.py
    :func: create_cli_parser
    :prog: run_pipeline.py

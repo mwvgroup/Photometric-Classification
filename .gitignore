@@ -12,11 +12,9 @@
 build
 dist
 
-# Light Curve Data
-analysis_pipeline/data_access/*/data
-
 # Jupyter Checkpoints
 *.ipynb_checkpoints
 
-# Testing cache files
+# Testing and cache files
 .pytest_cache/
+*.prof

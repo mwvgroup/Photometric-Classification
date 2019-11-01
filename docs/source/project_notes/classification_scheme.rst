@@ -3,10 +3,11 @@
 Classification Scheme
 =====================
 
-We here discuss the classification we wish to apply, which is originally
-presented in `González-Gaitán et al. 2014 <https://ui.adsabs.harvard.edu/abs/2014ApJ...795..142G/abstract>`_.
+We here discuss the classification originally presented in
+`González-Gaitán et al. 2014 <https://ui.adsabs.harvard.edu/abs/2014ApJ...795..142G/abstract>`_
+(G14).
 
-.. important:: GG14 relies on the SiFTO light-curve fitter. We here instead apply the
+.. important:: G14 relies on the SiFTO light-curve fitter. We here instead apply the
    `sncosmo`_ package. In their default setup, these two packages are very
    different, but we intentionally implement `sncosmo` in a way that mimmicks
    the SiFTO approach. See the :ref:`fitters` section for more details.
@@ -46,7 +47,7 @@ indicate that they are cooler. Since 91bgs are cooler, the recombination
 of Fe III to Fe II also occurs sooner causing the peak brightness in the
 redder bands to happen sooner than in the bluer bands.
 
-González-Gaitán et al. 2014 (GG14) puts forth a classification technique by
+González-Gaitán et al. 2014 (G14) puts forth a classification technique by
 which 91bg and a few other peculiar SNe can be identified (described below).
 This approach is compared against existing approaches (SNID and GELATO2) and
 found to be in good agreement.
@@ -55,7 +56,7 @@ found to be in good agreement.
 The Original Data Set
 ---------------------
 
-GG14 focuses on low-redshift SN samples (z < 0.1). In addition to a few
+G14 focuses on low-redshift SN samples (z < 0.1). In addition to a few
 targets picked from the literature, the data is primarily taken from:
 
 - The Caĺan/Tololo survey (Hamuy et al. 1996a)
@@ -117,7 +118,7 @@ stretch would look like Ia's.
 Some Additional Details
 -----------------------
 
-- The normal Ia template used in GG14 is the Hsiao+ 2007 template
+- The normal Ia template used in G14 is the Hsiao+ 2007 template
 - The 91bg template is the Nugent+ 2002 template
 - Data cuts were implemented as follows:
 

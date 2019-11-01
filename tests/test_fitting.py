@@ -50,7 +50,7 @@ class TableCreation(TestCase):
 
 
 class FitResultsToDict(TestCase):
-    """Tests for the ``_fit_results_to_dict`` function"""
+    """Tests for the ``fit_results_to_dict`` function"""
 
     # Don't limit output messages on test failures
     maxDiff = None
@@ -78,7 +78,7 @@ class FitResultsToDict(TestCase):
         model.update(data.meta)
         data.meta['obj_id'] = 'dummy_id'
 
-        row = fitting._fit_results_to_dict(
+        row = fitting.fit_results_to_dict(
             data, 'dummy_id', 'dummy_band_set', result, model)
 
         expected_row = {

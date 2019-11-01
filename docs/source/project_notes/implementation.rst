@@ -106,7 +106,7 @@ overall color law :math:`CL(\lambda)`.
 
 .. math::
 
-    F = x_0 \times [M_0(\text{phase}, \lambda) + x_1 \times M_1(\text{phase}, \lambda) +  ...] \times \exp[c \times CL(\lambda)]
+    F = x_0 \times [M_0(\text{phase}, \lambda) + x_1 \times M_1(\text{phase}, \lambda) +  \dots] \times e^{c \times CL(\lambda)}
 
 Here :math:`x_i` are the components of the model, :math:`c` is a color term,
 :math:`M_0` represents the average spectral template, and the remaining

@@ -61,7 +61,7 @@ def create_empty_table(parameters, **kwargs):
     return Table(names=names, dtype=dtype, **kwargs)
 
 
-def _fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
+def fit_results_to_dict(data, obj_id, band_set, results, fitted_model):
     """Format sncosmo fit results so they can be appended to an astropy table
 
     See the ``create_empty_table`` function for information on the assumed
@@ -126,7 +126,7 @@ def _plot_lc(data, result, fitted_model, show=True):
         fitted_model (Model): Model with params set to fitted values
     """
 
-    fig = sncosmo.plot_lc(data, fitted_model, color='blue')
+    fig = sncosmo.plot_lc(data, fitted_model, errors=result.errors)
     xs, d = utils.calc_model_chisq(data, result, fitted_model)
     print(f'chisq / ndof = {xs} / {d} = {xs / d}', flush=True)
     if show:
@@ -217,11 +217,13 @@ def run_band_fits(
     # Tabulate fit results for each band
     for model, vparams, prior, kwarg in model_args:
         model.update(prior)
+        kwarg['bounds'] = \
+            {p: v for p, v in kwarg.get('bounds', {}).items() if p in vparams}
 
         # Fit data in all bands
         result_all, fit_all = fit_func(data, model, vparams, **kwarg)
-        new_row = _fit_results_to_dict(data, obj_id, 'all', result_all,
-                                       fit_all)
+        new_row = fit_results_to_dict(data, obj_id, 'all', result_all,
+                                      fit_all)
         out_data.add_row(new_row)
 
         if show_plots:
@@ -229,6 +231,8 @@ def run_band_fits(
 
         # Fix t0 and z during individual band fits
         band_vparams = deepcopy(vparams) - {'t0', 'z'}
+        kwarg['bounds'].pop('t0', None)
+        kwarg['bounds'].pop('z', None)
 
         # Fit data in individual bands
         data = data.group_by('band')
@@ -236,8 +240,8 @@ def run_band_fits(
             # Using amplitude from all data fit as initial guess works better
             kwarg['guess_amplitude'] = False
             result, fit = fit_func(band_data, fit_all, band_vparams, **kwarg)
-            new_row = _fit_results_to_dict(band_data, obj_id, band_name,
-                                           result, fit)
+            new_row = fit_results_to_dict(band_data, obj_id, band_name,
+                                          result, fit)
             out_data.add_row(new_row)
 
             if show_plots:
@@ -254,11 +258,12 @@ def run_collective_fits(
         show_plots=False):
     """Run light curve fits on a given target using the Hsiao and 91bg model
 
-
     Args:
         obj_id      (str): Id of the object being fitted
         data      (Table): Table of photometric data
         fit_func   (func): Function to use to run fits (eg. ``fit_funcs.fit_lc``)
+        band_names (list): Name of bands included in ``data_iter``
+        lambda_eff (list): Effective wavelength for bands in ``band_names``
         priors_hs  (dict): Priors to use when fitting hsiao
         priors_bg  (dict): Priors to use when fitting sn91bg
         kwargs_hs  (dict): Kwargs to pass ``fit_func`` when fitting salt2
@@ -275,11 +280,13 @@ def run_collective_fits(
     # Tabulate fit results for each band
     for model, vparams, prior, kwarg in model_args:
         model.update(prior)
+        kwarg['bounds'] = \
+            {p: v for p, v in kwarg.get('bounds', {}).items() if p in vparams}
 
         # Fit data in all bands
         result_all, fit_all = fit_func(data, model, vparams, **kwarg)
-        new_row = _fit_results_to_dict(data, obj_id, 'all', result_all,
-                                       fit_all)
+        new_row = fit_results_to_dict(data, obj_id, 'all', result_all,
+                                      fit_all)
         out_data.add_row(new_row)
 
         if show_plots:
@@ -287,6 +294,8 @@ def run_collective_fits(
 
         # Fix t0 during individual band fits
         band_vparams = deepcopy(vparams) - {'t0', 'z'}
+        kwarg['bounds'].pop('t0', None)
+        kwarg['bounds'].pop('z', None)
 
         # Get red and blue data
         z = fit_all.parameters[fit_all.param_names.index('z')]
@@ -297,55 +306,11 @@ def run_collective_fits(
             # Using amplitude from all data fit as initial guess works better
             kwarg['guess_amplitude'] = False
             result, fit = fit_func(band_data, fit_all, band_vparams, **kwarg)
-            new_row = _fit_results_to_dict(band_data, obj_id, band_name,
-                                           result, fit)
+            new_row = fit_results_to_dict(band_data, obj_id, band_name,
+                                          result, fit)
             out_data.add_row(new_row)
 
             if show_plots:
                 _plot_lc(band_data, result, fit)
 
     return out_data
-
-# We may eventually want to make it so the pipeline can run a simple set of
-# fits on all the data with a single model. This can be done more simply
-# outside the framework of our pipeline, but if we were feeling particularly
-# froggy, then here is some reference code as a starting point
-#
-# def run_single_model_fits(
-#         obj_id, data, model, fit_prior, fit_kwargs, show_plots=False):
-#     """Run light curve fits on a given target using a single model
-#
-#     Args:
-#         obj_id      (str): Id of the object being fitted
-#         data      (Table): Table of photometric data
-#         model     (Model): The model to use while fitting
-#         fit_prior  (dict): Priors to use when fitting the model
-#         fit_kwargs (dict): Kwargs to use when fitting the model
-#         show_plots (bool): Plot and display each individual fit
-#
-#     Returns:
-#        Fit results and the fitted model for each model / data combination
-#     """
-#
-#     fit_kwargs = deepcopy(fit_kwargs) if fit_kwargs else None
-#     model = deepcopy(model)#
-#     model.update(fit_prior)
-#
-#     vparams = set(model.param_names) - {'mwebv'}
-#     if 'z' in fit_prior:
-#         vparams -= {'z'}
-#
-#     # Fit data using all bands
-#     fit_kwargs.setdefault('warn', False)
-#     results, fit_model = sncosmo.fit_lc(data, model, vparams, **fit_kwargs)
-#
-#     # Format results as a Table
-#     out_data = create_empty_table(model.param_names)
-#     new_row = _fit_results_to_dict(data, obj_id, 'all', results, fit_model)
-#     out_data.add_row(new_row)
-#
-#     if show_plots:
-#         _plot_lc(data, results, fit_model)
-#
-#     return out_data
-#
