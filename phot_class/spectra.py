@@ -102,7 +102,7 @@ def feature_velocity(wave, flux, eflux, rest_frame, unit=None):
         gaussian, wave, -(flux - 1), p0=start, sigma=eflux)
 
     c = speed_of_light.to(unit).value
-    return 3e5 * (
+    return c * (
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 - 1) /
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 + 1)
     )
