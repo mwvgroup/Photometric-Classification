@@ -34,6 +34,11 @@ class Area(TestCase):
         wave = np.arange(1000, 3000)
         self.assertEqual(0, spectra.feature_area(wave, wave))
 
+    def test_uncertainties_propagation(self):
+        """"""
+
+        self.fail()
+
 
 class PEW(TestCase):
     """Tests for the ``feature_pew`` function"""
@@ -75,6 +80,18 @@ class PEW(TestCase):
 
         self.assertListEqual(expected_norm_flux, norm_flux.tolist())
 
+    def test_uncertainties_propagation(self):
+        """"""
+
+        self.fail()
+
+
+class Velocity(TestCase):
+    """Tests for the ``feature_area`` function"""
+
+    def runTest(self):
+        self.fail()
+
 
 class FeatureIdentification(TestCase):
     """Test the identification of feature boundaries"""
@@ -94,7 +111,7 @@ class FeatureIdentification(TestCase):
         """Test the correct peak wavelength is found for a single flux spike"""
 
         expected_peak = self.peak_wavelengths[0]
-        recovered_peak = spectra.get_peak_wavelength(
+        recovered_peak = spectra._get_peak_wavelength(
             self.wavelength,
             self.flux,
             expected_peak - 10,
@@ -108,7 +125,7 @@ class FeatureIdentification(TestCase):
 
         max_wavelength = max(self.wavelength)
         with self.assertRaises(ValueError):
-            spectra.get_peak_wavelength(
+            spectra._get_peak_wavelength(
                 self.wavelength,
                 self.flux,
                 max_wavelength + 10,
@@ -120,7 +137,7 @@ class FeatureIdentification(TestCase):
 
         lower_peak_wavelength = min(self.peak_wavelengths)
         upper_peak_wavelength = max(self.peak_wavelengths)
-        recovered_lower_peak = spectra.get_peak_wavelength(
+        recovered_lower_peak = spectra._get_peak_wavelength(
             self.wavelength,
             self.flux,
             lower_peak_wavelength - 10,
@@ -128,7 +145,7 @@ class FeatureIdentification(TestCase):
             'min'
         )
 
-        recovered_upper_peak = spectra.get_peak_wavelength(
+        recovered_upper_peak = spectra._get_peak_wavelength(
             self.wavelength,
             self.flux,
             lower_peak_wavelength - 10,
