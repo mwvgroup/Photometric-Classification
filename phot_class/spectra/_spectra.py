@@ -109,6 +109,62 @@ def feature_velocity(rest_frame, wave, flux, eflux=None, unit=None):
     )
 
 
+def get_peak_wavelength(
+        wavelength, flux, lower_bound, upper_bound, behavior='min'):
+    """Return wavelength of the maximum flux within given wavelength bounds
+
+    The behavior argument can be used to select the 'min' or 'max' wavelength
+    when there are multiple wavelengths having the same peak flux value. The
+    default behavior is 'min'.
+
+    Args:
+        wavelength (ndarray): An array of wavelength values
+        flux       (ndarray): An array of flux values
+        lower_bound  (float): Lower wavelength boundary
+        upper_bound  (float): Upper wavelength boundary
+        behavior       (str): Return the 'min' or 'max' wavelength
+
+    Returns:
+        The wavelength for the maximum flux value
+        The maximum flux value
+    """
+
+    # Make sure the given spectrum spans the given wavelength bounds
+    if (min(wavelength) > lower_bound) or (upper_bound > max(wavelength)):
+        raise ValueError('Feature not in spectral wavelength range.')
+
+    # Select the portion of the spectrum within the given bounds
+    feature_indices = (lower_bound <= wavelength) & (wavelength <= upper_bound)
+    feature_flux = flux[feature_indices]
+    feature_wavelength = wavelength[feature_indices]
+
+    peak_indices = np.argwhere(feature_flux == np.max(feature_flux))
+    behavior_func = getattr(np, behavior)
+    return behavior_func(feature_wavelength[peak_indices])
+
+
+def get_feature_bounds(wavelength, flux, feature):
+    """Get the start and end wavelengths / flux for a given feature
+
+    Args:
+        wavelength (ndarray): An array of wavelength values
+        flux       (ndarray): An array of flux values
+        feature        (row): A dictionary defining feature parameters
+
+    Returns:
+        The starting wavelength of the feature
+        The ending wavelength of the feature
+    """
+
+    feat_start = get_peak_wavelength(
+        wavelength, flux, feature['lower_blue'], feature['upper_blue'], 'min')
+
+    feat_end = get_peak_wavelength(
+        wavelength, flux, feature['lower_red'], feature['upper_red'], 'max')
+
+    return feat_start, feat_end
+
+
 def calc_feature_properties(
         feat_name, wave, flux, feat_start, feat_end, eflux=None):
     """Calculate the properties of a single feature in a spectrum

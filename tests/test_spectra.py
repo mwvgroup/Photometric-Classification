@@ -76,15 +76,87 @@ class PEW(TestCase):
         self.assertListEqual(expected_norm_flux, norm_flux.tolist())
 
 
-class Velocity(TestCase):
-    # Todo: Write tests for ``feature_velocity``
+class FeatureIdentification(TestCase):
+    """Test the identification of feature boundaries"""
 
-    def runTest(self):
-        self.fail()
+    @classmethod
+    def setUpClass(cls):
+        # Create dummy spectrum
+        wave_range = (7000, 8001, 100)
+        cls.wavelength = np.arange(*wave_range)
+        cls.flux = np.ones_like(cls.wavelength)  # Define continuum
 
+        cls.peak_wavelengths = (7100, 7500)
+        for peak in cls.peak_wavelengths:
+            cls.flux[cls.wavelength == peak] = 10  # Add delta function peak
 
-class Properties(TestCase):
-    # Todo: Write tests for ``calc_feature_properties``
+    def test_peak_coordinates(self):
+        """Test the correct peak wavelength is found for a single flux spike"""
 
-    def runTest(self):
-        self.fail()
+        expected_peak = self.peak_wavelengths[0]
+        recovered_peak = spectra.get_peak_wavelength(
+            self.wavelength,
+            self.flux,
+            expected_peak - 10,
+            expected_peak + 10
+        )
+
+        self.assertEqual(expected_peak, recovered_peak)
+
+    def test_unobserved_feature(self):
+        """Test an error is raise if the feature is out of bounds"""
+
+        max_wavelength = max(self.wavelength)
+        with self.assertRaises(ValueError):
+            spectra.get_peak_wavelength(
+                self.wavelength,
+                self.flux,
+                max_wavelength + 10,
+                max_wavelength + 20
+            )
+
+    def test_double_peak(self):
+        """Test the correct feature wavelengths are found"""
+
+        lower_peak_wavelength = min(self.peak_wavelengths)
+        upper_peak_wavelength = max(self.peak_wavelengths)
+        recovered_lower_peak = spectra.get_peak_wavelength(
+            self.wavelength,
+            self.flux,
+            lower_peak_wavelength - 10,
+            upper_peak_wavelength + 10,
+            'min'
+        )
+
+        recovered_upper_peak = spectra.get_peak_wavelength(
+            self.wavelength,
+            self.flux,
+            lower_peak_wavelength - 10,
+            upper_peak_wavelength + 10,
+            'max'
+        )
+
+        self.assertEqual(
+            lower_peak_wavelength, recovered_lower_peak, 'Incorrect min peak')
+
+        self.assertEqual(
+            upper_peak_wavelength, recovered_upper_peak, 'Incorrect max peak')
+
+    def test_feature_bounds(self):
+        lower_peak_wavelength = min(self.peak_wavelengths)
+        upper_peak_wavelength = max(self.peak_wavelengths)
+        feature_dict = {
+            'lower_blue': lower_peak_wavelength - 10,
+            'upper_blue': lower_peak_wavelength + 10,
+            'lower_red': upper_peak_wavelength - 10,
+            'upper_red': upper_peak_wavelength + 10
+        }
+
+        feat_start, feat_end = spectra.get_feature_bounds(
+            self.wavelength, self.flux, feature_dict)
+
+        self.assertEqual(
+            lower_peak_wavelength, feat_start, 'Incorrect min peak')
+
+        self.assertEqual(
+            upper_peak_wavelength, feat_end, 'Incorrect max peak')
