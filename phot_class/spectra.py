@@ -9,9 +9,8 @@ import numpy as np
 from astropy import units
 from astropy.constants import c as speed_of_light
 from scipy.optimize import curve_fit
-
-# Todo: Compare outputs to original IDL code
-# Todo: Add flux error propagation
+from uncertainties import ufloat
+from uncertainties.unumpy import nominal_values, std_devs, uarray
 
 # In Angstroms
 line_locations = {
@@ -36,20 +35,15 @@ def feature_area(wave, flux):
     """Calculate the area of a feature
 
     Args:
-        wave (ndarray): A sorted array of wavelengths for the feature
-        flux (ndarray): An array of flux values for each wavelength
+        wave         (ndarray): A sorted array of wavelengths for the feature
+        flux (ndarray, uarray): An array of flux values for each wavelength
 
     Returns:
         The area of the feature
     """
 
-    x0 = wave[0]
-    x1 = wave[-1]
-    y0 = min(flux[0], flux[-1])
-    y1 = max(flux[0], flux[-1])
-
     # Feature area = area under continuum - area under spectrum
-    continuum_area = (x1 - x0) * y0 + (x1 - x0) * (y1 - y0) / 2.
+    continuum_area = (wave[-1] - wave[0]) * (flux[0] + flux[-1]) / 2
     spectrum_area = np.trapz(y=flux, x=wave)
     return continuum_area - spectrum_area
 
@@ -58,8 +52,8 @@ def feature_pew(wave, flux):
     """Calculate the pseudo equivalent-width of a feature
 
     Args:
-        wave (ndarray): A sorted array of wavelengths for the feature
-        flux (ndarray): An array of flux values for each wavelength
+        wave         (ndarray): A sorted array of wavelengths for the feature
+        flux (ndarray, uarray): An array of flux values for each wavelength
 
     Returns:
         The normalized flux
@@ -78,30 +72,37 @@ def feature_pew(wave, flux):
     return norm_flux, pew
 
 
-def feature_velocity(wave, flux, eflux, rest_frame, unit=None):
+def feature_velocity(rest_frame, wave, flux, eflux=None, unit=None):
     """Calculate the velocity of a feature
 
     Args:
-        wave     (ndarray): A sorted array of wavelengths for the feature
-        flux     (ndarray): An array of flux values for each wavelength
-        eflux    (ndarray): An array of error values for each flux value
-        rest_frame (float): The rest frame wavelength of the feature
-        unit  (PrefixUnit): Astropy unit to return velocity in (default km / s)
+        rest_frame     (float): The rest frame wavelength of the feature
+        wave         (ndarray): A sorted array of wavelengths for the feature
+        flux (ndarray, uarray): An array of flux values for each wavelength
+        eflux        (ndarray): An array of error values for each flux value
+        unit      (PrefixUnit): Astropy unit for returned velocity (default km/s)
 
     Returns:
         The velocity of the feature
     """
 
     unit = units.km / units.s if unit is None else unit
+    eflux = std_devs(flux) if eflux is None else eflux
+    flux = nominal_values(flux)
+
+    # Fit feature with a gaussian
     gaussian = lambda x, amplitude, avg, stddev, offset: \
         amplitude * np.exp(-((x - avg) ** 2) / (2 * stddev ** 2)) + offset
 
-    # Fit feature with a gaussian
-    start = [0.5, np.median(wave), 50., 0.]
     (amplitude, avg, stddev, offset), cov = curve_fit(
-        gaussian, wave, -(flux - 1), p0=start, sigma=eflux)
+        f=gaussian,
+        xdata=wave,
+        ydata=-(flux - 1),
+        p0=[0.5, np.median(wave), 50., 0.],
+        sigma=eflux)
 
     c = speed_of_light.to(unit).value
+    avg = ufloat(avg, np.sqrt(cov[1][1]))
     return c * (
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 - 1) /
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 + 1)
@@ -109,8 +110,12 @@ def feature_velocity(wave, flux, eflux, rest_frame, unit=None):
 
 
 def calc_feature_properties(
-        wave, flux, eflux, feat_name, feat_start, feat_end):
+        feat_name, wave, flux, feat_start, feat_end, eflux=None):
     """Calculate the properties of a single feature in a spectrum
+
+    Velocity values are returned in km / s. Error values are determined
+    both formally (summed in quadrature) and by re-sampling the feature
+    boundaries five steps in either direction.
 
     Args:
         wave     (ndarray): An array of wavelengths
@@ -121,13 +126,13 @@ def calc_feature_properties(
         feat_end   (float): Ending wavelength of the feature
 
     Returns:
-        - The average velocity
-        - The standard deviation in the velocity
-        - The average equivalent width
-        - The standard deviation in the equivalent width
-        - The average feature area
-        - The standard deviation in feature area
+        - (The line velocity, its formal error, and its sampling error)
+        - (The equivalent width, its formal error, and its sampling error)
+        - (The feature area, its formal error, and its sampling error)
     """
+
+    if eflux is not None:
+        flux = uarray(flux, eflux)
 
     # Get rest frame location of the specified feature
     rest_frame = line_locations[feat_name]
@@ -148,16 +153,31 @@ def calc_feature_properties(
 
             nw = wave[sample_start_idx: sample_end_idx]
             nf = flux[sample_start_idx: sample_end_idx]
-            nef = eflux[sample_start_idx: sample_end_idx]
 
             # Determine feature properties
             area.append(feature_area(nw, nf))
             norm_flux, pew = feature_pew(nw, nf)
             pequiv_width.append(pew)
-            velocity.append(feature_velocity(nw, norm_flux, nef, rest_frame))
+            velocity.append(feature_velocity(rest_frame, nw, norm_flux))
+
+    avg_velocity = np.mean(velocity)
+    avg_ew = np.mean(pequiv_width)
+    avg_area = np.mean(area)
 
     return (
-        np.mean(velocity), np.std(velocity),
-        np.mean(pequiv_width), np.std(pequiv_width),
-        np.mean(area), np.std(area)
+        (
+            avg_velocity.nominal_value,
+            avg_velocity.std_dev,
+            np.std(nominal_values(avg_velocity))
+        ),
+        (
+            avg_ew.nominal_value,
+            avg_ew.std_dev,
+            np.std(nominal_values(pequiv_width))
+        ),
+        (
+            avg_area.nominal_value,
+            avg_area.std_dev,
+            np.std(nominal_values(area))
+        )
     )

@@ -16,12 +16,12 @@ class Area(TestCase):
     def test_tophat(self):
         """Test the correct area is returned for an inverse top-hat feature"""
 
+        # We use a simulated flux that will remain unchanged when normalized
+        # This means the feature area is the same as the width of the feature
         wave = np.arange(1000, 3000)
         flux = np.ones_like(wave)
         flux[100:-100] = 0
 
-        # We use a simulated flux that will remain unchanged when normalized
-        # This means the feature area is the same as the width of the feature
         expected_area = len(wave) - 200
         returned_area = spectra.feature_area(wave, flux)
         self.assertEqual(expected_area, returned_area)
@@ -80,19 +80,6 @@ class Velocity(TestCase):
     # Todo: Write tests for ``feature_velocity``
 
     def runTest(self):
-        gaussian = lambda x, amplitude, avg, stddev, offset: \
-            amplitude * np.exp(-((x - avg) ** 2) / (2 * stddev ** 2)) + offset
-
-        amp = 10
-        avg = 2000
-        stddev = 15
-        offset = 500
-        wave = np.arange(1000, 3000)
-        flux = gaussian(wave, amp, avg, stddev, offset)
-        eflux = np.zeros_like(flux)
-
-        vel = spectra.feature_velocity(wave, flux, eflux, avg - 100)
-        print(vel)
         self.fail()
 
 
