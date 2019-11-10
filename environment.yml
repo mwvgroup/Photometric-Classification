@@ -30,6 +30,7 @@ dependencies:
       - nestle==0.2.0
       - pytest-cov
       - python-coveralls
+      - sfdmap
 
       # For test running
       - pytest==5.1.2
