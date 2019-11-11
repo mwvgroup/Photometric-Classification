@@ -1,8 +1,8 @@
 Literature Search
 =================
 
-Notes on a few particular papers relevant to this project. Some papers are
-included as summaries of other references.
+Notes are provided for a small subset of papers relevant to this project
+ as a quick reference sheet for the developers.
 
 Properties of 91bg-like SNe
 ---------------------------

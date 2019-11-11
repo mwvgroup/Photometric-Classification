@@ -10,6 +10,7 @@ from pathlib import Path
 
 import numpy as np
 import sfdmap
+import yaml
 from astropy import units
 from astropy.constants import c as speed_of_light
 from astropy.table import Table
@@ -17,21 +18,14 @@ from scipy.optimize import curve_fit
 from uncertainties import ufloat
 from uncertainties.unumpy import nominal_values, std_devs, uarray
 
-dust_path = Path(__file__).resolve().parent / 'sfddata-master'
-DUST_MAP = sfdmap.SFDMap(dust_path)
+# File paths for external data
+_file_dir = Path(__file__).resolve().parent
+dust_path = _file_dir.parent() / 'schlegel98_dust_map'
+line_locations_path = _file_dir / 'features.yml'
 
-# In Angstroms
-line_locations = {
-    'CaHK': 3945.02,
-    'MgII': 4481.00,
-    'FeII': 5169.00,
-    'SiIIW1': 5449.20,
-    'SiIIW2': 5622.46,
-    'CaII': 8578.79,  # Also 8498, 8542 and 8662
-    'NaD': 5895.0,
-    'FeI': 7000.0,
-    'OI': 7774.0,
-    'CaNIR': (11784. + 11839. + 11849.) / 3.}
+DUST_MAP = sfdmap.SFDMap(dust_path)
+with open(line_locations_path) as infile:
+    line_locations = yaml.load(infile, Loader=yaml.FullLoader)
 
 
 def feature_area(wave, flux):
@@ -266,8 +260,8 @@ def _spectrum_properties(wave, flux, z, ra, dec, eflux=None):
 
     # Iterate over features
     out_data = []
-    for feat_name in line_locations:
-        feat_start, feat_end = get_feature_bounds(wave, flux, feat_name)
+    for feat_name, feat_properties in line_locations:
+        feat_start, feat_end = get_feature_bounds(wave, flux, feat_properties)
         feat_properties = calc_feature_properties(
             feat_name, wave, flux, feat_start, feat_end, eflux)
 

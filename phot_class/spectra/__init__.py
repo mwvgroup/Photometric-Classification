@@ -1,1 +1,1 @@
-from ._spectra import *
+from ._calc_properties import *
