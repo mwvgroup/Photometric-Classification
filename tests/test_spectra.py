@@ -15,18 +15,18 @@ class SimulatedSpectrum:
     """Functions for simulating dummy spectra"""
 
     @staticmethod
-    def tophat(wave, m, b, start, end, height, seed=0):
+    def tophat(wave, m=0, b=1, start=100, end=-100, height=0, seed=0):
         """Simulate a top-hat absorption feature with normal errors
 
         Setting ``height=None`` will simulate just the continuum
 
         Args:
             wave (ndarray): Array of wavelengths to simulate flux for
-            m      (float): Slope of the continuum
-            b      (float): Y-intercept of the continuum
-            start    (int): Starting index for the top-hat
-            end      (int): Ending index for the top-hat
-            height (float): Height of the top-hat
+            m      (float): Slope of the continuum (default: 0)
+            b      (float): Y-intercept of the continuum (default: 1)
+            start    (int): Starting index for the top-hat (default: 100)
+            end      (int): Ending index for the top-hat (default: -100)
+            height (float): Height of the top-hat  (default: 0)
             seed   (float): Seed for random number generator (default: 0)
 
         Returns:
@@ -42,15 +42,15 @@ class SimulatedSpectrum:
         return flux, np.random.random(flux.size)
 
     @staticmethod
-    def gaussian(wave, amplitude=-1, mean=None, stddev=0, offset=0, seed=0):
+    def gaussian(wave, amplitude=-1, mean=None, stddev=1, offset=100, seed=0):
         """Simulate gaussian flux with normal errors
 
         Args:
             wave    (ndarray): Array of wavelengths to simulate flux for
             amplitude (float): Amplitude of the Gaussian (default: -1)
             mean      (float): Average of the Gaussian (default: mean of wave)
-            stddev    (float): Standard deviation of the Gaussian (default: 0)
-            offset    (float): Vertical offset of the Gaussian (default: 0)
+            stddev    (float): Standard deviation of the Gaussian (default: 1)
+            offset    (float): Vertical offset of the Gaussian (default: 100)
             seed      (float): Seed for random number generator (default: 0)
 
         Returns:
@@ -76,7 +76,7 @@ class Area(TestCase):
         # We use a simulated flux that will remain unchanged when normalized
         # This means the feature area is the same as the width of the feature
         wave = np.arange(1000, 3000)
-        flux, eflux = SimulatedSpectrum.tophat(wave, 0, 1, 100, -100, 0)
+        flux, eflux = SimulatedSpectrum.tophat(wave)
 
         expected_area = len(wave) - 200
         returned_area = spectra.feature_area(wave, flux)
@@ -94,7 +94,7 @@ class Area(TestCase):
         """Test the function supports input arrays with ufloat objects"""
 
         wave = np.arange(1000, 2000)
-        uflux = uarray(*SimulatedSpectrum.gaussian(wave))
+        uflux = uarray(*SimulatedSpectrum.gaussian(wave, stddev=100))
         returned_area = spectra.feature_area(wave, uflux)
         self.assertLess(0, returned_area.std_dev)
 
@@ -106,7 +106,7 @@ class PEW(TestCase):
         """Test the correct pew is returned for an inverse top-hat"""
 
         wave = np.arange(1000, 3000)
-        flux, eflux = SimulatedSpectrum.tophat(wave, 0, 1, 100, -100, 0)
+        flux, eflux = SimulatedSpectrum.tophat(wave)
 
         expected_area = len(wave) - 200
         normed_flux, returned_area = spectra.feature_pew(wave, flux)
@@ -119,7 +119,7 @@ class PEW(TestCase):
         """
 
         wave = np.arange(1000, 3000)
-        flux = 2 * wave
+        flux, eflux = SimulatedSpectrum.tophat(wave, height=None)
 
         norm_flux, pew = spectra.feature_pew(wave, flux)
         self.assertEqual(0, pew)
@@ -140,26 +140,30 @@ class PEW(TestCase):
     def test_uarray_support(self):
         """Test the function supports input arrays with ufloat objects"""
 
-        # Simulate gaussian flux with normal errors
         wave = np.arange(1000, 2000)
-        flux = - np.exp(-((wave - np.mean(wave)) ** 2) / 2)
-        np.random.seed(0)
-        eflux = np.random.random(flux.size)
-
-        uflux = uarray(flux, eflux)
+        uflux = uarray(*SimulatedSpectrum.gaussian(wave, stddev=100))
         norm_flux, pew = spectra.feature_pew(wave, uflux)
-        print(norm_flux, pew)
+        self.assertLess(0, pew.std_dev)
 
 
 class Velocity(TestCase):
     """Tests for the ``feature_area`` function"""
 
-    def runTest(self):
+    def test_velocity_estimation(self):
+        self.fail()
+
+    def test_uarray_support(self):
+        """Test the function supports input arrays with ufloat objects"""
+
+        wave = np.arange(1000, 2000)
+        uflux = uarray(*SimulatedSpectrum.gaussian(wave, stddev=100))
         self.fail()
 
 
 class FeatureIdentification(TestCase):
-    """Test the identification of feature boundaries"""
+    """Test and the identification of feature boundaries. Covered functions
+    include ``_get_peak_wavelength`` and ``get_feature_bounds``.
+    """
 
     @classmethod
     def setUpClass(cls):

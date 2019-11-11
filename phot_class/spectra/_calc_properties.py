@@ -72,6 +72,9 @@ def feature_pew(wave, flux):
 def feature_velocity(rest_frame, wave, flux, eflux=None, unit=None):
     """Calculate the velocity of a feature
 
+    Error values can be provided using the ``eflux`` argument, or
+    by specifying ``flux`` and an array of ``ufloat`` objects.
+
     Args:
         rest_frame     (float): The rest frame wavelength of the feature
         wave         (ndarray): A sorted array of wavelengths for the feature
@@ -82,6 +85,9 @@ def feature_velocity(rest_frame, wave, flux, eflux=None, unit=None):
     Returns:
         The velocity of the feature
     """
+
+    if eflux is None and not any(std_devs(flux)):
+        raise ValueError('No error values provided.')
 
     unit = units.km / units.s if unit is None else unit
     eflux = std_devs(flux) if eflux is None else eflux
