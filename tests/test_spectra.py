@@ -6,6 +6,7 @@
 from unittest import TestCase
 
 import numpy as np
+from astropy.constants import c
 from uncertainties.unumpy import uarray
 
 from phot_class import spectra
@@ -39,7 +40,8 @@ class SimulatedSpectrum:
             flux[start: end] = height
 
         np.random.seed(seed)
-        return flux, np.random.random(flux.size)
+        inverse_snr = np.random.randint(10, high=30, size=flux.size) / 100
+        return flux, flux * inverse_snr
 
     @staticmethod
     def gaussian(wave, amplitude=-1, mean=None, stddev=1, offset=100, seed=0):
@@ -64,7 +66,32 @@ class SimulatedSpectrum:
         ) + offset
 
         np.random.seed(seed)
-        return flux, np.random.random(flux.size)
+        inverse_snr = np.random.randint(10, high=30, size=flux.size) / 100
+        return flux, flux * inverse_snr
+
+    @staticmethod
+    def delta_func(wave, m=0, b=0, peak_wave=(), amplitude=1, seed=0):
+        """Simulate linear flux with interspersed delta functions
+
+        Args:
+            wave    (ndarray): Array of wavelengths to simulate flux for
+            m         (float): Slope of the continuum (default: 0)
+            b         (float): Y-intercept of the continuum (default: 1)
+            peak_wave  (iter): Starting index for the top-hat (default: 100)
+            amplitude (float): Height of the delta functions
+            seed      (float): Seed for random number generator (default: 0)
+
+        Returns:
+            - An array of flux values
+            - An array of error values
+        """
+
+        flux = m * wave + b
+        flux[np.isin(wave, peak_wave)] = amplitude
+
+        np.random.seed(seed)
+        inverse_snr = np.random.randint(10, high=30, size=flux.size) / 100
+        return flux, flux * inverse_snr
 
 
 class Area(TestCase):
@@ -150,7 +177,18 @@ class Velocity(TestCase):
     """Tests for the ``feature_area`` function"""
 
     def test_velocity_estimation(self):
-        self.fail()
+        wave = np.arange(1000, 2000)
+        lambda_observed = 1700
+        lambda_rest = np.mean(wave)
+        flux, eflux = SimulatedSpectrum.gaussian(
+            wave, mean=lambda_rest, stddev=100)
+
+        # Doppler equation: λ_observed = λ_source (c − v_source) / c
+        v_expected = (c * (1 - (lambda_observed / lambda_rest))).value
+        v_returned = spectra.feature_velocity(
+            lambda_rest, wave, flux, eflux, unit=c.unit)
+
+        self.assertEqual(v_expected, v_returned.nominal_value)
 
     def test_uarray_support(self):
         """Test the function supports input arrays with ufloat objects"""
@@ -160,31 +198,26 @@ class Velocity(TestCase):
         self.fail()
 
 
-class FeatureIdentification(TestCase):
-    """Test and the identification of feature boundaries. Covered functions
-    include ``_get_peak_wavelength`` and ``get_feature_bounds``.
-    """
+class FindPeakWavelength(TestCase):
+    """Tests for the ``find_peak_wavelength`` function"""
 
     @classmethod
     def setUpClass(cls):
-        # Create dummy spectrum
-        wave_range = (7000, 8001, 100)
-        cls.wavelength = np.arange(*wave_range)
-        cls.flux = np.ones_like(cls.wavelength)  # Define continuum
-
-        cls.peak_wavelengths = (7100, 7500)
-        for peak in cls.peak_wavelengths:
-            cls.flux[cls.wavelength == peak] = 10  # Add delta function peak
+        # Note that we are simulating delta function emission features
+        cls.wave = np.arange(100, 300)
+        cls.peak_wavelengths = (210, 250)
+        cls.flux, cls.eflux = SimulatedSpectrum.delta_func(
+            cls.wave, m=1, b=10, amplitude=500, peak_wave=cls.peak_wavelengths)
 
     def test_peak_coordinates(self):
         """Test the correct peak wavelength is found for a single flux spike"""
 
         expected_peak = self.peak_wavelengths[0]
-        recovered_peak = spectra._calc_properties._get_peak_wavelength(
-            self.wavelength,
-            self.flux,
-            expected_peak - 10,
-            expected_peak + 10
+        recovered_peak = spectra.find_peak_wavelength(
+            wave=self.wave,
+            flux=self.flux,
+            lower_bound=expected_peak - 10,
+            upper_bound=expected_peak + 10
         )
 
         self.assertEqual(expected_peak, recovered_peak)
@@ -192,30 +225,35 @@ class FeatureIdentification(TestCase):
     def test_unobserved_feature(self):
         """Test an error is raise if the feature is out of bounds"""
 
-        max_wavelength = max(self.wavelength)
+        max_wavelength = max(self.wave)
         with self.assertRaises(ValueError):
-            spectra._calc_properties._get_peak_wavelength(
-                self.wavelength,
-                self.flux,
-                max_wavelength + 10,
-                max_wavelength + 20
+            spectra._calc_properties.find_peak_wavelength(
+                wave=self.wave,
+                flux=self.flux,
+                lower_bound=max_wavelength + 10,
+                upper_bound=max_wavelength + 20
             )
 
     def test_double_peak(self):
-        """Test the correct feature wavelengths are found"""
+        """Test the correct feature wavelengths are found corresponding to
+        ``behavior = 'min'`` and ``behavior = 'max'``
+        """
 
         lower_peak_wavelength = min(self.peak_wavelengths)
         upper_peak_wavelength = max(self.peak_wavelengths)
-        recovered_lower_peak = spectra._calc_properties._get_peak_wavelength(
-            self.wavelength,
+        returned_lower_peak = spectra.find_peak_wavelength(
+            self.wave,
             self.flux,
             lower_peak_wavelength - 10,
             upper_peak_wavelength + 10,
             'min'
         )
 
-        recovered_upper_peak = spectra._calc_properties._get_peak_wavelength(
-            self.wavelength,
+        self.assertEqual(
+            lower_peak_wavelength, returned_lower_peak, 'Incorrect min peak')
+
+        returned_upper_peak = spectra.find_peak_wavelength(
+            self.wave,
             self.flux,
             lower_peak_wavelength - 10,
             upper_peak_wavelength + 10,
@@ -223,14 +261,23 @@ class FeatureIdentification(TestCase):
         )
 
         self.assertEqual(
-            lower_peak_wavelength, recovered_lower_peak, 'Incorrect min peak')
+            upper_peak_wavelength, returned_upper_peak, 'Incorrect max peak')
 
-        self.assertEqual(
-            upper_peak_wavelength, recovered_upper_peak, 'Incorrect max peak')
 
-    def test_feature_bounds(self):
-        lower_peak_wavelength = min(self.peak_wavelengths)
-        upper_peak_wavelength = max(self.peak_wavelengths)
+class FindFeatureBounds(TestCase):
+    """Tests for the ``find_feature_bounds`` function"""
+
+    def runTest(self):
+        """Test correct boundaries are returned for a simulated feature"""
+
+        # Note that we are simulating delta function absorption features
+        wave = np.arange(7000, 8001)
+        peak_wavelengths = (7100, 7500)
+        flux, eflux = SimulatedSpectrum.delta_func(
+            wave, peak_wave=peak_wavelengths)
+
+        lower_peak_wavelength = min(peak_wavelengths)
+        upper_peak_wavelength = max(peak_wavelengths)
         feature_dict = {
             'lower_blue': lower_peak_wavelength - 10,
             'upper_blue': lower_peak_wavelength + 10,
@@ -238,8 +285,8 @@ class FeatureIdentification(TestCase):
             'upper_red': upper_peak_wavelength + 10
         }
 
-        feat_start, feat_end = spectra.get_feature_bounds(
-            self.wavelength, self.flux, feature_dict)
+        feat_start, feat_end = spectra.find_feature_bounds(
+            wave, flux, feature_dict)
 
         self.assertEqual(
             lower_peak_wavelength, feat_start, 'Incorrect min peak')

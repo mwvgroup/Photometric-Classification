@@ -12,7 +12,7 @@ import numpy as np
 import sfdmap
 import yaml
 from astropy import units
-from astropy.constants import c as speed_of_light
+from astropy.constants import c
 from astropy.table import Table
 from scipy.optimize import curve_fit
 from uncertainties import ufloat
@@ -104,16 +104,16 @@ def feature_velocity(rest_frame, wave, flux, eflux=None, unit=None):
         p0=[0.5, np.median(wave), 50., 0.],
         sigma=eflux)
 
-    c = speed_of_light.to(unit).value
     avg = ufloat(avg, np.sqrt(cov[1][1]))
-    return c * (
+    speed_of_light = c.to(unit).value
+    return speed_of_light * (
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 - 1) /
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 + 1)
     )
 
 
-def _get_peak_wavelength(
-        wavelength, flux, lower_bound, upper_bound, behavior='min'):
+def find_peak_wavelength(
+        wave, flux, lower_bound, upper_bound, behavior='min'):
     """Return wavelength of the maximum flux within given wavelength bounds
 
     The behavior argument can be used to select the 'min' or 'max' wavelength
@@ -121,7 +121,7 @@ def _get_peak_wavelength(
     default behavior is 'min'.
 
     Args:
-        wavelength (ndarray): An array of wavelength values
+        wave       (ndarray): An array of wavelength values
         flux       (ndarray): An array of flux values
         lower_bound  (float): Lower wavelength boundary
         upper_bound  (float): Upper wavelength boundary
@@ -133,37 +133,37 @@ def _get_peak_wavelength(
     """
 
     # Make sure the given spectrum spans the given wavelength bounds
-    if (min(wavelength) > lower_bound) or (upper_bound > max(wavelength)):
+    if (min(wave) > lower_bound) or (upper_bound > max(wave)):
         raise ValueError('Feature not in spectral wavelength range.')
 
     # Select the portion of the spectrum within the given bounds
-    feature_indices = (lower_bound <= wavelength) & (wavelength <= upper_bound)
+    feature_indices = (lower_bound <= wave) & (wave <= upper_bound)
     feature_flux = flux[feature_indices]
-    feature_wavelength = wavelength[feature_indices]
+    feature_wavelength = wave[feature_indices]
 
     peak_indices = np.argwhere(feature_flux == np.max(feature_flux))
     behavior_func = getattr(np, behavior)
     return behavior_func(feature_wavelength[peak_indices])
 
 
-def get_feature_bounds(wavelength, flux, feature):
+def find_feature_bounds(wave, flux, feature):
     """Get the start and end wavelengths / flux for a given feature
 
     Args:
-        wavelength (ndarray): An array of wavelength values
-        flux       (ndarray): An array of flux values
-        feature        (row): A dictionary defining feature parameters
+        wave (ndarray): An array of wavelength values
+        flux (ndarray): An array of flux values
+        feature (dict): A dictionary defining feature parameters
 
     Returns:
         The starting wavelength of the feature
         The ending wavelength of the feature
     """
 
-    feat_start = _get_peak_wavelength(
-        wavelength, flux, feature['lower_blue'], feature['upper_blue'], 'min')
+    feat_start = find_peak_wavelength(
+        wave, flux, feature['lower_blue'], feature['upper_blue'], 'min')
 
-    feat_end = _get_peak_wavelength(
-        wavelength, flux, feature['lower_red'], feature['upper_red'], 'max')
+    feat_end = find_peak_wavelength(
+        wave, flux, feature['lower_red'], feature['upper_red'], 'max')
 
     return feat_start, feat_end
 
@@ -267,7 +267,7 @@ def _spectrum_properties(wave, flux, z, ra, dec, eflux=None):
     # Iterate over features
     out_data = []
     for feat_name, feat_properties in line_locations:
-        feat_start, feat_end = get_feature_bounds(wave, flux, feat_properties)
+        feat_start, feat_end = find_feature_bounds(wave, flux, feat_properties)
         feat_properties = calc_feature_properties(
             feat_name, wave, flux, feat_start, feat_end, eflux)
 
