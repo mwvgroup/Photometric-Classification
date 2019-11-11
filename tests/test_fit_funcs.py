@@ -131,29 +131,3 @@ class MCMCFit(BaseTestingClass):
         """Test fit results agree with the equivalent sncosmo function"""
 
         self._test_agrees_with_sncsomo(sncosmo.mcmc_lc)
-
-
-class NestedSimpleFit(BaseTestingClass):
-    """Tests for the ``nested_simple_fit`` function"""
-
-    @staticmethod
-    def fit_func(*a, **kw):
-        return fit_func_wraps.nested_simple_fit(*a, **kw)
-
-    def test_mutation(self):
-        """Test arguments are not mutated"""
-
-        self._test_mutation()
-
-
-class NestedMCMCFit(BaseTestingClass):
-    """Tests for the ``nested_mcmc_fit`` function"""
-
-    @staticmethod
-    def fit_func(*a, **kw):
-        return fit_func_wraps.nested_mcmc_fit(*a, **kw)
-
-    def test_mutation(self):
-        """Test arguments are not mutated"""
-
-        self._test_mutation()
