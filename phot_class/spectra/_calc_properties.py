@@ -83,16 +83,15 @@ def feature_velocity(rest_frame, wave, flux, unit=None, plot=False):
         The velocity of the feature
     """
 
+    eflux = std_devs(flux)
+    flux = nominal_values(flux)
     unit = units.km / units.s if unit is None else unit
 
     # Fit feature with a gaussian
-    gaussian = lambda x, amplitude, avg, stddev, offset: \
-        -amplitude * np.exp(-((x - avg) ** 2) / (2 * stddev ** 2)) + offset
+    def gaussian(x, depth, avg, stddev, offset):
+        return -depth * np.exp(-((x - avg) ** 2) / (2 * stddev ** 2)) + offset
 
-    eflux = std_devs(flux)
-    flux = nominal_values(flux)
-
-    (amplitude, avg, stddev, offset), cov = curve_fit(
+    (depth, avg, stddev, offset), cov = curve_fit(
         f=gaussian,
         xdata=wave,
         ydata=flux,
@@ -102,7 +101,7 @@ def feature_velocity(rest_frame, wave, flux, unit=None, plot=False):
     if plot:
         plt.scatter(wave, flux, label='Measured', color='C0', s=5)
         plt.errorbar(wave, flux, yerr=eflux, color='C0', linestyle='')
-        fit = gaussian(wave, amplitude, avg, stddev, offset)
+        fit = gaussian(wave, depth, avg, stddev, offset)
         plt.plot(wave, fit, label='Fit', color='C1')
         plt.axvline(avg, color='k', linestyle='--', label=f'Average: {avg}')
         plt.legend()

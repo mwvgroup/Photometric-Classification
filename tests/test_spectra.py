@@ -184,7 +184,12 @@ class Velocity(TestCase):
             wave, mean=lambda_observed, stddev=100)
 
         # Doppler equation: λ_observed = λ_source (c − v_source) / c
-        v_expected = (c * (1 - (lambda_observed / lambda_rest))).value
+        # v_expected = (c * (1 - (lambda_observed / lambda_rest))).value
+        lambda_ratio = ((lambda_rest - lambda_observed) / lambda_rest) + 1
+        v_expected = c.value * (
+                (lambda_ratio ** 2 - 1) / (lambda_ratio ** 2 + 1)
+        )
+
         v_returned = spectra.feature_velocity(
             lambda_rest, wave, flux, unit=c.unit)
 
@@ -201,7 +206,7 @@ class Velocity(TestCase):
 
         velocity_no_err = spectra.feature_velocity(lambda_rest, wave, flux)
         velocity_w_err = spectra.feature_velocity(lambda_rest, wave, uflux)
-        self.assertEqual(velocity_no_err, velocity_w_err.nominal_value)
+        self.assertAlmostEqual(velocity_no_err, velocity_w_err.nominal_value)
 
 
 class FindPeakWavelength(TestCase):
