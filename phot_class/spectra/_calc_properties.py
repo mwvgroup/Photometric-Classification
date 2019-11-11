@@ -169,7 +169,7 @@ def find_feature_bounds(wave, flux, feature):
 
 
 def calc_feature_properties(
-        feat_name, wave, flux, feat_start, feat_end, eflux=None):
+        feat_name, wave, flux, feat_start, feat_end, eflux=None, debug=False):
     """Calculate the properties of a single feature in a spectrum
 
     Velocity values are returned in km / s. Error values are determined
@@ -218,6 +218,9 @@ def calc_feature_properties(
             norm_flux, pew = feature_pew(nw, nf)
             pequiv_width.append(pew)
             velocity.append(feature_velocity(rest_frame, nw, norm_flux))
+
+    if debug:
+        return velocity, pequiv_width, area
 
     avg_velocity = np.mean(velocity)
     avg_ew = np.mean(pequiv_width)

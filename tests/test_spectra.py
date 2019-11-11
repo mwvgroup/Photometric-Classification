@@ -267,7 +267,7 @@ class FindPeakWavelength(TestCase):
 class FindFeatureBounds(TestCase):
     """Tests for the ``find_feature_bounds`` function"""
 
-    def runTest(self):
+    def test_bounds_for_simulated_feature(self):
         """Test correct boundaries are returned for a simulated feature"""
 
         # Note that we are simulating delta function absorption features
@@ -293,3 +293,60 @@ class FindFeatureBounds(TestCase):
 
         self.assertEqual(
             upper_peak_wavelength, feat_end, 'Incorrect max peak')
+
+
+class CalcFeatureProperties(TestCase):
+    """Tests for the ``calc_feature_properties`` function"""
+
+    def test_number_of_samples(self):
+        """Test the correct number of samples are performed"""
+
+        self.fail()
+
+    def test_return_order(self):
+        """Test values are returned in the correct order"""
+
+        self.fail()
+
+    def test_uarray_support(self):
+        """Test the function supports input arrays with ufloat objects"""
+
+        self.fail()
+
+
+class SpectrumProperties(TestCase):
+    """Tests for the ``_spectrum_properties`` function"""
+
+    @classmethod
+    def setUpClass(cls):
+        # Overwrite line definitions
+        pass
+
+    def test_redshift_dependance(self):
+        """Test properties of rest-framed spectra are independent of z"""
+
+        self.fail()
+
+    def test_extinction_dependence(self):
+        """Test properties scale correctly with extinction"""
+
+        self.fail()
+
+
+class TabulateSpectrumProperties(TestCase):
+    """Tests for the ``tabulate_spectral_properties`` function"""
+
+    @classmethod
+    def setUpClass(cls):
+        # Overwrite line definitions
+        pass
+
+    def test_column_names(self):
+        """Test the returned table has the correct column names"""
+
+        self.fail()
+
+    def test_uarray_support(self):
+        """Test the function supports input arrays with ufloat objects"""
+
+        self.fail()
