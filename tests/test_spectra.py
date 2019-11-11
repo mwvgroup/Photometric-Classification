@@ -40,7 +40,7 @@ class SimulatedSpectrum:
             flux[start: end] = height
 
         np.random.seed(seed)
-        inverse_snr = np.random.randint(10, high=30, size=flux.size) / 100
+        inverse_snr = np.random.randint(1, high=10, size=flux.size) / 1000
         return flux, flux * inverse_snr
 
     @staticmethod
@@ -66,7 +66,7 @@ class SimulatedSpectrum:
         ) + offset
 
         np.random.seed(seed)
-        inverse_snr = np.random.randint(10, high=30, size=flux.size) / 100
+        inverse_snr = np.random.randint(1, high=10, size=flux.size) / 1000
         return flux, flux * inverse_snr
 
     @staticmethod
@@ -90,7 +90,7 @@ class SimulatedSpectrum:
         flux[np.isin(wave, peak_wave)] = amplitude
 
         np.random.seed(seed)
-        inverse_snr = np.random.randint(10, high=30, size=flux.size) / 100
+        inverse_snr = np.random.randint(1, high=10, size=flux.size) / 1000
         return flux, flux * inverse_snr
 
 
@@ -178,24 +178,30 @@ class Velocity(TestCase):
 
     def test_velocity_estimation(self):
         wave = np.arange(1000, 2000)
-        lambda_observed = 1700
         lambda_rest = np.mean(wave)
+        lambda_observed = lambda_rest - 100
         flux, eflux = SimulatedSpectrum.gaussian(
-            wave, mean=lambda_rest, stddev=100)
+            wave, mean=lambda_observed, stddev=100)
 
         # Doppler equation: λ_observed = λ_source (c − v_source) / c
         v_expected = (c * (1 - (lambda_observed / lambda_rest))).value
         v_returned = spectra.feature_velocity(
-            lambda_rest, wave, flux, eflux, unit=c.unit)
+            lambda_rest, wave, flux, unit=c.unit)
 
-        self.assertEqual(v_expected, v_returned.nominal_value)
+        self.assertEqual(v_expected, v_returned)
 
     def test_uarray_support(self):
         """Test the function supports input arrays with ufloat objects"""
 
         wave = np.arange(1000, 2000)
-        uflux = uarray(*SimulatedSpectrum.gaussian(wave, stddev=100))
-        self.fail()
+        lambda_rest = np.mean(wave)
+
+        flux, eflux = SimulatedSpectrum.gaussian(wave, stddev=100)
+        uflux = uarray(flux, eflux)
+
+        velocity_no_err = spectra.feature_velocity(lambda_rest, wave, flux)
+        velocity_w_err = spectra.feature_velocity(lambda_rest, wave, uflux)
+        self.assertEqual(velocity_no_err, velocity_w_err.nominal_value)
 
 
 class FindPeakWavelength(TestCase):
@@ -298,15 +304,63 @@ class FindFeatureBounds(TestCase):
 class CalcFeatureProperties(TestCase):
     """Tests for the ``calc_feature_properties`` function"""
 
+    @classmethod
+    def setUpClass(cls):
+        cls.wave = np.arange(1000, 3000)
+        cls.rest_wave = np.mean(cls.wave)
+        stddev = 100
+        cls.flux, err = SimulatedSpectrum.gaussian(
+            cls.wave, mean=cls.rest_wave, stddev=stddev)
+
+        cls.feat_start = cls.wave[
+            (np.abs(cls.wave - cls.rest_wave + 2 * stddev)).argmin()]
+
+        cls.feat_end = cls.wave[
+            (np.abs(cls.wave - cls.rest_wave - 2 * stddev)).argmin()]
+
+        cls.area = spectra.feature_area(cls.wave, cls.flux)
+        cls.pequiv_width = spectra.feature_pew(cls.wave, cls.flux)
+        cls.velocity = spectra.feature_velocity(
+            cls.rest_wave, cls.wave, cls.flux)
+
+        cls.feat_name = 'test_CalcFeatureProperties'
+        line_properties = {
+            'restframe': 5169.00,
+            'lower_blue': 4500,
+            'upper_blue': 4700,
+            'lower_red': 5050,
+            'upper_red': 5550
+        }
+        spectra.line_locations[cls.feat_name] = line_properties
+
+    @classmethod
+    def tearDownClass(cls):
+        del spectra.line_locations['test_CalcFeatureProperties']
+
     def test_number_of_samples(self):
         """Test the correct number of samples are performed"""
 
-        self.fail()
+        velocity, pequiv_width, area = spectra.calc_feature_properties(
+            self.feat_name, self.wave, self.flux,
+            self.feat_start, self.feat_end, debug=True)
+
+        num_sample_steps = 5
+        num_samples = ((2 * num_sample_steps) + 1) ** 2
+        self.assertEqual(num_samples, len(velocity))
+        self.assertEqual(num_samples, len(pequiv_width))
+        self.assertEqual(num_samples, len(area))
 
     def test_return_order(self):
         """Test values are returned in the correct order"""
 
-        self.fail()
+        velocity, pequiv_width, area = spectra.calc_feature_properties(
+            self.feat_name, self.wave, self.flux,
+            self.feat_start, self.feat_end)
+
+        msg = ' values do not match.'
+        # self.assertEqual(self.velocity, velocity[0], 'Velocity' + msg)
+        self.assertEqual(self.pequiv_width, pequiv_width[0], 'EW' + msg)
+        self.assertEqual(self.area, area[0], 'Area' + msg)
 
     def test_uarray_support(self):
         """Test the function supports input arrays with ufloat objects"""
@@ -322,7 +376,7 @@ class SpectrumProperties(TestCase):
         # Overwrite line definitions
         pass
 
-    def test_redshift_dependance(self):
+    def test_redshift_dependence(self):
         """Test properties of rest-framed spectra are independent of z"""
 
         self.fail()

@@ -14,8 +14,9 @@ import yaml
 from astropy import units
 from astropy.constants import c
 from astropy.table import Table
+from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
-from uncertainties import ufloat
+from uncertainties import nominal_value, std_dev, ufloat
 from uncertainties.unumpy import nominal_values, std_devs, uarray
 
 # File paths for external data
@@ -69,42 +70,47 @@ def feature_pew(wave, flux):
     return norm_flux, pew
 
 
-def feature_velocity(rest_frame, wave, flux, eflux=None, unit=None):
+def feature_velocity(rest_frame, wave, flux, unit=None, plot=False):
     """Calculate the velocity of a feature
-
-    Error values can be provided using the ``eflux`` argument, or
-    by specifying ``flux`` and an array of ``ufloat`` objects.
 
     Args:
         rest_frame     (float): The rest frame wavelength of the feature
         wave         (ndarray): A sorted array of wavelengths for the feature
         flux (ndarray, uarray): An array of flux values for each wavelength
-        eflux        (ndarray): An array of error values for each flux value
         unit      (PrefixUnit): Astropy unit for returned velocity (default km/s)
 
     Returns:
         The velocity of the feature
     """
 
-    if eflux is None and not any(std_devs(flux)):
-        raise ValueError('No error values provided.')
-
     unit = units.km / units.s if unit is None else unit
-    eflux = std_devs(flux) if eflux is None else eflux
-    flux = nominal_values(flux)
 
     # Fit feature with a gaussian
     gaussian = lambda x, amplitude, avg, stddev, offset: \
-        amplitude * np.exp(-((x - avg) ** 2) / (2 * stddev ** 2)) + offset
+        -amplitude * np.exp(-((x - avg) ** 2) / (2 * stddev ** 2)) + offset
+
+    eflux = std_devs(flux)
+    flux = nominal_values(flux)
 
     (amplitude, avg, stddev, offset), cov = curve_fit(
         f=gaussian,
         xdata=wave,
-        ydata=-(flux - 1),
-        p0=[0.5, np.median(wave), 50., 0.],
-        sigma=eflux)
+        ydata=flux,
+        p0=[0.5, np.median(wave), 50., 0],
+        sigma=eflux if any(eflux) else None)
 
-    avg = ufloat(avg, np.sqrt(cov[1][1]))
+    if plot:
+        plt.scatter(wave, flux, label='Measured', color='C0', s=5)
+        plt.errorbar(wave, flux, yerr=eflux, color='C0', linestyle='')
+        fit = gaussian(wave, amplitude, avg, stddev, offset)
+        plt.plot(wave, fit, label='Fit', color='C1')
+        plt.axvline(avg, color='k', linestyle='--', label=f'Average: {avg}')
+        plt.legend()
+        plt.show()
+
+    if any(eflux):
+        avg = ufloat(avg, np.sqrt(cov[1][1]))
+
     speed_of_light = c.to(unit).value
     return speed_of_light * (
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 - 1) /
@@ -194,7 +200,7 @@ def calc_feature_properties(
         flux = uarray(flux, eflux)
 
     # Get rest frame location of the specified feature
-    rest_frame = line_locations[feat_name]
+    rest_frame = line_locations[feat_name]['restframe']
 
     # Get indices for beginning and end of the feature
     idx_start = np.where(wave == feat_start)[0][0]
@@ -228,18 +234,18 @@ def calc_feature_properties(
 
     return (
         (
-            avg_velocity.nominal_value,
-            avg_velocity.std_dev,
+            nominal_value(avg_velocity),
+            std_dev(avg_velocity),
             np.std(nominal_values(avg_velocity))
         ),
         (
-            avg_ew.nominal_value,
-            avg_ew.std_dev,
+            nominal_value(avg_ew),
+            std_dev(avg_ew),
             np.std(nominal_values(pequiv_width))
         ),
         (
-            avg_area.nominal_value,
-            avg_area.std_dev,
+            nominal_value(avg_area),
+            std_dev(avg_area),
             np.std(nominal_values(area))
         )
     )
