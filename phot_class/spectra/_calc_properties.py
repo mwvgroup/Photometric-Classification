@@ -20,7 +20,7 @@ from uncertainties.unumpy import nominal_values, std_devs, uarray
 
 # File paths for external data
 _file_dir = Path(__file__).resolve().parent
-dust_path = _file_dir.parent() / 'schlegel98_dust_map'
+dust_path = _file_dir.parent / 'schlegel98_dust_map'
 line_locations_path = _file_dir / 'features.yml'
 
 DUST_MAP = sfdmap.SFDMap(dust_path)
