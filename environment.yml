@@ -18,6 +18,8 @@ dependencies:
   - sncosmo=2.0.0
 
   - pip:
+      - uncertainties==3.1.2
+      - extinction==0.4.0
       - nestle==0.2.0
       - sndata==0.7.0
       - emcee==2.2.1
@@ -30,7 +32,7 @@ dependencies:
       - nestle==0.2.0
       - pytest-cov
       - python-coveralls
-      - sfdmap
+      - sfdmap==0.1.1
 
       # For test running
       - pytest==5.1.2
