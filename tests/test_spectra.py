@@ -364,7 +364,7 @@ class SampleFeatureProperties(TestCase):
          number of steps.
 
          If ``nsamp`` is not specified use:
-             nsamp = ((2 * nstep) + 1) ** 2 if nsamp
+             nsamp = ((2 * nstep) + 1) ** 2
 
         Args:
             nstep (float): Number of steps taken in each direction
