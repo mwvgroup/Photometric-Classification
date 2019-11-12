@@ -341,7 +341,36 @@ class SampleFeatureProperties(TestCase):
     def tearDownClass(cls):
         del spectra.line_locations[cls.feat_name]
 
+    def test_range_too_narrow(self):
+        """Test an error is raised if too narrow a feature is specified"""
+
+        args = dict(
+            feat_name=self.feat_name,
+            feat_start=self.wave[100],
+            feat_end=self.wave[109],
+            wave=self.wave,
+            flux=self.flux
+        )
+
+        self.assertRaisesRegex(
+            ValueError,
+            'Range too small.*',
+            spectra.sample_feature_properties,
+            **args
+        )
+
     def assertNumberSamples(self, nstep, nsamp=None):
+        """Assert the correct number of samples were performed for a given
+         number of steps.
+
+         If ``nsamp`` is not specified use:
+             nsamp = ((2 * nstep) + 1) ** 2 if nsamp
+
+        Args:
+            nstep (float): Number of steps taken in each direction
+            nsamp (float): Number of expected samples
+        """
+
         velocity, pequiv_width, area = spectra.sample_feature_properties(
             self.feat_name, self.feat_start, self.feat_end, self.wave,
             self.flux, nstep=nstep, debug=True)
