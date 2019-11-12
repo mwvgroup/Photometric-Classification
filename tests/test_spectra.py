@@ -339,7 +339,7 @@ class SampleFeatureProperties(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        del spectra.line_locations['test_CalcFeatureProperties']
+        del spectra.line_locations[cls.feat_name]
 
     def assertNumberSamples(self, nstep, nsamp=None):
         velocity, pequiv_width, area = spectra.sample_feature_properties(
@@ -395,19 +395,46 @@ class SampleFeatureProperties(TestCase):
         self.assertAlmostEqual(self.area, area[0], msg=msg.format('Area'))
 
 
-
 class SpectrumProperties(TestCase):
     """Tests for the ``_spectrum_properties`` function"""
 
     @classmethod
     def setUpClass(cls):
-        # Overwrite line definitions
-        pass
+        # Define test spectrum
+        cls.wave = np.arange(1000, 2000)
+        cls.observed_wave = np.mean(cls.wave)
+        cls.rest_wave = cls.observed_wave - 100
+        cls.flux, error = SimulatedSpectrum.gaussian(
+            cls.wave, mean=cls.observed_wave, stddev=100)
 
-    def test_redshift_dependence(self):
+        line_properties = {
+            'restframe': cls.rest_wave,
+            'lower_blue': cls.wave[100],
+            'upper_blue': cls.wave[100],
+            'lower_red': cls.wave[-100],
+            'upper_red': cls.wave[-100]
+        }
+
+        cls.old_lines = spectra._calc_properties.line_locations
+        spectra._calc_properties.line_locations = \
+            {'test_SpectrumProperties': line_properties}
+
+    @classmethod
+    def tearDownClass(cls):
+        spectra._calc_properties.line_locations = cls.old_lines
+
+    def test_spectrum_restframing(self):
         """Test properties of rest-framed spectra are independent of z"""
 
-        self.fail()
+        z0_return = spectra._calc_properties._spectrum_properties(
+            self.wave, self.flux, z=0, ra=1, dec=1)
+
+        test_z = 1
+        wave_at_z = self.wave * (1 + test_z)
+        z1_return = spectra._calc_properties._spectrum_properties(
+            wave_at_z, self.flux, z=test_z, ra=1, dec=1)
+
+        self.assertListEqual(z0_return, z1_return)
 
     def test_extinction_dependence(self):
         """Test properties scale correctly with extinction"""
@@ -420,15 +447,46 @@ class TabulateSpectrumProperties(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # Overwrite line definitions
-        pass
+        # Define test spectrum
+        cls.wave = np.arange(1000, 2000)
+        cls.observed_wave = np.mean(cls.wave)
+        cls.rest_wave = cls.observed_wave - 100
+        cls.flux, cls.error = SimulatedSpectrum.gaussian(
+            cls.wave, mean=cls.observed_wave, stddev=100)
+
+        line_properties = {
+            'restframe': cls.rest_wave,
+            'lower_blue': cls.wave[100],
+            'upper_blue': cls.wave[100],
+            'lower_red': cls.wave[-100],
+            'upper_red': cls.wave[-100]
+        }
+
+        cls.old_lines = spectra._calc_properties.line_locations
+        spectra._calc_properties.line_locations = \
+            {'test_TabulateSpectrumProperties': line_properties}
+
+    @classmethod
+    def tearDownClass(cls):
+        spectra.line_locations = cls.old_lines
 
     def test_column_names(self):
         """Test the returned table has the correct column names"""
 
-        self.fail()
+        expected_names = [
+            'date',
+            'test_TabulateSpectrumProperties_vel',
+            'test_TabulateSpectrumProperties_vel_err',
+            'test_TabulateSpectrumProperties_vel_samperr',
+            'test_TabulateSpectrumProperties_pew',
+            'test_TabulateSpectrumProperties_pew_err',
+            'test_TabulateSpectrumProperties_pew_samperr',
+            'test_TabulateSpectrumProperties_area',
+            'test_TabulateSpectrumProperties_area_err',
+            'test_TabulateSpectrumProperties_area_samperr'
+        ]
 
-    def test_uarray_support(self):
-        """Test the function supports input arrays with ufloat objects"""
+        returned_table = spectra.tabulate_spectral_properties(
+            [], [], [], [], [], [])
 
-        self.fail()
+        self.assertListEqual(expected_names, returned_table.colnames)

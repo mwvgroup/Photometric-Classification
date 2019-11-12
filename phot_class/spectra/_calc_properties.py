@@ -248,7 +248,7 @@ def sample_feature_properties(
     )
 
 
-def _spectrum_properties(wave, flux, z, ra, dec, eflux=None):
+def _spectrum_properties(wave, flux, z, ra, dec, av=3.1):
     """Calculate the properties of multiple features in a spectrum
 
     Velocity, pseudo equivalent width, and area are returned for
@@ -264,55 +264,52 @@ def _spectrum_properties(wave, flux, z, ra, dec, eflux=None):
     """
 
     # rest-frame spectra
-    wave /= 1 + z
+    wave = wave / (1 + z)
 
     # correct for extinction
-    mwebv = DUST_MAP.ebv(ra, dec)
-    # Todo
+    # mwebv = DUST_MAP.ebv(ra, dec)
+    # Todo: Fitzpatrick99
 
     # Iterate over features
     out_data = []
-    for feat_name, feat_properties in line_locations:
+    for feat_name, feat_properties in line_locations.items():
         feat_start, feat_end = find_feature_bounds(wave, flux, feat_properties)
-        feat_properties = sample_feature_properties(feat_name, feat_start,
-                                                    feat_end, wave, flux,
-                                                    eflux)
+        feat_properties = sample_feature_properties(
+            feat_name, feat_start, feat_end, wave, flux)
 
         out_data += np.array(feat_properties).flatten().tolist()
 
     return out_data
 
 
-def tabulate_spectral_properties(wave, flux, z, ra, dec, eflux=None):
+def tabulate_spectral_properties(date, wave, flux, z, ra, dec):
     """Tabulate spectral properties for multiple spectra
 
     Args:
-        wave  (iterable[ndarray, uarray]): Wavelengths for each spectrum
-        flux          (iterable[ndarray]): Flux for each spectrum
-        z               (iterable[float]): Redshift of each spectrum
-        ra              (iterable[float]): Right Ascension for each spectrum
-        dec             (iterable[float]): Declination for each spectrum
-        eflux         (iterable[ndarray]): The optional error for each flux
+        date           (iter[float]): The date of observation for each spectrum
+        wave (iter[ndarray, uarray]): Wavelengths for each spectrum
+        flux         (iter[ndarray]): Flux for each spectrum
+        z              (iter[float]): Redshift of each spectrum
+        ra             (iter[float]): Right Ascension for each spectrum
+        dec            (iter[float]): Declination for each spectrum
 
     Returns:
         A Table with measurements for each spectrum and feature
     """
 
     # Calculate feature properties
-    if eflux is None:
-        data_iter = zip(wave, flux, z, ra, dec)
-
-    else:
-        data_iter = zip(wave, flux, z, ra, dec, eflux)
-
-    rows = [_spectrum_properties(*args) for args in data_iter]
+    data_iter = zip(date, wave, flux, z, ra, dec)
+    rows = [[date] + _spectrum_properties(*args[1:]) for args in data_iter]
+    if not rows:
+        rows = None
 
     # Format results as a table
     col_names = ['date']
     for feat_name in line_locations:
-        col_names.append(feat_name)
-        col_names.append(feat_name + '_err')
-        col_names.append(feat_name + '_samperr')
+        for property in ('_vel', '_pew', '_area'):
+            col_names.append(feat_name + property)
+            col_names.append(feat_name + property + '_err')
+            col_names.append(feat_name + property + '_samperr')
 
     dtype = [float for _ in col_names]
-    return Table(rows=rows, names=col_names, dtype=dtype)
+    return Table(rows, names=col_names, dtype=dtype)
