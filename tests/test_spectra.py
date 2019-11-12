@@ -306,71 +306,94 @@ class FindFeatureBounds(TestCase):
             upper_peak_wavelength, feat_end, 'Incorrect max peak')
 
 
-class CalcFeatureProperties(TestCase):
-    """Tests for the ``calc_feature_properties`` function"""
+class SampleFeatureProperties(TestCase):
+    """Tests for the ``sample_feature_properties`` function"""
 
     @classmethod
     def setUpClass(cls):
-        cls.wave = np.arange(1000, 3000)
-        cls.rest_wave = np.mean(cls.wave)
-        stddev = 100
-        cls.flux, err = SimulatedSpectrum.gaussian(
-            cls.wave, mean=cls.rest_wave, stddev=stddev)
+        # Define test spectrum
+        cls.wave = np.arange(1000, 2000)
+        cls.observed_wave = np.mean(cls.wave)
+        cls.rest_wave = cls.observed_wave - 100
+        cls.flux, cls.error = SimulatedSpectrum.gaussian(
+            cls.wave, mean=cls.observed_wave, stddev=100)
 
-        cls.feat_start = cls.wave[
-            (np.abs(cls.wave - cls.rest_wave + 2 * stddev)).argmin()]
+        # Select just the feature
+        cls.feat_start = cls.wave[100]
+        cls.feat_end = cls.wave[-100]
+        feat_wave = cls.wave[100:-100]
+        feat_flux = cls.flux[100:-100]
 
-        cls.feat_end = cls.wave[
-            (np.abs(cls.wave - cls.rest_wave - 2 * stddev)).argmin()]
-
-        cls.area = spectra.feature_area(cls.wave, cls.flux)
-        cls.pequiv_width = spectra.feature_pew(cls.wave, cls.flux)
+        # Calculate feature properties
+        cls.area = spectra.feature_area(feat_wave, feat_flux)
+        norm_flux, cls.pequiv_width = spectra.feature_pew(feat_wave, feat_flux)
         cls.velocity = spectra.feature_velocity(
-            cls.rest_wave, cls.wave, cls.flux)
+            cls.rest_wave, feat_wave, feat_flux)
 
         cls.feat_name = 'test_CalcFeatureProperties'
         line_properties = {
-            'restframe': 5169.00,
-            'lower_blue': 4500,
-            'upper_blue': 4700,
-            'lower_red': 5050,
-            'upper_red': 5550
+            'restframe': cls.rest_wave,
         }
+
         spectra.line_locations[cls.feat_name] = line_properties
 
     @classmethod
     def tearDownClass(cls):
         del spectra.line_locations['test_CalcFeatureProperties']
 
+    def assertNumberSamples(self, nstep, nsamp=None):
+        velocity, pequiv_width, area = spectra.sample_feature_properties(
+            self.feat_name, self.feat_start, self.feat_end, self.wave,
+            self.flux, nstep=nstep, debug=True)
+
+        msg = 'Wrong number of samples for n={}'
+        nsamp = ((2 * nstep) + 1) ** 2 if nsamp is None else nsamp
+        self.assertEqual(nsamp, len(velocity), msg.format(nstep))
+        self.assertEqual(nsamp, len(pequiv_width), msg.format(nstep))
+        self.assertEqual(nsamp, len(area), msg.format(nstep))
+
     def test_number_of_samples(self):
         """Test the correct number of samples are performed"""
 
-        velocity, pequiv_width, area = spectra.calc_feature_properties(
-            self.feat_name, self.wave, self.flux,
-            self.feat_start, self.feat_end, debug=True)
+        for n in [0, 5]:
+            self.assertNumberSamples(n)
 
-        num_sample_steps = 5
-        num_samples = ((2 * num_sample_steps) + 1) ** 2
-        self.assertEqual(num_samples, len(velocity))
-        self.assertEqual(num_samples, len(pequiv_width))
-        self.assertEqual(num_samples, len(area))
+        self.assertNumberSamples(0, 1)
+        self.assertNumberSamples(-1, 0)
 
     def test_return_order(self):
         """Test values are returned in the correct order"""
 
-        velocity, pequiv_width, area = spectra.calc_feature_properties(
-            self.feat_name, self.wave, self.flux,
-            self.feat_start, self.feat_end)
+        velocity, pequiv_width, area = spectra.sample_feature_properties(
+            self.feat_name, self.feat_start, self.feat_end, self.wave,
+            self.flux, nstep=0)
 
-        msg = ' values do not match.'
-        # self.assertEqual(self.velocity, velocity[0], 'Velocity' + msg)
-        self.assertEqual(self.pequiv_width, pequiv_width[0], 'EW' + msg)
-        self.assertEqual(self.area, area[0], 'Area' + msg)
+        msg = '{} values do not match.'
+        self.assertAlmostEqual(
+            self.velocity, velocity[0], msg=msg.format('Velocity'))
+
+        self.assertAlmostEqual(
+            self.pequiv_width, pequiv_width[0], msg=msg.format('pEW'))
+
+        self.assertAlmostEqual(self.area, area[0], msg=msg.format('Area'))
 
     def test_uarray_support(self):
         """Test the function supports input arrays with ufloat objects"""
 
-        self.fail()
+        uflux = uarray(self.flux, self.error)
+        velocity, pequiv_width, area = spectra.sample_feature_properties(
+            self.feat_name, self.feat_start, self.feat_end, self.wave, uflux,
+            nstep=0)
+
+        msg = '{} values do not match.'
+        self.assertAlmostEqual(
+            self.velocity, velocity[0], msg=msg.format('Velocity'))
+
+        self.assertAlmostEqual(
+            self.pequiv_width, pequiv_width[0], msg=msg.format('pEW'))
+
+        self.assertAlmostEqual(self.area, area[0], msg=msg.format('Area'))
+
 
 
 class SpectrumProperties(TestCase):

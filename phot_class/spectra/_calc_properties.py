@@ -17,7 +17,7 @@ from astropy.table import Table
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
 from uncertainties import nominal_value, std_dev, ufloat
-from uncertainties.unumpy import nominal_values, std_devs, uarray
+from uncertainties.unumpy import nominal_values, std_devs
 
 # File paths for external data
 _file_dir = Path(__file__).resolve().parent
@@ -173,30 +173,28 @@ def find_feature_bounds(wave, flux, feature):
     return feat_start, feat_end
 
 
-def calc_feature_properties(
-        feat_name, wave, flux, feat_start, feat_end, eflux=None, debug=False):
+def sample_feature_properties(
+        feat_name, feat_start, feat_end, wave, flux, nstep=5, debug=False):
     """Calculate the properties of a single feature in a spectrum
 
     Velocity values are returned in km / s. Error values are determined
     both formally (summed in quadrature) and by re-sampling the feature
-    boundaries five steps in either direction.
+    boundaries ``nstep`` flux measurements in either direction.
 
     Args:
-        wave     (ndarray): An array of wavelengths
-        flux     (ndarray): An array of flux for each wavelength
-        feat_name    (str): The name of the feature
-        feat_start (float): Starting wavelength of the feature
-        feat_end   (float): Ending wavelength of the feature
-        eflux    (ndarray): The optional error for each flux value
+        feat_name        (str): The name of the feature
+        feat_start     (float): Starting wavelength of the feature
+        feat_end       (float): Ending wavelength of the feature
+        wave         (ndarray): An array of wavelengths
+        flux (ndarray, uarray): An array of flux for each wavelength
+        nstep          (float): The number of steps to take in each direction
+        debug           (bool): Return samples instead of the average values
 
     Returns:
         - (The line velocity, its formal error, and its sampling error)
         - (The equivalent width, its formal error, and its sampling error)
         - (The feature area, its formal error, and its sampling error)
     """
-
-    if eflux is not None:
-        flux = uarray(flux, eflux)
 
     # Get rest frame location of the specified feature
     rest_frame = line_locations[feat_name]['restframe']
@@ -209,8 +207,8 @@ def calc_feature_properties(
 
     # We vary the beginning and end of the feature to estimate the error
     velocity, pequiv_width, area = [], [], []
-    for i in np.arange(-5, 6):
-        for j in np.arange(-5, 6):
+    for i in np.arange(-nstep, nstep + 1):
+        for j in np.arange(-nstep, nstep + 1):
             # Get sub-sampled wavelength/flux
             sample_start_idx = idx_start + i
             sample_end_idx = idx_end + j
@@ -276,8 +274,9 @@ def _spectrum_properties(wave, flux, z, ra, dec, eflux=None):
     out_data = []
     for feat_name, feat_properties in line_locations:
         feat_start, feat_end = find_feature_bounds(wave, flux, feat_properties)
-        feat_properties = calc_feature_properties(
-            feat_name, wave, flux, feat_start, feat_end, eflux)
+        feat_properties = sample_feature_properties(feat_name, feat_start,
+                                                    feat_end, wave, flux,
+                                                    eflux)
 
         out_data += np.array(feat_properties).flatten().tolist()
 
