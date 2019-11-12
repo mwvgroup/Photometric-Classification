@@ -439,7 +439,26 @@ class SpectrumProperties(TestCase):
     def test_extinction_dependence(self):
         """Test properties scale correctly with extinction"""
 
-        self.fail()
+        # Use coordinates pointing towards galactic center
+        towards_gal = spectra._calc_properties._spectrum_properties(
+            self.wave, self.flux, z=0, ra=266.25, dec=-29)
+
+        # Use coordinates pointing away from galactic center
+        out_of_gal = spectra._calc_properties._spectrum_properties(
+            self.wave, self.flux, z=0, ra=266.25, dec=151)
+
+        gal_vel, gal_pew, gal_area = \
+            towards_gal[0], towards_gal[3], towards_gal[6]
+
+        out_vel, out_pew, out_area = \
+            out_of_gal[0], out_of_gal[3], out_of_gal[6]
+
+        # Redding at the galactic center should be very high, shifting the
+        # feature's average wavelength red-ward and increasing the
+        # it's measured velocity
+        self.assertGreater(abs(gal_vel), abs(out_vel))
+        self.assertGreater(gal_pew, out_pew)
+        self.assertGreater(gal_area, out_area)
 
 
 class TabulateSpectrumProperties(TestCase):

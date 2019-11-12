@@ -6,9 +6,9 @@ velocity, and  equivalent width. All functions in this module are built to
 support ``uarray`` objects from the ``uncertainties`` package as inputs.
 """
 
-import extinction
 from pathlib import Path
 
+import extinction
 import numpy as np
 import sfdmap
 import yaml
@@ -271,8 +271,7 @@ def _spectrum_properties(wave, flux, z, ra, dec, rv=3.1):
     # correct for extinction
     mwebv = DUST_MAP.ebv(ra, dec, frame='fk5j2000', unit='degree')
     mag_ext = extinction.fitzpatrick99(wave, rv * mwebv, rv)
-    flux = extinction.apply(mag_ext, flux)
-    print(flux)
+    flux = flux * 10 ** (0.4 * mag_ext)
 
     # Iterate over features
     out_data = []
