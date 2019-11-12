@@ -401,7 +401,7 @@ class SpectrumProperties(TestCase):
     @classmethod
     def setUpClass(cls):
         # Define test spectrum
-        cls.wave = np.arange(1000, 2000)
+        cls.wave = np.arange(7000, 8000)
         cls.observed_wave = np.mean(cls.wave)
         cls.rest_wave = cls.observed_wave - 100
         cls.flux, error = SimulatedSpectrum.gaussian(
@@ -448,7 +448,7 @@ class TabulateSpectrumProperties(TestCase):
     @classmethod
     def setUpClass(cls):
         # Define test spectrum
-        cls.wave = np.arange(1000, 2000)
+        cls.wave = np.arange(7000, 8000)
         cls.observed_wave = np.mean(cls.wave)
         cls.rest_wave = cls.observed_wave - 100
         cls.flux, cls.error = SimulatedSpectrum.gaussian(

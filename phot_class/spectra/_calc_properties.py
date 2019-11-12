@@ -6,6 +6,7 @@ velocity, and  equivalent width. All functions in this module are built to
 support ``uarray`` objects from the ``uncertainties`` package as inputs.
 """
 
+import extinction
 from pathlib import Path
 
 import numpy as np
@@ -248,14 +249,15 @@ def sample_feature_properties(
     )
 
 
-def _spectrum_properties(wave, flux, z, ra, dec, av=3.1):
+def _spectrum_properties(wave, flux, z, ra, dec, rv=3.1):
     """Calculate the properties of multiple features in a spectrum
 
     Velocity, pseudo equivalent width, and area are returned for
     each feature in ``line_locations`` along with their respective errors.
+    Spectra are rest-framed and corrected for MW extinction.
 
     Args:
-        wave  (ndarray): An array of wavelengths
+        wave  (ndarray): An array of wavelengths in angstroms
         flux  (ndarray): An array of flux for each wavelength
         eflux (ndarray): The optional error for each flux value
 
@@ -267,8 +269,10 @@ def _spectrum_properties(wave, flux, z, ra, dec, av=3.1):
     wave = wave / (1 + z)
 
     # correct for extinction
-    # mwebv = DUST_MAP.ebv(ra, dec)
-    # Todo: Fitzpatrick99
+    mwebv = DUST_MAP.ebv(ra, dec, frame='fk5j2000', unit='degree')
+    mag_ext = extinction.fitzpatrick99(wave, rv * mwebv, rv)
+    flux = extinction.apply(mag_ext, flux)
+    print(flux)
 
     # Iterate over features
     out_data = []
@@ -285,13 +289,16 @@ def _spectrum_properties(wave, flux, z, ra, dec, av=3.1):
 def tabulate_spectral_properties(date, wave, flux, z, ra, dec):
     """Tabulate spectral properties for multiple spectra
 
+    Spectra are rest-framed and corrected for MW extinction using the
+    Schlegel et al. 98 dust map and the Fitzpatrick et al. 99 extinction law.
+
     Args:
         date           (iter[float]): The date of observation for each spectrum
-        wave (iter[ndarray, uarray]): Wavelengths for each spectrum
-        flux         (iter[ndarray]): Flux for each spectrum
+        wave (iter[ndarray, uarray]): Wavelengths for each spectrum in angstroms
+        flux         (iter[ndarray]): Flux for each spectrum in arbitrary units
         z              (iter[float]): Redshift of each spectrum
-        ra             (iter[float]): Right Ascension for each spectrum
-        dec            (iter[float]): Declination for each spectrum
+        ra             (iter[float]): The J2000 Ra for each spectrum in degrees
+        dec            (iter[float]): The J2000 Dec for each spectrum in degrees
 
     Returns:
         A Table with measurements for each spectrum and feature
@@ -306,10 +313,10 @@ def tabulate_spectral_properties(date, wave, flux, z, ra, dec):
     # Format results as a table
     col_names = ['date']
     for feat_name in line_locations:
-        for property in ('_vel', '_pew', '_area'):
-            col_names.append(feat_name + property)
-            col_names.append(feat_name + property + '_err')
-            col_names.append(feat_name + property + '_samperr')
+        for value in ('_vel', '_pew', '_area'):
+            col_names.append(feat_name + value)
+            col_names.append(feat_name + value + '_err')
+            col_names.append(feat_name + value + '_samperr')
 
     dtype = [float for _ in col_names]
     return Table(rows, names=col_names, dtype=dtype)
