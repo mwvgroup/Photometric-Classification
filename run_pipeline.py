@@ -128,7 +128,10 @@ def create_cli_parser():
     )
 
     photometric_parser = subparsers.add_parser('photometric')
-    photometric_parser.set_defaults(func=run_photometric_classification)
+    photometric_parser.set_defaults(
+        func=run_photometric_classification,
+        help='Classify targets photometrically'
+    )
 
     photometric_parser.add_argument(
         '-f', '--fit_func',
@@ -159,7 +162,10 @@ def create_cli_parser():
     )
 
     spectroscopic_parser = subparsers.add_parser('spectroscopic')
-    spectroscopic_parser.set_defaults(func=run_spectroscopic_classification)
+    spectroscopic_parser.set_defaults(
+        func=run_spectroscopic_classification,
+        help='Classify targets spectroscopically'
+    )
 
     spectroscopic_parser.add_argument(
         '-r', '--rv',
@@ -190,4 +196,4 @@ if __name__ == '__main__':
 
     parser = create_cli_parser()
     cli_args = parser.parse_args()
-    run_photometric_classification(cli_args)
+    cli_args.func(cli_args)
