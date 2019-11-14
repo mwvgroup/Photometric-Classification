@@ -22,10 +22,10 @@ from uncertainties.unumpy import nominal_values, std_devs
 
 # File paths for external data
 _file_dir = Path(__file__).resolve().parent
-dust_path = _file_dir.parent / 'schlegel98_dust_map'
+dust_dir = _file_dir.parent / 'schlegel98_dust_map'
 line_locations_path = _file_dir / 'features.yml'
 
-DUST_MAP = sfdmap.SFDMap(dust_path)
+dust_map = sfdmap.SFDMap(dust_dir)
 with open(line_locations_path) as infile:
     line_locations = yaml.load(infile, Loader=yaml.FullLoader)
 
@@ -249,29 +249,19 @@ def sample_feature_properties(
     )
 
 
-def _spectrum_properties(wave, flux, z, ra, dec, rv=3.1):
+def _spectrum_properties(wave, flux):
     """Calculate the properties of multiple features in a spectrum
 
     Velocity, pseudo equivalent width, and area are returned for
     each feature in ``line_locations`` along with their respective errors.
-    Spectra are rest-framed and corrected for MW extinction.
 
     Args:
         wave  (ndarray): An array of wavelengths in angstroms
         flux  (ndarray): An array of flux for each wavelength
-        eflux (ndarray): The optional error for each flux value
 
     Returns:
         A list of measurements and errors for each feature
     """
-
-    # rest-frame spectra
-    wave = wave / (1 + z)
-
-    # correct for extinction
-    mwebv = DUST_MAP.ebv(ra, dec, frame='fk5j2000', unit='degree')
-    mag_ext = extinction.fitzpatrick99(wave, rv * mwebv, rv)
-    flux = flux * 10 ** (0.4 * mag_ext)
 
     # Iterate over features
     out_data = []
@@ -285,29 +275,61 @@ def _spectrum_properties(wave, flux, z, ra, dec, rv=3.1):
     return out_data
 
 
-def tabulate_spectral_properties(date, wave, flux, z, ra, dec):
-    """Tabulate spectral properties for multiple spectra
+def _correct_spectrum(spectrum, rv=3.1):
+    """Rest frame spectra and correct for MW extinction
+
+    Spectra are rest-framed and corrected for MW extinction using the
+    Schlegel et al. 98 dust map and the Fitzpatrick et al. 99 extinction law.
+    The values ``redshift``, ``ra``, and ``dec`` are expected in the table's
+    meta data.
+
+    Args:
+        spectrum (Table): Table with columns ``wave`` and ``flux``
+        rv       (float): Rv value to use for extinction
+
+    Returns:
+        - The rest framed wavelengths
+        - The flux corrected for extinction
+    """
+
+    z = spectrum.meta['redshift']
+    ra = spectrum.meta['ra']
+    dec = spectrum.meta['dec']
+    mwebv = dust_map.ebv(ra, dec, frame='fk5j2000', unit='degree')
+
+    wave = spectrum['wave'] / (1 + z)
+    mag_ext = extinction.fitzpatrick99(wave, rv * mwebv, rv)
+    flux = spectrum['flux'] * 10 ** (0.4 * mag_ext)
+
+    return wave, flux
+
+
+def tabulate_spectral_properties(data_release, rv=3.1, verbose=False):
+    """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
     Schlegel et al. 98 dust map and the Fitzpatrick et al. 99 extinction law.
 
     Args:
-        date           (iter[float]): The date of observation for each spectrum
-        wave (iter[ndarray, uarray]): Wavelengths for each spectrum in angstroms
-        flux         (iter[ndarray]): Flux for each spectrum in arbitrary units
-        z              (iter[float]): Redshift of each spectrum
-        ra             (iter[float]): The J2000 Ra for each spectrum in degrees
-        dec            (iter[float]): The J2000 Dec for each spectrum in degrees
+        data_release (module): SNdata module for a spectroscopic data release
+        rv            (float): Rv value to use for extinction
 
     Returns:
         A Table with measurements for each spectrum and feature
     """
 
-    # Calculate feature properties
-    data_iter = zip(date, wave, flux, z, ra, dec)
-    rows = [[date] + _spectrum_properties(*args[1:]) for args in data_iter]
-    if not rows:
-        rows = None
+    table_rows = []
+    for spectra in data_release.iter_data(verbose=verbose):
+        wave, flux = _correct_spectrum(spectra, rv=rv)
+        spectra['wave'] = wave
+        spectra['flux'] = flux
+
+        for spectrum in spectra.group_by('date').groups:
+            date = spectrum['date'][0]
+            table_rows += [date] + _spectrum_properties(wave, flux)
+
+    if not table_rows:
+        table_rows = None
 
     # Format results as a table
     col_names = ['date']
@@ -318,4 +340,4 @@ def tabulate_spectral_properties(date, wave, flux, z, ra, dec):
             col_names.append(feat_name + value + '_samperr')
 
     dtype = [float for _ in col_names]
-    return Table(rows, names=col_names, dtype=dtype)
+    return Table(table_rows, names=col_names, dtype=dtype)

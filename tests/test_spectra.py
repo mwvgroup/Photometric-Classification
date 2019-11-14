@@ -3,10 +3,12 @@
 
 """Tests for the ``simulation.spectra`` module."""
 
+import extinction
 from unittest import TestCase
 
 import numpy as np
 from astropy.constants import c
+from astropy.table import Table
 from uncertainties.unumpy import uarray
 
 from phot_class import spectra
@@ -378,7 +380,8 @@ class SampleFeatureProperties(TestCase):
         msg = 'Wrong number of samples for n={}'
         nsamp = ((2 * nstep) + 1) ** 2 if nsamp is None else nsamp
         self.assertEqual(nsamp, len(velocity), msg.format(nstep))
-        self.assertEqual(nsamp, len(pequiv_width), msg.format(nstep))
+        self.assertEqual(nsamp, len(pequiv_width
+                                    ), msg.format(nstep))
         self.assertEqual(nsamp, len(area), msg.format(nstep))
 
     def test_number_of_samples(self):
@@ -424,70 +427,61 @@ class SampleFeatureProperties(TestCase):
         self.assertAlmostEqual(self.area, area[0], msg=msg.format('Area'))
 
 
-class SpectrumProperties(TestCase):
-    """Tests for the ``_spectrum_properties`` function"""
+class CorrectSpectrum(TestCase):
+    """Tests for the ``_correct_spectrum`` function"""
 
     @classmethod
     def setUpClass(cls):
         # Define test spectrum
-        cls.wave = np.arange(7000, 8000)
-        cls.observed_wave = np.mean(cls.wave)
-        cls.rest_wave = cls.observed_wave - 100
-        cls.flux, error = SimulatedSpectrum.gaussian(
-            cls.wave, mean=cls.observed_wave, stddev=100)
+        wave = np.arange(7000, 8000)
+        flux, error = SimulatedSpectrum.gaussian(wave, stddev=100)
+        cls.test_spectrum = Table([wave, flux], names=['wave', 'flux'])
 
-        line_properties = {
-            'restframe': cls.rest_wave,
-            'lower_blue': cls.wave[100],
-            'upper_blue': cls.wave[100],
-            'lower_red': cls.wave[-100],
-            'upper_red': cls.wave[-100]
-        }
+    def test_restframing(self):
+        """Test wavelengths are rest-framed for to the spectrum's redshift"""
 
-        cls.old_lines = spectra._calc_properties.line_locations
-        spectra._calc_properties.line_locations = \
-            {'test_SpectrumProperties': line_properties}
+        test_spectrum = self.test_spectrum.copy()
+        test_spectrum.meta['redshift'] = 0
+        test_spectrum.meta['ra'] = 1
+        test_spectrum.meta['dec'] = 1
 
-    @classmethod
-    def tearDownClass(cls):
-        spectra._calc_properties.line_locations = cls.old_lines
+        wave, flux = spectra._calc_properties._correct_spectrum(test_spectrum)
+        self.assertListEqual(list(test_spectrum['wave']), wave.tolist(),
+                             'Wrong corrected wavelength for z=0')
 
-    def test_spectrum_restframing(self):
-        """Test properties of rest-framed spectra are independent of z"""
+        test_z = .25
+        test_spectrum['wave'] = test_spectrum['wave'] * (1 + test_z)
+        test_spectrum.meta['redshift'] = test_z
 
-        z0_return = spectra._calc_properties._spectrum_properties(
-            self.wave, self.flux, z=0, ra=1, dec=1)
+        wave, flux = spectra._calc_properties._correct_spectrum(test_spectrum)
+        self.assertListEqual(list(self.test_spectrum['wave']), wave.tolist(),
+                             f'Wrong corrected wavelength for z={test_z}')
 
-        test_z = 1
-        wave_at_z = self.wave * (1 + test_z)
-        z1_return = spectra._calc_properties._spectrum_properties(
-            wave_at_z, self.flux, z=test_z, ra=1, dec=1)
+    def test_extinction_correction(self):
+        """Test extinction is corrected for"""
 
-        self.assertListEqual(z0_return, z1_return)
+        # Set coordinates pointing towards galactic center
+        ra = 266.25
+        dec = -29
+        rv = 3.1
 
-    def test_extinction_dependence(self):
-        """Test properties scale correctly with extinction"""
+        test_spectrum = self.test_spectrum.copy()
+        test_spectrum.meta['redshift'] = 0
+        test_spectrum.meta['ra'] = ra
+        test_spectrum.meta['dec'] = dec
 
-        # Use coordinates pointing towards galactic center
-        towards_gal = spectra._calc_properties._spectrum_properties(
-            self.wave, self.flux, z=0, ra=266.25, dec=-29)
+        mwebv = spectra.dust_map.ebv(ra, dec, frame='fk5j2000', unit='degree')
+        ext = extinction.fitzpatrick99(test_spectrum['wave'], a_v=rv * mwebv)
+        test_spectrum['flux'] = extinction.apply(ext, test_spectrum['flux'])
 
-        # Use coordinates pointing away from galactic center
-        out_of_gal = spectra._calc_properties._spectrum_properties(
-            self.wave, self.flux, z=0, ra=266.25, dec=151)
-
-        gal_vel, gal_pew, gal_area = \
-            towards_gal[0], towards_gal[3], towards_gal[6]
-
-        out_vel, out_pew, out_area = \
-            out_of_gal[0], out_of_gal[3], out_of_gal[6]
-
-        # Redding at the galactic center should be very high, shifting the
-        # feature's average wavelength red-ward and increasing the
-        # it's measured velocity
-        self.assertGreater(abs(gal_vel), abs(out_vel))
-        self.assertGreater(gal_pew, out_pew)
-        self.assertGreater(gal_area, out_area)
+        wave, flux = spectra._calc_properties._correct_spectrum(test_spectrum)
+        is_close = np.isclose(self.test_spectrum['flux'], flux).all()
+        if not is_close:
+            self.assertListEqual(
+                list(self.test_spectrum['flux']),
+                flux.tolist(),
+                'Corrected spectral values are not close to simulated values.'
+            )
 
 
 class TabulateSpectrumProperties(TestCase):
@@ -534,7 +528,10 @@ class TabulateSpectrumProperties(TestCase):
             'test_TabulateSpectrumProperties_area_samperr'
         ]
 
-        returned_table = spectra.tabulate_spectral_properties(
-            [], [], [], [], [], [])
+        class DummyModule:
+            @staticmethod
+            def iter_data(*args, **kwargs):
+                return []
 
+        returned_table = spectra.tabulate_spectral_properties(DummyModule)
         self.assertListEqual(expected_names, returned_table.colnames)

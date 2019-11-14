@@ -52,7 +52,7 @@ def get_data_iter(data_module):
         yield data
 
 
-def run(cli_args):
+def run_photometric_classification(cli_args):
     """Run light curve fits using command line args
 
     Args:
@@ -95,9 +95,23 @@ def run(cli_args):
     classification.classify_targets(fit_results, out_path=classification_path)
 
 
+def run_spectroscopic_classification(cli_args):
+    # Create output file path
+    out_dir = Path(cli_args.out_dir).resolve()
+    out_dir.mkdir(exist_ok=True, parents=True)
+    file_path = out_dir / f'{cli_args.survey}_{cli_args.release}_spec.ecsv'
+
+    data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
+    data_module.download_module_data()
+
+    out_table = spectra.tabulate_spectral_properties(data_module)
+    out_table.write(file_path)
+
+
 def create_cli_parser():
     parser = argparse.ArgumentParser(
         description='Arguments for the command line interface are as follows:')
+    subparsers = parser.add_subparsers()
 
     parser.add_argument(
         '-s', '--survey',
@@ -113,28 +127,48 @@ def create_cli_parser():
         help='The name of the survey\'s data release. This should also match the sndata package (e.g. dr3).'
     )
 
-    parser.add_argument(
+    photometric_parser = subparsers.add_parser('photometric')
+    photometric_parser.set_defaults(func=run_photometric_classification)
+
+    photometric_parser.add_argument(
         '-f', '--fit_func',
         type=str,
         default='simple_fit',
         help='The name of the fitting routine to use (simple_fit, nest_fit, mcmc_fit, nested_simple_fit, nested_mcmc_fit).'
     )
 
-    parser.add_argument(
+    photometric_parser.add_argument(
         '-m', '--method',
         type=str,
         default='band',
         help="Whether to fit bands independently ('band') or as red and blue sets ('collective')"
     )
 
-    parser.add_argument(
+    photometric_parser.add_argument(
         '-c', '--config',
         type=str,
         required=False,
         help='Path of the yaml config file.'
     )
 
-    parser.add_argument(
+    photometric_parser.add_argument(
+        '-o', '--out_dir',
+        type=str,
+        required=True,
+        help='Directory to write output files to.'
+    )
+
+    spectroscopic_parser = subparsers.add_parser('spectroscopic')
+    spectroscopic_parser.set_defaults(func=run_spectroscopic_classification)
+
+    spectroscopic_parser.add_argument(
+        '-r', '--rv',
+        type=float,
+        required=False,
+        help='Rv value to use for extinction correction'
+    )
+
+    spectroscopic_parser.add_argument(
         '-o', '--out_dir',
         type=str,
         required=True,
@@ -150,9 +184,10 @@ if __name__ == '__main__':
     from phot_class import fit_func_wraps
     from phot_class import models
     from phot_class import utils
+    from phot_class import spectra
 
     models.register_sources()
 
     parser = create_cli_parser()
     cli_args = parser.parse_args()
-    run(cli_args)
+    run_photometric_classification(cli_args)
