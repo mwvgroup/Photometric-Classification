@@ -71,7 +71,7 @@ def feature_pew(wave, flux):
     return norm_flux, pew
 
 
-def feature_velocity(rest_frame, wave, flux, unit=None, plot=False):
+def feature_velocity(rest_frame, wave, flux, unit=None, plot=True):
     """Calculate the velocity of a feature
 
     Args:
@@ -100,7 +100,7 @@ def feature_velocity(rest_frame, wave, flux, unit=None, plot=False):
         sigma=eflux if any(eflux) else None)
 
     if plot:
-        plt.scatter(wave, flux, label='Measured', color='C0', s=5)
+        plt.plot(wave, flux, label='Measured', color='C0')
         plt.errorbar(wave, flux, yerr=eflux, color='C0', linestyle='')
         fit = gaussian(wave, depth, avg, stddev, offset)
         plt.plot(wave, fit, label='Fit', color='C1')
@@ -280,7 +280,7 @@ def _correct_spectrum(spectrum, rv=3.1):
 
     Spectra are rest-framed and corrected for MW extinction using the
     Schlegel et al. 98 dust map and the Fitzpatrick et al. 99 extinction law.
-    The values ``redshift``, ``ra``, and ``dec`` are expected in the table's
+    The values ``z``, ``ra``, and ``dec`` are expected in the table's
     meta data.
 
     Args:
@@ -292,16 +292,16 @@ def _correct_spectrum(spectrum, rv=3.1):
         - The flux corrected for extinction
     """
 
-    z = spectrum.meta['redshift']
+    z = spectrum.meta['z']
     ra = spectrum.meta['ra']
     dec = spectrum.meta['dec']
     mwebv = dust_map.ebv(ra, dec, frame='fk5j2000', unit='degree')
 
-    wave = spectrum['wave'] / (1 + z)
-    mag_ext = extinction.fitzpatrick99(wave, rv * mwebv, rv)
+    mag_ext = extinction.fitzpatrick99(spectrum['wavelength'], rv * mwebv, rv)
     flux = spectrum['flux'] * 10 ** (0.4 * mag_ext)
+    rest_wave = spectrum['wavelength'] / (1 + z)
 
-    return wave, flux
+    return rest_wave, flux
 
 
 def tabulate_spectral_properties(data_release, rv=3.1, verbose=False):
@@ -311,7 +311,7 @@ def tabulate_spectral_properties(data_release, rv=3.1, verbose=False):
     Schlegel et al. 98 dust map and the Fitzpatrick et al. 99 extinction law.
 
     Args:
-        data_release (module): SNdata module for a spectroscopic data release
+        data_release (module): SNData module for a spectroscopic data release
         rv            (float): Rv value to use for extinction
 
     Returns:

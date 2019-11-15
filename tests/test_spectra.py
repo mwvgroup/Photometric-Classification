@@ -441,7 +441,7 @@ class CorrectSpectrum(TestCase):
         """Test wavelengths are rest-framed for to the spectrum's redshift"""
 
         test_spectrum = self.test_spectrum.copy()
-        test_spectrum.meta['redshift'] = 0
+        test_spectrum.meta['z'] = 0
         test_spectrum.meta['ra'] = 1
         test_spectrum.meta['dec'] = 1
 
@@ -451,7 +451,7 @@ class CorrectSpectrum(TestCase):
 
         test_z = .25
         test_spectrum['wave'] = test_spectrum['wave'] * (1 + test_z)
-        test_spectrum.meta['redshift'] = test_z
+        test_spectrum.meta['z'] = test_z
 
         wave, flux = spectra._calc_properties._correct_spectrum(test_spectrum)
         self.assertListEqual(list(self.test_spectrum['wave']), wave.tolist(),
@@ -466,7 +466,7 @@ class CorrectSpectrum(TestCase):
         rv = 3.1
 
         test_spectrum = self.test_spectrum.copy()
-        test_spectrum.meta['redshift'] = 0
+        test_spectrum.meta['z'] = 0
         test_spectrum.meta['ra'] = ra
         test_spectrum.meta['dec'] = dec
 

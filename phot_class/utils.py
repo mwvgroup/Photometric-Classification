@@ -189,7 +189,7 @@ def classification_filter_factory(classifications):
     in an analysis. The function returned by this factory has signature
     ``returned_function(table: astropy.Table)`` which returns ``True`` if
     ``table.meta['classification']`` is not in ``classifications`` and
-    ``table.meta['redshift'] > 0``. If there is no 'classification' key in
+    ``table.meta['z'] > 0``. If there is no 'classification' key in
     the meta data, the return is True.
 
     Args:
