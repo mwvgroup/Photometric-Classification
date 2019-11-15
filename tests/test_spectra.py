@@ -435,7 +435,7 @@ class CorrectSpectrum(TestCase):
         # Define test spectrum
         wave = np.arange(7000, 8000)
         flux, error = SimulatedSpectrum.gaussian(wave, stddev=100)
-        cls.test_spectrum = Table([wave, flux], names=['wave', 'flux'])
+        cls.test_spectrum = Table([wave, flux], names=['wavelength', 'flux'])
 
     def test_restframing(self):
         """Test wavelengths are rest-framed for to the spectrum's redshift"""
@@ -446,16 +446,17 @@ class CorrectSpectrum(TestCase):
         test_spectrum.meta['dec'] = 1
 
         wave, flux = spectra._calc_properties._correct_spectrum(test_spectrum)
-        self.assertListEqual(list(test_spectrum['wave']), wave.tolist(),
+        self.assertListEqual(list(test_spectrum['wavelength']), wave.tolist(),
                              'Wrong corrected wavelength for z=0')
 
         test_z = .25
-        test_spectrum['wave'] = test_spectrum['wave'] * (1 + test_z)
+        test_spectrum['wavelength'] = test_spectrum['wavelength'] * (1 + test_z)
         test_spectrum.meta['z'] = test_z
 
         wave, flux = spectra._calc_properties._correct_spectrum(test_spectrum)
-        self.assertListEqual(list(self.test_spectrum['wave']), wave.tolist(),
-                             f'Wrong corrected wavelength for z={test_z}')
+        self.assertListEqual(
+            list(self.test_spectrum['wavelength']), wave.tolist(),
+            f'Wrong corrected wavelength for z={test_z}')
 
     def test_extinction_correction(self):
         """Test extinction is corrected for"""
@@ -471,7 +472,7 @@ class CorrectSpectrum(TestCase):
         test_spectrum.meta['dec'] = dec
 
         mwebv = spectra.dust_map.ebv(ra, dec, frame='fk5j2000', unit='degree')
-        ext = extinction.fitzpatrick99(test_spectrum['wave'], a_v=rv * mwebv)
+        ext = extinction.fitzpatrick99(test_spectrum['wavelength'], a_v=rv * mwebv)
         test_spectrum['flux'] = extinction.apply(ext, test_spectrum['flux'])
 
         wave, flux = spectra._calc_properties._correct_spectrum(test_spectrum)

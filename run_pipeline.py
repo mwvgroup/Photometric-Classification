@@ -104,7 +104,7 @@ def run_spectroscopic_classification(cli_args):
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
 
-    out_table = spectra.tabulate_spectral_properties(data_module)
+    out_table = spectra.tabulate_spectral_properties(data_module, plot=cli_args.verbose)
     out_table.write(file_path)
 
 
@@ -180,6 +180,11 @@ def create_cli_parser():
         required=True,
         help='Directory to write output files to.'
     )
+
+    spectroscopic_parser.add_argument(
+        '--verbose',
+        help='Display live plots of fitting results for the velocity calculation.',
+        action='store_true')
 
     return parser
 

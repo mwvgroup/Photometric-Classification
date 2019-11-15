@@ -17,6 +17,7 @@ from astropy.constants import c
 from astropy.table import Table
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
+from tqdm import tqdm
 from uncertainties import nominal_value, std_dev, ufloat
 from uncertainties.unumpy import nominal_values, std_devs
 
@@ -28,6 +29,8 @@ line_locations_path = _file_dir / 'features.yml'
 dust_map = sfdmap.SFDMap(dust_dir)
 with open(line_locations_path) as infile:
     line_locations = yaml.load(infile, Loader=yaml.FullLoader)
+
+plt.ion()
 
 
 def feature_area(wave, flux):
@@ -71,7 +74,7 @@ def feature_pew(wave, flux):
     return norm_flux, pew
 
 
-def feature_velocity(rest_frame, wave, flux, unit=None, plot=True):
+def feature_velocity(rest_frame, wave, flux, unit=None, plot=False):
     """Calculate the velocity of a feature
 
     Args:
@@ -79,6 +82,7 @@ def feature_velocity(rest_frame, wave, flux, unit=None, plot=True):
         wave         (ndarray): A sorted array of wavelengths for the feature
         flux (ndarray, uarray): An array of flux values for each wavelength
         unit      (PrefixUnit): Astropy unit for returned velocity (default km/s)
+        plot            (bool): Plot live fit results
 
     Returns:
         The velocity of the feature
@@ -89,8 +93,8 @@ def feature_velocity(rest_frame, wave, flux, unit=None, plot=True):
     unit = units.km / units.s if unit is None else unit
 
     # Fit feature with a gaussian
-    def gaussian(x, depth, avg, stddev, offset):
-        return -depth * np.exp(-((x - avg) ** 2) / (2 * stddev ** 2)) + offset
+    def gaussian(x, _depth, _avg, _std, _offset):
+        return -_depth * np.exp(-((x - _avg) ** 2) / (2 * _std ** 2)) + _offset
 
     (depth, avg, stddev, offset), cov = curve_fit(
         f=gaussian,
@@ -100,13 +104,13 @@ def feature_velocity(rest_frame, wave, flux, unit=None, plot=True):
         sigma=eflux if any(eflux) else None)
 
     if plot:
-        plt.plot(wave, flux, label='Measured', color='C0')
-        plt.errorbar(wave, flux, yerr=eflux, color='C0', linestyle='')
         fit = gaussian(wave, depth, avg, stddev, offset)
-        plt.plot(wave, fit, label='Fit', color='C1')
-        plt.axvline(avg, color='k', linestyle='--', label=f'Average: {avg}')
-        plt.legend()
-        plt.show()
+        plt.plot(wave, fit, label='Fit', color='C0', alpha=.25)
+        plt.axvline(wave[0], color='C0', linestyle='--', alpha=.25)
+        plt.axvline(wave[-1], color='C0', linestyle='--', alpha=.25)
+        plt.axvline(avg, color='grey', linestyle=':', label=f'Average: {avg}')
+        plt.draw()
+        plt.pause(.1)
 
     if any(eflux):
         avg = ufloat(avg, np.sqrt(cov[1][1]))
@@ -174,8 +178,8 @@ def find_feature_bounds(wave, flux, feature):
     return feat_start, feat_end
 
 
-def sample_feature_properties(
-        feat_name, feat_start, feat_end, wave, flux, nstep=5, debug=False):
+def sample_feature_properties(feat_name, feat_start, feat_end, wave, flux,
+                              nstep=5, plot=False, debug=False):
     """Calculate the properties of a single feature in a spectrum
 
     Velocity values are returned in km / s. Error values are determined
@@ -189,6 +193,7 @@ def sample_feature_properties(
         wave         (ndarray): An array of wavelengths
         flux (ndarray, uarray): An array of flux for each wavelength
         nstep          (float): The number of steps to take in each direction
+        plot            (bool): Plot live fit results
         debug           (bool): Return samples instead of the average values
 
     Returns:
@@ -208,6 +213,7 @@ def sample_feature_properties(
 
     # We vary the beginning and end of the feature to estimate the error
     velocity, pequiv_width, area = [], [], []
+
     for i in np.arange(-nstep, nstep + 1):
         for j in np.arange(-nstep, nstep + 1):
             # Get sub-sampled wavelength/flux
@@ -221,7 +227,16 @@ def sample_feature_properties(
             area.append(feature_area(nw, nf))
             norm_flux, pew = feature_pew(nw, nf)
             pequiv_width.append(pew)
-            velocity.append(feature_velocity(rest_frame, nw, norm_flux))
+
+            if plot and i == -nstep and j == -nstep:
+                plt.plot(nw, norm_flux, color='k')
+
+            vel = feature_velocity(rest_frame, nw, norm_flux, plot=plot)
+            velocity.append(vel)
+
+    if plot:
+        plt.pause(2)
+        plt.clf()
 
     if debug:
         return velocity, pequiv_width, area
@@ -249,7 +264,7 @@ def sample_feature_properties(
     )
 
 
-def _spectrum_properties(wave, flux):
+def _spectrum_properties(wave, flux, plot=False):
     """Calculate the properties of multiple features in a spectrum
 
     Velocity, pseudo equivalent width, and area are returned for
@@ -258,6 +273,7 @@ def _spectrum_properties(wave, flux):
     Args:
         wave  (ndarray): An array of wavelengths in angstroms
         flux  (ndarray): An array of flux for each wavelength
+        plot     (bool): Plot live fit results
 
     Returns:
         A list of measurements and errors for each feature
@@ -265,10 +281,10 @@ def _spectrum_properties(wave, flux):
 
     # Iterate over features
     out_data = []
-    for feat_name, feat_properties in line_locations.items():
+    for feat_name, feat_properties in tqdm(line_locations.items(), desc='Features'):
         feat_start, feat_end = find_feature_bounds(wave, flux, feat_properties)
         feat_properties = sample_feature_properties(
-            feat_name, feat_start, feat_end, wave, flux)
+            feat_name, feat_start, feat_end, wave, flux, plot=plot)
 
         out_data += np.array(feat_properties).flatten().tolist()
 
@@ -304,7 +320,7 @@ def _correct_spectrum(spectrum, rv=3.1):
     return rest_wave, flux
 
 
-def tabulate_spectral_properties(data_release, rv=3.1, verbose=False):
+def tabulate_spectral_properties(data_release, rv=3.1, plot=False):
     """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
@@ -313,20 +329,21 @@ def tabulate_spectral_properties(data_release, rv=3.1, verbose=False):
     Args:
         data_release (module): SNData module for a spectroscopic data release
         rv            (float): Rv value to use for extinction
+        plot           (bool): Plot live fit results
 
     Returns:
         A Table with measurements for each spectrum and feature
     """
 
     table_rows = []
-    for spectra in data_release.iter_data(verbose=verbose):
+    for spectra in data_release.iter_data(verbose={'desc': 'Objects'}):
         wave, flux = _correct_spectrum(spectra, rv=rv)
         spectra['wave'] = wave
         spectra['flux'] = flux
 
         for spectrum in spectra.group_by('date').groups:
             date = spectrum['date'][0]
-            table_rows += [date] + _spectrum_properties(wave, flux)
+            table_rows += [date] + _spectrum_properties(wave, flux, plot)
 
     if not table_rows:
         table_rows = None
