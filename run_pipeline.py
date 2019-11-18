@@ -27,8 +27,8 @@ def load_yaml(path):
         return yaml.load(infile, Loader=yaml.FullLoader)
 
 
-def get_data_iter(data_module):
-    """Iterate over data tables while removing Y band observations
+def get_phot_data_iter(data_module):
+    """Iterate over photometric data tables while removing Y band observations
 
     This function is a wrapper around ``data_module.iter_data``
 
@@ -38,6 +38,12 @@ def get_data_iter(data_module):
     Yields:
         Astropy tables
     """
+
+    if data_module.data_type != 'photometric':
+        survey = data_module.survey_abbrev
+        release = data_module.survey_abbrev
+        raise RuntimeError(
+            f'{survey} - {release} is not a photometric data release')
 
     # Other classifications:
     # 'SLSN', 'SNIb', 'SNIc', 'pSNIbc', 'zSNIbc', 'Unknown', 'AGN', 'Variable'
@@ -53,7 +59,7 @@ def get_data_iter(data_module):
 
 
 def run_photometric_classification(cli_args):
-    """Run light curve fits using command line args
+    """Run photometric classification of SNe
 
     Args:
         cli_args (argparse.Namespace): Command line arguments
@@ -73,7 +79,7 @@ def run_photometric_classification(cli_args):
     data_module.register_filters()
 
     # specify arguments for fitting.tabulate_fit_results
-    data_iter = get_data_iter(data_module)
+    data_iter = get_phot_data_iter(data_module)
     band_names = data_module.band_names
     lambda_eff = data_module.lambda_effective
     fit_func = getattr(fit_func_wraps, cli_args.fit_func)
@@ -95,7 +101,39 @@ def run_photometric_classification(cli_args):
     classification.classify_targets(fit_results, out_path=classification_path)
 
 
+def get_spec_data_iter(data_module):
+    """Iterate over spectroscopic data tables while removing galaxy observations
+
+    This function is a wrapper around ``data_module.iter_data``
+
+    Args:
+        data_module (module): An sndata module
+
+    Yields:
+        Astropy tables
+    """
+
+    survey = data_module.survey_abbrev
+    release = data_module.survey_abbrev
+    if data_module.data_type != 'spectroscopic':
+        raise RuntimeError(
+            f'{survey} - {release} is not a spectroscopic data release')
+
+    for table in data_module.iter_data(verbose=True):
+        if survey == 'sdss':
+            table = table['spec_type'] != 'gal'
+
+        if table:
+            yield table
+
+
 def run_spectroscopic_classification(cli_args):
+    """Run spectroscopic classification of SNe
+
+    Args:
+        cli_args (argparse.Namespace): Command line arguments
+    """
+
     # Create output file path
     out_dir = Path(cli_args.out_dir).resolve()
     out_dir.mkdir(exist_ok=True, parents=True)
@@ -104,7 +142,9 @@ def run_spectroscopic_classification(cli_args):
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
 
-    out_table = spectra.tabulate_spectral_properties(data_module, plot=cli_args.verbose)
+    out_table = spectra.tabulate_spectral_properties(
+        data_module, plot=cli_args.verbose)
+
     out_table.write(file_path)
 
 
