@@ -147,7 +147,7 @@ def run_spectroscopic_classification(cli_args):
     # Create output file path
     out_dir = Path(cli_args.out_dir).resolve() / 'spec_class'
     out_dir.mkdir(exist_ok=True, parents=True)
-    file_path = out_dir / f'{cli_args.survey}_{cli_args.release}.ecsv'
+    file_name = f'{cli_args.survey}_{cli_args.release}_{cli_args.nstep}_steps.ecsv'
 
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
@@ -157,7 +157,7 @@ def run_spectroscopic_classification(cli_args):
         nstep=cli_args.nstep,
         plot=cli_args.verbose)
 
-    out_table.write(file_path, overwrite=True)
+    out_table.write(out_dir / file_name, overwrite=True)
 
 
 def create_cli_parser():
