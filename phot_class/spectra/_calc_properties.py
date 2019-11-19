@@ -6,9 +6,9 @@ velocity, and  equivalent width. All functions in this module are built to
 support ``uarray`` objects from the ``uncertainties`` package as inputs.
 """
 
+import extinction
 from pathlib import Path
 
-import extinction
 import numpy as np
 import sfdmap
 import yaml
@@ -18,7 +18,7 @@ from astropy.table import Table
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
 from uncertainties import nominal_value, std_dev, ufloat
-from uncertainties.unumpy import nominal_values, std_devs
+from uncertainties.unumpy import nominal_values, std_devs, uarray
 
 # File paths for external data
 _file_dir = Path(__file__).resolve().parent
@@ -70,10 +70,10 @@ def feature_pew(wave, flux):
     continuum = m * wave + b
     norm_flux = flux / continuum
     pew = (x1 - x0) - np.trapz(y=norm_flux, x=wave)
-    return norm_flux, pew
+    return continuum, norm_flux, pew
 
 
-def feature_velocity(rest_frame, wave, flux, unit=None, plot=False):
+def feature_velocity(rest_frame, wave, flux, unit=None):
     """Calculate the velocity of a feature
 
     Args:
@@ -81,7 +81,6 @@ def feature_velocity(rest_frame, wave, flux, unit=None, plot=False):
         wave         (ndarray): A sorted array of wavelengths for the feature
         flux (ndarray, uarray): An array of flux values for each wavelength
         unit      (PrefixUnit): Astropy unit for returned velocity (default km/s)
-        plot            (bool): Plot live fit results
 
     Returns:
         The velocity of the feature
@@ -102,23 +101,17 @@ def feature_velocity(rest_frame, wave, flux, unit=None, plot=False):
         p0=[0.5, np.median(wave), 50., 0],
         sigma=eflux if any(eflux) else None)
 
-    if plot:
-        fit = gaussian(wave, depth, avg, stddev, offset)
-        plt.plot(wave, fit, label='Fit', color='C0', alpha=.25)
-        plt.axvline(wave[0], color='C0', linestyle='--', alpha=.25)
-        plt.axvline(wave[-1], color='C0', linestyle='--', alpha=.25)
-        plt.axvline(avg, color='grey', linestyle=':', label=f'Average: {avg}')
-        plt.draw()
-        plt.pause(.1)
-
     if any(eflux):
         avg = ufloat(avg, np.sqrt(cov[1][1]))
 
+    fit = gaussian(wave, depth, avg, stddev, offset)
     speed_of_light = c.to(unit).value
-    return speed_of_light * (
+    vel = speed_of_light * (
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 - 1) /
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 + 1)
     )
+
+    return vel, avg, fit
 
 
 def find_peak_wavelength(
@@ -177,8 +170,9 @@ def find_feature_bounds(wave, flux, feature):
     return feat_start, feat_end
 
 
-def sample_feature_properties(feat_name, feat_start, feat_end, wave, flux,
-                              nstep=5, plot=False, debug=False):
+def sample_feature_properties(
+        feat_name, feat_start, feat_end, wave, flux,
+        nstep=5, plot=False, debug=False):
     """Calculate the properties of a single feature in a spectrum
 
     Velocity values are returned in km / s. Error values are determined
@@ -201,6 +195,9 @@ def sample_feature_properties(feat_name, feat_start, feat_end, wave, flux,
         - (The feature area, its formal error, and its sampling error)
     """
 
+    if plot:
+        plt.clf()
+
     # Get rest frame location of the specified feature
     rest_frame = line_locations[feat_name]['restframe']
 
@@ -214,7 +211,7 @@ def sample_feature_properties(feat_name, feat_start, feat_end, wave, flux,
     velocity, pequiv_width, area = [], [], []
 
     for i in np.arange(-nstep, nstep + 1):
-        for j in np.arange(-nstep, nstep + 1):
+        for j in np.arange(nstep, -nstep - 1, -1):
             # Get sub-sampled wavelength/flux
             sample_start_idx = idx_start + i
             sample_end_idx = idx_end + j
@@ -224,17 +221,30 @@ def sample_feature_properties(feat_name, feat_start, feat_end, wave, flux,
 
             # Determine feature properties
             area.append(feature_area(nw, nf))
-            norm_flux, pew = feature_pew(nw, nf)
+            continuum, norm_flux, pew = feature_pew(nw, nf)
             pequiv_width.append(pew)
 
-            if plot and i == -nstep and j == -nstep:
-                plt.plot(nw, norm_flux, color='k')
-
-            vel = feature_velocity(rest_frame, nw, norm_flux, plot=plot)
+            vel, avg, fit = feature_velocity(rest_frame, nw, norm_flux)
             velocity.append(vel)
 
+            if plot and i == -nstep and j == nstep:
+                plt.plot(nw, nf, color='k')
+
+            if plot:
+                feat_id = line_locations[feat_name]['feature_id']
+                plt.title(feat_id + f' (pEW = {np.average(pequiv_width):.2f})')
+                plt.plot(nw, continuum, color='C0', linestyle='--', alpha=.4)
+                plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25)
+                plt.fill_between(nw, nf, continuum, color='grey', alpha=.2)
+                plt.axvline(nw[0], color='grey', linestyle='--', alpha=.25)
+                plt.axvline(nw[-1], color='grey', linestyle='--', alpha=.25)
+                plt.axvline(avg, color='C1', linestyle=':')
+                plt.draw()
+                plt.pause(.001)
+
+
     if plot:
-        plt.pause(1)
+        plt.pause(.5)
         plt.clf()
 
     if debug:
@@ -263,7 +273,7 @@ def sample_feature_properties(feat_name, feat_start, feat_end, wave, flux,
     )
 
 
-def _spectrum_properties(wave, flux, plot=False):
+def _spectrum_properties(wave, flux, nstep=5, plot=False):
     """Calculate the properties of multiple features in a spectrum
 
     Velocity, pseudo equivalent width, and area are returned for
@@ -282,12 +292,12 @@ def _spectrum_properties(wave, flux, plot=False):
     out_data = []
     for feat_name, feat_definition in line_locations.items():
         try:
-            feat_start, feat_end = find_feature_bounds(wave, flux,
-                                                       feat_definition)
+            feat_start, feat_end = find_feature_bounds(wave, flux, feat_definition)
             samp_results = sample_feature_properties(
-                feat_name, feat_start, feat_end, wave, flux, plot=plot)
+                feat_name, feat_start, feat_end, wave, flux,
+                nstep=nstep, plot=plot)
 
-            feat_properties = np.array([feat_name, samp_results, '']).flatten().tolist()
+            feat_properties = [feat_name] + np.array(samp_results).flatten().tolist() + ['']
 
         except KeyboardInterrupt:
             raise
@@ -324,7 +334,7 @@ def _correct_spectrum(wave, flux, ra, dec, z, rv=3.1):
     return rest_wave, flux
 
 
-def tabulate_spectral_properties(data_iter, rv=3.1, plot=False):
+def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
     """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
@@ -353,7 +363,9 @@ def tabulate_spectral_properties(data_iter, rv=3.1, plot=False):
             wave, flux, ra, dec, z, rv=rv)
 
         # Tabulate properties and add object Id to each measurement
-        spec_properties = _spectrum_properties(rest_wave, corrected_flux, plot)
+        spec_properties = _spectrum_properties(
+            rest_wave, corrected_flux, nstep=nstep, plot= plot)
+
         table_rows += [[obj_id, date] + r for r in spec_properties]
 
     if not table_rows:
@@ -362,7 +374,7 @@ def tabulate_spectral_properties(data_iter, rv=3.1, plot=False):
     # Format results as a table
     col_names = ['obj_id', 'date', 'feat_name']
     dtype = ['U100', 'U100', 'U20']
-    for value in ('_vel', '_pew', '_area'):
+    for value in ('vel', 'pew', 'area'):
         col_names.append(value)
         col_names.append(value + '_err')
         col_names.append(value + '_samperr')

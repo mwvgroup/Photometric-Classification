@@ -153,7 +153,9 @@ def run_spectroscopic_classification(cli_args):
     data_module.download_module_data()
 
     out_table = spectra.tabulate_spectral_properties(
-        get_spec_data_iter(data_module), plot=cli_args.verbose)
+        get_spec_data_iter(data_module),
+        nstep=cli_args.nstep,
+        plot=cli_args.verbose)
 
     out_table.write(file_path, overwrite=True)
 
@@ -219,11 +221,19 @@ def create_cli_parser():
         help='Classify targets spectroscopically'
     )
 
+
     spectroscopic_parser.add_argument(
         '-r', '--rv',
         type=float,
         required=False,
         help='Rv value to use for extinction correction'
+    )
+
+    spectroscopic_parser.add_argument(
+        '-n', '--nstep',
+        type=int,
+        default=5,
+        help='Number of steps used in resampling'
     )
 
     spectroscopic_parser.add_argument(
