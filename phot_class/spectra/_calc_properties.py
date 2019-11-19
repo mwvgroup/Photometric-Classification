@@ -6,9 +6,9 @@ velocity, and  equivalent width. All functions in this module are built to
 support ``uarray`` objects from the ``uncertainties`` package as inputs.
 """
 
-import extinction
 from pathlib import Path
 
+import extinction
 import numpy as np
 import sfdmap
 import yaml
@@ -18,7 +18,7 @@ from astropy.table import Table
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
 from uncertainties import nominal_value, std_dev, ufloat
-from uncertainties.unumpy import nominal_values, std_devs, uarray
+from uncertainties.unumpy import nominal_values, std_devs
 
 # File paths for external data
 _file_dir = Path(__file__).resolve().parent
@@ -242,7 +242,6 @@ def sample_feature_properties(
                 plt.draw()
                 plt.pause(.001)
 
-
     if plot:
         plt.pause(.5)
         plt.clf()
@@ -292,18 +291,23 @@ def _spectrum_properties(wave, flux, nstep=5, plot=False):
     out_data = []
     for feat_name, feat_definition in line_locations.items():
         try:
-            feat_start, feat_end = find_feature_bounds(wave, flux, feat_definition)
+            feat_start, feat_end = find_feature_bounds(
+                wave, flux, feat_definition)
+
             samp_results = sample_feature_properties(
                 feat_name, feat_start, feat_end, wave, flux,
-                nstep=nstep, plot=plot)
+                nstep=nstep, plot=plot
+            )
 
-            feat_properties = [feat_name] + np.array(samp_results).flatten().tolist() + ['']
+            feat_properties = \
+                [feat_name] + np.array(samp_results).flatten().tolist() + ['']
 
         except KeyboardInterrupt:
             raise
 
         except Exception as msg:
-            feat_properties = [feat_name] + np.full(9, np.nan).tolist() + [str(msg)]
+            feat_properties = [feat_name] + np.full(9, np.nan).tolist() + [
+                str(msg)]
 
         out_data.append(feat_properties)
 
@@ -364,7 +368,7 @@ def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
 
         # Tabulate properties and add object Id to each measurement
         spec_properties = _spectrum_properties(
-            rest_wave, corrected_flux, nstep=nstep, plot= plot)
+            rest_wave, corrected_flux, nstep=nstep, plot=plot)
 
         table_rows += [[obj_id, date] + r for r in spec_properties]
 
