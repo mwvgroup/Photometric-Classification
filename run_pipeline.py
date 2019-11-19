@@ -39,9 +39,9 @@ def get_phot_data_iter(data_module):
         Astropy tables
     """
 
+    survey = data_module.survey_abbrev
+    release = data_module.release
     if data_module.data_type != 'photometric':
-        survey = data_module.survey_abbrev
-        release = data_module.survey_abbrev
         raise RuntimeError(
             f'{survey} - {release} is not a photometric data release')
 
@@ -51,7 +51,10 @@ def get_phot_data_iter(data_module):
         ['SNIa', 'SNIa?', 'pSNIa', 'zSNIa']
     )
 
-    data_iter = data_module.iter_data(verbose=True, filter_func=filter_func)
+    data_iter = data_module.iter_data(
+        verbose={'desc': f'{survey} - {release} Objects'},
+        filter_func=filter_func)
+
     for data in data_iter:
         data = data[data['band'] != 'csp_dr3_Ydw']
         data = data[data['band'] != 'csp_dr3_Y']
@@ -114,17 +117,24 @@ def get_spec_data_iter(data_module):
     """
 
     survey = data_module.survey_abbrev
-    release = data_module.survey_abbrev
+    release = data_module.release
     if data_module.data_type != 'spectroscopic':
         raise RuntimeError(
             f'{survey} - {release} is not a spectroscopic data release')
 
-    for table in data_module.iter_data(verbose=True):
-        if survey == 'sdss':
-            table = table['spec_type'] != 'gal'
+    for table in data_module.iter_data(verbose={'desc': 'Objects'}):
+        # Skip sdss galaxy spectra
+        if survey.lower() == 'sdss':
+            table = table[table['type'] != 'Gal']
 
-        if table:
-            yield table
+        if not table:
+            continue
+
+        for spectrum in table.group_by('date').groups:
+            if spectrum.meta['ra'] is None:
+                continue
+
+            yield spectrum
 
 
 def run_spectroscopic_classification(cli_args):
@@ -135,20 +145,22 @@ def run_spectroscopic_classification(cli_args):
     """
 
     # Create output file path
-    out_dir = Path(cli_args.out_dir).resolve()
+    out_dir = Path(cli_args.out_dir).resolve() / 'spec_class'
     out_dir.mkdir(exist_ok=True, parents=True)
-    file_path = out_dir / f'{cli_args.survey}_{cli_args.release}_spec.ecsv'
+    file_path = out_dir / f'{cli_args.survey}_{cli_args.release}.ecsv'
 
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
 
     out_table = spectra.tabulate_spectral_properties(
-        data_module, plot=cli_args.verbose)
+        get_spec_data_iter(data_module), plot=cli_args.verbose)
 
-    out_table.write(file_path)
+    out_table.write(file_path, overwrite=True)
 
 
 def create_cli_parser():
+    """Return a command line argument parser"""
+
     parser = argparse.ArgumentParser(
         description='Arguments for the command line interface are as follows:')
     subparsers = parser.add_subparsers()
@@ -177,7 +189,7 @@ def create_cli_parser():
         '-f', '--fit_func',
         type=str,
         default='simple_fit',
-        help='The name of the fitting routine to use (simple_fit, nest_fit, mcmc_fit, nested_simple_fit, nested_mcmc_fit).'
+        help='The name of the fitting routine to use (simple_fit, nest_fit, mcmc_fit).'
     )
 
     photometric_parser.add_argument(

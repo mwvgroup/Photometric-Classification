@@ -17,7 +17,6 @@ from astropy.constants import c
 from astropy.table import Table
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
-from tqdm import tqdm
 from uncertainties import nominal_value, std_dev, ufloat
 from uncertainties.unumpy import nominal_values, std_devs
 
@@ -235,7 +234,7 @@ def sample_feature_properties(feat_name, feat_start, feat_end, wave, flux,
             velocity.append(vel)
 
     if plot:
-        plt.pause(2)
+        plt.pause(1)
         plt.clf()
 
     if debug:
@@ -281,17 +280,27 @@ def _spectrum_properties(wave, flux, plot=False):
 
     # Iterate over features
     out_data = []
-    for feat_name, feat_properties in tqdm(line_locations.items(), desc='Features'):
-        feat_start, feat_end = find_feature_bounds(wave, flux, feat_properties)
-        feat_properties = sample_feature_properties(
-            feat_name, feat_start, feat_end, wave, flux, plot=plot)
+    for feat_name, feat_definition in line_locations.items():
+        try:
+            feat_start, feat_end = find_feature_bounds(wave, flux,
+                                                       feat_definition)
+            samp_results = sample_feature_properties(
+                feat_name, feat_start, feat_end, wave, flux, plot=plot)
 
-        out_data += np.array(feat_properties).flatten().tolist()
+            feat_properties = np.array([feat_name, samp_results, '']).flatten().tolist()
+
+        except KeyboardInterrupt:
+            raise
+
+        except Exception as msg:
+            feat_properties = [feat_name] + np.full(9, np.nan).tolist() + [str(msg)]
+
+        out_data.append(feat_properties)
 
     return out_data
 
 
-def _correct_spectrum(spectrum, rv=3.1):
+def _correct_spectrum(wave, flux, ra, dec, z, rv=3.1):
     """Rest frame spectra and correct for MW extinction
 
     Spectra are rest-framed and corrected for MW extinction using the
@@ -308,53 +317,58 @@ def _correct_spectrum(spectrum, rv=3.1):
         - The flux corrected for extinction
     """
 
-    z = spectrum.meta['z']
-    ra = spectrum.meta['ra']
-    dec = spectrum.meta['dec']
     mwebv = dust_map.ebv(ra, dec, frame='fk5j2000', unit='degree')
-
-    mag_ext = extinction.fitzpatrick99(spectrum['wavelength'], rv * mwebv, rv)
-    flux = spectrum['flux'] * 10 ** (0.4 * mag_ext)
-    rest_wave = spectrum['wavelength'] / (1 + z)
-
+    mag_ext = extinction.fitzpatrick99(wave, rv * mwebv, rv)
+    flux = flux * 10 ** (0.4 * mag_ext)
+    rest_wave = wave / (1 + z)
     return rest_wave, flux
 
 
-def tabulate_spectral_properties(data_release, rv=3.1, plot=False):
+def tabulate_spectral_properties(data_iter, rv=3.1, plot=False):
     """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
     Schlegel et al. 98 dust map and the Fitzpatrick et al. 99 extinction law.
 
     Args:
-        data_release (module): SNData module for a spectroscopic data release
-        rv            (float): Rv value to use for extinction
-        plot           (bool): Plot live fit results
+        data_iter (iterable[Table]): Iterable of spectroscopic data tables
+        rv                  (float): Rv value to use for extinction
+        plot                 (bool): Plot live fit results
 
     Returns:
         A Table with measurements for each spectrum and feature
     """
 
     table_rows = []
-    for spectra in data_release.iter_data(verbose={'desc': 'Objects'}):
-        wave, flux = _correct_spectrum(spectra, rv=rv)
-        spectra['wave'] = wave
-        spectra['flux'] = flux
+    for spectrum in data_iter:
+        obj_id = spectrum.meta['obj_id']
+        wave = spectrum['wavelength']
+        flux = spectrum['flux']
+        z = spectrum.meta['z']
+        ra = spectrum.meta['ra']
+        dec = spectrum.meta['dec']
+        date = spectrum['date'][0]
 
-        for spectrum in spectra.group_by('date').groups:
-            date = spectrum['date'][0]
-            table_rows += [date] + _spectrum_properties(wave, flux, plot)
+        rest_wave, corrected_flux = _correct_spectrum(
+            wave, flux, ra, dec, z, rv=rv)
+
+        # Tabulate properties and add object Id to each measurement
+        spec_properties = _spectrum_properties(rest_wave, corrected_flux, plot)
+        table_rows += [[obj_id, date] + r for r in spec_properties]
 
     if not table_rows:
         table_rows = None
 
     # Format results as a table
-    col_names = ['date']
-    for feat_name in line_locations:
-        for value in ('_vel', '_pew', '_area'):
-            col_names.append(feat_name + value)
-            col_names.append(feat_name + value + '_err')
-            col_names.append(feat_name + value + '_samperr')
+    col_names = ['obj_id', 'date', 'feat_name']
+    dtype = ['U100', 'U100', 'U20']
+    for value in ('_vel', '_pew', '_area'):
+        col_names.append(value)
+        col_names.append(value + '_err')
+        col_names.append(value + '_samperr')
+        dtype += [float, float, float]
 
-    dtype = [float for _ in col_names]
-    return Table(table_rows, names=col_names, dtype=dtype)
+    col_names.append('msg')
+    dtype.append('U1000')
+
+    return Table(rows=table_rows, names=col_names, dtype=dtype)
