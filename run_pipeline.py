@@ -148,13 +148,23 @@ def run_spectroscopic_classification(cli_args):
     # Create output file path
     out_dir = Path(cli_args.out_dir).resolve() / 'spec_class'
     out_dir.mkdir(exist_ok=True, parents=True)
-    file_name = f'{cli_args.survey}_{cli_args.release}_{cli_args.nstep}_steps.ecsv'
+
+    if cli_args.rv == -1:
+        rv = None
+        rv_str = 'auto'
+
+    else:
+        rv = cli_args.rv
+        rv_str = cli_args.rv
+
+    file_name = f'{cli_args.survey}_{cli_args.release}_{rv_str}_{cli_args.nstep}.ecsv'
 
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
 
     out_table = spectra.tabulate_spectral_properties(
         get_spec_data_iter(data_module),
+        rv=rv,
         nstep=cli_args.nstep,
         plot=cli_args.verbose)
 
@@ -225,7 +235,7 @@ def create_cli_parser():
     spectroscopic_parser.add_argument(
         '-r', '--rv',
         type=float,
-        required=False,
+        default=-1,
         help='Rv value to use for extinction correction'
     )
 

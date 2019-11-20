@@ -57,8 +57,9 @@ def feature_pew(wave, flux):
         flux (ndarray, uarray): An array of flux values for each wavelength
 
     Returns:
-        The normalized flux
-        The pseudo equivalent-width of the feature
+        - The value of the continuum for each wavelength
+        - The normalized flux
+        - The pseudo equivalent-width of the feature
     """
 
     # Fit a line to the end points
@@ -83,7 +84,9 @@ def feature_velocity(rest_frame, wave, flux, unit=None):
         unit      (PrefixUnit): Astropy unit for returned velocity (default km/s)
 
     Returns:
-        The velocity of the feature
+        - The velocity of the feature
+        - The average of the Gaussian
+        - The Gaussian evaluated for each wavelength
     """
 
     eflux = std_devs(flux)
@@ -131,7 +134,6 @@ def find_peak_wavelength(
 
     Returns:
         The wavelength for the maximum flux value
-        The maximum flux value
     """
 
     # Make sure the given spectrum spans the given wavelength bounds
@@ -157,8 +159,8 @@ def find_feature_bounds(wave, flux, feature):
         feature (dict): A dictionary defining feature parameters
 
     Returns:
-        The starting wavelength of the feature
-        The ending wavelength of the feature
+        - The starting wavelength of the feature
+        - The ending wavelength of the feature
     """
 
     feat_start = find_peak_wavelength(
@@ -185,7 +187,7 @@ def sample_feature_properties(
         feat_end       (float): Ending wavelength of the feature
         wave         (ndarray): An array of wavelengths
         flux (ndarray, uarray): An array of flux for each wavelength
-        nstep          (float): The number of steps to take in each direction
+        nstep            (int): The number of steps to take in each direction
         plot            (bool): Plot live fit results
         debug           (bool): Return samples instead of the average values
 
@@ -224,7 +226,7 @@ def sample_feature_properties(
             continuum, norm_flux, pew = feature_pew(nw, nf)
             pequiv_width.append(pew)
 
-            vel, avg, fit = feature_velocity(rest_frame, nw, norm_flux)
+            vel, avg, fit = 0, 0, 0  # feature_velocity(rest_frame, nw, norm_flux)
             velocity.append(vel)
 
             if plot and i == -nstep and j == nstep:
@@ -286,6 +288,7 @@ def _spectrum_properties(wave, flux, nstep=5, plot=False):
     Args:
         wave  (ndarray): An array of wavelengths in angstroms
         flux  (ndarray): An array of flux for each wavelength
+        nstep     (int): The number of sampling steps to take
         plot     (bool): Plot live fit results
 
     Returns:
@@ -319,17 +322,21 @@ def _spectrum_properties(wave, flux, nstep=5, plot=False):
     return out_data
 
 
-def _correct_spectrum(wave, flux, ra, dec, z, rv=3.1):
+def _correct_spectrum(wave, flux, ra, dec, z, rv=None):
     """Rest frame spectra and correct for MW extinction
 
     Spectra are rest-framed and corrected for MW extinction using the
     Schlegel et al. 98 dust map and the Fitzpatrick et al. 99 extinction law.
-    The values ``z``, ``ra``, and ``dec`` are expected in the table's
-    meta data.
+    if rv is not given, a value of 1.7 is used for E(B - V) > .3 and a value
+    of 3.1 is used otherwise.
 
     Args:
-        spectrum (Table): Table with columns ``wave`` and ``flux``
-        rv       (float): Rv value to use for extinction
+        wave (ndarray): Array of wavelength values
+        flux (ndarray): Array of flux values
+        ra     (float): Ra coordinate of the object
+        dec    (float): Dec coordinate of the object
+        z      (float): Redshift of the object
+        rv     (float): Rv value to use for extinction
 
     Returns:
         - The rest framed wavelengths
@@ -337,13 +344,16 @@ def _correct_spectrum(wave, flux, ra, dec, z, rv=3.1):
     """
 
     mwebv = dust_map.ebv(ra, dec, frame='fk5j2000', unit='degree')
+    adaptive_rv = 1.7 if mwebv > .3 else 3.1
+    rv = rv if rv else adaptive_rv
+
     mag_ext = extinction.fitzpatrick99(wave, rv * mwebv, rv)
     flux = flux * 10 ** (0.4 * mag_ext)
     rest_wave = wave / (1 + z)
     return rest_wave, flux
 
 
-def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
+def tabulate_spectral_properties(data_iter, nstep=5, rv=None, plot=False):
     """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
@@ -351,6 +361,7 @@ def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
 
     Args:
         data_iter (iterable[Table]): Iterable of spectroscopic data tables
+        nstep                 (int): The number of sampling steps to take
         rv                  (float): Rv value to use for extinction
         plot                 (bool): Plot live fit results
 
