@@ -7,6 +7,7 @@ import argparse
 import warnings
 from pathlib import Path
 
+import numpy as np
 import sndata
 import yaml
 
@@ -125,7 +126,7 @@ def get_spec_data_iter(data_module):
     for table in data_module.iter_data(verbose={'desc': 'Objects'}):
         # Skip sdss galaxy spectra
         if survey.lower() == 'sdss':
-            table = table[table['type'] != 'Gal']
+            table = table[np.isin(table['type'], ['Ia', 'Ia-pec', 'Ia?'])]
 
         if not table:
             continue
@@ -220,7 +221,6 @@ def create_cli_parser():
         func=run_spectroscopic_classification,
         help='Classify targets spectroscopically'
     )
-
 
     spectroscopic_parser.add_argument(
         '-r', '--rv',

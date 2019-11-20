@@ -228,17 +228,22 @@ def sample_feature_properties(
             velocity.append(vel)
 
             if plot and i == -nstep and j == nstep:
-                plt.plot(nw, nf, color='k')
+                plt.plot(nw, nf, color='k', zorder=1)
+                plt.xlabel('Wavelength')
+                plt.ylabel('Flux')
 
             if plot:
                 feat_id = line_locations[feat_name]['feature_id']
-                plt.title(feat_id + f' (pEW = {np.average(pequiv_width):.2f})')
-                plt.plot(nw, continuum, color='C0', linestyle='--', alpha=.4)
-                plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25)
-                plt.fill_between(nw, nf, continuum, color='grey', alpha=.2)
-                plt.axvline(nw[0], color='grey', linestyle='--', alpha=.25)
-                plt.axvline(nw[-1], color='grey', linestyle='--', alpha=.25)
-                plt.axvline(avg, color='C1', linestyle=':')
+                avg_pew = np.average(pequiv_width)
+                std_pew = np.std(pequiv_width)
+                plt.title(feat_id + f' (pEW = {avg_pew:.2f} +\- {std_pew:.2f})')
+                plt.fill_between(nw, nf, continuum, color='grey', alpha=.2, zorder=0)
+                plt.axvline(nw[0], color='grey', linestyle='--', alpha=.25, zorder=2)
+                plt.axvline(nw[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
+                plt.plot(nw, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
+                plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
+                plt.axvline(avg, color='C1', linestyle=':', zorder=5)
+
                 plt.draw()
                 plt.pause(.001)
 
