@@ -104,10 +104,10 @@ def feature_velocity(rest_frame, wave, flux, unit=None):
         p0=[0.5, np.median(wave), 50., 0],
         sigma=eflux if any(eflux) else None)
 
+    fit = gaussian(wave, depth, avg, stddev, offset)
     if any(eflux):
         avg = ufloat(avg, np.sqrt(cov[1][1]))
 
-    fit = gaussian(wave, depth, avg, stddev, offset)
     speed_of_light = c.to(unit).value
     vel = speed_of_light * (
             ((((rest_frame - avg) / rest_frame) + 1) ** 2 - 1) /
@@ -226,6 +226,7 @@ def sample_feature_properties(
             continuum, norm_flux, pew = feature_pew(nw, nf)
             pequiv_width.append(pew)
 
+            # Todo: Add back in the velocity calculation
             vel, avg, fit = 0, 0, 0  # feature_velocity(rest_frame, nw, norm_flux)
             velocity.append(vel)
 
@@ -243,7 +244,10 @@ def sample_feature_properties(
                 plt.axvline(nw[0], color='grey', linestyle='--', alpha=.25, zorder=2)
                 plt.axvline(nw[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
                 plt.plot(nw, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
-                plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
+
+                # Todo: Add back in the velocity calculation
+                # plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
+
                 plt.axvline(avg, color='C1', linestyle=':', zorder=5)
 
                 plt.draw()
