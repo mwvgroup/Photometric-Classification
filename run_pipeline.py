@@ -7,6 +7,7 @@ import argparse
 import warnings
 from pathlib import Path
 
+import numpy as np
 import sndata
 import yaml
 
@@ -27,8 +28,8 @@ def load_yaml(path):
         return yaml.load(infile, Loader=yaml.FullLoader)
 
 
-def get_data_iter(data_module):
-    """Iterate over data tables while removing Y band observations
+def get_phot_data_iter(data_module):
+    """Iterate over photometric data tables while removing Y band observations
 
     This function is a wrapper around ``data_module.iter_data``
 
@@ -39,13 +40,22 @@ def get_data_iter(data_module):
         Astropy tables
     """
 
+    survey = data_module.survey_abbrev
+    release = data_module.release
+    if data_module.data_type != 'photometric':
+        raise RuntimeError(
+            f'{survey} - {release} is not a photometric data release')
+
     # Other classifications:
     # 'SLSN', 'SNIb', 'SNIc', 'pSNIbc', 'zSNIbc', 'Unknown', 'AGN', 'Variable'
     filter_func = utils.classification_filter_factory(
         ['SNIa', 'SNIa?', 'pSNIa', 'zSNIa']
     )
 
-    data_iter = data_module.iter_data(verbose=True, filter_func=filter_func)
+    data_iter = data_module.iter_data(
+        verbose={'desc': f'{survey} - {release} Objects'},
+        filter_func=filter_func)
+
     for data in data_iter:
         data = data[data['band'] != 'csp_dr3_Ydw']
         data = data[data['band'] != 'csp_dr3_Y']
@@ -53,7 +63,7 @@ def get_data_iter(data_module):
 
 
 def run_photometric_classification(cli_args):
-    """Run light curve fits using command line args
+    """Run photometric classification of SNe
 
     Args:
         cli_args (argparse.Namespace): Command line arguments
@@ -73,7 +83,7 @@ def run_photometric_classification(cli_args):
     data_module.register_filters()
 
     # specify arguments for fitting.tabulate_fit_results
-    data_iter = get_data_iter(data_module)
+    data_iter = get_phot_data_iter(data_module)
     band_names = data_module.band_names
     lambda_eff = data_module.lambda_effective
     fit_func = getattr(fit_func_wraps, cli_args.fit_func)
@@ -95,20 +105,68 @@ def run_photometric_classification(cli_args):
     classification.classify_targets(fit_results, out_path=classification_path)
 
 
+def get_spec_data_iter(data_module):
+    """Iterate over spectroscopic data tables while removing galaxy observations
+
+    This function is a wrapper around ``data_module.iter_data``
+
+    Args:
+        data_module (module): An sndata module
+
+    Yields:
+        Astropy tables
+    """
+
+    survey = data_module.survey_abbrev
+    release = data_module.release
+    if data_module.data_type != 'spectroscopic':
+        raise RuntimeError(
+            f'{survey} - {release} is not a spectroscopic data release')
+
+    for table in data_module.iter_data(verbose={'desc': 'Objects'}):
+        # Skip sdss galaxy spectra
+        if survey.lower() == 'sdss':
+            table = table[np.isin(table['type'], ['Ia', 'Ia-pec', 'Ia?'])]
+
+        if not table:
+            continue
+
+        for spectrum in table.group_by('date').groups:
+            if spectrum.meta['ra'] is None:
+                continue
+
+            yield spectrum
+
+
 def run_spectroscopic_classification(cli_args):
+    """Run spectroscopic classification of SNe
+
+    Args:
+        cli_args (argparse.Namespace): Command line arguments
+    """
+
     # Create output file path
-    out_dir = Path(cli_args.out_dir).resolve()
+    out_dir = Path(cli_args.out_dir).resolve() / 'spec_class'
     out_dir.mkdir(exist_ok=True, parents=True)
-    file_path = out_dir / f'{cli_args.survey}_{cli_args.release}_spec.ecsv'
+
+    rv_str = str(cli_args.rv).replace('.', '_')
+    file_name = f'{cli_args.survey}_{cli_args.release}_{rv_str}_{cli_args.nstep}.ecsv'
 
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
 
-    out_table = spectra.tabulate_spectral_properties(data_module, plot=cli_args.verbose)
-    out_table.write(file_path)
+    out_table = spectra.tabulate_spectral_properties(
+        get_spec_data_iter(data_module),
+        rv=cli_args.rv,
+        nstep=cli_args.nstep,
+        plot=cli_args.plot)
+
+    out_table.write(out_dir / file_name, overwrite=True)
 
 
 def create_cli_parser():
+    """Return a command line argument parser"""
+
     parser = argparse.ArgumentParser(
         description='Arguments for the command line interface are as follows:')
     subparsers = parser.add_subparsers()
@@ -137,7 +195,7 @@ def create_cli_parser():
         '-f', '--fit_func',
         type=str,
         default='simple_fit',
-        help='The name of the fitting routine to use (simple_fit, nest_fit, mcmc_fit, nested_simple_fit, nested_mcmc_fit).'
+        help='The name of the fitting routine to use (simple_fit, nest_fit, mcmc_fit).'
     )
 
     photometric_parser.add_argument(
@@ -170,8 +228,15 @@ def create_cli_parser():
     spectroscopic_parser.add_argument(
         '-r', '--rv',
         type=float,
-        required=False,
+        default=3.1,
         help='Rv value to use for extinction correction'
+    )
+
+    spectroscopic_parser.add_argument(
+        '-n', '--nstep',
+        type=int,
+        default=5,
+        help='Number of steps used in resampling'
     )
 
     spectroscopic_parser.add_argument(
@@ -182,7 +247,7 @@ def create_cli_parser():
     )
 
     spectroscopic_parser.add_argument(
-        '--verbose',
+        '--plot',
         help='Display live plots of fitting results for the velocity calculation.',
         action='store_true')
 

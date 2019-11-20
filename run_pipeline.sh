@@ -7,8 +7,22 @@ python run_pipeline.py \
     -s sdss \
     -r sako18spec \
     spectroscopic \
-    -o './results/' \
-    --verbose;
+    -n 0 \
+    -o './results/';
+
+python run_pipeline.py \
+    -s sdss \
+    -r sako18spec \
+    spectroscopic \
+    -n 2 \
+    -o './results/';
+
+python run_pipeline.py \
+    -s sdss \
+    -r sako18spec \
+    spectroscopic \
+    -n 5 \
+    -o './results/';
 
 # emcee fitting
 ###############
