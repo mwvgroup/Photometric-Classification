@@ -3,32 +3,6 @@
 # Spectroscopic classification
 ##############################
 
-# Fixed rv for different number of re-sampling steps
-python run_pipeline.py \
-    -s sdss \
-    -r sako18spec \
-    spectroscopic \
-    -n 0 \
-    -r 3.1 \
-    -o './results/';
-
-python run_pipeline.py \
-    -s sdss \
-    -r sako18spec \
-    spectroscopic \
-    -n 2 \
-    -r 3.1 \
-    -o './results/';
-
-python run_pipeline.py \
-    -s sdss \
-    -r sako18spec \
-    spectroscopic \
-    -n 5 \
-    -r 3.1 \
-    -o './results/';
-
-# Variable rv for different number of re-sampling steps
 python run_pipeline.py \
     -s sdss \
     -r sako18spec \

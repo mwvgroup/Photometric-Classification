@@ -149,14 +149,7 @@ def run_spectroscopic_classification(cli_args):
     out_dir = Path(cli_args.out_dir).resolve() / 'spec_class'
     out_dir.mkdir(exist_ok=True, parents=True)
 
-    if cli_args.rv == -1:
-        rv = None
-        rv_str = 'auto'
-
-    else:
-        rv = cli_args.rv
-        rv_str = cli_args.rv
-
+    rv_str = str(cli_args.rv).replace('.', '_')
     file_name = f'{cli_args.survey}_{cli_args.release}_{rv_str}_{cli_args.nstep}.ecsv'
 
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
@@ -164,9 +157,9 @@ def run_spectroscopic_classification(cli_args):
 
     out_table = spectra.tabulate_spectral_properties(
         get_spec_data_iter(data_module),
-        rv=rv,
+        rv=cli_args.rv,
         nstep=cli_args.nstep,
-        plot=cli_args.verbose)
+        plot=cli_args.plot)
 
     out_table.write(out_dir / file_name, overwrite=True)
 
@@ -235,7 +228,7 @@ def create_cli_parser():
     spectroscopic_parser.add_argument(
         '-r', '--rv',
         type=float,
-        default=-1,
+        default=3.1,
         help='Rv value to use for extinction correction'
     )
 
@@ -254,7 +247,7 @@ def create_cli_parser():
     )
 
     spectroscopic_parser.add_argument(
-        '--verbose',
+        '--plot',
         help='Display live plots of fitting results for the velocity calculation.',
         action='store_true')
 

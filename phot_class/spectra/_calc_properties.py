@@ -326,7 +326,7 @@ def _spectrum_properties(wave, flux, nstep=5, plot=False):
     return out_data
 
 
-def _correct_spectrum(wave, flux, ra, dec, z, rv=None):
+def _correct_spectrum(wave, flux, ra, dec, z, rv=3.1):
     """Rest frame spectra and correct for MW extinction
 
     Spectra are rest-framed and corrected for MW extinction using the
@@ -348,16 +348,13 @@ def _correct_spectrum(wave, flux, ra, dec, z, rv=None):
     """
 
     mwebv = dust_map.ebv(ra, dec, frame='fk5j2000', unit='degree')
-    adaptive_rv = 1.7 if mwebv > .3 else 3.1
-    rv = rv if rv else adaptive_rv
-
     mag_ext = extinction.fitzpatrick99(wave, rv * mwebv, rv)
     flux = flux * 10 ** (0.4 * mag_ext)
     rest_wave = wave / (1 + z)
     return rest_wave, flux
 
 
-def tabulate_spectral_properties(data_iter, nstep=5, rv=None, plot=False):
+def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
     """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
