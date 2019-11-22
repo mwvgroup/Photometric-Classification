@@ -247,8 +247,7 @@ def sample_feature_properties(
 
                 # Todo: Add back in the velocity calculation
                 # plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
-
-                plt.axvline(avg, color='C1', linestyle=':', zorder=5)
+                # plt.axvline(avg, color='C1', linestyle=':', zorder=5)
 
                 plt.draw()
                 plt.pause(.001)
@@ -378,7 +377,14 @@ def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
         z = spectrum.meta['z']
         ra = spectrum.meta['ra']
         dec = spectrum.meta['dec']
+        sid = spectrum.meta.get('spec_id', '?')
         date = spectrum['date'][0]
+
+        try:
+            type = spectrum['type'][0]
+
+        except IndexError:
+            type = '?'
 
         rest_wave, corrected_flux = _correct_spectrum(
             wave, flux, ra, dec, z, rv=rv)
@@ -387,14 +393,14 @@ def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
         spec_properties = _spectrum_properties(
             rest_wave, corrected_flux, nstep=nstep, plot=plot)
 
-        table_rows += [[obj_id, date] + r for r in spec_properties]
+        table_rows += [[obj_id, sid, date, type] + r for r in spec_properties]
 
     if not table_rows:
         table_rows = None
 
     # Format results as a table
-    col_names = ['obj_id', 'date', 'feat_name']
-    dtype = ['U100', 'U100', 'U20']
+    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name']
+    dtype = ['U100', 'U100', 'U100', 'U100', 'U20']
     for value in ('vel', 'pew', 'area'):
         col_names.append(value)
         col_names.append(value + '_err')
