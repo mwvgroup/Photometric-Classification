@@ -309,7 +309,7 @@ class TestFilterFactory(TestCase):
         class1_table, class2_table = Table(), Table()
         class1_table.meta['classification'] = 'class1'
         class2_table.meta['classification'] = 'class2'
-        class1_table.meta['redshift'] = class2_table.meta['redshift'] = 1
+        class1_table.meta['z'] = class2_table.meta['z'] = 1
 
         filter_func = utils.classification_filter_factory(['class1'])
         self.assertTrue(
