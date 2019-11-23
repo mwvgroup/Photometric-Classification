@@ -522,7 +522,9 @@ class TabulateSpectrumProperties(TestCase):
 
         expected_names = [
             'obj_id',
+            'sid',
             'date',
+            'type',
             'feat_name',
             'vel',
             'vel_err',
