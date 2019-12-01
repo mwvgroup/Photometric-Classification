@@ -1,1 +1,1 @@
-This directory contains note books left over from a previous classification attempt. This code is kept for reference only.
+This directory contains notebooks left over from an old version of the analysis pipeline. This code is kept for reference only.
