@@ -117,8 +117,7 @@ def feature_velocity(rest_frame, wave, flux, unit=None):
     return vel, avg, fit
 
 
-def find_peak_wavelength(
-        wave, flux, lower_bound, upper_bound, behavior='min'):
+def find_peak_wavelength(wave, flux, lower_bound, upper_bound, behavior='min'):
     """Return wavelength of the maximum flux within given wavelength bounds
 
     The behavior argument can be used to select the 'min' or 'max' wavelength
@@ -170,6 +169,39 @@ def find_feature_bounds(wave, flux, feature):
         wave, flux, feature['lower_red'], feature['upper_red'], 'max')
 
     return feat_start, feat_end
+
+
+def draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
+    """Shade in the EW, continuum, and position of a spectral feature
+
+    Args:
+        wave      (ndarray): An array of wavelengths in angstroms
+        flux      (ndarray): An array of flux for each wavelength
+        continuum (ndarray): The continuum flux
+        feat_name     (str): The name of the feature
+        eq_width  (ndarray): Array of equivalent width measurements
+        pause       (float): How long to pause after drawing
+    """
+
+    feat_id = line_locations[feat_name]['feature_id']
+    avg_pew = np.average(eq_width)
+    std_pew = np.std(eq_width)
+
+    plt.title(feat_id + rf' (pEW = {avg_pew:.2f} $\pm$ {std_pew:.2f})')
+    plt.xlabel('Wavelength')
+    plt.ylabel('Flux')
+
+    plt.fill_between(wave, flux, continuum, color='grey', alpha=.2, zorder=0)
+    plt.axvline(wave[0], color='grey', linestyle='--', alpha=.25, zorder=2)
+    plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
+    plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
+
+    # Todo: Add back in the velocity calculation
+    # plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
+    # plt.axvline(avg, color='C1', linestyle=':', zorder=5)
+
+    plt.draw()
+    plt.pause(pause)
 
 
 def sample_feature_properties(
@@ -230,27 +262,11 @@ def sample_feature_properties(
             vel, avg, fit = 0, 0, 0  # feature_velocity(rest_frame, nw, norm_flux)
             velocity.append(vel)
 
-            if plot and i == -nstep and j == nstep:
-                plt.plot(nw, nf, color='k', zorder=1)
-                plt.xlabel('Wavelength')
-                plt.ylabel('Flux')
-
             if plot:
-                feat_id = line_locations[feat_name]['feature_id']
-                avg_pew = np.average(pequiv_width)
-                std_pew = np.std(pequiv_width)
-                plt.title(feat_id + f' (pEW = {avg_pew:.2f} +\- {std_pew:.2f})')
-                plt.fill_between(nw, nf, continuum, color='grey', alpha=.2, zorder=0)
-                plt.axvline(nw[0], color='grey', linestyle='--', alpha=.25, zorder=2)
-                plt.axvline(nw[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
-                plt.plot(nw, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
+                if i == -nstep and j == nstep:
+                    plt.plot(nw, nf, color='k', zorder=1)
 
-                # Todo: Add back in the velocity calculation
-                # plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
-                # plt.axvline(avg, color='C1', linestyle=':', zorder=5)
-
-                plt.draw()
-                plt.pause(.001)
+                draw_measurement(nw, nf, continuum, feat_name, pequiv_width)
 
     if plot:
         plt.pause(.5)
@@ -317,8 +333,8 @@ def _spectrum_properties(wave, flux, nstep=5, plot=False):
             raise
 
         except Exception as msg:
-            feat_properties = [feat_name] + np.full(9, np.nan).tolist() + [
-                str(msg)]
+            masked_values = np.full(9, np.nan).tolist()
+            feat_properties = [feat_name] + masked_values + [str(msg)]
 
         out_data.append(feat_properties)
 
@@ -351,6 +367,28 @@ def _correct_spectrum(wave, flux, ra, dec, z, rv=3.1):
     flux = flux * 10 ** (0.4 * mag_ext)
     rest_wave = wave / (1 + z)
     return rest_wave, flux
+
+
+def bin_spectrum(wave, flux, bin_size=5):
+    """Bin a spectra
+
+    Args:
+        wave   (ndarray): An array of wavelengths in angstroms
+        flux   (ndarray): An array of flux for each wavelength
+        bin_size (float): The width of the bins
+
+    Returns:
+        - The center of each bin
+        - The binned flux values
+    """
+
+    min_wave = np.floor(np.min(wave))
+    max_wave = np.floor(np.max(wave))
+    bins = np.arange(min_wave, max_wave + 1, bin_size)
+
+    hist, bin_edges = np.histogram(flux, bins=bins)
+    bin_centers = bin_edges[:-1] + ((bin_edges[1] - bin_edges[0]) / 2)
+    return bin_centers, hist
 
 
 def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
@@ -386,8 +424,9 @@ def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
         except IndexError:
             type = '?'
 
+        bin_wave, bin_flux = bin_spectrum(wave, flux)
         rest_wave, corrected_flux = _correct_spectrum(
-            wave, flux, ra, dec, z, rv=rv)
+            bin_wave, bin_flux, ra, dec, z, rv=rv)
 
         # Tabulate properties and add object Id to each measurement
         spec_properties = _spectrum_properties(
