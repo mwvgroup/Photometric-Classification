@@ -165,8 +165,7 @@ def run_spectroscopic_classification(cli_args):
         rv=cli_args.rv,
         nstep=cli_args.nstep,
         method=cli_args.method,
-        bin_size=cli_args.bin_size,
-        plot=cli_args.plot)
+        bin_size=cli_args.bin_size)
 
     out_table.write(out_dir / file_name, overwrite=True)
 
@@ -266,11 +265,6 @@ def create_cli_parser():
         required=True,
         help='Directory to write output files to.'
     )
-
-    spectroscopic_parser.add_argument(
-        '--plot',
-        help='Display live plots of fitting results for the velocity calculation.',
-        action='store_true')
 
     return parser
 
