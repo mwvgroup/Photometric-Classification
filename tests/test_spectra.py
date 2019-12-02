@@ -466,7 +466,7 @@ class CorrectSpectrum(TestCase):
         rv = 3.1
 
         shifted_wave = self.test_wave * (1 + z)
-        rested_wave, flux = spectra._calc_properties._correct_spectrum(
+        rested_wave, flux = spectra._calc_properties.correct_extinction(
             shifted_wave, self.test_flux, ra, dec, z=z, rv=rv
         )
         self.assertListEqual(
@@ -493,7 +493,7 @@ class CorrectSpectrum(TestCase):
         ext = extinction.fitzpatrick99(self.test_wave, a_v=rv * mwebv)
         extincted_flux = extinction.apply(ext, self.test_flux)
 
-        wave, flux = spectra._calc_properties._correct_spectrum(
+        wave, flux = spectra._calc_properties.correct_extinction(
             self.test_wave, extincted_flux, ra, dec, z, rv=rv)
 
         is_close = np.isclose(self.test_flux, flux).all()
@@ -534,7 +534,7 @@ class BinSpectrum(TestCase):
         """Test the returned wavelengths are the bin centers"""
 
         err_msg = 'Differing element when calculating {}'
-        for method in ('average', 'sum'):
+        for method in ('avg', 'sum'):
             expected = self.wave[:-1] + ((self.wave[1] - self.wave[0]) / 2)
             returned, _ = spectra.bin_spectrum(
                 self.wave, self.flux, bin_size=1, method=method)

@@ -338,7 +338,7 @@ def _spectrum_properties(wave, flux, nstep=5, plot=False):
     return out_data
 
 
-def _correct_spectrum(wave, flux, ra, dec, z, rv=3.1):
+def correct_extinction(wave, flux, ra, dec, z, rv=3.1):
     """Rest frame spectra and correct for MW extinction
 
     Spectra are rest-framed and corrected for MW extinction using the
@@ -366,14 +366,14 @@ def _correct_spectrum(wave, flux, ra, dec, z, rv=3.1):
     return rest_wave, flux
 
 
-def bin_spectrum(wave, flux, bin_size=5, method='average'):
+def bin_spectrum(wave, flux, bin_size=5, method='avg'):
     """Bin a spectra
 
     Args:
         wave   (ndarray): An array of wavelengths in angstroms
         flux   (ndarray): An array of flux for each wavelength
         bin_size (float): The width of the bins
-        method     (str): Either 'average' or 'sum' the values of each bin
+        method     (str): Either 'avg' or 'sum' the values of each bin
 
     Returns:
         - The center of each bin
@@ -390,7 +390,7 @@ def bin_spectrum(wave, flux, bin_size=5, method='average'):
     if method == 'sum':
         return bin_centers, hist
 
-    elif method == 'average':
+    elif method == 'avg':
         bin_means = (
                 np.histogram(wave, bins=bins, weights=flux)[0] /
                 np.histogram(wave, bins)[0]
@@ -402,17 +402,20 @@ def bin_spectrum(wave, flux, bin_size=5, method='average'):
         raise ValueError(f'Unknown method {method}')
 
 
-def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
+def tabulate_spectral_properties(
+        data_iter, nstep=5, bin_size=5, binning='average', rv=3.1, plot=False):
     """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
     Schlegel et al. 98 dust map and the Fitzpatrick et al. 99 extinction law.
 
     Args:
-        data_iter (iterable[Table]): Iterable of spectroscopic data tables
-        nstep                 (int): The number of sampling steps to take
-        rv                  (float): Rv value to use for extinction
-        plot                 (bool): Plot live fit results
+        data_iter (iter[Table]): Iterable of spectroscopic data tables
+        nstep             (int): The number of sampling steps to take
+        bin_size        (float): The width of the bins (Default: 5)
+        binning           (str): Bin using 'avg' or 'sum' (Default: 'avg')
+        rv              (float): Rv value to use for extinction
+        plot             (bool): Plot live fit results
 
     Returns:
         A Table with measurements for each spectrum and feature
@@ -435,8 +438,10 @@ def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
         except IndexError:
             type = '?'
 
-        bin_wave, bin_flux = bin_spectrum(wave, flux)
-        rest_wave, corrected_flux = _correct_spectrum(
+        bin_wave, bin_flux = bin_spectrum(
+            wave, flux, bin_size=bin_size, method=binning)
+
+        rest_wave, corrected_flux = correct_extinction(
             bin_wave, bin_flux, ra, dec, z, rv=rv)
 
         # Tabulate properties and add object Id to each measurement
