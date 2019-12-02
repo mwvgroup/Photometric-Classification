@@ -18,9 +18,13 @@ from .calc_properties import (
     guess_feature_bounds,
     line_locations)
 
+plt.ion()
 
-def _draw_measurement(
-        wave, flux, continuum, feat_name, eq_width, pause=.001):
+
+# Todo: Docstring
+# Todo: Tests
+# Todo: add feature bounds to output table
+def _draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
     """Shade in the EW, continuum, and position of a spectral feature
 
     Args:
@@ -40,13 +44,10 @@ def _draw_measurement(
     plt.xlabel('Wavelength')
     plt.ylabel('Flux')
 
-    plt.fill_between(wave, flux, continuum, color='grey', alpha=.2,
-                     zorder=0)
+    plt.fill_between(wave, flux, continuum, color='grey', alpha=.2, zorder=0)
     plt.axvline(wave[0], color='grey', linestyle='--', alpha=.25, zorder=2)
-    plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25,
-                zorder=2)
-    plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4,
-             zorder=3)
+    plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
+    plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
 
     # Todo: Add back in the velocity calculation
     # plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
@@ -94,19 +95,23 @@ class SpectrumInspector:
         self.rest_wave, self.corrected_flux = correct_extinction(
             self.bin_wave, self.bin_flux, self.ra, self.dec, self.z, rv=rv)
 
-    def ask_feature_bounds(self, wave, flux, feat_definition):
+    def ask_feature_bounds(self, wave, flux, feature):
 
-        gstart, gend = guess_feature_bounds(wave, flux, feat_definition)
+        gstart, gend = guess_feature_bounds(wave, flux, feature)
 
         plt.clf()
-        plt.plot(self.bin_wave, self.bin_flux, color='k')
+        plt.plot(self.rest_wave, self.corrected_flux, color='k')
 
         vline_style = dict(color='grey', linestyle='--', alpha=.25, zorder=2)
         low_line = plt.axvline(gstart, **vline_style)
         upper_line = plt.axvline(gend, **vline_style)
-        plt.xlim(feat_definition['lower_blue'] - 20,
-                 feat_definition['upper_red'] + 20)
 
+        xlim = feature['lower_blue'] - 500, feature['upper_red'] + 500
+        plotted_flux = flux[(wave > xlim[0]) & (wave < xlim[1])]
+        plt.xlim(xlim)
+        plt.ylim(0, 1.1 * max(plotted_flux))
+
+        vline_style['color'] = 'red'
         xy_low = plt.ginput(1)
         lower_bound = wave[(np.abs(wave - xy_low[0][0])).argmin()]
         low_line.remove()
@@ -119,9 +124,8 @@ class SpectrumInspector:
 
         return lower_bound, upper_bound
 
-    @staticmethod
     def _sample_feature_properties(
-            feat_name, feat_start, feat_end, wave, flux, nstep=5, debug=False):
+            self, feat_name, feat_start, feat_end, nstep=5, debug=False):
         """Calculate the properties of a single feature in a spectrum
 
         Velocity values are returned in km / s. Error values are determined
@@ -132,8 +136,6 @@ class SpectrumInspector:
             feat_name        (str): The name of the feature
             feat_start     (float): Starting wavelength of the feature
             feat_end       (float): Ending wavelength of the feature
-            wave         (ndarray): An array of wavelengths
-            flux (ndarray, uarray): An array of flux for each wavelength
             nstep            (int): Number of samples taken in each direction
             debug           (bool): Return samples instead of averaged values
 
@@ -147,8 +149,8 @@ class SpectrumInspector:
         rest_frame = line_locations[feat_name]['restframe']
 
         # Get indices for beginning and end of the feature
-        idx_start = np.where(wave == feat_start)[0][0]
-        idx_end = np.where(wave == feat_end)[0][0]
+        idx_start = np.where(self.rest_wave == feat_start)[0][0]
+        idx_end = np.where(self.rest_wave == feat_end)[0][0]
         if idx_end - idx_start <= 10:
             raise ValueError('Range too small. Please select a wider range')
 
@@ -156,13 +158,12 @@ class SpectrumInspector:
         velocity, pequiv_width, area = [], [], []
         for i in np.arange(-nstep, nstep + 1):
             for j in np.arange(nstep, -nstep - 1, -1):
-
                 # Get sub-sampled wavelength/flux
                 sample_start_idx = idx_start + i
                 sample_end_idx = idx_end + j
 
-                nw = wave[sample_start_idx: sample_end_idx]
-                nf = flux[sample_start_idx: sample_end_idx]
+                nw = self.rest_wave[sample_start_idx: sample_end_idx]
+                nf = self.corrected_flux[sample_start_idx: sample_end_idx]
 
                 # Determine feature properties
                 area.append(feature_area(nw, nf))
@@ -174,13 +175,10 @@ class SpectrumInspector:
                 vel, avg, fit = 0, 0, 0
                 velocity.append(vel)
 
-                if i == -nstep and j == nstep:
-                    plt.xlim(min(nw), max(nw))
-
                 _draw_measurement(nw, nf, continuum, feat_name, pequiv_width)
 
-        plt.pause(.5)
-        plt.clf()
+        # So the user has time to see the results
+        plt.pause(.4)
 
         if debug:
             return velocity, pequiv_width, area
@@ -207,15 +205,13 @@ class SpectrumInspector:
             )
         )
 
-    def _spectrum_properties(self, wave, flux, nstep=5):
+    def _sample_spectrum_properties(self, nstep):
         """Calculate the properties of multiple features in a spectrum
 
         Velocity, pseudo equivalent width, and area are returned for
         each feature in ``line_locations`` along with their respective errors.
 
         Args:
-            wave  (ndarray): An array of wavelengths in angstroms
-            flux  (ndarray): An array of flux for each wavelength
             nstep     (int): The number of sampling steps to take
 
         Returns:
@@ -227,11 +223,13 @@ class SpectrumInspector:
         for feat_name, feat_definition in line_locations.items():
             try:
 
+                # Opens a new plot
                 feat_start, feat_end = self.ask_feature_bounds(
-                    wave, flux, feat_definition)
+                    self.rest_wave, self.corrected_flux, feat_definition)
 
+                # Closes the plot when finished
                 samp_results = self._sample_feature_properties(
-                    feat_name, feat_start, feat_end, wave, flux, nstep=nstep
+                    feat_name, feat_start, feat_end, nstep
                 )
 
                 samp_results = np.array(samp_results).flatten().tolist()
@@ -246,6 +244,7 @@ class SpectrumInspector:
 
             out_data.append(feat_properties)
 
+        plt.close()
         return out_data
 
     def run(self, bin_size=5, method='avg', nstep=5, rv=None):
@@ -253,10 +252,7 @@ class SpectrumInspector:
         self.prepare_spectrum(bin_size, method, rv)
 
         # Tabulate spectral properties
-        spec_properties = self._spectrum_properties(
-            self.rest_wave, self.corrected_flux, nstep=nstep)
-
-        plt.close()
+        spec_properties = self._sample_spectrum_properties(nstep)
 
         # Add object Id and other meta data to each measurement
         meta_data = [self.obj_id, self.sid, self.date, self.spec_type]
