@@ -3,6 +3,7 @@
 # Spectroscopic classification
 ##############################
 
+# First we fixed the bin size and vary the number of samples
 python run_pipeline.py \
     -s sdss \
     -r sako18spec \
@@ -22,6 +23,15 @@ python run_pipeline.py \
     -r sako18spec \
     spectroscopic \
     -n 5 \
+    -o './results/';
+
+# We also try an alternate bin size
+python run_pipeline.py \
+    -s sdss \
+    -r sako18spec \
+    spectroscopic \
+    -n 5 \
+    -b 3 \
     -o './results/';
 
 # emcee fitting

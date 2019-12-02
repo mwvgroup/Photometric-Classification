@@ -403,7 +403,7 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
 
 
 def tabulate_spectral_properties(
-        data_iter, nstep=5, bin_size=5, method='average', rv=3.1, plot=False):
+        data_iter, nstep=5, bin_size=5, method='avg', rv=3.1, plot=False):
     """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
