@@ -403,7 +403,7 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
 
 
 def tabulate_spectral_properties(
-        data_iter, nstep=5, bin_size=5, binning='average', rv=3.1, plot=False):
+        data_iter, nstep=5, bin_size=5, method='average', rv=3.1, plot=False):
     """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
@@ -413,7 +413,7 @@ def tabulate_spectral_properties(
         data_iter (iter[Table]): Iterable of spectroscopic data tables
         nstep             (int): The number of sampling steps to take
         bin_size        (float): The width of the bins (Default: 5)
-        binning           (str): Bin using 'avg' or 'sum' (Default: 'avg')
+        method            (str): Bin using 'avg' or 'sum' (Default: 'avg')
         rv              (float): Rv value to use for extinction
         plot             (bool): Plot live fit results
 
@@ -439,7 +439,7 @@ def tabulate_spectral_properties(
             type = '?'
 
         bin_wave, bin_flux = bin_spectrum(
-            wave, flux, bin_size=bin_size, method=binning)
+            wave, flux, bin_size=bin_size, method=method)
 
         rest_wave, corrected_flux = correct_extinction(
             bin_wave, bin_flux, ra, dec, z, rv=rv)

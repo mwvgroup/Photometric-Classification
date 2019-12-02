@@ -240,6 +240,20 @@ def create_cli_parser():
     )
 
     spectroscopic_parser.add_argument(
+        '-b', '--bin_size',
+        type=int,
+        default=5,
+        help='Size of bins in angstroms'
+    )
+
+    spectroscopic_parser.add_argument(
+        '-m', '--method',
+        type=str,
+        default='avg',
+        help='Either "avg" or "sum" each bin'
+    )
+
+    spectroscopic_parser.add_argument(
         '-o', '--out_dir',
         type=str,
         required=True,
