@@ -8,6 +8,7 @@ from unittest import TestCase
 
 import numpy as np
 from astropy.constants import c
+from matplotlib import pyplot as plt
 from uncertainties.unumpy import uarray
 
 from phot_class import spectra
@@ -307,6 +308,20 @@ class FindFeatureBounds(TestCase):
             upper_peak_wavelength, feat_end, 'Incorrect max peak')
 
 
+class DrawMeasurement(TestCase):
+    """Tests for the ``_draw_measurement`` function"""
+
+    def runTest(self):
+        """Test the current axis is not empty after drawing"""
+
+        wave = np.arange(1000, 2000)
+        flux, error = SimulatedSpectrum.gaussian(wave, stddev=100)
+        spectra._calc_properties._draw_measurement(
+            wave, flux, flux, 'pW6', [2, 3, 4])
+
+        self.assertTrue(plt.gca(), 'Returned figure has no axes')
+
+
 class SampleFeatureProperties(TestCase):
     """Tests for the ``sample_feature_properties`` function"""
 
@@ -487,6 +502,51 @@ class CorrectSpectrum(TestCase):
                 self.test_flux.tolist(), flux.tolist(),
                 'Corrected spectral values are not close to simulated values.'
             )
+
+
+class BinSpectrum(TestCase):
+    """Tests for the ``bin_spectrum`` function."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.wave = np.arange(1000, 2001)
+        cls.flux = np.ones_like(cls.wave)
+
+    def test_correct_binned_average(self):
+        """Test flux values are correctly averaged in each bin"""
+
+        bins, avgs = spectra.bin_spectrum(self.wave, self.flux)
+        correct_avg = (avgs == 1).all()
+        self.assertTrue(correct_avg)
+
+    def test_correct_binned_sum(self):
+        """Test flux values are correctly summed in each bin"""
+
+        bin_size = 5
+        bins, sums = spectra.bin_spectrum(
+            self.wave, self.flux, bin_size, method='sum')
+
+        sums[-1] -= 1  # Because of inclusion of values at the boundary
+        correct_sum = (sums == bin_size).all()
+        self.assertTrue(correct_sum)
+
+    def test_bin_centers(self):
+        """Test the returned wavelengths are the bin centers"""
+
+        err_msg = 'Differing element when calculating {}'
+        for method in ('average', 'sum'):
+            expected = self.wave[:-1] + ((self.wave[1] - self.wave[0]) / 2)
+            returned, _ = spectra.bin_spectrum(
+                self.wave, self.flux, bin_size=1, method=method)
+
+            self.assertListEqual(
+                expected.tolist(), returned.tolist(), err_msg.format(method))
+
+    def test_unknown_method(self):
+        """Test a ValueError error is raised for an unknown binning method"""
+
+        kwargs = dict(wave=self.wave, flux=self.flux, method='fake_method')
+        self.assertRaises(ValueError, spectra.bin_spectrum, **kwargs)
 
 
 class TabulateSpectrumProperties(TestCase):

@@ -1,14 +1,11 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""This module calculates the properties of spectral features such as area,
-velocity, and  equivalent width. All functions in this module are built to
-support ``uarray`` objects from the ``uncertainties`` package as inputs.
-"""
-
-from pathlib import Path
+"""This module calculates the properties of spectral features."""
 
 import extinction
+from pathlib import Path
+
 import numpy as np
 import sfdmap
 import yaml
@@ -171,7 +168,7 @@ def find_feature_bounds(wave, flux, feature):
     return feat_start, feat_end
 
 
-def draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
+def _draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
     """Shade in the EW, continuum, and position of a spectral feature
 
     Args:
@@ -266,7 +263,7 @@ def sample_feature_properties(
                 if i == -nstep and j == nstep:
                     plt.plot(nw, nf, color='k', zorder=1)
 
-                draw_measurement(nw, nf, continuum, feat_name, pequiv_width)
+                _draw_measurement(nw, nf, continuum, feat_name, pequiv_width)
 
     if plot:
         plt.pause(.5)
@@ -369,13 +366,14 @@ def _correct_spectrum(wave, flux, ra, dec, z, rv=3.1):
     return rest_wave, flux
 
 
-def bin_spectrum(wave, flux, bin_size=5):
+def bin_spectrum(wave, flux, bin_size=5, method='average'):
     """Bin a spectra
 
     Args:
         wave   (ndarray): An array of wavelengths in angstroms
         flux   (ndarray): An array of flux for each wavelength
         bin_size (float): The width of the bins
+        method     (str): Either 'average' or 'sum' the values of each bin
 
     Returns:
         - The center of each bin
@@ -386,9 +384,22 @@ def bin_spectrum(wave, flux, bin_size=5):
     max_wave = np.floor(np.max(wave))
     bins = np.arange(min_wave, max_wave + 1, bin_size)
 
-    hist, bin_edges = np.histogram(flux, bins=bins)
+    hist, bin_edges = np.histogram(wave, bins=bins, weights=flux)
     bin_centers = bin_edges[:-1] + ((bin_edges[1] - bin_edges[0]) / 2)
-    return bin_centers, hist
+
+    if method == 'sum':
+        return bin_centers, hist
+
+    elif method == 'average':
+        bin_means = (
+                np.histogram(wave, bins=bins, weights=flux)[0] /
+                np.histogram(wave, bins)[0]
+        )
+
+        return bin_centers, bin_means
+
+    else:
+        raise ValueError(f'Unknown method {method}')
 
 
 def tabulate_spectral_properties(data_iter, nstep=5, rv=3.1, plot=False):
