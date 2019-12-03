@@ -18,6 +18,11 @@ from .calc_properties import (bin_spectrum, correct_extinction, feature_area,
 plt.ion()
 
 
+class NoInputGiven(Exception):
+    """No input given from matplotlib input request"""
+    pass
+
+
 def _draw_measurement(
         feat_name, wave, flux, continuum, fit, avg, eq_width, pause=.001):
     """Shade in the EW, continuum, and position of a spectral feature
@@ -137,6 +142,10 @@ class SpectrumInspector:
 
         plt.title('Select the feature\'s upper and lower bound.')
         xy = plt.ginput(2)
+
+        if len(xy) < 2:
+            raise NoInputGiven
+
         lower_bound = wave[(np.abs(wave - xy[0][0])).argmin()]
         upper_bound = wave[(np.abs(wave - xy[1][0])).argmin()]
 
@@ -307,8 +316,9 @@ class SpectrumInspector:
         return [meta_data + r for r in spec_properties]
 
 
+# Todo: cache results
 def tabulate_spectral_properties(
-        data_iter, nstep=5, bin_size=3, method='avg', rv=3.1):
+        data_iter, nstep=5, bin_size=3, method='avg', rv=3.1, out_path=None):
     """Tabulate spectral properties for multiple spectra of the same object
 
     Spectra are rest-framed and corrected for MW extinction using the
@@ -328,15 +338,19 @@ def tabulate_spectral_properties(
     table_rows = []
     for spectrum in data_iter:
         inspector = SpectrumInspector(spectrum)
-        table_rows = inspector.run(
-            nstep=nstep, bin_size=bin_size, method=method, rv=rv)
+
+        try:
+            table_rows = inspector.run(
+                nstep=nstep, bin_size=bin_size, method=method, rv=rv)
+
+        except NoInputGiven:
+            break
 
     if not table_rows:
         table_rows = None
 
     # Format results as a table
-    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name', 'feat_start',
-                 'feat_end']
+    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name', 'feat_start', 'feat_end']
     dtype = ['U100', 'U100', 'U100', 'U100', 'U20', float, float]
     for value in ('vel', 'pew', 'area'):
         col_names.append(value)
