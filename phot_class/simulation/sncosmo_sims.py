@@ -1,9 +1,7 @@
 # !/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""The ``simulation.sncsomo_sims`` module generates light-curves using sncosmo
-and write models results to file.
-"""
+"""Generates light-curves using sncosmo and write models results to file."""
 
 from pathlib import Path
 
@@ -12,9 +10,6 @@ import sncosmo
 from astropy.cosmology import FlatLambdaCDM
 from astropy.table import Table
 from numpy.random import multivariate_normal
-
-__all__ = ['AVG_COLOR', 'AVG_STRETCH', 'COVARIANCE', 'bg_stretch_color',
-           'sim_bg_params', 'generate_lc']
 
 AVG_COLOR = 0.557
 AVG_STRETCH = 0.975

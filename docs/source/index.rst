@@ -130,13 +130,13 @@ summaries below for key files in the project repository::
    :caption: API Reference:
 
    api_reference/overview
-   api_reference/spectra.rst
+   api_reference/spectra
    api_reference/models
    api_reference/fit_func_wraps
    api_reference/fitting
    api_reference/classification
    api_reference/fom
+   api_reference/simulation
    api_reference/utils
-   api_reference/sncosmo_sims
 
 .. _GitHub: https://github.com/mwvgroup/sdss-classification/
