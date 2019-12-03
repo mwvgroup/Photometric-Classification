@@ -22,7 +22,6 @@ from .calc_properties import (
 plt.ion()
 
 
-# Todo: Tests
 def _draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
     """Shade in the EW, continuum, and position of a spectral feature
 
@@ -81,7 +80,7 @@ class SpectrumInspector:
         try:
             self.spec_type = spectrum['type'][0]
 
-        except IndexError:
+        except KeyError:
             self.spec_type = '?'
 
         # Place holders for intermediate analysis results
@@ -98,7 +97,7 @@ class SpectrumInspector:
         """
 
         result = [self.bin_wave, self.bin_flux, self.rest_flux, self.rest_wave]
-        if not all(v is not None for v in result):
+        if not all(v is None for v in result):
             raise ValueError('The spectrum has already been prepared')
 
         self.bin_wave, self.bin_flux = bin_spectrum(
@@ -268,7 +267,8 @@ class SpectrumInspector:
                 samp_results = np.full(9, np.nan).tolist() + [str(msg)]
 
             plt.close()
-            feat_properties = [feat_name, feat_start, feat_end].extend(samp_results)
+            feat_properties = [feat_name, feat_start, feat_end].extend(
+                samp_results)
             out_data.append(feat_properties)
 
         return out_data
@@ -343,7 +343,8 @@ def tabulate_spectral_properties(
         table_rows = None
 
     # Format results as a table
-    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name', 'feat_start', 'feat_end']
+    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name', 'feat_start',
+                 'feat_end']
     dtype = ['U100', 'U100', 'U100', 'U100', 'U20', float, float]
     for value in ('vel', 'pew', 'area'):
         col_names.append(value)

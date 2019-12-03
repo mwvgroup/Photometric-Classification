@@ -307,8 +307,8 @@ class FindFeatureBounds(TestCase):
             upper_peak_wavelength, feat_end, 'Incorrect max peak')
 
 
-class CorrectSpectrum(TestCase):
-    """Tests for the ``_correct_spectrum`` function"""
+class CorrectExtinction(TestCase):
+    """Tests for the ``correct_extinction`` function"""
 
     @classmethod
     def setUpClass(cls):
