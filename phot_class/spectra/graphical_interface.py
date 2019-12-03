@@ -11,25 +11,24 @@ from matplotlib import pyplot as plt
 from uncertainties import nominal_value, std_dev
 from uncertainties.unumpy import nominal_values
 
-from .calc_properties import (
-    bin_spectrum,
-    correct_extinction,
-    feature_area,
-    feature_pew,
-    guess_feature_bounds,
-    line_locations)
+from .calc_properties import (bin_spectrum, correct_extinction, feature_area,
+                              feature_pew, feature_velocity,
+                              guess_feature_bounds, line_locations)
 
 plt.ion()
 
 
-def _draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
+def _draw_measurement(
+        feat_name, wave, flux, continuum, fit, avg, eq_width, pause=.001):
     """Shade in the EW, continuum, and position of a spectral feature
 
     Args:
+        feat_name     (str): The name of the feature
         wave      (ndarray): An array of wavelengths in angstroms
         flux      (ndarray): An array of flux for each wavelength
         continuum (ndarray): The continuum flux
-        feat_name     (str): The name of the feature
+        fit       (ndarray): The fit gaussian flux
+        avg         (float): The average of the fitted gaussian
         eq_width  (ndarray): Array of equivalent width measurements
         pause       (float): How long to pause after drawing
     """
@@ -47,9 +46,8 @@ def _draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
     plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
     plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
 
-    # Todo: Add back in the velocity calculation
-    # plt.plot(nw, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
-    # plt.axvline(avg, color='C1', linestyle=':', zorder=5)
+    plt.plot(wave, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
+    plt.axvline(avg, color='C1', linestyle=':', zorder=5)
 
     plt.draw()
     plt.pause(pause)
@@ -132,7 +130,7 @@ class SpectrumInspector:
         low_line = plt.axvline(gstart, **vline_style)
         upper_line = plt.axvline(gend, **vline_style)
 
-        xlim = feature['lower_blue'] - 500, feature['upper_red'] + 500
+        xlim = feature['lower_blue'] - 1000, feature['upper_red'] + 1000
         plotted_flux = flux[(wave > xlim[0]) & (wave < xlim[1])]
         plt.xlim(xlim)
         plt.ylim(0, 1.1 * max(plotted_flux))
@@ -200,13 +198,12 @@ class SpectrumInspector:
                 continuum, norm_flux, pew = feature_pew(nw, nf)
                 pequiv_width.append(pew)
 
-                # Todo: Add back in the velocity calculation
-                # vel, avg, fit = feature_velocity(rest_frame, nw, norm_flux)
-                vel, avg, fit = 0, 0, 0
+                vel, avg, fit = feature_velocity(rest_frame, nw, norm_flux)
                 velocity.append(vel)
 
                 if not debug:
-                    _draw_measurement(nw, nf, continuum, feat_name, pequiv_width)
+                    _draw_measurement(
+                        feat_name, nw, nf, continuum, fit, avg, pequiv_width)
 
         # So the user has time to see the results
         plt.pause(.4)
@@ -270,8 +267,8 @@ class SpectrumInspector:
                 samp_results = np.full(9, np.nan).tolist() + [str(msg)]
 
             plt.close()
-            feat_properties = [feat_name, feat_start, feat_end].extend(
-                samp_results)
+            feat_properties = [feat_name, feat_start, feat_end] + samp_results
+
             out_data.append(feat_properties)
 
         return out_data
