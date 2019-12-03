@@ -22,7 +22,6 @@ plt.ion()
 
 
 # Todo: Tests
-# Todo: add feature bounds to output table
 def _draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
     """Shade in the EW, continuum, and position of a spectral feature
 
@@ -86,9 +85,9 @@ class SpectrumInspector:
 
         # Place holders for intermediate analysis results
         self.bin_wave, self.bin_flux = None, None
-        self.corrected_flux, self.rest_wave = None, None
+        self.rest_flux, self.rest_wave = None, None
 
-    def _prepare_spectrum(self, bin_size, method, rv=None):
+    def prepare_spectrum(self, bin_size, method, rv=None):
         """Bin, correct for extinction, and rest-frame the spectrum
 
         Args:
@@ -97,10 +96,14 @@ class SpectrumInspector:
             rv       (float): Rv value to use for extinction (Default: 3.1)
         """
 
+        result = [self.bin_wave, self.bin_flux, self.rest_flux, self.rest_wave]
+        if not all(v is not None for v in result):
+            raise ValueError('The spectrum has already been prepared')
+
         self.bin_wave, self.bin_flux = bin_spectrum(
             self.wave, self.flux, bin_size=bin_size, method=method)
 
-        self.rest_wave, self.corrected_flux = correct_extinction(
+        self.rest_wave, self.rest_flux = correct_extinction(
             self.bin_wave, self.bin_flux, self.ra, self.dec, self.z, rv=rv)
 
     def _ask_feature_bounds(self, wave, flux, feature):
@@ -123,7 +126,7 @@ class SpectrumInspector:
         gstart, gend = guess_feature_bounds(wave, flux, feature)
 
         plt.clf()
-        plt.plot(self.rest_wave, self.corrected_flux, color='k')
+        plt.plot(self.rest_wave, self.rest_flux, color='k')
 
         vline_style = dict(color='grey', linestyle='--', alpha=.25, zorder=2)
         low_line = plt.axvline(gstart, **vline_style)
@@ -188,7 +191,7 @@ class SpectrumInspector:
                 sample_end_idx = idx_end + j
 
                 nw = self.rest_wave[sample_start_idx: sample_end_idx]
-                nf = self.corrected_flux[sample_start_idx: sample_end_idx]
+                nf = self.rest_flux[sample_start_idx: sample_end_idx]
 
                 # Determine feature properties
                 area.append(feature_area(nw, nf))
@@ -243,33 +246,30 @@ class SpectrumInspector:
             A list of measurements and errors for each feature
         """
 
-        # Iterate over features
         out_data = []
         for feat_name, feat_definition in line_locations.items():
+            # Opens a new plot
+            feat_start, feat_end = self._ask_feature_bounds(
+                self.rest_wave, self.rest_flux, feat_definition)
+
             try:
-
-                # Opens a new plot
-                feat_start, feat_end = self._ask_feature_bounds(
-                    self.rest_wave, self.corrected_flux, feat_definition)
-
                 # Closes the plot when finished
                 samp_results = self._sample_feature_properties(
                     feat_name, feat_start, feat_end, nstep
                 )
 
-                samp_results = np.array(samp_results).flatten().tolist()
-                feat_properties = [feat_name] + samp_results + ['']
+                samp_results = np.array(samp_results).flatten().tolist() + ['']
 
             except KeyboardInterrupt:
                 raise
 
             except Exception as msg:
-                masked_values = np.full(9, np.nan).tolist()
-                feat_properties = [feat_name] + masked_values + [str(msg)]
+                samp_results = np.full(9, np.nan).tolist() + [str(msg)]
 
+            plt.close()
+            feat_properties = [feat_name, feat_start, feat_end].extend(samp_results)
             out_data.append(feat_properties)
 
-        plt.close()
         return out_data
 
     def run(self, bin_size=5, method='avg', nstep=5, rv=None):
@@ -279,8 +279,10 @@ class SpectrumInspector:
             - obj_id
             - sid
             - date
-            - type
+            - spectrum type
             - feature name
+            - feature lower bound
+            - feature upper bound
             - velocity
             - velocity formal error
             - velocity sampling error
@@ -302,7 +304,7 @@ class SpectrumInspector:
             A list of spectral properties
         """
 
-        self._prepare_spectrum(bin_size, method, rv)
+        self.prepare_spectrum(bin_size, method, rv)
 
         # Tabulate spectral properties
         spec_properties = self._sample_spectrum_properties(nstep)

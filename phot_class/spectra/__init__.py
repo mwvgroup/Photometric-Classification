@@ -43,8 +43,8 @@ def tabulate_spectral_properties(
         table_rows = None
 
     # Format results as a table
-    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name']
-    dtype = ['U100', 'U100', 'U100', 'U100', 'U20']
+    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name', 'feat_start', 'feat_end']
+    dtype = ['U100', 'U100', 'U100', 'U100', 'U20', float, float]
     for value in ('vel', 'pew', 'area'):
         col_names.append(value)
         col_names.append(value + '_err')
