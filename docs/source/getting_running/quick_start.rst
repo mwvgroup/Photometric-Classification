@@ -2,9 +2,9 @@ The Command Line Interface
 ==========================
 
 The ``phot_class`` package can be accessed either from within a Python
-environment or via the command line using *run_pipeline.py*. For interacting
-within an environment, see the API documentation. We here outline how to use
-the command line interface.
+environment or via the command line using *run_pipeline.py*. We here outline
+how to use the command line interface. For working from within an environment,
+see the API documentation.
 
 See *run_pipeline.sh* for a **complete** list of commands that were run as
 part of our analysis. In principle, all light curve fits considered by this

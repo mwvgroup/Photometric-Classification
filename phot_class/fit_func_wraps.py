@@ -17,6 +17,7 @@ Usage Example
 >>> model = sncosmo.Model('salt2')
 >>> data = sncosmo.load_example_data()
 >>>
+>>> # Here you can use the functions simple_fit, nest_fit, or mcmc_fit
 >>> result, fitted_model = fit_func_wraps.simple_fit(
 >>>     data, model,
 >>>     ['z', 't0', 'x0', 'x1', 'c'],  # parameters of model to vary

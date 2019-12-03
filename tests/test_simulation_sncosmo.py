@@ -133,25 +133,16 @@ class LCParameterSimulation(TestCase):
 class GenerateLC(TestCase):
     """Tests for the ``generate_lc`` function."""
 
-    @classmethod
-    def setUpClass(cls):
-        cls.temp_dir = TemporaryDirectory()
-        cls.model = sncosmo.Model('sn91bg')
-        cls.phase_range = (-10, 40)
-        cls.model_params = sncosmo_sims.sim_bg_params(
-            zmin=0, zmax=1, tmin=100, tmax=150
-        )
-
-        sncosmo_sims.generate_lc(
-            cls.model, cls.phase_range, cls.model_params, cls.temp_dir.name)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.temp_dir.cleanup()
-
     def test_number_simulations(self):
         """Test one light-curve file exists for every set of parameters"""
 
-        files = list(Path(self.temp_dir.name).glob('*.ecsv'))
-        self.assertGreaterEqual(len(files), 0)
-        self.assertEqual(len(self.model_params), len(files))
+        model = sncosmo.Model('sn91bg')
+        phase_range = (-10, 40)
+        model_params = sncosmo_sims.sim_bg_params(
+            zmin=0, zmax=1, tmin=100, tmax=150
+        )
+
+        light_curves = sncosmo_sims.generate_lc(
+            model, phase_range, model_params)
+
+        self.assertEqual(len(model_params), len(light_curves))
