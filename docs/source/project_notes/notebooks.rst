@@ -22,7 +22,7 @@ provided below. Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 | fit_inspection.ipynb               | Inspects fit results for individual light curves.                            |
 +------------------------------------+------------------------------------------------------------------------------+
-| fitting_method_comparison.ipynb    | Comparison of classifcation results when using band-by-band vs. collective   |
+| fitting_method_comparison.ipynb    | Comparison of classification results when using band-by-band vs. collective  |
 |                                    | fitting.                                                                     |
 +------------------------------------+------------------------------------------------------------------------------+
 | iminuit_vs_emcee.ipynb             | A simple comparison of the fit_lc and mcmc_lc minimization routines.         |
@@ -35,6 +35,8 @@ provided below. Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 | sncosmo_chisq_bug.ipynb            | Outlines a bug in the calculation of chi-squared in SNCosmo and demonstrates |
 |                                    | that our results do not suffer from this bug.                                |
++------------------------------------+------------------------------------------------------------------------------+
+| spec_class.ipynb                   | Classifies spectroscopically observed targets according to Branch et al. 2006|
 +------------------------------------+------------------------------------------------------------------------------+
 
 .. _BinderHub: https://binderhub.readthedocs.io/en/latest/
