@@ -26,7 +26,7 @@ def tabulate_spectral_properties(
         data_iter (iter[Table]): Iterable of spectroscopic data tables
         nstep             (int): The number of sampling steps to take
         bin_size        (float): The width of the bins (Default: 5)
-        method            (str): Bin using 'avg' or 'sum' (Default: 'avg')
+        method            (str): Either 'avg' or 'sum' the values of each bin
         rv              (float): Rv value to use for extinction
 
     Returns:

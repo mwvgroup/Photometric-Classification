@@ -21,7 +21,6 @@ from .calc_properties import (
 plt.ion()
 
 
-# Todo: Docstring
 # Todo: Tests
 # Todo: add feature bounds to output table
 def _draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
@@ -58,8 +57,17 @@ def _draw_measurement(wave, flux, continuum, feat_name, eq_width, pause=.001):
 
 
 class SpectrumInspector:
+    """Graphical interface for measuring spectral features"""
 
     def __init__(self, spectrum):
+        """Graphical interface for measuring pEW and area of spectral features
+
+        The input table is expected to have the keys ``z``, ``ra``, and ``dec``
+        in it's meta data.
+
+        Args:
+            spectrum (Table): Table with columns wavelength, flux, and date
+        """
 
         # Meta data about the spectrum
         self.obj_id = spectrum.meta['obj_id']
@@ -80,7 +88,7 @@ class SpectrumInspector:
         self.bin_wave, self.bin_flux = None, None
         self.corrected_flux, self.rest_wave = None, None
 
-    def prepare_spectrum(self, bin_size, method, rv=None):
+    def _prepare_spectrum(self, bin_size, method, rv=None):
         """Bin, correct for extinction, and rest-frame the spectrum
 
         Args:
@@ -95,7 +103,22 @@ class SpectrumInspector:
         self.rest_wave, self.corrected_flux = correct_extinction(
             self.bin_wave, self.bin_flux, self.ra, self.dec, self.z, rv=rv)
 
-    def ask_feature_bounds(self, wave, flux, feature):
+    def _ask_feature_bounds(self, wave, flux, feature):
+        """Prompt the user for the feature boundaries
+
+        Plot the estimated feature bounds and wait for the user to click their
+        preferred lower and upper bound. Return the closest value in
+        ``wavelengths`` to each click.
+
+        Args:
+            wave (ndarray): An array of wavelengths
+            wave (ndarray): An array of flux for each wavelength
+            feature (dict): Feature definition from global ``line_locations``
+
+        Returns:
+            - The lower wavelength bound
+            - The upper wavelength bound
+        """
 
         gstart, gend = guess_feature_bounds(wave, flux, feature)
 
@@ -111,12 +134,14 @@ class SpectrumInspector:
         plt.xlim(xlim)
         plt.ylim(0, 1.1 * max(plotted_flux))
 
+        plt.title('Please select the feature\'s lower bound.')
         vline_style['color'] = 'red'
         xy_low = plt.ginput(1)
         lower_bound = wave[(np.abs(wave - xy_low[0][0])).argmin()]
         low_line.remove()
         plt.axvline(lower_bound, **vline_style)
 
+        plt.title('Please select the feature\'s upper bound.')
         xy_high = plt.ginput(1)
         upper_bound = wave[(np.abs(wave - xy_high[0][0])).argmin()]
         upper_line.remove()
@@ -224,7 +249,7 @@ class SpectrumInspector:
             try:
 
                 # Opens a new plot
-                feat_start, feat_end = self.ask_feature_bounds(
+                feat_start, feat_end = self._ask_feature_bounds(
                     self.rest_wave, self.corrected_flux, feat_definition)
 
                 # Closes the plot when finished
@@ -248,8 +273,36 @@ class SpectrumInspector:
         return out_data
 
     def run(self, bin_size=5, method='avg', nstep=5, rv=None):
+        """Measure spectra properties
 
-        self.prepare_spectrum(bin_size, method, rv)
+        The returned list includes values for the:
+            - obj_id
+            - sid
+            - date
+            - type
+            - feature name
+            - velocity
+            - velocity formal error
+            - velocity sampling error
+            - pEW
+            - pEW formal error
+            - pEW sampling error
+            - feature area
+            - feature area formal error
+            - feature area sampling error
+            - Exit message
+
+        Args:
+            bin_size (float): The width of the bins
+            method     (str): Either 'avg' or 'sum' the values of each bin
+            nstep      (int): The number of sampling steps to take
+            rv       (float): Rv value to use for extinction
+
+        Returns:
+            A list of spectral properties
+        """
+
+        self._prepare_spectrum(bin_size, method, rv)
 
         # Tabulate spectral properties
         spec_properties = self._sample_spectrum_properties(nstep)
