@@ -3,8 +3,6 @@
 
 """Tests for the ``simulation.sncosmo_sims`` module."""
 
-from pathlib import Path
-from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 import numpy as np

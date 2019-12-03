@@ -112,16 +112,16 @@ summaries below for key files in the project repository::
    project_notes/classification_scheme
    project_notes/implementation
    project_notes/data
-   project_notes/notebooks
    project_notes/literature
 
 .. toctree::
    :hidden:
    :maxdepth: 1
-   :caption: Getting Running:
+   :caption: Getting Started:
 
-   getting_running/installation
-   getting_running/quick_start
+   getting_started/installation
+   getting_started/cli
+   getting_started/notebooks
 
 
 .. toctree::

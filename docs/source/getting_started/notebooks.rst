@@ -3,8 +3,10 @@ Notebooks
 
 Although the ``phot_class`` package houses the core logic of our analysis, the
 visualization and interaction with results from the package is performed using
-Jupyter Notebooks. Descriptions of each notebook and what they inspect are
-provided below. Online interactive versions are provided for each notebook via
+Jupyter Notebooks. Notebooks also contain commentary on the analysis process,
+making them good a good place to build familiarity with the analysis pipeline.
+Descriptions of each notebook and what they discuss are provided below.
+Online interactive versions are provided for each notebook via
 `BinderHub`_. To launch a BinderHub server click `here`_.
 
 .. note:: Please note that the BinderHub server might take a while to
