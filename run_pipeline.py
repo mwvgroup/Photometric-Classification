@@ -150,7 +150,12 @@ def run_spectroscopic_classification(cli_args):
     out_dir.mkdir(exist_ok=True, parents=True)
 
     rv_str = str(cli_args.rv).replace('.', '_')
-    file_name = f'{cli_args.survey}_{cli_args.release}_{rv_str}_{cli_args.nstep}.ecsv'
+    file_name = (
+        f'{cli_args.survey}_{cli_args.release}'
+        f'_rv{rv_str}_bin{cli_args.bin_size}'
+        f'_meth{cli_args.method}'
+        f'_step{cli_args.nstep}.ecsv'
+    )
 
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
@@ -159,7 +164,8 @@ def run_spectroscopic_classification(cli_args):
         get_spec_data_iter(data_module),
         rv=cli_args.rv,
         nstep=cli_args.nstep,
-        plot=cli_args.plot)
+        method=cli_args.method,
+        bin_size=cli_args.bin_size)
 
     out_table.write(out_dir / file_name, overwrite=True)
 
@@ -240,16 +246,25 @@ def create_cli_parser():
     )
 
     spectroscopic_parser.add_argument(
+        '-b', '--bin_size',
+        type=int,
+        default=5,
+        help='Size of bins in angstroms'
+    )
+
+    spectroscopic_parser.add_argument(
+        '-m', '--method',
+        type=str,
+        default='avg',
+        help='Either "avg" or "sum" each bin'
+    )
+
+    spectroscopic_parser.add_argument(
         '-o', '--out_dir',
         type=str,
         required=True,
         help='Directory to write output files to.'
     )
-
-    spectroscopic_parser.add_argument(
-        '--plot',
-        help='Display live plots of fitting results for the velocity calculation.',
-        action='store_true')
 
     return parser
 

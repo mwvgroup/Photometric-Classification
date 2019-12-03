@@ -1,18 +1,18 @@
 .. _classification:
 
-Classification Scheme
-=====================
+Classification Scheme (Background)
+==================================
 
-We here discuss the classification originally presented in
-`González-Gaitán et al. 2014 <https://ui.adsabs.harvard.edu/abs/2014ApJ...795..142G/abstract>`_
-(G14).
+We here discuss the photometric classification technique presented in
+`González-Gaitán et al. 2014`_ (G14) that this project is based on.
 
 .. important:: G14 relies on the SiFTO light-curve fitter. We here instead apply the
    `sncosmo`_ package. In their default setup, these two packages are very
-   different, but we intentionally implement `sncosmo` in a way that mimmicks
+   different, but we intentionally implement ``sncosmo`` in a way that mimics
    the SiFTO approach. See the :ref:`fitters` section for more details.
 
 .. _sncosmo: http://sncosmo.readthedocs.io/
+.. _González-Gaitán et al. 2014: https://ui.adsabs.harvard.edu/abs/2014ApJ...795..142G/abstract
 
 Background
 ----------

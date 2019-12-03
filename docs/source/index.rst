@@ -39,13 +39,13 @@ identifying dim, fast-declining SNe, but can also identify other peculiar
 transients such as SNe Iax-like, SN 2006bt-like, and super-Chandrasekhar
 SNe Ia.
 
-In Perrefort et al. 2020 we apply the same classification technique to the
-SDSS Supernova Survey. The following documentation is provided as a
-technical reference for the published work, and serves as a complete project
-writeup for all programmatic aspects of the project. The **Project Notes**
-section documents the project from a scientific perspective. It it provided
-to ensure reproducibility of the results and to clarify various design
-decisions. The **API Reference** documents how to use the project's code
+In Perrefort et al. 2020 we apply the same classification technique (with
+some minor changes) to the SDSS Supernova Survey. This documentation is
+provided as a technical reference for the published work, and serves as a
+complete project writeup for all programmatic aspects of the project. The
+**Project Notes** section documents the project from a scientific perspective.
+It it provided to ensure reproducibility of the results and to clarify various
+design decisions. The **API Reference** documents how to use the project's code
 base along with various technical clarifications.
 
 Source Code and Repository Structure
@@ -72,9 +72,9 @@ summaries below for key files in the project repository::
 +----------------------+------------------------------------------------------------------------------+
 | File                 | Description                                                                  |
 +======================+==============================================================================+
-| *config_files/*      | Files specifying fitting arguments anf priors for different models/surveys.  |
+| *config_files/*      | Files specifying fitting arguments and priors for different models/surveys.  |
 +----------------------+------------------------------------------------------------------------------+
-| *docs/*              | The project documentation source code (what you're reading right now).       |
+| *docs/*              | The project documentation's source code (what you're reading right now).     |
 +----------------------+------------------------------------------------------------------------------+
 | *notebooks/*         | Notebooks that inspect results of the classification pipeline.               |
 |                      | These contain mostly plotting code.                                          |
@@ -112,16 +112,16 @@ summaries below for key files in the project repository::
    project_notes/classification_scheme
    project_notes/implementation
    project_notes/data
-   project_notes/notebooks
    project_notes/literature
 
 .. toctree::
    :hidden:
    :maxdepth: 1
-   :caption: Getting Running:
+   :caption: Getting Started:
 
-   getting_running/installation
-   getting_running/quick_start
+   getting_started/installation
+   getting_started/cli
+   getting_started/notebooks
 
 
 .. toctree::
@@ -130,12 +130,13 @@ summaries below for key files in the project repository::
    :caption: API Reference:
 
    api_reference/overview
+   api_reference/spectra
    api_reference/models
    api_reference/fit_func_wraps
    api_reference/fitting
    api_reference/classification
    api_reference/fom
+   api_reference/simulation
    api_reference/utils
-   api_reference/sncosmo_sims
 
 .. _GitHub: https://github.com/mwvgroup/sdss-classification/

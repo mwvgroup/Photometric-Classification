@@ -9,5 +9,5 @@ setup(name='phot_class',
       python_requires='>=3.7',
       setup_requires=['pytest-runner'],
       tests_require=['pytest'],
-      package_data={'': ['*.npy']},
+      package_data={'': ['*.npy', '*.yml']},
       include_pacakge_data=True)

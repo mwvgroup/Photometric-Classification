@@ -5,8 +5,10 @@
 
 from unittest import TestCase
 
+import matplotlib as mpl
 import numpy as np
 import sncosmo
+from matplotlib import pyplot as plt
 from sncosmo.utils import Result
 
 from phot_class import fitting, models
@@ -120,7 +122,14 @@ class PlotLc(TestCase):
             data, model,
             ['z', 't0', 'x0', 'x1', 'c'],
             bounds={'z': (0.3, 0.7)})
+
+        # Other tests in the suite test code that turns on interactive plotting
+        ion = mpl.is_interactive()
+        plt.ioff()
         fig = fitting._plot_lc(data, result, fitted_model, show=False)
+        if ion:
+            plt.ion()
+
         self.assertTrue(fig.get_axes(), 'Returned figure has no axes')
 
 

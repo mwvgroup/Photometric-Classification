@@ -32,7 +32,7 @@
 #
 # pW5:
 #   feature_id: S ii λ5449, λ5622
-#   restframe: 5535.5
+#   restframe: 5535.5   # (5449 + 5622) / 2
 #   lower_blue: 5150
 #   upper_blue: 5300
 #   lower_red: 5500
@@ -40,7 +40,7 @@
 
 pW6:
   feature_id: Si ii λ5972
-  restframe: 5971.89  # (5449 + 5622) / 2
+  restframe: 5971.89
   lower_blue: 5550
   upper_blue: 5700
   lower_red: 5800

@@ -79,7 +79,7 @@ band-passes - a very different approach to SiFTO.
 There is no single set of parameters used by ``sncosmo``. Generally, the
 parameters are determined by the model that is being fit. Additional
 parameters can also be added to any model to represent external effects like
-extinction. These effects can be implimented at either the rest or observed
+extinction. These effects can be implemented at either the rest or observed
 frame.
 
 
@@ -206,9 +206,9 @@ Method 1: Band-by-Band Fitting
      ``t0`` are fixed to the value determined when fitting all bands
      simultaneously.
   3. Any fits that fail are dropped from our sample.
-  4. The bandpasses are separated into the rest-frame blue and red
+  4. The band-passes are separated into the rest-frame blue and red
      (blue/redward of 5500 Angstroms.)
-  5. The chi-squard values from the band-by-band fits are summed for each
+  5. The chi-squared values from the band-by-band fits are summed for each
      model in both the red and blue bandpasses. These values are used to
      determine the position of each target on the classification plot
      (see the :ref:`classification` section).
