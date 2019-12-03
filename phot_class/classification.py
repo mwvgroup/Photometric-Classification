@@ -6,7 +6,8 @@ and determines the corresponding classification coordinates:
 
 .. math::
 
-    x \def \chi^2_{blue}(Ia) - \chi^2_{blue}(91bg)
+    x \def \chi^2_{blue}(Ia) - \chi^2_{blue}(91bg) \\
+
     y \def \chi^2_{red}(Ia) - \chi^2_{red}(91bg)
 """
 
