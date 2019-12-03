@@ -153,7 +153,8 @@ class SpectrumInspector:
         return lower_bound, upper_bound
 
     def _sample_feature_properties(
-            self, feat_name, feat_start, feat_end, nstep=5, debug=False):
+            self, feat_name, feat_start, feat_end, nstep=5,
+            return_samples=False, debug=False):
         """Calculate the properties of a single feature in a spectrum
 
         Velocity values are returned in km / s. Error values are determined
@@ -165,7 +166,8 @@ class SpectrumInspector:
             feat_start     (float): Starting wavelength of the feature
             feat_end       (float): Ending wavelength of the feature
             nstep            (int): Number of samples taken in each direction
-            debug           (bool): Return samples instead of averaged values
+            return_samples  (bool): Return samples instead of averaged values
+            debug           (bool): Run without plotting anything
 
         Returns:
             - (The line velocity, its formal error, and its sampling error)
@@ -203,12 +205,13 @@ class SpectrumInspector:
                 vel, avg, fit = 0, 0, 0
                 velocity.append(vel)
 
-                _draw_measurement(nw, nf, continuum, feat_name, pequiv_width)
+                if not debug:
+                    _draw_measurement(nw, nf, continuum, feat_name, pequiv_width)
 
         # So the user has time to see the results
         plt.pause(.4)
 
-        if debug:
+        if return_samples:
             return velocity, pequiv_width, area
 
         avg_velocity = np.mean(velocity)
