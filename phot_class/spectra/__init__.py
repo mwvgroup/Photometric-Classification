@@ -10,5 +10,19 @@ from .calc_properties import (bin_spectrum, correct_extinction, dust_map,
                               feature_area, feature_pew, feature_velocity,
                               find_peak_wavelength, guess_feature_bounds,
                               line_locations)
-from .graphical_interface import SpectrumInspector, tabulate_spectral_properties
+from .graphical_interface import (SpectrumInspector,
+                                  tabulate_spectral_properties)
 
+__all__ = (
+    'bin_spectrum',
+    'correct_extinction',
+    'dust_map',
+    'feature_area',
+    'feature_pew',
+    'feature_velocity',
+    'find_peak_wavelength',
+    'guess_feature_bounds',
+    'line_locations',
+    'SpectrumInspector',
+    'tabulate_spectral_properties'
+)
