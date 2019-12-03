@@ -3,8 +3,6 @@
 
 """Generates light-curves using sncosmo and write models results to file."""
 
-from pathlib import Path
-
 import numpy as np
 import sncosmo
 from astropy.cosmology import FlatLambdaCDM
@@ -96,22 +94,20 @@ def sim_bg_params(
             z, t0, x1, c in param_iter]
 
 
-def generate_lc(model, phase_range, model_params, out_dir):
-    """Generate 91bg light curves in SDSS band passes
+def generate_lc(model, phase_range, model_params):
+    """Generate light curves in SDSS band passes
 
     This is a very simple simulation that assumes observations are performed
     simultaneously at each epoch with a gain of one and zero sky noise.
-    Simulations use SDSS bandpasses
+    Simulations use SDSS band-passes
 
     Args:
         model       (Model): The model to be used
         phase_range (tuple): Phase range to simulate light-curves over
         model_params (list): List of model parameters for each light-curve
-        out_dir      (Path): The output directory to write light-curves to
     """
 
-    out_dir = Path(out_dir)  # In case out_dir is a string
-
+    light_curves_out = []
     for i, params_dict in enumerate(model_params):
         time = 5 * (params_dict['t0'] + np.arange(*phase_range).tolist())
         bands = np.concatenate(
@@ -127,7 +123,8 @@ def generate_lc(model, phase_range, model_params, out_dir):
              'zp': np.full(table_length, 27.5),
              'zpsys': np.full(table_length, 'ab')})
 
-        light_curve = sncosmo.realize_lcs(observations, model, [params_dict])[
-            0]
+        light_curve = sncosmo.realize_lcs(observations, model, [params_dict])[0]
         light_curve.meta.update(params_dict)
-        light_curve.write(out_dir / f'sn91bg_{i}.ecsv', overwrite=True)
+        light_curves_out.append(light_curve)
+
+    return light_curves_out

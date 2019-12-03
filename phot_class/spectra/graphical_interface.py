@@ -279,7 +279,7 @@ class SpectrumInspector:
     def run(self, bin_size=5, method='avg', nstep=5, rv=None):
         """Measure spectra properties
 
-        The returned list includes values for the:
+        Values in the returned list:
             - obj_id
             - sid
             - date
