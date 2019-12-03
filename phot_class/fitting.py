@@ -5,6 +5,9 @@
 tabulates the results. This includes the ability to fit each bandpass
 independently (like in SiFTO) or to fit restframe blue/red band passes os
 separate, collective sets.
+
+Function Documentation
+----------------------
 """
 
 from copy import deepcopy

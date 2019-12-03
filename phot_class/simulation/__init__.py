@@ -3,11 +3,6 @@
 
 """Generates light-curves using sncosmo and write models results to file.
 
-Usage Example
--------------
-
-
-
 Function Documentation
 ----------------------
 """
