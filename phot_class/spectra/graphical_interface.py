@@ -127,26 +127,18 @@ class SpectrumInspector:
         plt.plot(self.rest_wave, self.rest_flux, color='k')
 
         vline_style = dict(color='grey', linestyle='--', alpha=.25, zorder=2)
-        low_line = plt.axvline(gstart, **vline_style)
-        upper_line = plt.axvline(gend, **vline_style)
+        plt.axvline(gstart, **vline_style)
+        plt.axvline(gend, **vline_style)
 
-        xlim = feature['lower_blue'] - 1000, feature['upper_red'] + 1000
+        xlim = feature['lower_blue'] - 1500, feature['upper_red'] + 1500
         plotted_flux = flux[(wave > xlim[0]) & (wave < xlim[1])]
         plt.xlim(xlim)
         plt.ylim(0, 1.1 * max(plotted_flux))
 
-        plt.title('Please select the feature\'s lower bound.')
-        vline_style['color'] = 'red'
-        xy_low = plt.ginput(1)
-        lower_bound = wave[(np.abs(wave - xy_low[0][0])).argmin()]
-        low_line.remove()
-        plt.axvline(lower_bound, **vline_style)
-
-        plt.title('Please select the feature\'s upper bound.')
-        xy_high = plt.ginput(1)
-        upper_bound = wave[(np.abs(wave - xy_high[0][0])).argmin()]
-        upper_line.remove()
-        plt.axvline(upper_bound, **vline_style)
+        plt.title('Select the feature\'s upper and lower bound.')
+        xy = plt.ginput(2)
+        lower_bound = wave[(np.abs(wave - xy[0][0])).argmin()]
+        upper_bound = wave[(np.abs(wave - xy[1][0])).argmin()]
 
         return lower_bound, upper_bound
 
