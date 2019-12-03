@@ -134,3 +134,58 @@ class SampleFeatureProperties(TestCase):
             self.pequiv_width, pequiv_width[0], msg=msg.format('pEW'))
 
         self.assertAlmostEqual(self.area, area[0], msg=msg.format('Area'))
+
+
+class TabulateSpectrumProperties(TestCase):
+    """Tests for the ``tabulate_spectral_properties`` function"""
+
+    @classmethod
+    def setUpClass(cls):
+        # Define test spectrum
+        cls.wave = np.arange(7000, 8000)
+        cls.observed_wave = np.mean(cls.wave)
+        cls.rest_wave = cls.observed_wave - 100
+        cls.flux, cls.error = SimulatedSpectrum.gaussian(
+            cls.wave, mean=cls.observed_wave, stddev=100)
+
+        line_properties = {
+            'restframe': cls.rest_wave,
+            'lower_blue': cls.wave[100],
+            'upper_blue': cls.wave[100],
+            'lower_red': cls.wave[-100],
+            'upper_red': cls.wave[-100]
+        }
+
+        cls.old_lines = spectra.calc_properties.line_locations
+        spectra.calc_properties.line_locations = \
+            {'test_TabulateSpectrumProperties': line_properties}
+
+    @classmethod
+    def tearDownClass(cls):
+        spectra.line_locations = cls.old_lines
+
+    def test_column_names(self):
+        """Test the returned table has the correct column names"""
+
+        expected_names = [
+            'obj_id',
+            'sid',
+            'date',
+            'type',
+            'feat_name',
+            'feat_start',
+            'feat_end',
+            'vel',
+            'vel_err',
+            'vel_samperr',
+            'pew',
+            'pew_err',
+            'pew_samperr',
+            'area',
+            'area_err',
+            'area_samperr',
+            'msg'
+        ]
+
+        returned_table = spectra.tabulate_spectral_properties(iter([]))
+        self.assertListEqual(expected_names, returned_table.colnames)

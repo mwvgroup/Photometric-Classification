@@ -6,6 +6,7 @@ the properties of spectral features.
 """
 
 import numpy as np
+from astropy.table import Table
 from matplotlib import pyplot as plt
 from uncertainties import nominal_value, std_dev
 from uncertainties.unumpy import nominal_values
@@ -312,3 +313,45 @@ class SpectrumInspector:
         # Add object Id and other meta data to each measurement
         meta_data = [self.obj_id, self.sid, self.date, self.spec_type]
         return [meta_data + r for r in spec_properties]
+
+
+def tabulate_spectral_properties(
+        data_iter, nstep=5, bin_size=3, method='avg', rv=3.1):
+    """Tabulate spectral properties for multiple spectra of the same object
+
+    Spectra are rest-framed and corrected for MW extinction using the
+    Schlegel et al. 98 dust map and the Fitzpatrick et al. 99 extinction law.
+
+    Args:
+        data_iter (iter[Table]): Iterable of spectroscopic data tables
+        nstep             (int): The number of sampling steps to take
+        bin_size        (float): The width of the bins (Default: 5)
+        method            (str): Either 'avg' or 'sum' the values of each bin
+        rv              (float): Rv value to use for extinction
+
+    Returns:
+        A Table with measurements for each spectrum and feature
+    """
+
+    table_rows = []
+    for spectrum in data_iter:
+        inspector = SpectrumInspector(spectrum)
+        table_rows = inspector.run(
+            nstep=nstep, bin_size=bin_size, method=method, rv=rv)
+
+    if not table_rows:
+        table_rows = None
+
+    # Format results as a table
+    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name', 'feat_start', 'feat_end']
+    dtype = ['U100', 'U100', 'U100', 'U100', 'U20', float, float]
+    for value in ('vel', 'pew', 'area'):
+        col_names.append(value)
+        col_names.append(value + '_err')
+        col_names.append(value + '_samperr')
+        dtype += [float, float, float]
+
+    col_names.append('msg')
+    dtype.append('U1000')
+
+    return Table(rows=table_rows, names=col_names, dtype=dtype)
