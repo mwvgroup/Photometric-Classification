@@ -160,7 +160,7 @@ def run_spectroscopic_classification(cli_args):
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
 
-    out_table = spectra.tabulate_spectral_properties(
+    spectra.tabulate_spectral_properties(
         get_spec_data_iter(data_module),
         rv=cli_args.rv,
         nstep=cli_args.nstep,

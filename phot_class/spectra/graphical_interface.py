@@ -23,41 +23,6 @@ class NoInputGiven(Exception):
     pass
 
 
-def _draw_measurement(
-        feat_name, wave, flux, continuum, fit, avg, eq_width, pause=.001):
-    """Shade in the EW, continuum, and position of a spectral feature
-
-    Args:
-        feat_name     (str): The name of the feature
-        wave      (ndarray): An array of wavelengths in angstroms
-        flux      (ndarray): An array of flux for each wavelength
-        continuum (ndarray): The continuum flux
-        fit       (ndarray): The fit gaussian flux
-        avg         (float): The average of the fitted gaussian
-        eq_width  (ndarray): Array of equivalent width measurements
-        pause       (float): How long to pause after drawing
-    """
-
-    feat_id = line_locations[feat_name]['feature_id']
-    avg_pew = np.average(eq_width)
-    std_pew = np.std(eq_width)
-
-    plt.title(feat_id + rf' (pEW = {avg_pew:.2f} $\pm$ {std_pew:.2f})')
-    plt.xlabel('Wavelength')
-    plt.ylabel(f'Flux ({self.obj_id - self.sid})')
-
-    plt.fill_between(wave, flux, continuum, color='grey', alpha=.2, zorder=0)
-    plt.axvline(wave[0], color='grey', linestyle='--', alpha=.25, zorder=2)
-    plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
-    plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
-
-    plt.plot(wave, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
-    plt.axvline(avg, color='C1', linestyle=':', zorder=5)
-
-    plt.draw()
-    plt.pause(pause)
-
-
 class SpectrumInspector:
     """Graphical interface for measuring spectral features"""
 
@@ -141,8 +106,10 @@ class SpectrumInspector:
         plt.ylim(0, 1.1 * max(plotted_flux))
 
         plt.title('Select the feature\'s lower then upper bound.')
-        xy = plt.ginput(2)
+        plt.xlabel('Wavelength')
+        plt.ylabel(f'Flux (Object Id: {self.obj_id} - Spec Id: {self.sid})')
 
+        xy = plt.ginput(2, timeout=float('inf'))
         if len(xy) < 2:
             raise NoInputGiven
 
@@ -150,6 +117,37 @@ class SpectrumInspector:
         upper_bound = wave[(np.abs(wave - xy[1][0])).argmin()]
 
         return lower_bound, upper_bound
+
+    def _draw_measurement(self, feat_name, wave, flux, continuum, fit, avg,
+                          eq_width, pause=.001):
+        """Shade in the EW, continuum, and position of a spectral feature
+
+        Args:
+            feat_name     (str): The name of the feature
+            wave      (ndarray): An array of wavelengths in angstroms
+            flux      (ndarray): An array of flux for each wavelength
+            continuum (ndarray): The continuum flux
+            fit       (ndarray): The fit gaussian flux
+            avg         (float): The average of the fitted gaussian
+            eq_width  (ndarray): Array of equivalent width measurements
+            pause       (float): How long to pause after drawing
+        """
+
+        feat_id = line_locations[feat_name]['feature_id']
+        avg_pew = np.average(eq_width)
+        std_pew = np.std(eq_width)
+
+        plt.title(feat_id + rf' (pEW = {avg_pew:.2f} $\pm$ {std_pew:.2f})')
+        plt.fill_between(wave, flux, continuum, color='grey', alpha=.2, zorder=0)
+        plt.axvline(wave[0], color='grey', linestyle='--', alpha=.25, zorder=2)
+        plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
+        plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
+
+        plt.plot(wave, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
+        plt.axvline(avg, color='C1', linestyle=':', zorder=5)
+
+        plt.draw()
+        plt.pause(pause)
 
     def _sample_feature_properties(
             self, feat_name, feat_start, feat_end, nstep=5,
@@ -201,9 +199,8 @@ class SpectrumInspector:
 
                 vel, avg, fit = feature_velocity(rest_frame, nw, norm_flux)
                 velocity.append(vel)
-
                 if not debug:
-                    _draw_measurement(
+                    self._draw_measurement(
                         feat_name, nw, nf, continuum, fit, avg, pequiv_width)
 
         # So the user has time to see the results
@@ -360,13 +357,16 @@ def tabulate_spectral_properties(
 
     if out_path and out_path.exists():
         out_table = Table.read(out_path)
+        # Todo:
+        # already_run = Table.read(out_path).to_pandas().set_index('obj_id', 'sid').index
+        # print(already_run)
 
     else:
         out_table = _create_output_table()
 
     for spectrum in data_iter:
-        if spectrum.meta['obj_id'] in out_table['obj_id']:
-            continue
+        # if spectrum.meta['obj_id'] in out_table['obj_id']:
+        #    continue
 
         inspector = SpectrumInspector(spectrum)
 

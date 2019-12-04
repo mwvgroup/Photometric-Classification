@@ -207,6 +207,10 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
         - The binned flux values
     """
 
+    # Todo: test this
+    if bin_size <= wave[1] - wave[0]:
+        return wave, flux
+
     min_wave = np.floor(np.min(wave))
     max_wave = np.floor(np.max(wave))
     bins = np.arange(min_wave, max_wave + 1, bin_size)
