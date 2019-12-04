@@ -135,7 +135,7 @@ class SpectrumInspector:
         plt.axvline(gstart, **vline_style)
         plt.axvline(gend, **vline_style)
 
-        xlim = feature['lower_blue'] - 1500, feature['upper_red'] + 1500
+        xlim = feature['lower_blue'] - 1000, feature['upper_red'] + 1000
         plotted_flux = flux[(wave > xlim[0]) & (wave < xlim[1])]
         plt.xlim(xlim)
         plt.ylim(0, 1.1 * max(plotted_flux))
@@ -316,7 +316,30 @@ class SpectrumInspector:
         return [meta_data + r for r in spec_properties]
 
 
-# Todo: cache results
+def _create_output_table(*args, **kwargs):
+    """Create an empty astropy table for storing spectra results
+
+    Args:
+        Any arguments for instantiating ``Table`` except ``names`` or ``dtype``
+
+    Returns:
+        An empty astropy Table
+    """
+
+    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name', 'feat_start', 'feat_end']
+    dtype = ['U100', 'U100', 'U100', 'U100', 'U20', float, float]
+    for value in ('vel', 'pew', 'area'):
+        col_names.append(value)
+        col_names.append(value + '_err')
+        col_names.append(value + '_samperr')
+        dtype += [float, float, float]
+
+    col_names.append('msg')
+    dtype.append('U1000')
+
+    return Table(names=col_names, dtype=dtype, *args, **kwargs)
+
+
 def tabulate_spectral_properties(
         data_iter, nstep=5, bin_size=3, method='avg', rv=3.1, out_path=None):
     """Tabulate spectral properties for multiple spectra of the same object
@@ -335,8 +358,16 @@ def tabulate_spectral_properties(
         A Table with measurements for each spectrum and feature
     """
 
-    table_rows = []
+    if out_path and out_path.exists():
+        out_table = Table.read(out_path)
+
+    else:
+        out_table = _create_output_table()
+
     for spectrum in data_iter:
+        if spectrum.meta['obj_id'] in out_table['obj_id']:
+            continue
+
         inspector = SpectrumInspector(spectrum)
 
         try:
@@ -346,19 +377,12 @@ def tabulate_spectral_properties(
         except NoInputGiven:
             break
 
-    if not table_rows:
-        table_rows = None
+        else:
+            for row in table_rows:
+                out_table.add_row(row)
 
-    # Format results as a table
-    col_names = ['obj_id', 'sid', 'date', 'type', 'feat_name', 'feat_start', 'feat_end']
-    dtype = ['U100', 'U100', 'U100', 'U100', 'U20', float, float]
-    for value in ('vel', 'pew', 'area'):
-        col_names.append(value)
-        col_names.append(value + '_err')
-        col_names.append(value + '_samperr')
-        dtype += [float, float, float]
+    if out_path:
+         out_table.write(out_path, overwrite=True)
 
-    col_names.append('msg')
-    dtype.append('U1000')
+    return out_table
 
-    return Table(rows=table_rows, names=col_names, dtype=dtype)

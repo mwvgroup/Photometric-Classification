@@ -165,9 +165,9 @@ def run_spectroscopic_classification(cli_args):
         rv=cli_args.rv,
         nstep=cli_args.nstep,
         method=cli_args.method,
-        bin_size=cli_args.bin_size)
-
-    out_table.write(out_dir / file_name, overwrite=True)
+        bin_size=cli_args.bin_size,
+        out_path=out_dir / file_name
+    )
 
 
 def create_cli_parser():
