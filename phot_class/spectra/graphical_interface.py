@@ -44,7 +44,7 @@ def _draw_measurement(
 
     plt.title(feat_id + rf' (pEW = {avg_pew:.2f} $\pm$ {std_pew:.2f})')
     plt.xlabel('Wavelength')
-    plt.ylabel('Flux')
+    plt.ylabel(f'Flux ({self.obj_id - self.sid})')
 
     plt.fill_between(wave, flux, continuum, color='grey', alpha=.2, zorder=0)
     plt.axvline(wave[0], color='grey', linestyle='--', alpha=.25, zorder=2)
@@ -140,7 +140,7 @@ class SpectrumInspector:
         plt.xlim(xlim)
         plt.ylim(0, 1.1 * max(plotted_flux))
 
-        plt.title('Select the feature\'s upper and lower bound.')
+        plt.title('Select the feature\'s lower then upper bound.')
         xy = plt.ginput(2)
 
         if len(xy) < 2:
