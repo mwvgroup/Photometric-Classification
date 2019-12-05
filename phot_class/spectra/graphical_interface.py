@@ -138,12 +138,16 @@ class SpectrumInspector:
         std_pew = np.std(eq_width)
 
         plt.title(feat_id + rf' (pEW = {avg_pew:.2f} $\pm$ {std_pew:.2f})')
-        plt.fill_between(wave, flux, continuum, color='grey', alpha=.2, zorder=0)
+        plt.fill_between(wave, flux, continuum, color='grey', alpha=.2,
+                         zorder=0)
         plt.axvline(wave[0], color='grey', linestyle='--', alpha=.25, zorder=2)
-        plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
-        plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
+        plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25,
+                    zorder=2)
+        plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4,
+                 zorder=3)
 
-        plt.plot(wave, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
+        plt.plot(wave, fit * continuum, label='Fit', color='C2', alpha=.25,
+                 zorder=4)
         plt.axvline(avg, color='C1', linestyle=':', zorder=5)
 
         plt.draw()
@@ -356,17 +360,15 @@ def tabulate_spectral_properties(
     """
 
     if out_path and out_path.exists():
-        out_table = Table.read(out_path)
-        # Todo:
-        # already_run = Table.read(out_path).to_pandas().set_index('obj_id', 'sid').index
-        # print(already_run)
+        # We need to use astropy to read the file incase the file path is ecsv
+        already_run = Table.read(out_path).to_pandas().set_index(['obj_id', 'sid']).index
 
     else:
-        out_table = _create_output_table()
+        already_run = []
 
     for spectrum in data_iter:
-        # if spectrum.meta['obj_id'] in out_table['obj_id']:
-        #    continue
+        if (spectrum.meta['obj_id'], spectrum.meta['spec_id']) in already_run:
+            continue
 
         inspector = SpectrumInspector(spectrum)
 
@@ -377,12 +379,10 @@ def tabulate_spectral_properties(
         except NoInputGiven:
             break
 
-        else:
-            for row in table_rows:
-                out_table.add_row(row)
+    meta = dict(nstep=nstep, bin_size=bin_size, method=method, rv=rv)
+    out_table = _create_output_table(rows=table_rows, meta=meta)
 
     if out_path:
-         out_table.write(out_path, overwrite=True)
+        out_table.write(out_path, overwrite=True)
 
     return out_table
-
