@@ -54,6 +54,7 @@ class SpectrumInspector:
         # Place holders for intermediate analysis results
         self.bin_wave, self.bin_flux = None, None
         self.rest_flux, self.rest_wave = None, None
+        self.feature_bounds = []
 
     def prepare_spectrum(self, bin_size, method, rv=None):
         """Bin, correct for extinction, and rest-frame the spectrum
@@ -95,8 +96,10 @@ class SpectrumInspector:
 
         plt.clf()
         plt.plot(self.rest_wave, self.rest_flux, color='k')
+        for bound in self.feature_bounds:
+            plt.axvline(bound, color='C0', linestyle='--', alpha = .5)
 
-        vline_style = dict(color='grey', linestyle='--', alpha=.25, zorder=2)
+        vline_style = dict(color='red', linestyle='--', alpha=.5)
         plt.axvline(gstart, **vline_style)
         plt.axvline(gend, **vline_style)
 
@@ -115,11 +118,14 @@ class SpectrumInspector:
 
         lower_bound = wave[(np.abs(wave - xy[0][0])).argmin()]
         upper_bound = wave[(np.abs(wave - xy[1][0])).argmin()]
+        self.feature_bounds.append(lower_bound)
+        self.feature_bounds.append(upper_bound)
 
         return lower_bound, upper_bound
 
-    def _draw_measurement(self, feat_name, wave, flux, continuum, fit, avg,
-                          eq_width, pause=.001):
+    @staticmethod
+    def _draw_measurement(
+            feat_name, wave, flux, continuum, fit, avg, eq_width, pause=.001):
         """Shade in the EW, continuum, and position of a spectral feature
 
         Args:
@@ -138,16 +144,12 @@ class SpectrumInspector:
         std_pew = np.std(eq_width)
 
         plt.title(feat_id + rf' (pEW = {avg_pew:.2f} $\pm$ {std_pew:.2f})')
-        plt.fill_between(wave, flux, continuum, color='grey', alpha=.2,
-                         zorder=0)
+        plt.fill_between(wave, flux, continuum, color='grey', alpha=.2, zorder=0)
         plt.axvline(wave[0], color='grey', linestyle='--', alpha=.25, zorder=2)
-        plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25,
-                    zorder=2)
-        plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4,
-                 zorder=3)
+        plt.axvline(wave[-1], color='grey', linestyle='--', alpha=.25, zorder=2)
+        plt.plot(wave, continuum, color='C0', linestyle='--', alpha=.4, zorder=3)
 
-        plt.plot(wave, fit * continuum, label='Fit', color='C2', alpha=.25,
-                 zorder=4)
+        plt.plot(wave, fit * continuum, label='Fit', color='C2', alpha=.25, zorder=4)
         plt.axvline(avg, color='C1', linestyle=':', zorder=5)
 
         plt.draw()
@@ -354,6 +356,7 @@ def tabulate_spectral_properties(
         bin_size        (float): The width of the bins (Default: 5)
         method            (str): Either 'avg' or 'sum' the values of each bin
         rv              (float): Rv value to use for extinction
+        out_path         (Path): Optionally cache reults to file
 
     Returns:
         A Table with measurements for each spectrum and feature
@@ -366,6 +369,7 @@ def tabulate_spectral_properties(
     else:
         already_run = []
 
+    table_rows = []
     for spectrum in data_iter:
         if (spectrum.meta['obj_id'], spectrum.meta['spec_id']) in already_run:
             continue
@@ -373,11 +377,15 @@ def tabulate_spectral_properties(
         inspector = SpectrumInspector(spectrum)
 
         try:
-            table_rows = inspector.run(
+            spectrum_properties = inspector.run(
                 nstep=nstep, bin_size=bin_size, method=method, rv=rv)
+            table_rows.append(spectrum_properties)
 
         except NoInputGiven:
             break
+
+    if not table_rows:
+        table_rows = None
 
     meta = dict(nstep=nstep, bin_size=bin_size, method=method, rv=rv)
     out_table = _create_output_table(rows=table_rows, meta=meta)

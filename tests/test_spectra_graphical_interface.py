@@ -142,33 +142,8 @@ class SampleFeatureProperties(TestCase):
         self.assertNumberSamples(-1, 0)
 
 
-class TabulateSpectrumProperties(TestCase):
-    """Tests for the ``tabulate_spectral_properties`` function"""
-
-    @classmethod
-    def setUpClass(cls):
-        # Define test spectrum
-        cls.wave = np.arange(7000, 8000)
-        cls.observed_wave = np.mean(cls.wave)
-        cls.rest_wave = cls.observed_wave - 100
-        cls.flux, cls.error = SimulatedSpectrum.gaussian(
-            cls.wave, mean=cls.observed_wave, stddev=100)
-
-        line_properties = {
-            'restframe': cls.rest_wave,
-            'lower_blue': cls.wave[100],
-            'upper_blue': cls.wave[100],
-            'lower_red': cls.wave[-100],
-            'upper_red': cls.wave[-100]
-        }
-
-        cls.old_lines = spectra.calc_properties.line_locations
-        spectra.calc_properties.line_locations = \
-            {'test_TabulateSpectrumProperties': line_properties}
-
-    @classmethod
-    def tearDownClass(cls):
-        spectra.line_locations = cls.old_lines
+class CreateOutputTable(TestCase):
+    """Tests for the ``_create_output_table`` function"""
 
     def test_column_names(self):
         """Test the returned table has the correct column names"""
@@ -193,5 +168,5 @@ class TabulateSpectrumProperties(TestCase):
             'msg'
         ]
 
-        returned_table = spectra.tabulate_spectral_properties(iter([]))
+        returned_table = spectra.graphical_interface._create_output_table()
         self.assertListEqual(expected_names, returned_table.colnames)
