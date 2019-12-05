@@ -372,7 +372,7 @@ class BinSpectrum(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.wave = np.arange(1000, 2001, 2)
+        cls.wave = np.arange(1000, 2001, 1)
         cls.flux = np.ones_like(cls.wave)
 
     def test_correct_binned_average(self):
@@ -391,6 +391,7 @@ class BinSpectrum(TestCase):
 
         sums[-1] -= 1  # Because of inclusion of values at the boundary
         correct_sum = (sums == bin_size).all()
+        print(sums)
         self.assertTrue(correct_sum)
 
     def test_unchanged_spectrum_for_low_resolution(self):
@@ -399,7 +400,7 @@ class BinSpectrum(TestCase):
         err_msg = 'Differing element when calculating {}'
         for method in ('avg', 'sum'):
             returned, _ = spectra.bin_spectrum(
-                self.wave, self.flux, bin_size=1, method=method)
+                self.wave, self.flux, bin_size=.5, method=method)
 
             self.assertListEqual(
                 self.wave.tolist(), returned.tolist(), err_msg.format(method))
