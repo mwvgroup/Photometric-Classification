@@ -372,7 +372,7 @@ class BinSpectrum(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.wave = np.arange(1000, 2001)
+        cls.wave = np.arange(1000, 2001, 2)
         cls.flux = np.ones_like(cls.wave)
 
     def test_correct_binned_average(self):
@@ -393,14 +393,27 @@ class BinSpectrum(TestCase):
         correct_sum = (sums == bin_size).all()
         self.assertTrue(correct_sum)
 
-    def test_bin_centers(self):
-        """Test the returned wavelengths are the bin centers"""
+    def test_unchanged_spectrum_for_low_resolution(self):
+        """Test original spectrum is returned when bin size < the resolution"""
 
         err_msg = 'Differing element when calculating {}'
         for method in ('avg', 'sum'):
-            expected = self.wave[:-1] + ((self.wave[1] - self.wave[0]) / 2)
             returned, _ = spectra.bin_spectrum(
                 self.wave, self.flux, bin_size=1, method=method)
+
+            self.assertListEqual(
+                self.wave.tolist(), returned.tolist(), err_msg.format(method))
+
+    def test_correct_bin_centers(self):
+        """Test the returned wavelengths are the bin centers"""
+
+        bin_size = 5
+        err_msg = 'Differing element when calculating {}'
+        for method in ('avg', 'sum'):
+            expected = np.arange(self.wave[0], self.wave[-1],
+                                 bin_size) + bin_size / 2
+            returned, _ = spectra.bin_spectrum(
+                self.wave, self.flux, bin_size=bin_size, method=method)
 
             self.assertListEqual(
                 expected.tolist(), returned.tolist(), err_msg.format(method))
