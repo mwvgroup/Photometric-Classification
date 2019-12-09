@@ -6,7 +6,7 @@ the properties of spectral features.
 """
 
 import numpy as np
-from astropy.table import Table
+from astropy.table import Table, vstack
 from matplotlib import pyplot as plt
 from uncertainties import nominal_value, std_dev
 from uncertainties.unumpy import nominal_values
@@ -14,13 +14,9 @@ from uncertainties.unumpy import nominal_values
 from .calc_properties import (bin_spectrum, correct_extinction, feature_area,
                               feature_pew, feature_velocity,
                               guess_feature_bounds, line_locations)
+from .exceptions import FeatureOutOfBounds, NoInputGiven
 
 plt.ion()
-
-
-class NoInputGiven(Exception):
-    """No input given from matplotlib input request"""
-    pass
 
 
 class SpectrumInspector:
@@ -43,7 +39,12 @@ class SpectrumInspector:
         self.z = spectrum.meta['z']
         self.ra = spectrum.meta['ra']
         self.dec = spectrum.meta['dec']
-        self.sid = spectrum.meta.get('spec_id', '?')
+        if 'sid' in spectrum.colnames:
+            self.sid = spectrum['sid'][0]
+
+        else:
+            self.sid = '?'
+
         self.date = spectrum['date'][0]
         try:
             self.spec_type = spectrum['type'][0]
@@ -97,15 +98,23 @@ class SpectrumInspector:
         plt.clf()
         plt.plot(self.rest_wave, self.rest_flux, color='k')
         for bound in self.feature_bounds:
-            plt.axvline(bound, color='C0', linestyle='--', alpha = .5)
+            plt.axvline(bound, color='k', linestyle='--', zorder=10)
 
-        vline_style = dict(color='red', linestyle='--', alpha=.5)
-        plt.axvline(gstart, **vline_style)
-        plt.axvline(gend, **vline_style)
+        plt.axvline(gstart, color='blue', linestyle='--', alpha=.5)
+        plt.axvline(gend, color='red', linestyle='--', alpha=.5)
+        for ffeature in line_locations.values():
+            if ffeature == feature:
+                plt.axvspan(feature['lower_blue'], feature['upper_blue'], color='C0', alpha=.5)
+                plt.axvspan(feature['lower_red'], feature['upper_red'], color='C3', alpha=.5)
+                continue
 
-        xlim = feature['lower_blue'] - 1000, feature['upper_red'] + 1000
-        plotted_flux = flux[(wave > xlim[0]) & (wave < xlim[1])]
-        plt.xlim(xlim)
+            plt.axvspan(ffeature['lower_blue'], ffeature['upper_blue'], color='grey', alpha=.25)
+            plt.axvspan(ffeature['lower_red'], ffeature['upper_red'], color='grey', alpha=.25)
+
+        xlow = max(feature['lower_blue'] - 1400, min(wave))
+        xhigh = min(feature['upper_red'] + 1400, max(wave))
+        plotted_flux = flux[(wave > xlow) & (wave < xhigh)]
+        plt.xlim(xlow, xhigh)
         plt.ylim(0, 1.1 * max(plotted_flux))
 
         plt.title('Select the feature\'s lower then upper bound.')
@@ -252,9 +261,16 @@ class SpectrumInspector:
 
         out_data = []
         for feat_name, feat_definition in line_locations.items():
-            # Opens a new plot
-            feat_start, feat_end = self._ask_feature_bounds(
-                self.rest_wave, self.rest_flux, feat_definition)
+
+            try:
+                # Opens a new plot
+                feat_start, feat_end = self._ask_feature_bounds(
+                    self.rest_wave, self.rest_flux, feat_definition)
+
+            except FeatureOutOfBounds as err:
+                samp_results = np.full(11, np.nan).tolist() + [str(err)]
+                out_data.append([feat_name] + samp_results)
+                continue
 
             try:
                 # Closes the plot when finished
@@ -264,16 +280,14 @@ class SpectrumInspector:
 
                 samp_results = np.array(samp_results).flatten().tolist() + ['']
 
-            except KeyboardInterrupt:
+            except (KeyboardInterrupt, NoInputGiven):
                 raise
 
-            except Exception as msg:
-                samp_results = np.full(9, np.nan).tolist() + [str(msg)]
+            except Exception as err:
+                samp_results = np.full(9, np.nan).tolist() + [str(err)]
 
+            out_data.append([feat_name, feat_start, feat_end] + samp_results)
             plt.close()
-            feat_properties = [feat_name, feat_start, feat_end] + samp_results
-
-            out_data.append(feat_properties)
 
         return out_data
 
@@ -364,14 +378,15 @@ def tabulate_spectral_properties(
 
     if out_path and out_path.exists():
         # We need to use astropy to read the file incase the file path is ecsv
-        already_run = Table.read(out_path).to_pandas().set_index(['obj_id', 'sid']).index
+        existing_table = Table.read(out_path)
+        already_run = existing_table.to_pandas().set_index(['obj_id', 'sid']).index
 
     else:
         already_run = []
 
     table_rows = []
     for spectrum in data_iter:
-        if (spectrum.meta['obj_id'], spectrum.meta['spec_id']) in already_run:
+        if (spectrum.meta['obj_id'], spectrum['sid'][0]) in already_run:
             continue
 
         inspector = SpectrumInspector(spectrum)
@@ -379,9 +394,9 @@ def tabulate_spectral_properties(
         try:
             spectrum_properties = inspector.run(
                 nstep=nstep, bin_size=bin_size, method=method, rv=rv)
-            table_rows.append(spectrum_properties)
+            table_rows.extend(spectrum_properties)
 
-        except NoInputGiven:
+        except (NoInputGiven, KeyboardInterrupt):
             break
 
     if not table_rows:
@@ -391,6 +406,10 @@ def tabulate_spectral_properties(
     out_table = _create_output_table(rows=table_rows, meta=meta)
 
     if out_path:
+        if out_path.exists():
+            out_table = vstack([existing_table, out_table])
+
+        out_table.sort(['obj_id', 'sid'])
         out_table.write(out_path, overwrite=True)
 
     return out_table

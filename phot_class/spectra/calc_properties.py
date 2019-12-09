@@ -14,7 +14,7 @@ from astropy.constants import c
 from scipy.optimize import curve_fit
 from uncertainties import ufloat
 from uncertainties.unumpy import nominal_values, std_devs
-
+from .exceptions import FeatureOutOfBounds
 # File paths for external data
 _file_dir = Path(__file__).resolve().parent
 dust_dir = _file_dir.parent / 'schlegel98_dust_map'
@@ -130,7 +130,7 @@ def find_peak_wavelength(wave, flux, lower_bound, upper_bound, behavior='min'):
 
     # Make sure the given spectrum spans the given wavelength bounds
     if (min(wave) > lower_bound) or (upper_bound > max(wave)):
-        raise ValueError('Feature not in spectral wavelength range.')
+        raise FeatureOutOfBounds('Feature not in spectral wavelength range.')
 
     # Select the portion of the spectrum within the given bounds
     feature_indices = (lower_bound <= wave) & (wave <= upper_bound)
