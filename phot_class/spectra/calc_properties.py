@@ -129,7 +129,7 @@ def find_peak_wavelength(wave, flux, lower_bound, upper_bound, behavior='min'):
     """
 
     # Make sure the given spectrum spans the given wavelength bounds
-    if (min(wave) > lower_bound) or (upper_bound > max(wave)):
+    if not any((wave > lower_bound) & (wave < upper_bound)):
         raise FeatureOutOfBounds('Feature not in spectral wavelength range.')
 
     # Select the portion of the spectrum within the given bounds
