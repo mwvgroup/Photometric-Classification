@@ -8,7 +8,7 @@ python run_pipeline.py \
     -r sako18spec \
     spectroscopic \
     -n 3 \
-    -b 3 \
+    -b 5 \
     -o './results/';
 
 # emcee fitting
