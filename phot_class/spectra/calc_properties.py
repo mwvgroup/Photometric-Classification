@@ -4,7 +4,7 @@
 """This module calculates the properties of spectral features."""
 
 from pathlib import Path
-
+from scipy.ndimage import gaussian_filter
 import extinction
 import numpy as np
 import sfdmap
@@ -200,7 +200,7 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
         wave   (ndarray): An array of wavelengths in angstroms
         flux   (ndarray): An array of flux for each wavelength
         bin_size (float): The width of the bins
-        method     (str): Either 'avg' or 'sum' the values of each bin
+        method     (str): Either 'avg', 'sum', or 'gauss' the values of each bin
 
     Returns:
         - The center of each bin
@@ -208,7 +208,7 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
     """
 
     # Todo: test this
-    if bin_size <= wave[1] - wave[0]:
+    if (method != 'gauss') and (bin_size <= wave[1] - wave[0]):
         return wave, flux
 
     min_wave = np.floor(np.min(wave))
@@ -228,6 +228,9 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
         )
 
         return bin_centers, bin_means
+
+    elif method == 'gauss':
+        return wave, gaussian_filter(flux, bin_size)
 
     else:
         raise ValueError(f'Unknown method {method}')
