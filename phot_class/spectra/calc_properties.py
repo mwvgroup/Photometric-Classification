@@ -208,7 +208,7 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
     """
 
     # Todo: test this
-    if (method != 'gauss') and (bin_size <= wave[1] - wave[0]):
+    if (method != 'gauss') and any(bin_size <= wave[1:] - wave[:-1]):
         return wave, flux
 
     min_wave = np.floor(np.min(wave))

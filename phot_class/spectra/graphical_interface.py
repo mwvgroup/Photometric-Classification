@@ -66,17 +66,17 @@ class SpectrumInspector:
             rv       (float): Rv value to use for extinction (Default: 3.1)
         """
 
-        result = [self.bin_wave, self.bin_flux, self.rest_flux, self.rest_wave]
+        result = self.bin_wave, self.bin_flux, self.rest_flux, self.rest_wave
         if not all(v is None for v in result):
             raise ValueError('The spectrum has already been prepared')
 
-        self.bin_wave, self.bin_flux = bin_spectrum(
-            self.wave, self.flux, bin_size=bin_size, method=method)
-
         self.rest_wave, self.rest_flux = correct_extinction(
-            self.bin_wave, self.bin_flux, self.ra, self.dec, self.z, rv=rv)
+            self.wave, self.flux, self.ra, self.dec, self.z, rv=rv)
 
-    def _ask_feature_bounds(self, wave, flux, feature):
+        self.bin_wave, self.bin_flux = bin_spectrum(
+            self.rest_wave, self.rest_flux, bin_size=bin_size, method=method)
+
+    def _ask_feature_bounds(self, feature):
         """Prompt the user for the feature boundaries
 
         Plot the estimated feature bounds and wait for the user to click their
@@ -93,10 +93,11 @@ class SpectrumInspector:
             - The upper wavelength bound
         """
 
-        gstart, gend = guess_feature_bounds(wave, flux, feature)
+        gstart, gend = guess_feature_bounds(self.bin_wave, self.bin_flux, feature)
 
         plt.clf()
-        plt.plot(self.rest_wave, self.rest_flux, color='k')
+        plt.plot(self.rest_wave, self.rest_flux, color='grey', alpha=.75)
+        plt.plot(self.bin_wave, self.bin_flux, color='k')
         for bound in self.feature_bounds:
             plt.axvline(bound, color='k', linestyle='--', zorder=10)
 
@@ -111,9 +112,9 @@ class SpectrumInspector:
             plt.axvspan(ffeature['lower_blue'], ffeature['upper_blue'], color='grey', alpha=.25)
             plt.axvspan(ffeature['lower_red'], ffeature['upper_red'], color='grey', alpha=.25)
 
-        xlow = max(feature['lower_blue'] - 1400, min(wave))
-        xhigh = min(feature['upper_red'] + 1400, max(wave))
-        plotted_flux = flux[(wave > xlow) & (wave < xhigh)]
+        xlow = max(feature['lower_blue'] - 1400, min(self.rest_wave))
+        xhigh = min(feature['upper_red'] + 1400, max(self.rest_wave))
+        plotted_flux = self.rest_flux[(self.rest_wave > xlow) & (self.rest_wave < xhigh)]
         plt.xlim(xlow, xhigh)
         plt.ylim(0, 1.1 * max(plotted_flux))
 
@@ -122,11 +123,14 @@ class SpectrumInspector:
         plt.ylabel(f'Flux (Object Id: {self.obj_id} - Spec Id: {self.sid})')
 
         xy = plt.ginput(2, timeout=float('inf'))
-        if len(xy) < 2:
+        if len(xy) == 0:
+            xy = ([gstart, None], [gend, None])
+
+        elif len(xy) == 1:
             raise NoInputGiven
 
-        lower_bound = wave[(np.abs(wave - xy[0][0])).argmin()]
-        upper_bound = wave[(np.abs(wave - xy[1][0])).argmin()]
+        lower_bound = self.bin_wave[(np.abs(self.bin_wave - xy[0][0])).argmin()]
+        upper_bound = self.bin_wave[(np.abs(self.bin_wave - xy[1][0])).argmin()]
         self.feature_bounds.append(lower_bound)
         self.feature_bounds.append(upper_bound)
 
@@ -134,7 +138,7 @@ class SpectrumInspector:
 
     @staticmethod
     def _draw_measurement(
-            feat_name, wave, flux, continuum, fit, avg, eq_width, pause=.001):
+            feat_name, wave, flux, continuum, fit, avg, eq_width, pause=.0001):
         """Shade in the EW, continuum, and position of a spectral feature
 
         Args:
@@ -191,8 +195,8 @@ class SpectrumInspector:
         rest_frame = line_locations[feat_name]['restframe']
 
         # Get indices for beginning and end of the feature
-        idx_start = np.where(self.rest_wave == feat_start)[0][0]
-        idx_end = np.where(self.rest_wave == feat_end)[0][0]
+        idx_start = np.where(self.bin_wave == feat_start)[0][0]
+        idx_end = np.where(self.bin_wave == feat_end)[0][0]
         if idx_end - idx_start <= 10:
             raise ValueError('Range too small. Please select a wider range')
 
@@ -204,8 +208,8 @@ class SpectrumInspector:
                 sample_start_idx = idx_start + i
                 sample_end_idx = idx_end + j
 
-                nw = self.rest_wave[sample_start_idx: sample_end_idx]
-                nf = self.rest_flux[sample_start_idx: sample_end_idx]
+                nw = self.bin_wave[sample_start_idx: sample_end_idx]
+                nf = self.bin_flux[sample_start_idx: sample_end_idx]
 
                 # Determine feature properties
                 area.append(feature_area(nw, nf))
@@ -264,8 +268,7 @@ class SpectrumInspector:
 
             try:
                 # Opens a new plot
-                feat_start, feat_end = self._ask_feature_bounds(
-                    self.rest_wave, self.rest_flux, feat_definition)
+                feat_start, feat_end = self._ask_feature_bounds(feat_definition)
 
             except FeatureOutOfBounds as err:
                 samp_results = np.full(11, np.nan).tolist() + [str(err)]
