@@ -41,7 +41,6 @@ python run_pipeline.py \
 python run_pipeline.py \
     -s sdss \
     -r sako18 \
-
     photometric \
     -f simple_fit \
     -m band \

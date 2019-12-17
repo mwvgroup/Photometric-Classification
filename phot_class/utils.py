@@ -203,6 +203,6 @@ def classification_filter_factory(classifications):
         if 'classification' not in table.meta:
             return True
 
-        return table.meta['classification'] in classifications
+        return table.meta['classification'] not in classifications
 
     return filter_func

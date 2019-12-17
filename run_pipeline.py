@@ -50,9 +50,10 @@ def get_phot_data_iter(data_module):
             f'{survey} - {release} is not a photometric data release')
 
     # Other classifications:
+    # 'SNIa', 'SNIa?', 'pSNIa', 'zSNIa'
     # 'SLSN', 'SNIb', 'SNIc', 'pSNIbc', 'zSNIbc', 'Unknown', 'AGN', 'Variable'
     filter_func = utils.classification_filter_factory(
-        ['SNIa', 'SNIa?', 'pSNIa', 'zSNIa']
+        ['AGN', 'Variable']
     )
 
     data_iter = data_module.iter_data(
