@@ -55,9 +55,27 @@ python run_pipeline.py \
     -m collective \
     -c 'config_files/sdss_config_ext.yml' \
     -o './results/collective_fits/with_ext';
+    
+python run_pipeline.py \
+    -s des \
+    -r sn3yr \
+    photometric \
+    -f simple_fit \
+    -m band \
+    -c 'config_files/des_config_ext.yml' \
+    -o './results/band_fits/with_ext';
 
-# A repeat of the above, but without extinction
-###############################################
+python run_pipeline.py \
+    -s des \
+    -r sn3yr \
+    photometric \
+    -f simple_fit \
+    -m collective \
+    -c 'config_files/des_config_ext.yml' \
+    -o './results/collective_fits/with_ext';
+
+# A repeat of the above DES fits, but without extinction
+########################################################
 
 python run_pipeline.py \
     -s des \
