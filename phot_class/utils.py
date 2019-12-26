@@ -181,7 +181,8 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
     return out_list
 
 
-def classification_filter_factory(classifications):
+# Todo: update docs
+def classification_filter_factory(classifications, ftype='exclude'):
     """Factory function that returns a filter function for skipping data with
     a given SDSS classification
 
@@ -194,6 +195,7 @@ def classification_filter_factory(classifications):
 
     Args:
          classifications (list[str]): A list of classifications to allow
+         ftype                 (str): 'exclude' or 'include' the given classes
 
     Returns:
         A filter function for sndata
@@ -203,6 +205,13 @@ def classification_filter_factory(classifications):
         if 'classification' not in table.meta:
             return True
 
-        return table.meta['classification'] not in classifications
+        if ftype == 'exclude':
+            return table.meta['classification'] not in classifications
+
+        elif ftype == 'include':
+            return table.meta['classification'] in classifications
+
+        else:
+            raise ValueError(f'Unknown filter type: {ftype}')
 
     return filter_func
