@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
     # Create iterable over light-curve data
     filter_func = utils.classification_filter_factory(
-        ['SNIa', 'SNIa?', 'pSNIa', 'zSNIa']
+        ['SNIa', 'SNIa?', 'pSNIa', 'zSNIa'], ftype='include'
     )
     sdss_data = sako18.iter_data(verbose=True, filter_func=filter_func)
 
