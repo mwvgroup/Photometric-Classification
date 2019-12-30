@@ -97,8 +97,8 @@ class SampleFeatureProperties(TestCase):
 
         args = dict(
             feat_name=self.feat_name,
-            feat_start=self.inspector.rest_wave[100],
-            feat_end=self.inspector.rest_wave[109],
+            feat_start=self.inspector.bin_wave[100],
+            feat_end=self.inspector.bin_wave[109],
             debug=True
         )
 
@@ -123,8 +123,8 @@ class SampleFeatureProperties(TestCase):
 
         velocity, pew, area = self.inspector._sample_feature_properties(
             feat_name=self.feat_name,
-            feat_start=self.inspector.rest_wave[100],
-            feat_end=self.inspector.rest_wave[-100],
+            feat_start=self.inspector.bin_wave[100],
+            feat_end=self.inspector.bin_wave[-100],
             nstep=nstep, return_samples=True, debug=True)
 
         msg = 'Wrong number of samples for n={}'

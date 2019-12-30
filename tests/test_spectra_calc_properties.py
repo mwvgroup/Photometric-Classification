@@ -3,14 +3,15 @@
 
 """Tests for the ``simulation.spectra`` module."""
 
-import extinction
 from unittest import TestCase
 
+import extinction
 import numpy as np
 from astropy.constants import c
 from uncertainties.unumpy import uarray
 
 from phot_class import spectra
+from phot_class.spectra.exceptions import FeatureOutOfBounds
 
 
 class SimulatedSpectrum:
@@ -238,7 +239,7 @@ class FindPeakWavelength(TestCase):
         """Test an error is raise if the feature is out of bounds"""
 
         max_wavelength = max(self.wave)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(FeatureOutOfBounds):
             spectra.find_peak_wavelength(
                 wave=self.wave,
                 flux=self.flux,
@@ -391,7 +392,6 @@ class BinSpectrum(TestCase):
 
         sums[-1] -= 1  # Because of inclusion of values at the boundary
         correct_sum = (sums == bin_size).all()
-        print(sums)
         self.assertTrue(correct_sum)
 
     def test_unchanged_spectrum_for_low_resolution(self):
