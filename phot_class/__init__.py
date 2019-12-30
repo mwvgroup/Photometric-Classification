@@ -37,8 +37,6 @@ Modules
 +--------------------+--------------------------------------------------------+
 """
 
-# Todo Include an example(s)
-
 from pathlib import Path as _Path
 
 dust_path = _Path(__file__).resolve().parent / 'schlegel98_dust_map'
