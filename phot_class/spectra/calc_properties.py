@@ -207,7 +207,6 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
         - The binned flux values
     """
 
-    # Todo: test this
     if (method != 'gauss') and any(bin_size <= wave[1:] - wave[:-1]):
         return wave, flux
 

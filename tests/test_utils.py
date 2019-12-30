@@ -226,7 +226,7 @@ class TestSplitBands(TestCase):
         self.assertListEqual(expected_red_bands, red_bands.tolist())
 
 
-# Todo: Test cutoff wavelength
+# Todo: Test cutoff wavelength (i.e. The ``cutoff`` argument)
 class TestSplitData(TestCase):
     """Tests for the ``split_data`` function"""
 

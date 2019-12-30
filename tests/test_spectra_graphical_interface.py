@@ -91,7 +91,6 @@ class SampleFeatureProperties(TestCase):
     def tearDownClass(cls):
         del spectra.line_locations[cls.feat_name]
 
-    # Todo: test range changes with binning
     def test_range_too_narrow(self):
         """Test an error is raised if too narrow a feature is specified"""
 
