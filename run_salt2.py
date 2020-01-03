@@ -65,8 +65,12 @@ def tabulate_fit_results(data_iter, model, fit_func, config, out_path=None):
        An astropy table with fit results
     """
 
-    # Add meta_data to output table meta data
-    out_table = create_empty_table(model.param_names)
+    if out_path and Path(out_path).exists():
+        out_table = Table.read(out_path)
+
+    else:
+        # Includes meta data
+        out_table = create_empty_table(model.param_names)
 
     for data in data_iter:
 
@@ -74,6 +78,9 @@ def tabulate_fit_results(data_iter, model, fit_func, config, out_path=None):
         obj_id = data.meta['obj_id']
         prior = config[obj_id]['priors']
         kwargs = config[obj_id]['kwargs']
+
+        if obj_id in out_table['obj_id']:
+            continue
 
         try:
             fit_results_table = run_salt2_fits(
@@ -114,7 +121,7 @@ if __name__ == '__main__':
 
     # Create iterable over light-curve data
     filter_func = utils.classification_filter_factory(
-        ['SNIa', 'SNIa?', 'pSNIa', 'zSNIa'], ftype='include'
+        ['AGN', 'Variable']
     )
     sdss_data = sako18.iter_data(verbose=True, filter_func=filter_func)
 
@@ -128,6 +135,7 @@ if __name__ == '__main__':
     for obj_config in sdss_config.values():
         obj_config['kwargs']['bounds']['x1'] = [-5, 5]
         obj_config['kwargs']['bounds']['c'] = [-.5, .5]
+        obj_config['kwargs']['bounds']['z'] = [0, 1]
 
     # Run fits
     sako18.register_filters()
