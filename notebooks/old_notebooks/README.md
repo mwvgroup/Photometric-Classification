@@ -1,1 +1,0 @@
-This directory contains notebooks left over from an old version of the analysis pipeline. This code is kept for reference only.

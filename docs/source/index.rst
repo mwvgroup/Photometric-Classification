@@ -66,6 +66,7 @@ summaries below for key files in the project repository::
    ├── environment.yml
    ├── run_pipeline.py
    ├── run_pipeline.sh
+   ├── run_salt2.py
    └── setup.py
 
 
@@ -94,6 +95,8 @@ summaries below for key files in the project repository::
 | *run_pipeline.py*    | A command line interface for running the ``phot_class`` package.             |
 +----------------------+------------------------------------------------------------------------------+
 | *run_pipeline.sh*    | Runs the command line interface for various combinations of arguments        |
++----------------------+------------------------------------------------------------------------------+
+| *run_salt2.py*       | Runs salt2 fits for each SDSS target.                                        |
 +----------------------+------------------------------------------------------------------------------+
 | *setup.py*           | Installation script for the ``phot_class`` package.                          |
 +----------------------+------------------------------------------------------------------------------+

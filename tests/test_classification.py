@@ -39,13 +39,12 @@ class GetFittingMethod(TestCase):
             ValueError, classification._get_fitting_func, 'dummy_arg')
 
 
-# Todo test redshift dependence
 class ClassificationCoords(TestCase):
     """Tests for the ``classify_targets`` function"""
 
     @classmethod
     def setUpClass(cls):
-        """Define some moke data for testing"""
+        """Define some dummy data for testing"""
 
         h_chisq_u, h_dof_u = 10, 1
         h_chisq_g, h_dof_g = 20, 1

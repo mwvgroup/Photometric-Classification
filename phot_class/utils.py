@@ -181,19 +181,19 @@ def split_data(data_table, band_names, lambda_eff, z, cutoff=700):
     return out_list
 
 
-def classification_filter_factory(classifications):
-    """Factory function that returns a filter function for skipping data with
-    a given SDSS classification
+def classification_filter_factory(classifications, ftype='exclude'):
+    """Returns function to determine whether data should be skipped/kept in an
+     iterator based on its classification
 
-    Filter functions return a boolean signifying whether data should be used
-    in an analysis. The function returned by this factory has signature
-    ``returned_function(table: astropy.Table)`` which returns ``True`` if
-    ``table.meta['classification']`` is not in ``classifications`` and
-    ``table.meta['z'] > 0``. If there is no 'classification' key in
-    the meta data, the return is True.
+    The function returned by this factory has signature
+    ``returned_function(table: astropy.Table) -> boolean``. The boolean
+    indicates whether the data should kept (i.e. not skipped). The class of
+    each object is determined from ``table.meta['classification']``. If
+    there is no '`classification'` key in the meta data, the return is True.
 
     Args:
          classifications (list[str]): A list of classifications to allow
+         ftype                 (str): 'exclude' or 'include' the given classes
 
     Returns:
         A filter function for sndata
@@ -203,6 +203,13 @@ def classification_filter_factory(classifications):
         if 'classification' not in table.meta:
             return True
 
-        return table.meta['classification'] in classifications
+        if ftype == 'exclude':
+            return table.meta['classification'] not in classifications
+
+        elif ftype == 'include':
+            return table.meta['classification'] in classifications
+
+        else:
+            raise ValueError(f'Unknown filter type: {ftype}')
 
     return filter_func

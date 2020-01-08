@@ -226,7 +226,7 @@ class TestSplitBands(TestCase):
         self.assertListEqual(expected_red_bands, red_bands.tolist())
 
 
-# Todo: Test cutoff wavelength
+# Todo: Test cutoff wavelength (i.e. The ``cutoff`` argument)
 class TestSplitData(TestCase):
     """Tests for the ``split_data`` function"""
 
@@ -303,8 +303,10 @@ class TestFilterFactory(TestCase):
             filter_func(no_classification_table),
             "Did not return True for table with no fitting")
 
-    def test_classification_filtering(self):
-        """Test the returned filter function correctly filters data tables"""
+    def test_include_filtering(self):
+        """Test the returned function excludes specified classifications
+        when ``ftype='include'``
+        """
 
         class1_table, class2_table = Table(), Table()
         class1_table.meta['classification'] = 'class1'
@@ -312,6 +314,27 @@ class TestFilterFactory(TestCase):
         class1_table.meta['z'] = class2_table.meta['z'] = 1
 
         filter_func = utils.classification_filter_factory(['class1'])
+        self.assertFalse(
+            filter_func(class1_table),
+            "Returned True for undesired classification")
+
+        self.assertTrue(
+            filter_func(class2_table),
+            "Returned False for desired classification")
+
+    def test_exclude_filtering(self):
+        """Test the returned function only includes specified classifications
+        when ``ftype='include'``
+        """
+
+        class1_table, class2_table = Table(), Table()
+        class1_table.meta['classification'] = 'class1'
+        class2_table.meta['classification'] = 'class2'
+        class1_table.meta['z'] = class2_table.meta['z'] = 1
+
+        filter_func = utils.classification_filter_factory(
+            ['class1'], ftype='include')
+
         self.assertTrue(
             filter_func(class1_table),
             "Returned True for undesired classification")

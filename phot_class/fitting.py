@@ -225,8 +225,7 @@ def run_band_fits(
 
         # Fit data in all bands
         result_all, fit_all = fit_func(data, model, vparams, **kwarg)
-        new_row = fit_results_to_dict(data, obj_id, 'all', result_all,
-                                      fit_all)
+        new_row = fit_results_to_dict(data, obj_id, 'all', result_all, fit_all)
         out_data.add_row(new_row)
 
         if show_plots:
@@ -243,8 +242,7 @@ def run_band_fits(
             # Using amplitude from all data fit as initial guess works better
             kwarg['guess_amplitude'] = False
             result, fit = fit_func(band_data, fit_all, band_vparams, **kwarg)
-            new_row = fit_results_to_dict(band_data, obj_id, band_name,
-                                          result, fit)
+            new_row = fit_results_to_dict(band_data, obj_id, band_name, result, fit)
             out_data.add_row(new_row)
 
             if show_plots:
@@ -288,8 +286,7 @@ def run_collective_fits(
 
         # Fit data in all bands
         result_all, fit_all = fit_func(data, model, vparams, **kwarg)
-        new_row = fit_results_to_dict(data, obj_id, 'all', result_all,
-                                      fit_all)
+        new_row = fit_results_to_dict(data, obj_id, 'all', result_all, fit_all)
         out_data.add_row(new_row)
 
         if show_plots:
@@ -304,13 +301,11 @@ def run_collective_fits(
         z = fit_all.parameters[fit_all.param_names.index('z')]
         blue_data, red_data = utils.split_data(data, band_names, lambda_eff, z)
 
-        for band_name, band_data in zip(('blue', 'red'),
-                                        (blue_data, red_data)):
+        for band_name, band_data in zip(('blue', 'red'), (blue_data, red_data)):
             # Using amplitude from all data fit as initial guess works better
             kwarg['guess_amplitude'] = False
             result, fit = fit_func(band_data, fit_all, band_vparams, **kwarg)
-            new_row = fit_results_to_dict(band_data, obj_id, band_name,
-                                          result, fit)
+            new_row = fit_results_to_dict(band_data, obj_id, band_name, result, fit)
             out_data.add_row(new_row)
 
             if show_plots:

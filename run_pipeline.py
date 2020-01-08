@@ -4,12 +4,15 @@
 """Command line interface for the ``phot_class`` package."""
 
 import argparse
+import math
 import warnings
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
 import sndata
 import yaml
+from sndata.sdss import sako18spec
 
 warnings.simplefilter('ignore')
 
@@ -47,9 +50,10 @@ def get_phot_data_iter(data_module):
             f'{survey} - {release} is not a photometric data release')
 
     # Other classifications:
+    # 'SNIa', 'SNIa?', 'pSNIa', 'zSNIa'
     # 'SLSN', 'SNIb', 'SNIc', 'pSNIbc', 'zSNIbc', 'Unknown', 'AGN', 'Variable'
     filter_func = utils.classification_filter_factory(
-        ['SNIa', 'SNIa?', 'pSNIa', 'zSNIa']
+        ['AGN', 'Variable']
     )
 
     data_iter = data_module.iter_data(
@@ -105,6 +109,42 @@ def run_photometric_classification(cli_args):
     classification.classify_targets(fit_results, out_path=classification_path)
 
 
+@np.vectorize
+def calc_julian_date(date):
+    """
+    Convert a datetime object into julian float.
+
+    Args:
+        date (str): The date to convert in %Y-%m-%d format
+
+    Returns:
+        The Julian date as a float
+    """
+
+    date = datetime.strptime(date, '%Y-%m-%d')
+    julian_datetime = (
+        367 * date.year -
+        int((7 * (date.year + int((date.month + 9) / 12.0))) / 4.0) +
+        int((275 * date.month) / 9.0) + date.day +
+        1721013.5 +
+        (date.hour + date.minute / 60.0 + date.second / math.pow(60,2)) / 24.0 -
+        0.5 * math.copysign(1, 100 * date.year + date.month - 190002.5) + 0.5
+    )
+
+    return julian_datetime
+
+
+def get_sdss_phase(obj_id, date_str):
+    peak = sako18spec.load_table('master').to_pandas(index='CID')['MJDatPeakrmag']
+    peak += 2400000.5
+
+    if obj_id in peak.index:
+        return calc_julian_date(date_str) - peak.loc[obj_id]
+
+    else:
+        return None
+
+
 def get_spec_data_iter(data_module):
     """Iterate over spectroscopic data tables while removing galaxy observations
 
@@ -131,8 +171,12 @@ def get_spec_data_iter(data_module):
         if not table:
             continue
 
-        for spectrum in table.group_by('date').groups:
+        for spectrum in table.group_by('sid').groups:
             if spectrum.meta['ra'] is None:
+                continue
+
+            phase = get_sdss_phase(spectrum.meta['obj_id'], spectrum['date'][0])
+            if (phase is None) or (np.abs(phase) > 7):
                 continue
 
             yield spectrum
@@ -160,14 +204,14 @@ def run_spectroscopic_classification(cli_args):
     data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
     data_module.download_module_data()
 
-    out_table = spectra.tabulate_spectral_properties(
+    spectra.tabulate_spectral_properties(
         get_spec_data_iter(data_module),
         rv=cli_args.rv,
         nstep=cli_args.nstep,
         method=cli_args.method,
-        bin_size=cli_args.bin_size)
-
-    out_table.write(out_dir / file_name, overwrite=True)
+        bin_size=cli_args.bin_size,
+        out_path=out_dir / file_name
+    )
 
 
 def create_cli_parser():
@@ -247,7 +291,7 @@ def create_cli_parser():
 
     spectroscopic_parser.add_argument(
         '-b', '--bin_size',
-        type=int,
+        type=float,
         default=5,
         help='Size of bins in angstroms'
     )

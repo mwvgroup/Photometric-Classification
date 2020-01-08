@@ -4,7 +4,7 @@
 """This module calculates the properties of spectral features."""
 
 from pathlib import Path
-
+from scipy.ndimage import gaussian_filter
 import extinction
 import numpy as np
 import sfdmap
@@ -14,7 +14,7 @@ from astropy.constants import c
 from scipy.optimize import curve_fit
 from uncertainties import ufloat
 from uncertainties.unumpy import nominal_values, std_devs
-
+from .exceptions import FeatureOutOfBounds
 # File paths for external data
 _file_dir = Path(__file__).resolve().parent
 dust_dir = _file_dir.parent / 'schlegel98_dust_map'
@@ -129,8 +129,8 @@ def find_peak_wavelength(wave, flux, lower_bound, upper_bound, behavior='min'):
     """
 
     # Make sure the given spectrum spans the given wavelength bounds
-    if (min(wave) > lower_bound) or (upper_bound > max(wave)):
-        raise ValueError('Feature not in spectral wavelength range.')
+    if not any((wave > lower_bound) & (wave < upper_bound)):
+        raise FeatureOutOfBounds('Feature not in spectral wavelength range.')
 
     # Select the portion of the spectrum within the given bounds
     feature_indices = (lower_bound <= wave) & (wave <= upper_bound)
@@ -200,12 +200,15 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
         wave   (ndarray): An array of wavelengths in angstroms
         flux   (ndarray): An array of flux for each wavelength
         bin_size (float): The width of the bins
-        method     (str): Either 'avg' or 'sum' the values of each bin
+        method     (str): Either 'avg', 'sum', or 'gauss' the values of each bin
 
     Returns:
         - The center of each bin
         - The binned flux values
     """
+
+    if (method != 'gauss') and any(bin_size <= wave[1:] - wave[:-1]):
+        return wave, flux
 
     min_wave = np.floor(np.min(wave))
     max_wave = np.floor(np.max(wave))
@@ -224,6 +227,9 @@ def bin_spectrum(wave, flux, bin_size=5, method='avg'):
         )
 
         return bin_centers, bin_means
+
+    elif method == 'gauss':
+        return wave, gaussian_filter(flux, bin_size)
 
     else:
         raise ValueError(f'Unknown method {method}')

@@ -3,14 +3,15 @@
 
 """Tests for the ``simulation.spectra`` module."""
 
-import extinction
 from unittest import TestCase
 
+import extinction
 import numpy as np
 from astropy.constants import c
 from uncertainties.unumpy import uarray
 
 from phot_class import spectra
+from phot_class.spectra.exceptions import FeatureOutOfBounds
 
 
 class SimulatedSpectrum:
@@ -238,7 +239,7 @@ class FindPeakWavelength(TestCase):
         """Test an error is raise if the feature is out of bounds"""
 
         max_wavelength = max(self.wave)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(FeatureOutOfBounds):
             spectra.find_peak_wavelength(
                 wave=self.wave,
                 flux=self.flux,
@@ -372,7 +373,7 @@ class BinSpectrum(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.wave = np.arange(1000, 2001)
+        cls.wave = np.arange(1000, 2001, 1)
         cls.flux = np.ones_like(cls.wave)
 
     def test_correct_binned_average(self):
@@ -393,14 +394,27 @@ class BinSpectrum(TestCase):
         correct_sum = (sums == bin_size).all()
         self.assertTrue(correct_sum)
 
-    def test_bin_centers(self):
-        """Test the returned wavelengths are the bin centers"""
+    def test_unchanged_spectrum_for_low_resolution(self):
+        """Test original spectrum is returned when bin size < the resolution"""
 
         err_msg = 'Differing element when calculating {}'
         for method in ('avg', 'sum'):
-            expected = self.wave[:-1] + ((self.wave[1] - self.wave[0]) / 2)
             returned, _ = spectra.bin_spectrum(
-                self.wave, self.flux, bin_size=1, method=method)
+                self.wave, self.flux, bin_size=.5, method=method)
+
+            self.assertListEqual(
+                self.wave.tolist(), returned.tolist(), err_msg.format(method))
+
+    def test_correct_bin_centers(self):
+        """Test the returned wavelengths are the bin centers"""
+
+        bin_size = 5
+        err_msg = 'Differing element when calculating {}'
+        for method in ('avg', 'sum'):
+            expected = np.arange(self.wave[0], self.wave[-1],
+                                 bin_size) + bin_size / 2
+            returned, _ = spectra.bin_spectrum(
+                self.wave, self.flux, bin_size=bin_size, method=method)
 
             self.assertListEqual(
                 expected.tolist(), returned.tolist(), err_msg.format(method))
