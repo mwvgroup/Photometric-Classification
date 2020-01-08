@@ -14,6 +14,7 @@ from uncertainties.unumpy import nominal_values
 from .calc_properties import (bin_spectrum, correct_extinction, feature_area,
                               feature_pew, feature_velocity,
                               guess_feature_bounds, line_locations)
+
 from .exceptions import FeatureOutOfBounds, NoInputGiven
 
 plt.ion()
