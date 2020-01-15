@@ -8,7 +8,7 @@ sncosmo
 uncertainties
 extinction
 nestle
-sndata
+sndata>=0.8.3
 emcee
 tqdm
 sklearn
