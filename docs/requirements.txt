@@ -12,7 +12,6 @@ sndata
 emcee
 tqdm
 sklearn
-sphinx-rtd-theme
 numpy
 iminuit
 nestle
@@ -20,6 +19,6 @@ pytest-cov
 python-coveralls
 sfdmap
 
-sphinx==2.2.0
-sphinx-argparse==0.2.5
-sphinx-rtd-theme==0.4.3
+sphinx
+sphinx-argparse
+sphinx-rtd-theme
