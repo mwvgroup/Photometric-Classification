@@ -19,6 +19,3 @@ python:
   install:
     - method: setuptools
       path: .
-
-conda:
-  environment: environment.yml
