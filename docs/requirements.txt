@@ -4,7 +4,7 @@ matplotlib
 pandas
 requests
 scipy
-sncosmo<2.0.0
+sncosmo
 uncertainties
 extinction
 nestle
