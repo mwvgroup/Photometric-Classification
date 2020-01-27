@@ -19,7 +19,7 @@ install:
   - pip install python-coveralls
 
 script:
-  - pytest --cov=analysis/
+  - pytest --cov=phot_class/
 
 after_success:
   - coveralls
