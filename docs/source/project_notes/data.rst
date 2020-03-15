@@ -7,7 +7,7 @@ considered data from the Dark Energy Survey (DES) Year 3 Cosmology release
 (SN3YR), and the third data release of the Carnegie Supernova Project
 (CSP DR3). We note that just because a data set is considered here or
 elsewhere in our preliminary exploration, it is not guaranteed to be used
-in our final work.
+in the published work.
 
 We rely on the ``sndata`` python package for programmatic access to
 each of these data sets. In principle, the pipeline we have built should
@@ -75,24 +75,3 @@ The following cuts were applied to the photometric data.
    magnitude system. These differ from the standard AB system by an additive
    constant found in Table 7. The fluxes in the online files have already been
    converted to the AB system and are given in Micro-Janskies.
-
-
-The DES Year 3 Cosmology Data (Brout, Sako et al. 2019 and Brout, Scolnic et al. 2019)
---------------------------------------------------------------------------------------
-
-- Five year survey from 2013 - 2018 in *ugriz* within 0.017 < z < 0.849
--  Average cadence of 7 days per filter
-- These results contain the first three years of DES from Sept. 2013 to Feb. 2016
-  - Discovered ∼12,000 transients
-  - ∼3,000 identified as likely SNe Ia based on their light curves and out of 533 targeted for spectroscopic classification 251 were confirmed (D’Andrea et al. 2018).
-  - These papers include a low-z SN sample from CfA3, CfA4, and CSP1. It's not clear if the numbers above include the low-z sample.
-
-- The 31.00 zero-point is for internal DES use. The ZP in the public data files is 27.5.
-
-
-
-The CSP data
-------------
-
-- The official CSP web page for DR3 is available `here <https://csp.obs.carnegiescience.edu/news-items/csp-dr3-photometry-released>`_
-- Spectroscopic classification can be found in `Folatelli et al. (2013) <https://arxiv.org/abs/1305.6997). Data tables are available from [Vizier](http://cdsarc.u-strasbg.fr/viz-bin/cat/J/ApJ/773/53>`_
