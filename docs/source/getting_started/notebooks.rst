@@ -15,7 +15,7 @@ Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 | Notebook                           | Description                                                                  |
 +====================================+==============================================================================+
-|  classification.ipynb              | Applies spectroscopic/photometric classifications to all supernovae.         |
+|  classification.ipynb              | Applies photometric classifications to all supernovae.                       |
 +------------------------------------+------------------------------------------------------------------------------+
 |  classifying_single_target.ipynb   | Demonstrates the classification technique of Gonzalez-Gaitan+ 14 on          |
 |                                    | a single supernova.                                                          |
@@ -37,6 +37,8 @@ Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 | sncosmo_chisq_bug.ipynb            | Outlines a bug in the calculation of chi-squared in SNCosmo and demonstrates |
 |                                    | that our results do not suffer from this bug.                                |
++------------------------------------+------------------------------------------------------------------------------+
+|  spec_classification.ipynb         | Exploration of spectroscopic classifications for SDSS supernovae.            |
 +------------------------------------+------------------------------------------------------------------------------+
 
 .. _BinderHub: https://binderhub.readthedocs.io/en/latest/
