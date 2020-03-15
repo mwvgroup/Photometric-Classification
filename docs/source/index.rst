@@ -39,8 +39,8 @@ identifying dim, fast-declining SNe, but can also identify other peculiar
 transients such as SNe Iax-like, SN 2006bt-like, and super-Chandrasekhar
 SNe Ia.
 
-In Perrefort et al. 2020 we apply the same classification technique
-to the SDSS Supernova Survey. This documentation is
+In Perrefort et al. 2020 we apply a modified version of the same classification
+technique to the SDSS Supernova Survey. This documentation is
 provided as a technical reference for the published work, and serves as a
 complete project writeup for all programmatic aspects of the project. The
 **Project Notes** section documents the project from a scientific perspective.
