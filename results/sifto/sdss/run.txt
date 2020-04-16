@@ -1,0 +1,14 @@
+Template: conley09g
+Daymax: 85d
+/nosnake
+forcefit and fredshift=sne.redshift
+wanted_filters=['u','g','r','i','z']+'_2.5m' 
+
+Call:
+newsub,snname=sne[w].name,templatetype='conley09g',/nosnake,daymax=85.,verbose=2,/forcef,$
+fittype='simple',wanted_filters=['u','g','r','i','z']+'_2.5m',namedir='sdss',/ffit,$      
+fredshift=sne[w].redshift,survey='sdss'      
+
+Perrefor20 culls:
+>1 data -15 and 0 B-max
+>1 data 0 and +25 B-max

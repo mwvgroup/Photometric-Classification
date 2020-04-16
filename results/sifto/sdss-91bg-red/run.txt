@@ -1,0 +1,11 @@
+Template: 91bgnlmod and maxs=2.6
+Daymax: 85d
+/nosnake
+forcefit and fredshift=sne.redshift
+wanted_filters=['u','g','r','i','z']+'_2.5m' 
+/red and brwave = 5500
+
+Call:
+newsub,snname=sne[w].name,templatetype='91bgnlmod',/nosnake,daymax=85.,verbose=2,/forcef,$
+fittype='simple',wanted_filters=['u','g','r','i','z']+'_2.5m',namedir='sdss-red-91bg',/ffit,$      
+fredshift=sne[w].redshift,survey='sdss',/red,brwave=5500.0,maxs=2.6      
