@@ -1,17 +1,5 @@
 #!/usr/bin/env bash
 
-# Spectroscopic classification
-##############################
-
-python run_pipeline.py \
-    -s sdss \
-    -r sako18spec \
-    spectroscopic \
-    -n 5 \
-    -b 5 \
-    -m gauss \
-    -o './results/';
-
 # emcee fitting
 ###############
 

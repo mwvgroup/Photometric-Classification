@@ -123,12 +123,12 @@ def calc_julian_date(date):
 
     date = datetime.strptime(date, '%Y-%m-%d')
     julian_datetime = (
-        367 * date.year -
-        int((7 * (date.year + int((date.month + 9) / 12.0))) / 4.0) +
-        int((275 * date.month) / 9.0) + date.day +
-        1721013.5 +
-        (date.hour + date.minute / 60.0 + date.second / math.pow(60,2)) / 24.0 -
-        0.5 * math.copysign(1, 100 * date.year + date.month - 190002.5) + 0.5
+            367 * date.year -
+            int((7 * (date.year + int((date.month + 9) / 12.0))) / 4.0) +
+            int((275 * date.month) / 9.0) + date.day +
+            1721013.5 +
+            (date.hour + date.minute / 60.0 + date.second / math.pow(60, 2)) / 24.0 -
+            0.5 * math.copysign(1, 100 * date.year + date.month - 190002.5) + 0.5
     )
 
     return julian_datetime
@@ -143,75 +143,6 @@ def get_sdss_phase(obj_id, date_str):
 
     else:
         return None
-
-
-def get_spec_data_iter(data_module):
-    """Iterate over spectroscopic data tables while removing galaxy observations
-
-    This function is a wrapper around ``data_module.iter_data``
-
-    Args:
-        data_module (module): An sndata module
-
-    Yields:
-        Astropy tables
-    """
-
-    survey = data_module.survey_abbrev
-    release = data_module.release
-    if data_module.data_type != 'spectroscopic':
-        raise RuntimeError(
-            f'{survey} - {release} is not a spectroscopic data release')
-
-    for table in data_module.iter_data(verbose={'desc': 'Objects'}):
-        # Skip sdss galaxy spectra
-        if survey.lower() == 'sdss':
-            table = table[np.isin(table['type'], ['Ia', 'Ia-pec', 'Ia?'])]
-
-        if not table:
-            continue
-
-        for spectrum in table.group_by('sid').groups:
-            if spectrum.meta['ra'] is None:
-                continue
-
-            phase = get_sdss_phase(spectrum.meta['obj_id'], spectrum['date'][0])
-            if (phase is None) or (np.abs(phase) > 7):
-                continue
-
-            yield spectrum
-
-
-def run_spectroscopic_classification(cli_args):
-    """Run spectroscopic classification of SNe
-
-    Args:
-        cli_args (argparse.Namespace): Command line arguments
-    """
-
-    # Create output file path
-    out_dir = Path(cli_args.out_dir).resolve() / 'spec_class'
-    out_dir.mkdir(exist_ok=True, parents=True)
-
-    rv_str = str(cli_args.rv).replace('.', '_')
-    file_name = (
-        f'{cli_args.survey}_{cli_args.release}'
-        f'_rv{rv_str}_bin{cli_args.bin_size}'
-        f'_meth{cli_args.method}'
-        f'_step{cli_args.nstep}.ecsv'
-    )
-
-    data_module = getattr(getattr(sndata, cli_args.survey), cli_args.release)
-    data_module.download_module_data()
-
-    spectra.tabulate_spectral_properties(
-        get_spec_data_iter(data_module),
-        rv=cli_args.rv,
-        nstep=cli_args.nstep,
-        method=cli_args.method,
-        bin_size=cli_args.bin_size,
-        out_path=out_dir / file_name
-    )
 
 
 def create_cli_parser():
@@ -269,47 +200,6 @@ def create_cli_parser():
         help='Directory to write output files to.'
     )
 
-    spectroscopic_parser = subparsers.add_parser('spectroscopic')
-    spectroscopic_parser.set_defaults(
-        func=run_spectroscopic_classification,
-        help='Classify targets spectroscopically'
-    )
-
-    spectroscopic_parser.add_argument(
-        '-r', '--rv',
-        type=float,
-        default=3.1,
-        help='Rv value to use for extinction correction'
-    )
-
-    spectroscopic_parser.add_argument(
-        '-n', '--nstep',
-        type=int,
-        default=5,
-        help='Number of steps used in resampling'
-    )
-
-    spectroscopic_parser.add_argument(
-        '-b', '--bin_size',
-        type=float,
-        default=5,
-        help='Size of bins in angstroms'
-    )
-
-    spectroscopic_parser.add_argument(
-        '-m', '--method',
-        type=str,
-        default='avg',
-        help='Either "avg" or "sum" each bin'
-    )
-
-    spectroscopic_parser.add_argument(
-        '-o', '--out_dir',
-        type=str,
-        required=True,
-        help='Directory to write output files to.'
-    )
-
     return parser
 
 
@@ -319,7 +209,6 @@ if __name__ == '__main__':
     from phot_class import fit_func_wraps
     from phot_class import models
     from phot_class import utils
-    from phot_class import spectra
 
     models.register_sources()
 
