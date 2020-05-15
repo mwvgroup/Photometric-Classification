@@ -52,6 +52,26 @@ def get_sdss_t0(obj_id):
     return convert_to_jd(t0_mjd)
 
 
+@np.vectorize
+def convert_sdss_date_to_jd(observed_date):
+    """Convert SDSS Spectra observation dates from string format to JD
+
+    Args:
+        observed_date (str): Date string with format ``%Y-%m-%d``
+
+    Returns:
+        Observed date in JD as a float
+    """
+
+    date_with_timezone = observed_date + '+0000'
+    date = datetime.strptime(date_with_timezone, '%Y-%m-%d%z')
+
+    unix_time = date.timestamp()
+    january_1_1970_in_julian = 2440587.5
+    day_in_seconds = 24 * 60 * 60
+    return (unix_time / day_in_seconds) + january_1_1970_in_julian
+
+
 def pre_process(table):
     """Formats data tables for use with SNID
 
@@ -71,27 +91,14 @@ def pre_process(table):
     except ValueError:
         return Table()
 
-    # Remove galaxy spectra
+    # Remove galaxy spectra and spectra outside phase range
     table = table[table['type'] != 'Gal']
-
-    time = []
-    for row in table:
-        observed_date = row['date']
-        date_with_timezone = observed_date + '+0000'
-        date = datetime.strptime(date_with_timezone, '%Y-%m-%d%z')
-
-        unix_time = date.timestamp()
-        january_1_1970_in_julian = 2440587.5
-        day_in_seconds = 24 * 60 * 60
-        time.append((unix_time / day_in_seconds) + january_1_1970_in_julian)
-
-    # Remove spectra outside phase range
-    table['time'] = time
+    table['time'] = convert_sdss_date_to_jd(table['date'])
     table['phase'] = table['time'] - t0
     table = table[(min_phase <= table['phase']) & (table['phase'] <= max_phase)]
 
     # Group data by individual spectra
-    if table:
+    if table:  # Raises error for empty table
         table.group_by('phase')
 
     return table
@@ -108,10 +115,10 @@ def sdss_data_iter():
 
     # Here we select object Id's for just SNe Ia
     spec_summary = sako18spec.load_table(9)
-    obj_ids = spec_summary[spec_summary['Type'] == 'Ia']['CID']
+    obj_ids = spec_summary[spec_summary['Type'] == 'Ia']['CID']  # Todo: Include all SN types
     obj_ids = sorted(obj_ids, key=int)
 
-    for obj_id in tqdm(obj_ids):
+    for obj_id in tqdm(obj_ids, desc='Object Ids'):
         data = sako18spec.get_data_for_id(obj_id)
         processed_data = pre_process(data)
         if processed_data:
@@ -142,7 +149,7 @@ def read_snid_output(path):
     return data
 
 
-def run_snid(out_dir, spectrum):
+def run_snid_on_spectrum(out_dir, spectrum, inter=0, plot=0, verbose=0, **kwargs):
     """Run SNID on a spectrum
 
     Use the SDSS measured redshift.
@@ -159,16 +166,23 @@ def run_snid(out_dir, spectrum):
     phase = spectrum['phase'][0]
     z = spectrum.meta['z']
 
+    # Create input file
     snid_input_path = out_dir / f'{obj_id}_{phase:.2f}.dat'
-    snid_out_path = snid_input_path.parent / (snid_input_path.stem + '_snid.output')
+    np.savetxt(snid_input_path, spectrum['wavelength', 'flux'])
 
     # Run SNID
-    np.savetxt(snid_input_path, spectrum['wavelength', 'flux'])
-    bash_command = f'snid forcez={z} inter=0 plot=0 verbose=0 {snid_input_path}'
+    fortran_kwargs = f'inter={inter} plot={plot} verbose={verbose}'
+    for key, val in kwargs.items():
+        fortran_kwargs += f' {key}={val}'
+
+    bash_command = f'snid forcez={z} {fortran_kwargs} {snid_input_path}'
     subprocess.Popen(bash_command.split(), cwd=str(out_dir)).communicate()
 
     # Delete input file
     snid_input_path.unlink()
+
+    # Parse SNID output file
+    snid_out_path = snid_input_path.parent / (snid_input_path.stem + '_snid.output')
     if snid_out_path.exists():
         data = read_snid_output(snid_out_path)
         data['obj_id'] = obj_id
@@ -178,7 +192,7 @@ def run_snid(out_dir, spectrum):
     return Table()
 
 
-def main(out_dir):
+def run_snid_on_sdss(out_dir, **kwargs):
     """Run SNID for all SDSS spectra classified by Sako18 as ``Ia``
 
     Args:
@@ -186,13 +200,17 @@ def main(out_dir):
     """
 
     out_dir.mkdir(exist_ok=True, parents=True)
+    snid_outputs = [run_snid_on_spectrum(out_dir, spec, **kwargs) for spec in sdss_data_iter()]
 
-    snid_out = Table()
-    for spec in sdss_data_iter():
-        snid_out = vstack([snid_out, run_snid(out_dir, spec)])
-        snid_out.write(out_dir / 'all.csv', format='ascii.csv', overwrite=True)
+    out_path = out_dir / 'all.csv'
+    vstack(snid_outputs).write(out_path, format='ascii.csv', overwrite=True)
 
 
 if __name__ == '__main__':
-    snid_out_dir = Path(__file__).resolve().parent.parent / 'results' / 'snid'
-    main(snid_out_dir)
+    results_dir = Path(__file__).resolve().parent.parent / 'results' / 'snid'
+
+    print('Typing Spectra rlapmin=10')
+    run_snid_on_sdss(results_dir / 'type_rlap_10', rlapmin=10)
+
+    print('Typing Spectra rlapmin=5')
+    run_snid_on_sdss(results_dir / 'type_rlap_5', rlapmin=5)
