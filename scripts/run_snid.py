@@ -1,4 +1,8 @@
-# Example call: snid forcez=0.528 inter=0 plot=0 sn2003jo.dat
+#!/usr/bin/env python3.7
+# -*- coding: UTF-8 -*-
+
+
+"""This script runs SNID on SDSS Sako et. al 2018 spectra"""
 
 import subprocess
 import sys
@@ -6,7 +10,7 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-from astropy.table import Table
+from astropy.table import Table, vstack
 from sndata._utils import convert_to_jd
 from sndata.sdss import sako18spec
 from tqdm import tqdm
@@ -49,10 +53,13 @@ def get_sdss_t0(obj_id):
 
 
 def pre_process(table):
-    """Formats daa tables for use with the GUI
+    """Formats data tables for use with SNID
 
-    Changes:
-        - Remove galaxy spectra from data tables
+    Args:
+        table (Table): The data to format
+
+    Returns:
+        A new table with formatted data
     """
 
     obj_id = table.meta['obj_id']
@@ -112,6 +119,65 @@ def sdss_data_iter():
                 yield individual_spectrum
 
 
+def read_snid_output(path):
+    """Return type summary from an SNID output file
+
+    Args:
+        path (str, Path): Path to read
+
+    Returns:
+         An astropy Table
+    """
+
+    names = ['type', 'ntemp', 'fraction', 'slope', 'redshift',
+             'redshift_error', 'age', 'age_error']
+
+    data = Table.read(
+        str(path), header_start=4, data_start=4,
+        data_end=28, format='ascii.basic', names=names
+
+    )
+
+    del data.meta['comments']
+    return data
+
+
+def run_snid(out_dir, spectrum):
+    """Run SNID on a spectrum
+
+    Use the SDSS measured redshift.
+
+    Args:
+        out_dir   (Path): Directory to write results into
+        spectrum (Table): Table with phase, wavelength, and flux columns
+
+    Returns:
+        A Table with SNID type results
+    """
+
+    obj_id = spectrum.meta['obj_id']
+    phase = spectrum['phase'][0]
+    z = spectrum.meta['z']
+
+    snid_input_path = out_dir / f'{obj_id}_{phase:.2f}.dat'
+    snid_out_path = snid_input_path.parent / (snid_input_path.stem + '_snid.output')
+
+    # Run SNID
+    np.savetxt(snid_input_path, spectrum['wavelength', 'flux'])
+    bash_command = f'snid forcez={z} inter=0 plot=0 verbose=0 {snid_input_path}'
+    subprocess.Popen(bash_command.split(), cwd=str(out_dir)).communicate()
+
+    # Delete input file
+    snid_input_path.unlink()
+    if snid_out_path.exists():
+        data = read_snid_output(snid_out_path)
+        data['obj_id'] = obj_id
+        data['phase'] = phase
+        return data
+
+    return Table()
+
+
 def main(out_dir):
     """Run SNID for all SDSS spectra classified by Sako18 as ``Ia``
 
@@ -121,19 +187,10 @@ def main(out_dir):
 
     out_dir.mkdir(exist_ok=True, parents=True)
 
-    for spectrum in sdss_data_iter():
-        obj_id = spectrum.meta['obj_id']
-        phase = spectrum['phase'][0]
-        z = spectrum.meta['z']
-
-        sndata_input_file = out_dir / f'{obj_id}_{phase:.2f}.dat'
-        np.savetxt(sndata_input_file, spectrum['wavelength', 'flux'])
-
-        bash_command = f"snid forcez={z} inter=0 plot=0 verbose=0 {sndata_input_file}"
-        process = subprocess.Popen(bash_command.split(), cwd=str(out_dir))
-        process.communicate()
-
-        sndata_input_file.unlink()
+    snid_out = Table()
+    for spec in sdss_data_iter():
+        snid_out = vstack([snid_out, run_snid(out_dir, spec)])
+        snid_out.write(out_dir / 'all.csv', format='ascii.csv', overwrite=True)
 
 
 if __name__ == '__main__':
