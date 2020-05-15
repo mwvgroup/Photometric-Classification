@@ -6,6 +6,7 @@
 
 import subprocess
 import sys
+import warnings
 from datetime import datetime
 from pathlib import Path
 
@@ -22,7 +23,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 sako18spec.download_module_data()
 
 # Load some data tables from the Sako et al. 2018 publication
-sdss_master_table = sako18spec.load_table('master').to_pandas(index='CID')
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    sdss_master_table = sako18spec.load_table('master').to_pandas(index='CID')
 
 # Specify minimum and maximum phase to include in returned data (inclusive)
 min_phase = -15
@@ -72,7 +75,7 @@ def convert_sdss_date_to_jd(observed_date):
     return (unix_time / day_in_seconds) + january_1_1970_in_julian
 
 
-def pre_process(table):
+def format_table(table):
     """Formats data tables for use with SNID
 
     Args:
@@ -120,13 +123,14 @@ def sdss_data_iter():
 
     for obj_id in tqdm(obj_ids, desc='Object Ids'):
         data = sako18spec.get_data_for_id(obj_id)
-        processed_data = pre_process(data)
+        processed_data = format_table(data)
         if processed_data:
             for individual_spectrum in processed_data.groups:
                 yield individual_spectrum
 
 
-def read_snid_output(path):
+# Todo: This was a quick / hacky solution with unnecessarily many type casts
+def read_snid_types(path):
     """Return type summary from an SNID output file
 
     Args:
@@ -142,11 +146,18 @@ def read_snid_output(path):
     data = Table.read(
         str(path), header_start=4, data_start=4,
         data_end=28, format='ascii.basic', names=names
-
     )
 
-    del data.meta['comments']
-    return data
+    dataframe = data.to_pandas(index='type')
+    types = ['Ia', 'Ib', 'Ic', 'II', 'NotSN']
+    num_tempates = dataframe.loc[types].ntemp
+    percent_templates = num_tempates / dataframe.loc[types].ntemp.sum()
+
+    out_data = Table(
+        [types, num_tempates, percent_templates],
+        names=['type', 'ntemp', 'perctemp'])
+
+    return out_data
 
 
 def run_snid_on_spectrum(out_dir, spectrum, inter=0, plot=0, verbose=0, **kwargs):
@@ -168,25 +179,28 @@ def run_snid_on_spectrum(out_dir, spectrum, inter=0, plot=0, verbose=0, **kwargs
 
     # Create input file
     snid_input_path = out_dir / f'{obj_id}_{phase:.2f}.dat'
-    np.savetxt(snid_input_path, spectrum['wavelength', 'flux'])
+    snid_out_path = snid_input_path.parent / (snid_input_path.stem + '_snid.output')
 
-    # Run SNID
-    fortran_kwargs = f'inter={inter} plot={plot} verbose={verbose}'
-    for key, val in kwargs.items():
-        fortran_kwargs += f' {key}={val}'
+    if not snid_out_path.exists():
+        # Run SNID
+        fortran_kwargs = f'inter={inter} plot={plot} verbose={verbose}'
+        for key, val in kwargs.items():
+            fortran_kwargs += f' {key}={val}'
 
-    bash_command = f'snid forcez={z} {fortran_kwargs} {snid_input_path}'
-    subprocess.Popen(bash_command.split(), cwd=str(out_dir)).communicate()
+        np.savetxt(snid_input_path, spectrum['wavelength', 'flux'])
+        bash_command = f'snid forcez={z} {fortran_kwargs} {snid_input_path}'
+        subprocess.Popen(bash_command.split(), cwd=str(out_dir)).communicate()
 
-    # Delete input file
-    snid_input_path.unlink()
+        # Delete input file
+        snid_input_path.unlink()
 
     # Parse SNID output file
-    snid_out_path = snid_input_path.parent / (snid_input_path.stem + '_snid.output')
     if snid_out_path.exists():
-        data = read_snid_output(snid_out_path)
+        data = read_snid_types(snid_out_path)
         data['obj_id'] = obj_id
         data['phase'] = phase
+        data['minwave'] = min(spectrum['wavelength'])
+        data['maxwave'] = max(spectrum['wavelength'])
         return data
 
     return Table()
@@ -204,6 +218,10 @@ def run_snid_on_sdss(out_dir, **kwargs):
 
     out_path = out_dir / 'all.csv'
     vstack(snid_outputs).write(out_path, format='ascii.csv', overwrite=True)
+
+    # The parameter file is overwritten for each target so is of little use
+    # We remove it to avoid confusion.
+    (out_dir / 'snid.param').unlink()
 
 
 if __name__ == '__main__':
