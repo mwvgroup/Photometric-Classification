@@ -135,8 +135,11 @@ def format_table(table):
     # Group data by individual spectra
     if table:  # Raises error for empty table
         table.group_by('phase')
+        log.info(f'<{obj_id}> has {len(set(table["phase"]))} spectra')
 
-    log.info(f'Formatted table for <{obj_id}> is empty')
+    else:
+	    log.info(f'Formatted table for <{obj_id}> is empty')
+
     return table
 
 
@@ -323,6 +326,7 @@ def combine_typing_results(*paths, perc_cutoff=0.):
 
 
 def run_snid_subtyping_on_sdss(out_dir, object_types, **kwargs):
+
     out_dir.mkdir(exist_ok=True, parents=True)
     snid_outputs = []
     for spec in sdss_data_iter():
@@ -332,9 +336,10 @@ def run_snid_subtyping_on_sdss(out_dir, object_types, **kwargs):
             type = object_types.loc[obj_id]
 
         except KeyError:
+            log.info(f'No recorded type for <{obj_id}>')
             continue
 
-        run_snid_on_spectrum(out_dir, spec, use=type['type'], **kwargs)
+        run_snid_on_spectrum(out_dir, spec, usetype=type['type'], **kwargs)
 
     out_path = out_dir / 'all.csv'
     vstack(snid_outputs).write(out_path, format='ascii.csv', overwrite=True)
@@ -347,7 +352,7 @@ def run_snid_subtyping_on_sdss(out_dir, object_types, **kwargs):
 if __name__ == '__main__':
     results_dir = Path(__file__).resolve().parent.parent / 'results' / 'snid'
 
-    no_interact_kwargs = dict(inter=0, plot=0, verbose=0, )
+    no_interact_kwargs = dict(inter=0, plot=0, verbose=0)
 
     type_result_paths = []
     for rlap in (5, 10):
