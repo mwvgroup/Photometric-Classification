@@ -53,9 +53,20 @@ def read_peak_type(path):
     return peak_type, percent_templates
 
 
-def compile_peak_types(dir, perc_cutoff=0.5):
+def compile_peak_types(results_dir, perc_cutoff=0.5):
+    """Get peak types from previous SNID run
+
+    Args:
+        results_dir (Path): Directory of SNID outputs
+        perc_cutoff (float): Only return results where most likly type has >=
+            perc_cutoff of the template matches
+
+    Returns:
+        A DataFrame indexed by object ID
+    """
+
     rows = []
-    for path in dir.glob('*snid.output'):
+    for path in results_dir.glob('*snid.output'):
         obj_id, phase, *_ = path.name.split('_')
         peak_type, percent_templates = read_peak_type(path)
         rows.append([obj_id, float(phase), peak_type, percent_templates])

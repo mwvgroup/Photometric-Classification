@@ -121,11 +121,11 @@ def format_table(table):
     except ValueError:
         return Table()
 
-    # Remove galaxy spectra and spectra outside phase range
-    table = table[table['type'] != 'Gal']
-
     table['time'] = convert_sdss_date_to_jd(table['date'])
     table['phase'] = table['time'] - t0
+
+    # Remove galaxy spectra and spectra outside phase range
+    table = table[table['type'] != 'Gal']
     table = table[(table['phase'] >= min_phase) & (table['phase'] <= max_phase)]
 
     if table:
@@ -149,8 +149,7 @@ def sdss_data_iter():
 
     # Here we select object Id's for just SNe Ia
     spec_summary = sako18spec.load_table(9)
-    obj_ids = spec_summary[spec_summary['Type'] == 'Ia']['CID']  # Todo: Include all SN types?
-    obj_ids = sorted(obj_ids, key=int)
+    obj_ids = sorted(spec_summary['CID'], key=int)
 
     unique_ids = set(obj_ids)
     total_ids = len(unique_ids)
@@ -212,7 +211,8 @@ def run_snid_on_sdss(out_dir, **kwargs):
     out_dir.mkdir(exist_ok=True, parents=True)
     for spec in sdss_data_iter():
         z = spec.meta['z']
-        run_snid_on_spectrum(out_dir, spec, forcez=z, emclip=z, **kwargs)
+        phase = spec['phase'][0]
+        run_snid_on_spectrum(out_dir, spec, forcez=z, emclip=z, age=phase, dage=10, **kwargs)
 
     # The parameter file is overwritten for each target so is of little use
     # We remove it to avoid confusion.
