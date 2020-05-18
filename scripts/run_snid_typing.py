@@ -358,7 +358,7 @@ if __name__ == '__main__':
     for rlap in (5, 10):
         log.info(f'Typing Spectra rlapmin={rlap}')
         type_path = results_dir / f'type_rlap_{rlap}'
-        #run_snid_on_sdss(type_path, rlapmin=rlap, **no_interact_kwargs)
+        run_snid_on_sdss(type_path, rlapmin=rlap, **no_interact_kwargs)
         type_result_paths.append(type_path / 'all.csv')
 
     log.info('Selecting best fit object types')
