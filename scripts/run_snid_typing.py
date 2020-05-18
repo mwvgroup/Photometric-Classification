@@ -18,9 +18,15 @@ from sndata.sdss import sako18spec
 
 log = logging.getLogger()
 formatter = logging.Formatter(f'%(levelname)8s (%(asctime)s): %(name)s - %(message)s')
+
 stream_handler = logging.StreamHandler(sys.stdout)
 stream_handler.setFormatter(formatter)
 log.addHandler(stream_handler)
+
+file_handler = logging.FileHandler('./snid.log')
+file_handler.setFormatter(formatter)
+log.addHandler(file_handler)
+
 log.setLevel(logging.DEBUG)
 
 # Add custom project code to python path
@@ -157,6 +163,8 @@ def sdss_data_iter():
             for individual_spectrum in processed_data.groups:
                 yield individual_spectrum
 
+        log.debug('Finished with target\n\n')
+
 
 ###############################################################################
 # Python wrappers for running SNID
@@ -250,8 +258,8 @@ def run_snid_on_sdss(out_dir, **kwargs):
     out_dir.mkdir(exist_ok=True, parents=True)
     snid_outputs = []
     for spec in sdss_data_iter():
-        snid_outputs.append(run_snid_on_spectrum(out_dir, spec, **kwargs))
-        log.debug('Finished with target\n\n')
+        z = spec.meta['z']
+        snid_outputs.append(run_snid_on_spectrum(out_dir, spec, forcez=z, **kwargs))
 
     out_path = out_dir / 'all.csv'
     vstack(snid_outputs).write(out_path, format='ascii.csv', overwrite=True)
@@ -345,7 +353,7 @@ if __name__ == '__main__':
     for rlap in (5, 10):
         log.info(f'Typing Spectra rlapmin={rlap}')
         type_path = results_dir / f'type_rlap_{rlap}'
-        run_snid_on_sdss(type_path, rlapmin=rlap, **no_interact_kwargs)
+        #run_snid_on_sdss(type_path, rlapmin=rlap, **no_interact_kwargs)
         type_result_paths.append(type_path / 'all.csv')
 
     log.info('Selecting best fit object types')
@@ -354,4 +362,4 @@ if __name__ == '__main__':
     for rlap in (5, 10):
         log.info(f'Subtyping Spectra rlapmin={rlap}')
         subtype_path = results_dir / f'subtype_rlap_{rlap}'
-        run_snid_subtyping_on_sdss(type_path, rlapmin=rlap, **no_interact_kwargs)
+        run_snid_subtyping_on_sdss(subtype_path, types, rlapmin=rlap, **no_interact_kwargs)
