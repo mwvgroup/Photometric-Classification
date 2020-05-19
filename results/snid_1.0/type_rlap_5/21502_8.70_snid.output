@@ -1,0 +1,132 @@
+### SNID output file ###
+ 
+### input spectrum and options ###
+# Input spectrum                 : 21502_8.70.dat
+# Parameter file                 : NA
+# Wavelength range               :    3000.00   5300.00
+# Mask file                      : NA
+# Median filtering width [A]     : NA
+# Median filtering width [pix]   :       1.00
+# Clip emission redshift         :     0.0878
+# Clip sky lines                 : 0
+# Emission clip width [A]        :       0.09
+# Keep A-band                    : 1
+# Age range                      :      -1.30     18.70
+# Delta range                    :      -9.99     99.90
+# Min. number of spectra/template:   1
+# Use only templates             : NA
+# Use only types                 : NA
+# Avoid templates                : NA
+# Avoid types                    : NA
+# rlapmin                        :       5.00
+# Redshift range                 :    -0.0100    1.2000
+# Forced initial redshift        :     0.0878
+# Extra fake redshift            : NA
+# Nsigma for initial redshift    : NA
+# Redshift filter                :     0.0200
+# Wavenumbers k1,k2,k3,k4        :     1    4   85  102
+# Template directory             : /Users/daniel/snid-5.0/templates/
+ 
+### initial/user-input redshift ###
+zinit       0.0000
+zuser       0.0878
+ 
+### median redshift/age and error ###
+zmed        0.0957    0.0020
+agem          1.90      2.48
+ 
+### type fraction/redshift/age ###
+#type ntemp fraction slope redshift redshift_error age age_error
+Ia              3      1.00    0.0000    0.0957    0.0020     1.900     2.476
+Ia-norm         2      0.67    0.1404    0.0961    0.0006     1.400     0.707
+Ia-91T          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-91bg         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-csm          1      0.33   -0.1250    0.0927    0.0000     5.600     0.000
+Ia-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ib              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ib-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ib-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIb             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ic              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-broad        0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+II              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIP             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+II-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIn             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIL             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+NotSN           0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+AGN             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Gal             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+LBV             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+ 
+### rlap-ordered template listings ###
+#no. sn type lap rlap z zerr age age_flag grade
+   1  sn96X         Ia-norm    0.4454   7.57   0.0957   0.0065     1.90  0   good
+   2  sn96X         Ia-norm    0.4481   6.81   0.0965   0.0073     0.90  0   good
+   3  sn81B         Ia-norm    0.4454   6.39   0.1119   0.0087    -0.90  0    bad
+   4  sn81B         Ia-norm    0.4508   6.21   0.1118   0.0091     0.00  0    bad
+   5  sn02ic        Ia-csm     0.4386   6.01   0.0927   0.0092     5.60  0   good
+#--- rlap cutoff
+   6  sn02bo        Ia-norm    0.4427   4.25   0.1035   0.0122     5.50  0    cut
+   7  sn89B         Ia-norm    0.4224   4.18   0.1059   0.0133    -0.50  0    cut
+   8  sn94ae        Ia-norm    0.4725   4.12   0.0924   0.0092     9.40  0    cut
+   9  sn96X         Ia-norm    0.4508   4.11   0.0946   0.0093     7.80  0    cut
+  10  sn99ac        Ia-91T     0.4048   3.35   0.1061   0.0122     9.20  0    cut
+  11  sn93ac        Ia-norm    0.4698   3.23   0.1035   0.0138     6.90  0    cut
+  12  sn92A         Ia-norm    0.5510   3.17   0.1130   0.0155    -0.40  0    cut
+  13  sn03fg        Ia-pec     0.5496   3.07   0.0832   0.0172     2.00  0    cut
+  14  sn92A         Ia-norm    0.5510   3.00   0.1017   0.0136     8.70  0    cut
+  15  sn04S         Ia-norm    0.4440   3.00   0.1183   0.0172     1.70  0    cut
+  16  sn95D         Ia-norm    0.4725   2.92   0.0901   0.0120    16.10  0    cut
+  17  sn94D         Ia-norm    0.4671   2.91   0.0858   0.0125    16.30  0    cut
+  18  sn02er        Ia-norm    0.4102   2.70   0.1018   0.0160     3.40  0    cut
+  19  sn92A         Ia-norm    0.4292   2.61   0.1033   0.0141     8.90  0    cut
+  20  sn92A         Ia-norm    0.5510   2.58   0.1130   0.0155     5.90  0    cut
+  21  kcSb          Gal        0.5510   2.57   0.0590   0.0187   -99.90  2    cut
+  22  sn97br        Ia-91T     0.4088   2.46   0.0905   0.0144    12.40  0    cut
+  23  sn06gz        Ia-pec     0.4143   2.43   0.0970   0.0145     4.30  0    cut
+  24  sn92A         Ia-norm    0.5510   2.42   0.1092   0.0173     2.40  0    cut
+  25  sn04S         Ia-norm    0.4048   2.42   0.1121   0.0208     7.50  0    cut
+  26  sn95al        Ia-norm    0.4048   2.13   0.0975   0.0161    17.00  0    cut
+  27  sn91T         Ia-91T     0.5510   2.05   0.1175   0.0188    -0.20  0    cut
+  28  sn90N         Ia-norm    0.4088   2.01   0.0930   0.0149    17.70  0    cut
+  29  sn99ac        Ia-91T     0.4021   2.00   0.1017   0.0174    17.10  0    cut
+  30  kcSa          Gal        0.5510   1.95   0.0589   0.0207   -99.90  2    cut
+  31  sn05bf        Ib-pec     0.4549   1.93   0.0843   0.0180     3.40  0    cut
+  32  sn92A         Ia-norm    0.4129   1.64   0.1001   0.0191    17.30  0    cut
+  33  sn90N         Ia-norm    0.5510   1.64   0.0954   0.0285     4.90  0    cut
+  34  kcSB5         Gal        0.5510   1.53   0.0471   0.0201   -99.90  2    cut
+  35  kcSB6         Gal        0.5510   1.42   0.3148   0.0185   -99.90  2    cut
+  36  sn98bw        Ic-broad   0.4129   1.42   0.1873   0.0202    11.70  0    cut
+  37  kcS0          Gal        0.5510   1.39   0.0573   0.0201   -99.90  2    cut
+  38  kcSB4         Gal        0.5510   1.39   0.0762   0.0105   -99.90  2    cut
+  39  sn97cy        IIn        0.5456   1.37   0.3307   0.0130   196.10  1    cut
+  40  kcSB1         Gal        0.5510   1.29   0.0375   0.0240   -99.90  2    cut
+  41  sn91N         Ic-norm    0.4427   1.27   0.1307   0.0230   250.20  1    cut
+  42  kcSB3         Gal        0.5510   1.18   0.0270   0.0456   -99.90  2    cut
+  43  kcSB2         Gal        0.5510   1.17   0.1419   0.0239   -99.90  2    cut
+  44  kcSc          Gal        0.5510   1.15   0.0823   0.0196   -99.90  2    cut
+  45  sn98bw        Ic-broad   0.4752   1.12   0.0734   0.0633    12.70  0    cut
+  46  sn91N         Ic-norm    0.4116   1.11   0.1154   0.0421     6.60  1    cut
+  47  sn98bw        Ic-broad   0.4725   1.10   0.0802   0.0419    18.70  0    cut
+  48  sn91N         Ic-norm    0.4102   1.06   0.1174   0.0542     5.70  1    cut
+  49  sn97cy        IIn        0.4603   0.93   0.0793   0.0385    29.40  1    cut
+  50  sn91N         Ic-norm    0.4319   0.91   0.1213   0.0537    12.00  1    cut
+  51  sn91N         Ic-norm    0.4116   0.88  -0.0059   0.0417     7.60  1    cut
+  52  agn           AGN        0.5510   0.88   0.1613   0.1042   -99.90  2    cut
+  53  sn06aj        Ic-broad   0.4292   0.88   0.2054   0.0246     2.80  0    cut
+  54  sn93J         IIb        0.4048   0.86  -0.0094   0.0000    12.00  0    cut
+  55  sn93J         IIb        0.4048   0.86  -0.0094   0.0000    11.00  0    cut
+  56  sn93J         IIb        0.4319   0.84  -0.0094   0.0000    13.00  0    cut
+  57  sn84L         Ib-norm    0.4400   0.83   0.2477   0.0534    11.90  0    cut
+  58  sn97dq        Ic-norm    0.4887   0.77   0.2596   0.0322    27.90  1    cut
+  59  kcE           Gal        0.5510   0.76   0.3227   0.0328   -99.90  2    cut
+  60  sn91N         Ic-norm    0.4332   0.72  -0.0070   0.0628     0.00  1    cut
+  61  sn92A         Ia-norm    0.5510   0.50   0.1089   0.1215    11.70  0    cut
