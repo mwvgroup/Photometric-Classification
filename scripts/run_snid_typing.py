@@ -16,12 +16,6 @@ from sndata._utils import convert_to_jd
 from sndata.sdss import sako18spec
 
 log = logging.getLogger()
-formatter = logging.Formatter(f'%(levelname)8s (%(asctime)s): %(name)s - %(message)s')
-
-file_handler = logging.FileHandler('./snid_typing.log')
-file_handler.setFormatter(formatter)
-log.addHandler(file_handler)
-
 log.setLevel(logging.DEBUG)
 
 # Add custom project code to python path
@@ -38,6 +32,9 @@ with warnings.catch_warnings():
 # Specify minimum and maximum phase of spectra to consider
 min_phase = -15
 max_phase = 15
+
+min_wave = 4000
+max_wave = 9000
 
 
 ###############################################################################
@@ -202,7 +199,13 @@ def run_snid_on_spectrum(out_dir, spectrum, **kwargs):
 def run_snid_on_sdss(out_dir, **kwargs):
     """Run SNID for all SDSS spectra classified by Sako18 as ``Ia``
     
-    forcez and emclip arguments for SNID are set to the SDSS redshift
+    Asserts SNID arguments:
+        - forcez = SDSS estimated sn redshift
+        - emclip = forcez
+        - age = SDSS estimated sn phase
+        - wmin = ``min_wave`` global
+        - wmax = ``max_wave`` global
+        - dage = 10 days
 
     Args:
         out_dir (Path): Directory to write results into
@@ -212,7 +215,15 @@ def run_snid_on_sdss(out_dir, **kwargs):
     for spec in sdss_data_iter():
         z = spec.meta['z']
         phase = spec['phase'][0]
-        run_snid_on_spectrum(out_dir, spec, forcez=z, emclip=z, age=phase, dage=10, **kwargs)
+        run_snid_on_spectrum(
+            out_dir, spec,
+            forcez=z,
+            emclip=z,
+            age=phase,
+            wmin=min_wave,
+            wmax=max_wave,
+            dage=10,
+            **kwargs)
 
     # The parameter file is overwritten for each target so is of little use
     # We remove it to avoid confusion.
@@ -220,6 +231,12 @@ def run_snid_on_sdss(out_dir, **kwargs):
 
 
 if __name__ == '__main__':
+    formatter = logging.Formatter(f'%(levelname)8s (%(asctime)s): %(name)s - %(message)s')
+
+    file_handler = logging.FileHandler('./snid_typing.log')
+    file_handler.setFormatter(formatter)
+    log.addHandler(file_handler)
+
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setFormatter(formatter)
     log.addHandler(stream_handler)

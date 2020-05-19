@@ -12,12 +12,6 @@ from astropy.table import Table
 from run_snid_typing import run_snid_on_spectrum, sdss_data_iter
 
 log = logging.getLogger()
-formatter = logging.Formatter(f'%(levelname)8s (%(asctime)s): %(name)s - %(message)s')
-
-file_handler = logging.FileHandler('./snid_subtyping.log')
-file_handler.setFormatter(formatter)
-log.addHandler(file_handler)
-
 log.setLevel(logging.DEBUG)
 
 # Parent types for SNID templates used in the classification
@@ -58,7 +52,7 @@ def compile_peak_types(results_dir, perc_cutoff=0.5):
 
     Args:
         results_dir (Path): Directory of SNID outputs
-        perc_cutoff (float): Only return results where most likly type has >=
+        perc_cutoff (float): Only return results where most likley type has >=
             perc_cutoff of the template matches
 
     Returns:
@@ -146,6 +140,12 @@ def run_snid_subtyping_on_sdss(out_dir, object_types, **kwargs):
 
 
 if __name__ == '__main__':
+    formatter = logging.Formatter(f'%(levelname)8s (%(asctime)s): %(name)s - %(message)s')
+
+    file_handler = logging.FileHandler('./snid_subtyping.log')
+    file_handler.setFormatter(formatter)
+    log.addHandler(file_handler)
+
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setFormatter(formatter)
     log.addHandler(stream_handler)
