@@ -1,0 +1,109 @@
+### SNID output file ###
+ 
+### input spectrum and options ###
+# Input spectrum                 : 20530_0.40.dat
+# Parameter file                 : NA
+# Wavelength range               :    4000.00   9000.00
+# Mask file                      : NA
+# Median filtering width [A]     : NA
+# Median filtering width [pix]   :       1.00
+# Clip emission redshift         :     0.0598
+# Clip sky lines                 : 0
+# Emission clip width [A]        :       0.06
+# Keep A-band                    : 1
+# Age range                      :      -9.60     10.40
+# Delta range                    :      -9.99     99.90
+# Min. number of spectra/template:   1
+# Use only templates             : NA
+# Use only types                 : NotSN
+# Avoid templates                : NA
+# Avoid types                    : NA
+# rlapmin                        :       5.00
+# Redshift range                 :    -0.0100    1.2000
+# Forced initial redshift        :     0.0598
+# Extra fake redshift            : NA
+# Nsigma for initial redshift    : NA
+# Redshift filter                :     0.0200
+# Wavenumbers k1,k2,k3,k4        :     1    4   85  102
+# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+ 
+### initial/user-input redshift ###
+zinit       0.0000
+zuser       0.0598
+ 
+### median redshift/age and error ###
+zmed        0.0618    0.0005
+agem          0.00      0.00
+ 
+### type fraction/redshift/age ###
+#type ntemp fraction slope redshift redshift_error age age_error
+Ia              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-91T          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-91bg         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-csm          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ib              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ib-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ib-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIb             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ic              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-broad        0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+II              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIP             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+II-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIn             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIL             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+NotSN           2      1.00    0.0000    0.0618    0.0005     0.000     0.000
+AGN             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Gal             2      1.00    0.0000    0.0618    0.0005     0.000     0.000
+LBV             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+ 
+### rlap-ordered template listings ###
+#no. sn type lap rlap z zerr age age_flag grade
+   1  kcSb          Gal        0.8069   7.22   0.0615   0.0035   -99.90  2   good
+   2  kcSa          Gal        0.8069   6.51   0.0622   0.0032   -99.90  2   good
+#--- rlap cutoff
+   3  kcE           Gal        0.8069   4.37   0.0625   0.0054   -99.90  2    cut
+   4  kcS0          Gal        0.8069   4.18   0.0626   0.0062   -99.90  2    cut
+   5  mstar         M-star     0.8069   3.40   0.0630   0.0081     0.00  2    cut
+   6  mstar         M-star     0.8069   2.62   0.0618   0.0091     1.00  2    cut
+   7  mstar         M-star     0.8069   2.10   0.0617   0.0098     2.00  2    cut
+   8  lbv2001ac     LBV        0.8069   2.07   0.0437   0.0078   -99.90  2    cut
+   9  lbv2001ac     LBV        0.6769   2.02   0.0447   0.0075   -99.90  2    cut
+  10  lbv2003hy     LBV        0.6579   1.93   0.0119   0.0073   -99.90  2    cut
+  11  lbv2003hy     LBV        0.6607   1.79   0.0800   0.0165   -99.90  2    cut
+  12  lbv2003hy     LBV        0.6593   1.71   0.0820   0.0093   -99.90  2    cut
+  13  lbv2003hy     LBV        0.6593   1.68   0.0822   0.0121   -99.90  2    cut
+  14  mstar         M-star     0.8069   1.56   0.0611   0.0113     3.00  2    cut
+  15  lbv2003hy     LBV        0.6593   1.53   0.0636   0.0184   -99.90  2    cut
+  16  lbv1999bw     LBV        0.6823   1.38   0.0429   0.0101   -99.90  2    cut
+  17  mstar         M-star     0.8069   1.37   0.1837   0.0173     7.00  2    cut
+  18  lbv2003hy     LBV        0.6607   1.36   0.0453   0.0095   -99.90  2    cut
+  19  lbv2003hy     LBV        0.6444   1.36   0.0431   0.0139   -99.90  2    cut
+  20  lbv2003hy     LBV        0.6593   1.35   0.0655   0.0206   -99.90  2    cut
+  21  kcSB3         Gal        0.8069   1.33   0.0452   0.0092   -99.90  2    cut
+  22  lbv2003hy     LBV        0.6607   1.26   0.0656   0.0190   -99.90  2    cut
+  23  mstar         M-star     0.8069   1.26   0.1063   0.0202     4.00  2    cut
+  24  lbv2003hy     LBV        0.6579   1.25   0.0656   0.0180   -99.90  2    cut
+  25  mstar         M-star     0.8069   1.23   0.1830   0.0167     8.00  2    cut
+  26  kcSB1         Gal        0.8069   1.23   0.0186   0.0103   -99.90  2    cut
+  27  mstar         M-star     0.8069   1.22   0.1808   0.0206     6.00  2    cut
+  28  kcSB2         Gal        0.8069   1.22   0.0178   0.0105   -99.90  2    cut
+  29  mstar         M-star     0.8069   1.22   0.1066   0.0231     5.00  2    cut
+  30  kcSB4         Gal        0.8069   1.22   0.0193   0.0097   -99.90  2    cut
+  31  kcSc          Gal        0.7040   1.18   0.0440   0.0101   -99.90  2    cut
+  32  kcSB5         Gal        0.8069   1.12   0.0440   0.0094   -99.90  2    cut
+  33  mstar         M-star     0.8069   1.12   0.1197   0.0337     9.00  2    cut
+  34  agn           AGN        0.8055   1.11   0.0429   0.0122   -99.90  2    cut
+  35  kcSB6         Gal        0.8069   1.08   0.0443   0.0095   -99.90  2    cut
+  36  lbv1999bw     LBV        0.6525   1.05   0.0902   0.0208   -99.90  2    cut
+  37  mstar         M-star     0.8069   1.03   0.0962   0.0351    10.00  2    cut
+  38  lbv2003hy     LBV        0.6566   0.76   0.0442   0.0279   -99.90  2    cut
