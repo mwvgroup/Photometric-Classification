@@ -5,6 +5,7 @@
 
 import argparse
 import math
+import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
@@ -13,6 +14,13 @@ import numpy as np
 import sndata
 import yaml
 from sndata.sdss import sako18spec
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from phot_class import classification
+from phot_class import fit_func_wraps
+from phot_class import models
+from phot_class import utils
 
 warnings.simplefilter('ignore')
 
@@ -63,6 +71,11 @@ def get_phot_data_iter(data_module):
     for data in data_iter:
         data = data[data['band'] != 'csp_dr3_Ydw']
         data = data[data['band'] != 'csp_dr3_Y']
+        data = data[data['band'] != 'csp_dr3_Jrc2']
+        data = data[data['band'] != 'csp_dr3_Jdw']
+        data = data[data['band'] != 'csp_dr3_J']
+        data = data[data['band'] != 'csp_dr3_Hdw']
+        data = data[data['band'] != 'csp_dr3_H']
         yield data
 
 
@@ -150,7 +163,10 @@ def create_cli_parser():
 
     parser = argparse.ArgumentParser(
         description='Arguments for the command line interface are as follows:')
-    subparsers = parser.add_subparsers()
+    parser.set_defaults(
+        func=run_photometric_classification,
+        help='Classify targets photometrically'
+    )
 
     parser.add_argument(
         '-s', '--survey',
@@ -166,34 +182,28 @@ def create_cli_parser():
         help='The name of the survey\'s data release. This should also match the sndata package (e.g. dr3).'
     )
 
-    photometric_parser = subparsers.add_parser('photometric')
-    photometric_parser.set_defaults(
-        func=run_photometric_classification,
-        help='Classify targets photometrically'
-    )
-
-    photometric_parser.add_argument(
+    parser.add_argument(
         '-f', '--fit_func',
         type=str,
         default='simple_fit',
         help='The name of the fitting routine to use (simple_fit, nest_fit, mcmc_fit).'
     )
 
-    photometric_parser.add_argument(
+    parser.add_argument(
         '-m', '--method',
         type=str,
         default='band',
         help="Whether to fit bands independently ('band') or as red and blue sets ('collective')"
     )
 
-    photometric_parser.add_argument(
+    parser.add_argument(
         '-c', '--config',
         type=str,
         required=False,
         help='Path of the yaml config file.'
     )
 
-    photometric_parser.add_argument(
+    parser.add_argument(
         '-o', '--out_dir',
         type=str,
         required=True,
@@ -205,11 +215,6 @@ def create_cli_parser():
 
 # Parse command line input
 if __name__ == '__main__':
-    from phot_class import classification
-    from phot_class import fit_func_wraps
-    from phot_class import models
-    from phot_class import utils
-
     models.register_sources()
 
     parser = create_cli_parser()
