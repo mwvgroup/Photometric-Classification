@@ -1,4 +1,0 @@
-   DEBUG (2020-05-19 11:46:48,927): urllib3.connectionpool - Starting new HTTPS connection (1): portal.nersc.gov:443
-   DEBUG (2020-05-19 11:46:49,538): urllib3.connectionpool - https://portal.nersc.gov:443 "GET /project/dessn/SDSS/dataRelease/ HTTP/1.1" 200 2024
-   DEBUG (2020-05-19 11:46:49,645): urllib3.connectionpool - Starting new HTTP connection (1): www.ioa.s.u-tokyo.ac.jp:80
-   DEBUG (2020-05-19 11:46:50,101): urllib3.connectionpool - http://www.ioa.s.u-tokyo.ac.jp:80 "GET /~doi/sdss/ HTTP/1.1" 404 208
