@@ -72,7 +72,7 @@ def fom(truth, classification, check_type):
     Args:
         truth          (ndarray): The true classifications
         classification (ndarray): The assigned classifications
-        check_type         (str): The type to calculate the FOM for
+        check_type         (str): The classification to calculate the FOM for
 
     Returns:
         (n_true / n_total_type) * (n_true / (n_true + n_false))
@@ -95,9 +95,6 @@ def fom(truth, classification, check_type):
 
 def rectangular(truth, x, y, x_cutoff, y_cutoff, check_type):
     """Calculate the figure of merit using a pair of rectangular lower bounds
-
-    Expected classifications are "normal" or "91bg" (case insensitive).
-    All other classifications are ignored.
     
     Args:
         truth   (ndarray): Array of classifications (str) to take as truth
@@ -119,9 +116,6 @@ def rectangular(truth, x, y, x_cutoff, y_cutoff, check_type):
 def horizontal(truth, x, x_cutoff, check_type):
     """Calculate the figure of merit using a vertical lower boundary
     (i.e. using only the x coordinate)
-
-    Expected classifications are "normal" or "91bg" (case insensitive).
-    All other classifications are ignored.
 
     Args:
         truth  (ndarray): Array of classifications to take as truth
