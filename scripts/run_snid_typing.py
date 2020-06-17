@@ -53,7 +53,7 @@ TYPES = ['Ia', 'Ib', 'Ic', 'II', 'NotSN']
 ###############################################################################
 
 def get_sdss_t0(obj_id):
-    """Get the t0 value for CSP targets
+    """Get the t0 value for SDSS targets
 
     Args:
         obj_id (str): The object identifier
