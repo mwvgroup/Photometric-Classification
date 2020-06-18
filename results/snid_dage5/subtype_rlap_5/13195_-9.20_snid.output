@@ -1,0 +1,102 @@
+### SNID output file ###
+ 
+### input spectrum and options ###
+# Input spectrum                 : 13195_-9.20.dat
+# Parameter file                 : NA
+# Wavelength range               :    4000.00   9000.00
+# Mask file                      : NA
+# Median filtering width [A]     : NA
+# Median filtering width [pix]   :       1.00
+# Clip emission redshift         :     0.0199
+# Clip sky lines                 : 0
+# Emission clip width [A]        :       0.02
+# Keep A-band                    : 1
+# Age range                      :     -14.20     -4.20
+# Delta range                    :      -9.99     99.90
+# Min. number of spectra/template:   1
+# Use only templates             : NA
+# Use only types                 : Ib
+# Avoid templates                : NA
+# Avoid types                    : NA
+# rlapmin                        :       5.00
+# Redshift range                 :    -0.0100    1.2000
+# Forced initial redshift        :     0.0199
+# Extra fake redshift            : NA
+# Nsigma for initial redshift    : NA
+# Redshift filter                :     0.0200
+# Wavenumbers k1,k2,k3,k4        :     1    4   85  102
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
+ 
+### initial/user-input redshift ###
+zinit       0.0000
+zuser       0.0199
+ 
+### median redshift/age and error ###
+zmed        0.0122    0.0093
+agem         -7.10      2.48
+ 
+### type fraction/redshift/age ###
+#type ntemp fraction slope redshift redshift_error age age_error
+Ia              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-91T          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-91bg         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-csm          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ib             12      1.00    0.0000    0.0122    0.0093    -7.100     2.482
+Ib-norm         6      0.50    0.1334    0.0122    0.0068    -6.750     3.182
+Ib-pec          6      0.50   -0.1410    0.0179    0.0114    -7.100     2.533
+IIb             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ic              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-broad        0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+II              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIP             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+II-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIn             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIL             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+NotSN           0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+AGN             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Gal             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+LBV             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+ 
+### rlap-ordered template listings ###
+#no. sn type lap rlap z zerr age age_flag grade
+   1  sn1999dn      Ib-norm    0.7839   7.20   0.0129   0.0074     0.00  1   good
+   2  sn1999dn      Ib-norm    0.8069   6.81   0.0113   0.0075     6.90  1   good
+   3  sn2005bf      Ib-pec     0.6079   6.60   0.0106   0.0075    -4.60  0   good
+   4  sn2005bf      Ib-pec     0.6079   6.50   0.0102   0.0076    -7.60  0   good
+   5  sn2008D       Ib-pec     0.8069   6.48   0.0252   0.0090    -6.60  0   good
+   6  sn2005bf      Ib-pec     0.6038   6.25   0.0107   0.0080    -5.60  0   good
+   7  sn2007Y       Ib-norm    0.8069   6.09   0.0213   0.0100    -9.00  0   good
+   8  sn1999ex      Ib-norm    0.8069   5.52   0.0272   0.0102    -4.50  0   good
+   9  sn1998T       Ib-norm    0.7175   5.40   0.0116   0.0081     0.00  1   good
+  10  sn2008D       Ib-pec     0.4887   5.40   0.0361   0.0133   -11.50  0   good
+  11  sn1991ar      Ib-norm    0.5348   5.31   0.0106   0.0080     0.00  1   good
+  12  sn2008D       Ib-pec     0.8069   5.08   0.0298   0.0121    -9.30  0   good
+#--- rlap cutoff
+  13  sn1999dn      Ib-norm    0.7947   4.76   0.0098   0.0095    27.70  1    cut
+  14  sn1988L       Ib-norm    0.7053   4.71   0.0139   0.0114     0.00  1    cut
+  15  sn1997dc      Ib-norm    0.7960   4.54   0.0089   0.0098     0.00  1    cut
+  16  sn1999di      Ib-norm    0.8001   4.40   0.0087   0.0100    23.60  1    cut
+  17  sn1999di      Ib-norm    0.8015   4.38   0.0091   0.0096     0.00  1    cut
+  18  sn2008D       Ib-pec     0.7514   4.34   0.0483   0.0168   -13.50  0    cut
+  19  sn2008D       Ib-pec     0.7094   4.27   0.0451   0.0173   -13.40  0    cut
+  20  sn2008D       Ib-pec     0.7541   3.85   0.0374   0.0175   -12.50  0    cut
+  21  sn2008D       Ib-pec     0.8069   3.81   0.0442   0.0187   -12.40  0    cut
+  22  sn1991ar      Ib-norm    0.4860   3.09   0.0093   0.0119    15.80  1    cut
+  23  sn1991ar      Ib-norm    0.7771   2.45   0.0102   0.0171    27.40  1    cut
+  24  sn1999di      Ib-norm    0.6837   2.39   0.0101   0.0181    30.50  1    cut
+  25  sn1997dd      IIb        0.8069   2.29   0.0082   0.0182     0.00  1    cut
+  26  sn1997dd      IIb        0.6322   2.12   0.0054   0.0159    16.40  1    cut
+  27  sn2003bg      IIb        0.8069   1.93   0.0276   0.0278    -7.40  0    cut
+  28  sn1997dd      IIb        0.6322   1.80   0.0069   0.0182     3.60  1    cut
+  29  sn1988L       Ib-norm    0.7446   1.69   0.0153   0.0269    47.70  1    cut
+  30  sn1993J       IIb        0.6349   1.62   0.0170   0.0274    -5.00  0    cut
+  31  sn1993J       IIb        0.5808   1.22   0.0293   0.0350   -10.50  0    cut
