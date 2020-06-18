@@ -1,7 +1,11 @@
 #!/usr/bin/env python3.7
 # -*- coding: UTF-8 -*-
 
-"""This script runs SNID on SDSS Sako et. al 2018 spectra"""
+"""This script runs SNID on SDSS Sako et. al 2018 spectra
+
+Important: For asserted default SNID arguments, see the
+``run_snid_with_defaults`` function.
+"""
 
 import logging
 import subprocess
@@ -9,6 +13,7 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import numpy as np
 import pandas as pd
@@ -35,13 +40,16 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     sdss_master_table = sako18spec.load_table('master').to_pandas(index='CID')
 
-# Specify minimum and maximum phase of spectra to consider
+# Specify default minimum and maximum phase of spectra to consider
 min_phase = -15
 max_phase = 15
 
-# Specify minimum and maximum wavelength range (observer frame) to consider
+# Specify default minimum and maximum wavelength range (observer frame) to consider
 min_wave = 4000
 max_wave = 9000
+
+# Default age range to consider
+dage = 10
 
 # Parent types for SNID templates used in the classification
 # E.g. 'Ia' is a parent type, while 'Ia-norm' and 'Ia-91bg' are subtypes
@@ -192,18 +200,16 @@ def run_snid_on_spectrum(out_dir, spectrum, **kwargs):
     if not len(set(spectrum['phase'])) == 1:
         raise ValueError('SNID passed multiple spectra')
 
-    # Create input file
-    snid_input_path = out_dir / f'{obj_id}_{phase:.2f}.dat'
+    # Create input file in temporary directory
+    with TemporaryDirectory() as temp_dir:
+        snid_input_path = Path(temp_dir) / f'{obj_id}_{phase:.2f}.dat'
+        np.savetxt(snid_input_path, spectrum['wavelength', 'flux'])
 
-    # Run SNID
-    fortran_kwargs = ' '.join(f'{key}={val}' for key, val in kwargs.items())
-    np.savetxt(snid_input_path, spectrum['wavelength', 'flux'])
-    bash_command = f'snid {fortran_kwargs} {snid_input_path}'
-    log.info(bash_command)
-    subprocess.Popen(bash_command.split(), cwd=str(out_dir)).communicate()
-
-    # Delete input file
-    snid_input_path.unlink()
+        # Run SNID
+        fortran_kwargs = ' '.join(f'{key}={val}' for key, val in kwargs.items())
+        bash_command = f'snid {fortran_kwargs} {snid_input_path}'
+        log.info(bash_command)
+        subprocess.Popen(bash_command.split(), cwd=str(out_dir)).communicate()
 
 
 def run_snid_with_defaults(out_dir, spec, **kwargs):
@@ -215,7 +221,7 @@ def run_snid_with_defaults(out_dir, spec, **kwargs):
         - age = SDSS estimated sn phase
         - wmin = ``min_wave`` global
         - wmax = ``max_wave`` global
-        - dage = 10 days
+        - dage = 5 days
 
     Args:
         out_dir   (Path): Directory to write results into
@@ -232,7 +238,7 @@ def run_snid_with_defaults(out_dir, spec, **kwargs):
         age=phase,
         wmin=min_wave,
         wmax=max_wave,
-        dage=10,
+        dage=dage,
         **kwargs)
 
 
@@ -380,12 +386,13 @@ def run_snid_subtyping_on_sdss(out_dir, object_types, **kwargs):
 
 if __name__ == '__main__':
 
-    results_dir = Path(__file__).resolve().parent.parent / 'results' / 'snid'
+    results_dir = Path(__file__).resolve().parent / 'results' / f'snid_dage{dage}'
     results_dir.mkdir(exist_ok=True)
 
     file_handler = logging.FileHandler(results_dir / 'snid_typing.log')
     file_handler.setFormatter(formatter)
     log.addHandler(file_handler)
+    log.setLevel(logging.DEBUG)
 
     # Run typing
     type_output_dirs = []

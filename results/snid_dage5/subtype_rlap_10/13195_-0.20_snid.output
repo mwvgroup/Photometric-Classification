@@ -1,0 +1,119 @@
+### SNID output file ###
+ 
+### input spectrum and options ###
+# Input spectrum                 : 13195_-0.20.dat
+# Parameter file                 : NA
+# Wavelength range               :    4000.00   9000.00
+# Mask file                      : NA
+# Median filtering width [A]     : NA
+# Median filtering width [pix]   :       1.00
+# Clip emission redshift         :     0.0199
+# Clip sky lines                 : 0
+# Emission clip width [A]        :       0.02
+# Keep A-band                    : 1
+# Age range                      :      -5.20      4.80
+# Delta range                    :      -9.99     99.90
+# Min. number of spectra/template:   1
+# Use only templates             : NA
+# Use only types                 : Ib
+# Avoid templates                : NA
+# Avoid types                    : NA
+# rlapmin                        :      10.00
+# Redshift range                 :    -0.0100    1.2000
+# Forced initial redshift        :     0.0199
+# Extra fake redshift            : NA
+# Nsigma for initial redshift    : NA
+# Redshift filter                :     0.0200
+# Wavenumbers k1,k2,k3,k4        :     1    4   85  102
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
+ 
+### initial/user-input redshift ###
+zinit       0.0000
+zuser       0.0199
+ 
+### median redshift/age and error ###
+zmed        0.0214    0.0000
+agem          4.40      0.00
+ 
+### type fraction/redshift/age ###
+#type ntemp fraction slope redshift redshift_error age age_error
+Ia              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-91T          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-91bg         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-csm          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ib              1      1.00    0.0000    0.0214    0.0000     4.400     0.000
+Ib-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ib-pec          1      1.00    0.0000    0.0214    0.0000     4.400     0.000
+IIb             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ic              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-broad        0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+II              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIP             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+II-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIn             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIL             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+NotSN           0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+AGN             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Gal             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+LBV             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+ 
+### rlap-ordered template listings ###
+#no. sn type lap rlap z zerr age age_flag grade
+   1  sn2008D       Ib-pec     0.6227  10.89   0.0214   0.0050     4.40  0   good
+#--- rlap cutoff
+   2  sn1998dt      Ib-norm    0.6322   8.97   0.0287   0.0061     0.00  0    cut
+   3  sn1998dt      Ib-norm    0.6309   8.46   0.0276   0.0064     0.90  0    cut
+   4  sn2005bf      Ib-pec     0.6106   8.42   0.0174   0.0058    -2.70  0    cut
+   5  sn2005bf      Ib-pec     0.6106   8.13   0.0170   0.0061    -1.60  0    cut
+   6  sn2005bf      Ib-pec     0.6079   8.06   0.0152   0.0059     3.20  0    cut
+   7  sn2005bf      Ib-pec     0.6079   8.06   0.0156   0.0060     2.20  0    cut
+   8  sn2005bf      Ib-pec     0.6079   7.99   0.0172   0.0061    -4.60  0    cut
+   9  sn1998dt      Ib-norm    0.6336   7.72   0.0249   0.0068     3.90  0    cut
+  10  sn2005bf      Ib-pec     0.6024   7.59   0.0170   0.0064    -3.60  0    cut
+  11  sn2005bf      Ib-pec     0.6065   7.34   0.0163   0.0066     1.20  0    cut
+  12  sn2005bf      Ib-pec     0.6065   7.22   0.0169   0.0067    -0.70  0    cut
+  13  sn1999ex      Ib-norm    0.7419   6.69   0.0280   0.0078     0.40  0    cut
+  14  sn2005bf      Ib-pec     0.7419   6.41   0.0150   0.0070     3.40  0    cut
+  15  sn2005bf      Ib-pec     0.5672   5.44   0.0170   0.0092    -0.90  0    cut
+  16  sn2007Y       Ib-norm    0.7419   5.26   0.0205   0.0101    -2.00  0    cut
+  17  sn1983N       Ib-norm    0.5591   5.16   0.0185   0.0104     4.00  0    cut
+  18  sn1999ex      Ib-norm    0.7419   4.94   0.0312   0.0111    -4.50  0    cut
+  19  sn1999dn      Ib-norm    0.7419   4.91   0.0167   0.0101     0.00  1    cut
+  20  sn1988L       Ib-norm    0.7053   4.52   0.0186   0.0118     0.00  1    cut
+  21  sn1998T       Ib-norm    0.6525   4.17   0.0153   0.0093     0.00  1    cut
+  22  sn1991ar      Ib-norm    0.5348   4.09   0.0146   0.0110     0.00  1    cut
+  23  sn1999dn      Ib-norm    0.7419   3.95   0.0151   0.0117     6.90  1    cut
+  24  sn1999di      Ib-norm    0.7351   3.11   0.0116   0.0117    23.60  1    cut
+  25  sn1999dn      Ib-norm    0.7297   3.04   0.0142   0.0124    27.70  1    cut
+  26  sn1997dc      Ib-norm    0.7311   2.92   0.0117   0.0140     0.00  1    cut
+  27  sn1991ar      Ib-norm    0.4860   2.83   0.0125   0.0143    15.80  1    cut
+  28  sn1999di      Ib-norm    0.7365   2.53   0.0133   0.0144     0.00  1    cut
+  29  sn1993J       IIb        0.6051   2.37   0.0149   0.0184     3.70  0    cut
+  30  sn1993J       IIb        0.6051   2.19   0.0142   0.0192     4.60  0    cut
+  31  sn1993J       IIb        0.7419   2.11   0.0150   0.0194     3.40  0    cut
+  32  sn1993J       IIb        0.7419   2.11   0.0141   0.0212     3.80  0    cut
+  33  sn1993J       IIb        0.6498   2.04   0.0161   0.0222     2.70  0    cut
+  34  sn1993J       IIb        0.7419   2.02   0.0207   0.0240    -2.00  0    cut
+  35  sn1993J       IIb        0.7419   1.96   0.0241   0.0244    -4.00  0    cut
+  36  sn1999di      Ib-norm    0.6187   1.96   0.0114   0.0151    30.50  1    cut
+  37  sn1993J       IIb        0.7419   1.94   0.0226   0.0249    -3.00  0    cut
+  38  sn1997dd      IIb        0.7419   1.91   0.0137   0.0218     0.00  1    cut
+  39  sn1991ar      Ib-norm    0.7121   1.77   0.0130   0.0165    27.40  1    cut
+  40  sn1993J       IIb        0.6349   1.71   0.0261   0.0260    -5.00  0    cut
+  41  sn1996cb      IIb        0.6417   1.66   0.0164   0.0555     0.90  0    cut
+  42  sn1993J       IIb        0.7419   1.64   0.0223   0.0285    -1.60  0    cut
+  43  sn1996cb      IIb        0.6431   1.63   0.0269   0.0329    -2.10  0    cut
+  44  sn1993J       IIb        0.6891   1.62   0.0186   0.0269     1.40  0    cut
+  45  sn1997dd      IIb        0.6322   1.59   0.0104   0.0198    16.40  1    cut
+  46  sn1993J       IIb        0.7419   1.56   0.0233   0.0297    -2.40  0    cut
+  47  sn1997dd      IIb        0.6322   1.40   0.0118   0.0211     3.60  1    cut
+  48  sn1988L       Ib-norm    0.6796   1.13   0.0198   0.0242    47.70  1    cut

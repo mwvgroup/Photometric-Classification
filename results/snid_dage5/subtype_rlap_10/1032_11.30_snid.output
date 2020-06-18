@@ -1,0 +1,141 @@
+### SNID output file ###
+ 
+### input spectrum and options ###
+# Input spectrum                 : 1032_11.30.dat
+# Parameter file                 : NA
+# Wavelength range               :    4000.00   9000.00
+# Mask file                      : NA
+# Median filtering width [A]     : NA
+# Median filtering width [pix]   :       1.00
+# Clip emission redshift         :     0.1290
+# Clip sky lines                 : 0
+# Emission clip width [A]        :       0.13
+# Keep A-band                    : 1
+# Age range                      :       6.30     16.30
+# Delta range                    :      -9.99     99.90
+# Min. number of spectra/template:   1
+# Use only templates             : NA
+# Use only types                 : Ic
+# Avoid templates                : NA
+# Avoid types                    : NA
+# rlapmin                        :      10.00
+# Redshift range                 :    -0.0100    1.2000
+# Forced initial redshift        :     0.1290
+# Extra fake redshift            : NA
+# Nsigma for initial redshift    : NA
+# Redshift filter                :     0.0200
+# Wavenumbers k1,k2,k3,k4        :     1    4   85  102
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
+ 
+### initial/user-input redshift ###
+zinit       0.0000
+zuser       0.1290
+ 
+### median redshift/age and error ###
+zmed        0.1387    0.0011
+agem         13.90      2.83
+ 
+### type fraction/redshift/age ###
+#type ntemp fraction slope redshift redshift_error age age_error
+Ia              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-91T          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-91bg         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-csm          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ia-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ib              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ib-norm         0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ib-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIb             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+Ic              3      1.00    0.0000    0.1387    0.0011    13.900     2.828
+Ic-norm         2      0.67    0.3333    0.1394    0.0009    13.900     2.828
+Ic-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Ic-broad        1      0.33    0.0000    0.1378    0.0000     0.000     0.000
+###
+II              0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIP             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+II-pec          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIn             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+IIL             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+###
+NotSN           0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+AGN             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+Gal             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+LBV             0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
+ 
+### rlap-ordered template listings ###
+#no. sn type lap rlap z zerr age age_flag grade
+   1  sn1983V       Ic-norm    0.6431  11.38   0.1400   0.0064    11.90  0   good
+   2  sn1983V       Ic-norm    0.6417  10.40   0.1387   0.0070    15.90  0   good
+   3  sn1997dq      Ic-broad   0.8069  10.15   0.1378   0.0070     1.00  1   good
+#--- rlap cutoff
+   4  sn1997ef      Ic-broad   0.7094   9.30   0.1422   0.0087    12.80  0    cut
+   5  sn1997ef      Ic-broad   0.7067   9.17   0.1396   0.0089    15.70  0    cut
+   6  sn1997dq      Ic-broad   0.8069   9.16   0.1383   0.0076    27.90  1    cut
+   7  sn1997dq      Ic-broad   0.6999   8.90   0.1378   0.0084    17.90  1    cut
+   8  sn1997dq      Ic-broad   0.6999   8.66   0.1376   0.0087    14.90  1    cut
+   9  sn1983V       Ic-norm    0.6417   8.52   0.1388   0.0084    14.90  0    cut
+  10  sn1997dq      Ic-broad   0.8069   8.51   0.1384   0.0081    27.90  1    cut
+  11  sn1997dq      Ic-broad   0.7026   8.45   0.1370   0.0088    21.90  1    cut
+  12  sn1997dq      Ic-broad   0.6999   8.18   0.1371   0.0092     0.00  1    cut
+  13  sn1983V       Ic-norm    0.5930   8.10   0.1405   0.0095    12.90  0    cut
+  14  sn2002ap      Ic-broad   0.6999   8.10   0.1400   0.0097    11.60  0    cut
+  15  sn1997dq      Ic-broad   0.7026   7.83   0.1373   0.0094    26.90  1    cut
+  16  sn1997ef      Ic-broad   0.7080   7.48   0.1421   0.0114    13.80  0    cut
+  17  sn2002ap      Ic-broad   0.6999   7.32   0.1428   0.0105     6.60  0    cut
+  18  sn1991A       Ic-norm    0.6065   7.22   0.1317   0.0105     0.00  1    cut
+  19  sn1995F       Ic-norm    0.8069   6.84   0.1336   0.0091     0.20  1    cut
+  20  sn1995F       Ic-norm    0.8069   6.68   0.1312   0.0097    29.10  1    cut
+  21  sn1983V       Ic-norm    0.6038   6.61   0.1409   0.0112    13.90  0    cut
+  22  sn1997ei      Ic-norm    0.7744   6.56   0.1375   0.0101    10.90  1    cut
+  23  sn2004aw      Ic-norm    0.8069   6.15   0.1418   0.0111    12.20  0    cut
+  24  sn1995F       Ic-norm    0.6607   5.98   0.1357   0.0097    11.00  1    cut
+  25  sn1995F       Ic-norm    0.8069   5.98   0.1329   0.0108    35.70  1    cut
+  26  sn1995F       Ic-norm    0.8069   5.82   0.1332   0.0110    35.80  1    cut
+  27  sn2002ap      Ic-broad   0.6227   5.57   0.1374   0.0132     9.50  0    cut
+  28  sn1990U       Ic-norm    0.7351   5.15   0.1265   0.0117    10.90  0    cut
+  29  sn1997ei      Ic-norm    0.6160   4.99   0.1369   0.0117     0.00  1    cut
+  30  sn1995F       Ic-norm    0.7026   4.73   0.1345   0.0140     4.00  1    cut
+  31  sn1997dq      Ic-broad   0.7067   4.61   0.1366   0.0147    54.80  1    cut
+  32  sn1991N       Ic-norm    0.8069   4.59   0.1378   0.0156     0.00  1    cut
+  33  sn2002ap      Ic-broad   0.6227   4.52   0.1401   0.0145     6.50  0    cut
+  34  sn1997ef      Ic-broad   0.5645   4.38   0.1406   0.0163     6.90  0    cut
+  35  sn1990aa      Ic-norm    0.7256   4.28   0.1434   0.0155     0.00  1    cut
+  36  sn1995F       Ic-norm    0.7026   4.16   0.1357   0.0157     1.90  1    cut
+  37  sn1995F       Ic-norm    0.6403   3.87   0.1365   0.0155     0.00  1    cut
+  38  sn1995F       Ic-norm    0.8069   3.52   0.1346   0.0166    56.90  1    cut
+  39  sn1990U       Ic-norm    0.7175   3.44   0.1220   0.0171    11.90  0    cut
+  40  sn1990B       Ic-norm    0.7013   3.40   0.1318   0.0167     8.90  0    cut
+  41  sn1991N       Ic-norm    0.8069   3.30   0.1336   0.0182    27.90  1    cut
+  42  sn1997dq      Ic-broad   0.8069   3.26   0.1365   0.0179    81.70  1    cut
+  43  sn1991N       Ic-norm    0.7053   3.24   0.1407   0.0196     5.70  1    cut
+  44  sn1991A       Ic-norm    0.6566   3.24   0.1345   0.0169    10.90  1    cut
+  45  sn1991A       Ic-norm    0.6363   3.08   0.1376   0.0211    32.60  1    cut
+  46  sn1997dq      Ic-broad   0.4549   3.03   0.1381   0.0182    42.80  1    cut
+  47  sn1991N       Ic-norm    0.8069   3.02   0.1370   0.0199    12.00  1    cut
+  48  sn1991A       Ic-norm    0.6200   2.98   0.1369   0.0173    16.80  1    cut
+  49  sn1991N       Ic-norm    0.7053   2.53   0.1397   0.0235     6.60  1    cut
+  50  sn1998bw      Ic-broad   0.8069   2.46   0.1610   0.0315    15.70  0    cut
+  51  sn1990B       Ic-norm    0.4346   2.34   0.1358   0.0229     9.90  0    cut
+  52  sn1991A       Ic-norm    0.6688   2.32   0.1410   0.0211    47.50  1    cut
+  53  sn1991A       Ic-norm    0.5564   2.07   0.1360   0.0258    61.40  1    cut
+  54  sn1991N       Ic-norm    0.7053   1.92   0.1421   0.0282     7.60  1    cut
+  55  sn1990B       Ic-norm    0.6634   1.89   0.1450   0.0246    15.40  0    cut
+  56  sn1997dq      Ic-broad   0.7676   1.82   0.1452   0.0247   222.20  1    cut
+  57  sn1990B       Ic-norm    0.4346   1.70   0.1384   0.0294     7.00  0    cut
+  58  sn1998bw      Ic-broad   0.8069   1.64   0.1595   0.0464    13.70  0    cut
+  59  sn1991A       Ic-norm    0.6566   1.55   0.1417   0.0277    65.10  1    cut
+  60  sn1995F       Ic-norm    0.8069   1.54   0.1395   0.0295    88.80  1    cut
+  61  sn2002ap      Ic-broad   0.5916   1.29   0.1436   0.0403    12.70  0    cut
+  62  sn1990aa      Ic-norm    0.7243   1.26   0.1436   0.0383    61.50  1    cut
+  63  sn1991A       Ic-norm    0.4833   1.13   0.1458   0.0414   128.30  1    cut
+  64  sn1990aa      Ic-norm    0.7243   1.05   0.1499   0.0408   116.10  1    cut
+  65  sn1998bw      Ic-broad   0.8069   0.99   0.1556   0.0504     7.80  0    cut
+  66  sn1991N       Ic-norm    0.8069   0.84   0.1476   0.0559   250.20  1    cut
+  67  sn1991N       Ic-norm    0.7080   0.79   0.1493   0.0601   276.10  1    cut
+  68  sn1998bw      Ic-broad   0.8069   0.70   0.2757   0.0744    11.70  0    cut
+  69  sn1998bw      Ic-broad   0.8069   0.66   0.1439   0.0529     8.70  0    cut
+  70  sn1998bw      Ic-broad   0.8069   0.62   0.2617   0.0636    12.70  0    cut
