@@ -21,13 +21,7 @@ from astropy.table import Table
 from sndata._utils import convert_to_jd
 from sndata.sdss import sako18spec
 
-formatter = logging.Formatter(f'%(levelname)8s (%(asctime)s): %(name)s - %(message)s')
-stream_handler = logging.StreamHandler(sys.stdout)
-stream_handler.setFormatter(formatter)
-
 log = logging.getLogger()
-log.addHandler(stream_handler)
-log.setLevel(logging.DEBUG)
 
 # Add custom project code to python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -50,10 +44,6 @@ max_wave = 9000
 
 # Default age range to consider
 dage = 10
-
-# Parent types for SNID templates used in the classification
-# E.g. 'Ia' is a parent type, while 'Ia-norm' and 'Ia-91bg' are subtypes
-TYPES = ['Ia', 'Ib', 'Ic', 'II', 'NotSN']
 
 
 ###############################################################################
@@ -157,7 +147,8 @@ def format_table(table):
 def sdss_data_iter():
     """Iterate over SDSS spectra
 
-    Only includes objects that are spectroscopically confirmed Ia
+    Includes all spectroscopically observed targets listed in Sako et al.
+    2018 Table 9.
 
     Yields:
         Individual spectra as an astropy Table
@@ -179,6 +170,142 @@ def sdss_data_iter():
                 yield spec
 
         log.debug('Finished with target\n\n')
+
+
+###############################################################################
+# Read output files from SNID (sub)typing
+###############################################################################
+
+
+def read_peak_type(path):
+    """Return the type summary from an SNID output file
+
+    Args:
+        path (str, Path): Path to read
+
+    Returns:
+         An astropy Table
+    """
+
+    names = ['type', 'ntemp', 'fraction', 'slope', 'redshift',
+             'redshift_error', 'age', 'age_error']
+
+    data = Table.read(
+        str(path), header_start=4, data_start=4,
+        data_end=28, format='ascii.basic', names=names
+    ).to_pandas(index='type')
+
+    # Calculate percentage of templates used for each type
+    # Total matched templates equals the sum of matches for the parent types
+    type_names = ['Ia', 'Ib', 'Ic', 'II', 'NotSN']
+    peak_type = data.loc[type_names].ntemp.idxmax()
+    ntemp = data.loc[peak_type].ntemp
+    total_templates = data.loc[type_names].ntemp.sum()
+    percent_templates = ntemp / total_templates * 100
+
+    return peak_type, ntemp, percent_templates
+
+
+def compile_peak_types(snid_dir, perc_cutoff=0.5):
+    """Get peak types from previous SNID run
+
+    Args:
+        snid_dir     (Path): Directory of SNID outputs
+        perc_cutoff (float): Only return results best type has >=
+            perc_cutoff of the template matches
+
+    Returns:
+        A DataFrame indexed by object ID
+    """
+
+    if not snid_dir.exists():
+        raise FileNotFoundError(f'Results directory DNE: {snid_dir}')
+
+    rows = []
+    for path in snid_dir.glob('*snid.output'):
+        obj_id, phase, *_ = path.name.split('_')
+        peak_type, ntemp, percent_templates = read_peak_type(path)
+        rows.append([int(obj_id), float(phase), peak_type, ntemp, percent_templates])
+
+    type_data = pd.DataFrame(
+        rows,
+        columns=['objId', 'Phase', 'Type', 'nType', 'percType', ])
+
+    # Keep only the spectra nearest peak
+    type_data['abs_phase'] = type_data.Phase.abs()
+    type_data = type_data.sort_values('abs_phase', ascending=True)
+    type_data = type_data.drop_duplicates(keep='first', subset='objId')
+    type_data = type_data.sort_values('objId', ascending=True)
+
+    # Apply percentage cutoff
+    type_data = type_data[type_data.percType >= perc_cutoff]
+    return type_data.set_index('objId')
+
+
+def read_peak_subtype(path):
+    """Return the subtype summary from an SNID output file
+
+    Args:
+        path (str, Path): Path to read
+
+    Returns:
+         An astropy Table
+    """
+
+    names = ['type', 'ntemp', 'fraction', 'slope', 'redshift',
+             'redshift_error', 'age', 'age_error']
+
+    data = Table.read(
+        str(path), header_start=4, data_start=4,
+        data_end=28, format='ascii.basic', names=names
+    ).to_pandas(index='type')
+
+    # Get the subtype with the most matches. Make sure the subtype
+    # is not equally as "good" a match as the second best subtype
+    sn_type, subtype, second_subtype = data.ntemp.nlargest(3).index
+    assert data.loc[subtype].ntemp != second_subtype
+
+    subtype_record = data.loc[subtype]
+    type_record = data.loc[sn_type]
+    perc_temp = subtype_record.ntemp / type_record.ntemp * 100
+
+    return subtype_record.redshift, subtype, subtype_record.ntemp, perc_temp
+
+
+def compile_peak_subtypes(snid_dir, perc_cutoff=0.5):
+    """Get peak subtypes from all output files from a previous SNID run
+
+    Args:
+        snid_dir (Path): Directory of SNID outputs
+        perc_cutoff (float): Only return results best subtype has >=
+            perc_cutoff of the template matches
+
+    Returns:
+        A DataFrame indexed by object ID
+    """
+
+    if not snid_dir.exists():
+        raise FileNotFoundError(f'Results directory DNE: {snid_dir}')
+
+    rows = []
+    for path in snid_dir.glob('*snid.output'):
+        obj_id, phase, *_ = path.name.split('_')
+        rows.append([int(obj_id), float(phase), *read_peak_subtype(path)])
+
+    type_data = pd.DataFrame(
+        rows,
+        columns=['objId', 'Phase', 'Redshift', 'subType', 'nSubType', 'percSubType'])
+
+    # Keep only the spectra nearest peak
+    type_data['abs_phase'] = type_data['Phase'].abs()
+    type_data = type_data.sort_values('abs_phase', ascending=True)
+    type_data = type_data.drop_duplicates(keep='first', subset='objId')
+    type_data = type_data.drop('abs_phase', axis='columns')
+
+    type_data = type_data.sort_values('objId')
+
+    type_data = type_data[type_data.percSubType >= perc_cutoff]
+    return type_data.set_index('objId')
 
 
 ###############################################################################
@@ -213,15 +340,15 @@ def run_snid_on_spectrum(out_dir, spectrum, **kwargs):
 
 
 def run_snid_with_defaults(out_dir, spec, **kwargs):
-    """Run SNID on a spectrum
+    """Run SNID on a spectrum with customized defaults
 
     Asserts SNID arguments:
-        - forcez = SDSS estimated sn redshift
-        - emclip = forcez
-        - age = SDSS estimated sn phase
+        - forcez = SDSS estimated redshift
+        - emclip = SDSS estimated redshift
+        - age = SDSS estimated phase
         - wmin = ``min_wave`` global
         - wmax = ``max_wave`` global
-        - dage = 5 days
+        - dage = ``dage`` global
 
     Args:
         out_dir   (Path): Directory to write results into
@@ -232,7 +359,8 @@ def run_snid_with_defaults(out_dir, spec, **kwargs):
     z = spec.meta['z']
     phase = spec['phase'][0]
     run_snid_on_spectrum(
-        out_dir, spec,
+        out_dir,
+        spec,
         forcez=z,
         emclip=z,
         age=phase,
@@ -242,12 +370,18 @@ def run_snid_with_defaults(out_dir, spec, **kwargs):
         **kwargs)
 
 
-def run_snid_on_sdss(out_dir, **kwargs):
-    """Run SNID for all SDSS spectra classified by Sako18 as ``Ia``
+def run_snid_typing_on_sdss_with_defaults(out_dir, **kwargs):
+    """Run SNID for all SDSS spectra
+
+    For a list of customized default arguments see
+    ``run_snid_with_defaults``.
 
     Args:
         out_dir (Path): Directory to write results into
         Any additional SNID kwargs
+
+    Returns:
+        A dataframe with typing results for all targets with >50% temlate matches
     """
 
     out_dir.mkdir(exist_ok=True, parents=True)
@@ -258,103 +392,13 @@ def run_snid_on_sdss(out_dir, **kwargs):
     # We remove it to avoid confusion.
     (out_dir / 'snid.param').unlink()
 
-
-###############################################################################
-# SNID Subtyping
-###############################################################################
-
-
-def read_peak_type(path):
-    """Return the type summary from an SNID output file
-
-    Args:
-        path (str, Path): Path to read
-
-    Returns:
-         An astropy Table
-    """
-
-    names = ['type', 'ntemp', 'fraction', 'slope', 'redshift',
-             'redshift_error', 'age', 'age_error']
-
-    data = Table.read(
-        str(path), header_start=4, data_start=4,
-        data_end=28, format='ascii.basic', names=names
-    ).to_pandas(index='type')
-
-    # Calculate percentage of templates used for each type
-    # Total matched templates equals the sum of matches for the parent types
-    # (see TYPES global)
-    peak_type = data.loc[TYPES].ntemp.idxmax()
-    total_templates = data.loc[TYPES].ntemp.sum()
-    percent_templates = data.loc[peak_type].ntemp / total_templates
-
-    return peak_type, percent_templates
-
-
-def compile_peak_types(results_dir, perc_cutoff=0.5):
-    """Get peak types from previous SNID run
-
-    Args:
-        results_dir (Path): Directory of SNID outputs
-        perc_cutoff (float): Only return results where most likley type has >=
-            perc_cutoff of the template matches
-
-    Returns:
-        A DataFrame indexed by object ID
-    """
-
-    rows = []
-    for path in results_dir.glob('*snid.output'):
-        obj_id, phase, *_ = path.name.split('_')
-        peak_type, percent_templates = read_peak_type(path)
-        rows.append([obj_id, float(phase), peak_type, percent_templates])
-
-    type_data = pd.DataFrame(
-        rows,
-        columns=['obj_id', 'phase', 'peak_type', 'perc_temp'])
-
-    # Keep only the spectra nearest peak
-    type_data['abs_phase'] = type_data.phase.abs()
-    type_data = type_data.sort_values('abs_phase', ascending=True)
-    type_data = type_data.drop_duplicates(keep='first', subset='obj_id')
-
-    # Apply percentage cutoff
-    type_data = type_data[type_data.perc_temp >= perc_cutoff]
-
-    type_data['obj_id'] = type_data['obj_id'].astype('str')
-    return type_data.set_index('obj_id')
-
-
-def combine_typing_results(*paths, perc_cutoff=0.5):
-    """Combining tables of peak types from SNID
-
-    Values from the later tables take precedence over earlier tables.
-
-    Args:
-        *paths       (Path): Path of the types table
-        perc_cutoff (float): Drop values with ``perctemp`` < this value
-
-    Returns:
-         A pandas data frame with types for each object
-    """
-
-    combined_data = None
-    for path in paths:
-        if combined_data is None:
-            combined_data = compile_peak_types(path, perc_cutoff=perc_cutoff)
-            continue
-
-        new_data = compile_peak_types(path, perc_cutoff=perc_cutoff)
-        combined_data.update(new_data)
-
-    return combined_data
+    return compile_peak_types(out_dir)
 
 
 def run_snid_subtyping_on_sdss(out_dir, object_types, **kwargs):
     """Run SNID on SDSS using a single type per object
 
-    ``object_types`` must have a column ``type`` and be indexed by object id.
+    ``object_types`` must have a column ``Type`` and be indexed by object id.
 
     Args:
         out_dir (Path): Directory to write results into
@@ -366,7 +410,7 @@ def run_snid_subtyping_on_sdss(out_dir, object_types, **kwargs):
 
     out_dir.mkdir(exist_ok=True, parents=True)
     for spec in sdss_data_iter():
-        obj_id = spec.meta['obj_id']
+        obj_id = int(spec.meta['obj_id'])
 
         try:
             type_record = object_types.loc[obj_id]
@@ -375,7 +419,7 @@ def run_snid_subtyping_on_sdss(out_dir, object_types, **kwargs):
             log.info(f'No recorded type for <{obj_id}>')
             continue
 
-        template_type = type_record['peak_type']
+        template_type = type_record['Type']
         log.info(f'Using template {template_type}')
         run_snid_with_defaults(out_dir, spec, usetype=template_type, **kwargs)
 
@@ -384,29 +428,60 @@ def run_snid_subtyping_on_sdss(out_dir, object_types, **kwargs):
     (out_dir / 'snid.param').unlink()
 
 
+def construct_summary_table(results_dir):
+    # Get subtyping results
+    subtypes = compile_peak_subtypes(results_dir / 'subtype_rlap_5')
+    subtypes.update(compile_peak_subtypes(results_dir / 'subtype_rlap_10'))
+
+    # Add typing results to the dataframe
+    types = compile_peak_types(results_dir / 'type_rlap_5')
+    types.update(compile_peak_types(results_dir / 'type_rlap_10'))
+    subtypes = subtypes.join(types[['nType', 'percType']])
+
+    # Add SDSS classifications
+    master = sako18spec.load_table('master')
+    master['objId'] = np.array(master['CID'], dtype=float)
+    master['SDSSClass'] = master['Classification']
+    sdss_df = master.to_pandas('objId')
+    subtypes = subtypes.join(sdss_df.SDSSClass, on='objId')
+
+    return subtypes
+
+
 if __name__ == '__main__':
 
-    results_dir = Path(__file__).resolve().parent / 'results' / f'snid_dage{dage}'
-    results_dir.mkdir(exist_ok=True)
+    _results_dir = Path(__file__).resolve().parent / 'results' / f'snid_dage{dage}'
+    _results_dir.mkdir(exist_ok=True, parents=True)
 
-    file_handler = logging.FileHandler(results_dir / 'snid_typing.log')
+    formatter = logging.Formatter(f'%(levelname)8s (%(asctime)s): %(name)s - %(message)s')
+    file_handler = logging.FileHandler(_results_dir / 'snid_typing.log')
     file_handler.setFormatter(formatter)
     log.addHandler(file_handler)
+
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(formatter)
+    log.addHandler(stream_handler)
     log.setLevel(logging.DEBUG)
 
     # Run typing
-    type_output_dirs = []
-    for rlapmin in (5, 10):
-        log.info(f'Typing Spectra rlapmin={rlapmin}')
-        type_path = results_dir / f'type_rlap_{rlapmin}'
-        run_snid_on_sdss(type_path, rlapmin=rlapmin, inter=0, plot=0, verbose=0)
-        type_output_dirs.append(type_path)
+    log.info('Typing Spectra rlapmin=5')
+    type_path = _results_dir / f'type_rlap_5'
+    types_5 = run_snid_typing_on_sdss_with_defaults(type_path, rlapmin=5, inter=0, plot=0, verbose=0)
 
-    # Run sub typing
-    log.info('Selecting best fit object types')
-    types = combine_typing_results(*type_output_dirs, perc_cutoff=.5)
+    log.info('Typing Spectra rlapmin=10')
+    type_path = _results_dir / f'type_rlap_10'
+    types_10 = run_snid_typing_on_sdss_with_defaults(type_path, rlapmin=10, inter=0, plot=0, verbose=0)
+
+    # Combine typing results from rlap=5 and rlap=10.
+    # Prefer rlap=10 results
+    final_types = types_5.copy()
+    final_types.update(types_10)
 
     for rlap in (5, 10):
         log.info(f'Subtyping Spectra rlapmin={rlap}')
-        subtype_path = results_dir / f'subtype_rlap_{rlap}'
-        run_snid_subtyping_on_sdss(subtype_path, types, rlapmin=rlap, inter=0, plot=0, verbose=0)
+        subtype_path = _results_dir / f'subtype_rlap_{rlap}'
+        run_snid_subtyping_on_sdss(subtype_path, final_types, rlapmin=rlap, inter=0, plot=0, verbose=0)
+
+    log.info('Writing summary table...')
+    summary_table = construct_summary_table(_results_dir)
+    summary_table.to_csv(_results_dir / 'summary.csv')

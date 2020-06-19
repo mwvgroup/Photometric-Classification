@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -323,14 +323,14 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  252  sn2006gr      Ia-norm    0.6024   4.53   0.1141   0.0136    -4.00  0    cut
  253  sn2006sr      Ia-norm    0.6024   4.53   0.1084   0.0096    -0.90  0    cut
  254  sn2003cg      Ia-norm    0.6024   4.52   0.1030   0.0097     4.00  0    cut
- 255  sn2002er      Ia-norm    0.6024   4.52   0.1095   0.0105    -6.00  0    cut
- 256  sn2003ic      Ia-norm    0.6024   4.51   0.1077   0.0103     4.30  0    cut
- 257  sn2008bf      Ia-norm    0.6024   4.50   0.1052   0.0098     7.50  0    cut
- 258  sn1999aw      Ia-91T     0.6024   4.50   0.1138   0.0129     0.00  0    cut
- 259  sn2007ux      Ia-norm    0.6024   4.50   0.1001   0.0094     5.80  0    cut
- 260  sn2002he      Ia-norm    0.6024   4.50   0.1099   0.0100    -3.20  0    cut
- 261  sn2007kk      Ia-norm    0.6024   4.49   0.1081   0.0110     5.00  0    cut
- 262  sn2001fe      Ia-norm    0.5862   4.49   0.1070   0.0107    -1.70  0    cut
+ 255  sn2001fe      Ia-norm    0.5862   4.52   0.1071   0.0107    -1.70  0    cut
+ 256  sn2002er      Ia-norm    0.6024   4.52   0.1095   0.0105    -6.00  0    cut
+ 257  sn2003ic      Ia-norm    0.6024   4.51   0.1077   0.0103     4.30  0    cut
+ 258  sn2008bf      Ia-norm    0.6024   4.50   0.1052   0.0098     7.50  0    cut
+ 259  sn1999aw      Ia-91T     0.6024   4.50   0.1138   0.0129     0.00  0    cut
+ 260  sn2007ux      Ia-norm    0.6024   4.50   0.1001   0.0094     5.80  0    cut
+ 261  sn2002he      Ia-norm    0.6024   4.50   0.1099   0.0100    -3.20  0    cut
+ 262  sn2007kk      Ia-norm    0.6024   4.49   0.1081   0.0110     5.00  0    cut
  263  sn2005cf      Ia-norm    0.6024   4.48   0.1034   0.0102    -1.40  0    cut
  264  sn2000cx      Ia-pec     0.5564   4.46   0.1103   0.0119    -2.30  0    cut
  265  sn2005cf      Ia-norm    0.6024   4.46   0.1035   0.0104    -1.50  0    cut

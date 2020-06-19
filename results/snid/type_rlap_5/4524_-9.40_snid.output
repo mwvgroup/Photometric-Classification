@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -943,19 +943,19 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  872  sn1997dq      Ic-broad   0.8069   1.43   0.1934   0.0234    27.90  1    cut
  873  sn1991A       Ic-norm    0.6728   1.42   0.1847   0.0227    47.50  1    cut
  874  sn2005bl      Ia-91bg    0.8069   1.42   0.0742   0.0486    -2.90  0    cut
- 875  sn2005bf      Ib-pec     0.6458   1.42   0.0376   0.0356    -0.70  0    cut
- 876  mstar         M-star     0.8069   1.42   0.0650   0.0172     2.00  2    cut
- 877  sn2005cf      Ia-norm    0.8069   1.41   0.2027   0.0278   -11.70  0    cut
- 878  sn2005cs      IIP        0.8069   1.40   0.1345   0.0228    -0.20  0    cut
- 879  sn2003du      Ia-norm    0.8069   1.40   0.0753   0.0325   -11.10  0    cut
- 880  sn1987A       II-pec     0.5483   1.40   0.0130   0.0379   -18.60  0    cut
- 881  sn2006bp      IIP        0.7067   1.40   0.1500   0.0238    -1.70  0    cut
- 882  sn1997ei      Ic-norm    0.6783   1.39   0.0413   0.0268     0.00  1    cut
- 883  kcE           Gal        0.8069   1.39   0.1500   0.0133   -99.90  2    cut
- 884  sn2005cf      Ia-norm    0.8069   1.39   0.2030   0.0291   -11.20  0    cut
- 885  mstar         M-star     0.8069   1.39   0.0216   0.0750     0.00  2    cut
- 886  sn1997dq      Ic-broad   0.8069   1.39   0.1921   0.0226   222.20  1    cut
- 887  sn1997dq      Ic-broad   0.8069   1.38   0.0338   0.0557     1.00  1    cut
+ 875  sn1997dq      Ic-broad   0.8069   1.42   0.0521   0.0556     1.00  1    cut
+ 876  sn2005bf      Ib-pec     0.6458   1.42   0.0376   0.0356    -0.70  0    cut
+ 877  mstar         M-star     0.8069   1.42   0.0650   0.0172     2.00  2    cut
+ 878  sn2005cf      Ia-norm    0.8069   1.41   0.2027   0.0278   -11.70  0    cut
+ 879  sn2005cs      IIP        0.8069   1.40   0.1345   0.0228    -0.20  0    cut
+ 880  sn2003du      Ia-norm    0.8069   1.40   0.0753   0.0325   -11.10  0    cut
+ 881  sn1987A       II-pec     0.5483   1.40   0.0130   0.0379   -18.60  0    cut
+ 882  sn2006bp      IIP        0.7067   1.40   0.1500   0.0238    -1.70  0    cut
+ 883  sn1997ei      Ic-norm    0.6783   1.39   0.0413   0.0268     0.00  1    cut
+ 884  kcE           Gal        0.8069   1.39   0.1500   0.0133   -99.90  2    cut
+ 885  sn2005cf      Ia-norm    0.8069   1.39   0.2030   0.0291   -11.20  0    cut
+ 886  mstar         M-star     0.8069   1.39   0.0216   0.0750     0.00  2    cut
+ 887  sn1997dq      Ic-broad   0.8069   1.39   0.1921   0.0226   222.20  1    cut
  888  lbv1999bw     LBV        0.6525   1.38   0.1434   0.0122   -99.90  2    cut
  889  sn2002cu      Ia-norm    0.6607   1.38   0.2110   0.0271    -8.20  0    cut
  890  sn1997dq      Ic-broad   0.6864   1.38   0.1916   0.0264    54.80  1    cut

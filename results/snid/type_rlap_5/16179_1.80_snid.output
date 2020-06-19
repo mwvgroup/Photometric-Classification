@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -866,7 +866,7 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  795  sn2000dk      Ia-norm    0.6999   2.03   0.1231   0.0207    -5.10  0    cut
  796  sn2003W       Ia-norm    0.6972   2.03   0.1279   0.0255    -2.30  0    cut
  797  sn2006gz      Ia-pec     0.7026   2.03   0.1099   0.0260    11.10  0    cut
- 798  sn2005hk      Ia-pec     0.6282   2.03   0.1037   0.0195    -7.30  0    cut
+ 798  sn2005hk      Ia-pec     0.6282   2.03   0.1038   0.0195    -7.30  0    cut
  799  sn2003ch      Ia-norm    0.6986   2.03   0.1168   0.0202     0.80  0    cut
  800  sn2003ch      Ia-norm    0.6986   2.03   0.1180   0.0208    -0.20  0    cut
  801  sn2001ay      Ia-norm    0.6986   2.03   0.1202   0.0241     3.30  0    cut
@@ -1312,8 +1312,8 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
 1241  sn2006hb      Ia-91bg    0.7094   1.69   0.1112   0.0306     7.70  0    cut
 1242  sn2003cg      Ia-norm    0.7419   1.69   0.1106   0.0288     4.00  0    cut
 1243  sn2006gj      Ia-norm    0.6986   1.69   0.1195   0.0252    -0.70  0    cut
-1244  sn2004dt      Ia-norm    0.7419   1.69   0.1315   0.0261    -5.60  0    cut
-1245  sn2006D       Ia-norm    0.7419   1.69   0.2594   0.0346    -5.30  0    cut
+1244  sn2006D       Ia-norm    0.7419   1.69   0.2594   0.0346    -5.30  0    cut
+1245  sn2004dt      Ia-norm    0.7419   1.69   0.1315   0.0261    -5.60  0    cut
 1246  sn2004bg      Ia-norm    0.6959   1.69   0.1177   0.0214    -3.00  0    cut
 1247  sn2004fu      Ia-norm    0.7162   1.69   0.2554   0.0310     3.40  0    cut
 1248  sn2001cp      Ia-norm    0.6945   1.68   0.1207   0.0244    -3.90  0    cut

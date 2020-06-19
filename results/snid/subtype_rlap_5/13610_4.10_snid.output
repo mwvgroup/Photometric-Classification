@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -885,11 +885,11 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  814  sn2007bc      Ia-norm    0.7053   2.48   0.2880   0.0171     6.20  0    cut
  815  sn2000dk      Ia-norm    0.6376   2.48   0.2973   0.0146     3.70  0    cut
  816  sn2005bl      Ia-91bg    0.6214   2.48   0.2985   0.0154    -5.90  0    cut
- 817  sn1998bp      Ia-norm    0.6295   2.47   0.2966   0.0149     0.10  0    cut
- 818  sn1984A       Ia-norm    0.5496   2.47   0.3174   0.0178    -4.90  0    cut
- 819  sn1986G       Ia-91bg    0.6539   2.46   0.3018   0.0159    -2.70  0    cut
- 820  sn2004as      Ia-norm    0.6512   2.45   0.2983   0.0158     5.80  0    cut
- 821  sn2008C       Ia-norm    0.7026   2.45   0.2882   0.0169     8.30  0    cut
+ 817  sn2008C       Ia-norm    0.7026   2.47   0.2880   0.0168     8.30  0    cut
+ 818  sn1998bp      Ia-norm    0.6295   2.47   0.2966   0.0149     0.10  0    cut
+ 819  sn1984A       Ia-norm    0.5496   2.47   0.3174   0.0178    -4.90  0    cut
+ 820  sn1986G       Ia-91bg    0.6539   2.46   0.3018   0.0159    -2.70  0    cut
+ 821  sn2004as      Ia-norm    0.6512   2.45   0.2983   0.0158     5.80  0    cut
  822  sn2008bf      Ia-norm    0.7080   2.45   0.2948   0.0174    10.40  0    cut
  823  sn2006gj      Ia-norm    0.7135   2.45   0.2926   0.0167     3.20  0    cut
  824  sn1986G       Ia-91bg    0.5957   2.45   0.2981   0.0167     1.30  0    cut

@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -83,7 +83,7 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
   13  sn2008ar      Ia-norm    0.7419   9.29   0.1733   0.0067    -3.70  0   good
   14  sn2005cf      Ia-norm    0.8069   9.16   0.1737   0.0067    -6.60  0   good
   15  sn2005cf      Ia-norm    0.8069   9.12   0.1722   0.0067    -5.50  0   good
-  16  sn2006gr      Ia-norm    0.7311   9.10   0.1782   0.0073    -6.00  0   good
+  16  sn2006gr      Ia-norm    0.7311   9.11   0.1782   0.0073    -6.00  0   good
   17  sn2005cf      Ia-norm    0.8069   9.01   0.1745   0.0069    -7.30  0   good
   18  sn2005cf      Ia-norm    0.8069   8.97   0.1725   0.0069    -3.80  0   good
   19  sn1999aw      Ia-91T     0.7839   8.86   0.1730   0.0083     2.90  0   good
@@ -962,8 +962,8 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  891  sn1997br      Ia-91T     0.6525   2.64   0.1825   0.0159    -6.60  0    cut
  892  sn2001ay      Ia-norm    0.6999   2.64   0.1812   0.0185    -1.50  0    cut
  893  sn2007cq      Ia-91T     0.7419   2.63   0.0210   0.0268    -4.00  0    cut
- 894  sn2005hk      Ia-pec     0.8069   2.63   0.0009   0.0213    -8.30  0    cut
- 895  sn2003gn      Ia-norm    0.6986   2.63   0.1819   0.0182    -3.00  0    cut
+ 894  sn2003gn      Ia-norm    0.6986   2.63   0.1819   0.0182    -3.00  0    cut
+ 895  sn2005hk      Ia-pec     0.8069   2.63   0.0009   0.0213    -8.30  0    cut
  896  sn2004fz      Ia-norm    0.7459   2.63   0.1709   0.0243    -6.80  0    cut
  897  sn2006gz      Ia-pec     0.7080   2.62   0.1825   0.0121   -12.30  0    cut
  898  sn2006bt      Ia-norm    0.7351   2.62   0.1667   0.0203    -1.00  0    cut
