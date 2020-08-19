@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -150,8 +150,8 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
   79  sn1994D       Ia-norm    0.6038   3.81   0.0848   0.0098    -3.10  0    cut
   80  sn2007le      Ia-norm    0.6038   3.80   0.0919   0.0104    -6.40  0    cut
   81  sn2008ar      Ia-norm    0.6038   3.79   0.0828   0.0095    -3.70  0    cut
-  82  kcS0          Gal        0.6038   3.78   0.0589   0.0061   -99.90  2    cut
-  83  sn2006S       Ia-norm    0.6038   3.78   0.0854   0.0126    -5.50  0    cut
+  82  sn2006S       Ia-norm    0.6038   3.78   0.0854   0.0126    -5.50  0    cut
+  83  kcS0          Gal        0.6038   3.78   0.0589   0.0061   -99.90  2    cut
   84  sn2004bg      Ia-norm    0.6038   3.78   0.0809   0.0114    -3.00  0    cut
   85  sn2005cf      Ia-norm    0.6038   3.77   0.0811   0.0092    -2.30  0    cut
   86  sn2007co      Ia-norm    0.6038   3.77   0.0871   0.0107    -4.10  0    cut
@@ -603,8 +603,8 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  532  sn1998bp      Ia-norm    0.6038   2.72   0.0800   0.0126    -0.90  0    cut
  533  sn2006N       Ia-norm    0.6038   2.72   0.0824   0.0111     2.60  0    cut
  534  sn1998es      Ia-91T     0.6038   2.72   0.0808   0.0184    -2.40  0    cut
- 535  sn1986G       Ia-91bg    0.5754   2.71   0.0799   0.0141    -3.00  0    cut
- 536  sn1997Y       Ia-norm    0.6038   2.71   0.0800   0.0125     1.90  0    cut
+ 535  sn1997Y       Ia-norm    0.6038   2.71   0.0800   0.0125     1.90  0    cut
+ 536  sn1986G       Ia-91bg    0.5754   2.71   0.0799   0.0141    -3.00  0    cut
  537  sn2006oa      Ia-91T     0.6038   2.71   0.0798   0.0205    -0.10  0    cut
  538  sn2003cg      Ia-norm    0.6038   2.71   0.0841   0.0150     1.90  0    cut
  539  sn2006cj      Ia-norm    0.5970   2.71   0.0837   0.0196    -1.20  0    cut

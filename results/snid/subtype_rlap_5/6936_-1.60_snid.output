@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -931,15 +931,15 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  860  sn2004at      Ia-norm    0.6972   3.97   0.1878   0.0112    -7.40  0    cut
  861  sn2002dl      Ia-91bg    0.6986   3.96   0.1883   0.0108    -7.40  0    cut
  862  sn2001ep      Ia-norm    0.7013   3.96   0.1813   0.0105    -0.10  0    cut
- 863  sn1994ae      Ia-norm    0.6999   3.95   0.1803   0.0121     7.90  0    cut
- 864  sn2000fa      Ia-norm    0.6999   3.94   0.1872   0.0111     4.20  0    cut
- 865  sn2007hj      Ia-norm    0.7459   3.94   0.1824   0.0118     3.40  0    cut
- 866  sn2002kf      Ia-norm    0.6986   3.94   0.1832   0.0106     6.00  0    cut
- 867  sn2001ep      Ia-norm    0.7013   3.93   0.1805   0.0106     0.80  0    cut
- 868  sn2002er      Ia-norm    0.7283   3.93   0.1948   0.0106    -8.00  0    cut
- 869  sn1997bq      Ia-norm    0.7067   3.92   0.1998   0.0134    -7.70  0    cut
- 870  sn2001V       Ia-91T     0.6945   3.92   0.1872   0.0109    -6.40  0    cut
- 871  sn2002ic      Ia-csm     0.8082   3.92   0.1758   0.0128     5.60  0    cut
+ 863  sn2002ic      Ia-csm     0.8082   3.95   0.1757   0.0128     5.60  0    cut
+ 864  sn1994ae      Ia-norm    0.6999   3.95   0.1803   0.0121     7.90  0    cut
+ 865  sn2000fa      Ia-norm    0.6999   3.94   0.1872   0.0111     4.20  0    cut
+ 866  sn2007hj      Ia-norm    0.7459   3.94   0.1824   0.0118     3.40  0    cut
+ 867  sn2002kf      Ia-norm    0.6986   3.94   0.1832   0.0106     6.00  0    cut
+ 868  sn2001ep      Ia-norm    0.7013   3.93   0.1805   0.0106     0.80  0    cut
+ 869  sn2002er      Ia-norm    0.7283   3.93   0.1948   0.0106    -8.00  0    cut
+ 870  sn1997bq      Ia-norm    0.7067   3.92   0.1998   0.0134    -7.70  0    cut
+ 871  sn2001V       Ia-91T     0.6945   3.92   0.1872   0.0109    -6.40  0    cut
  872  sn2004gs      Ia-norm    0.7446   3.92   0.1804   0.0115     1.70  0    cut
  873  sn1999dq      Ia-91T     0.6877   3.92   0.1851   0.0115    -6.40  0    cut
  874  sn2001ep      Ia-norm    0.7013   3.91   0.1821   0.0106    -1.10  0    cut

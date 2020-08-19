@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -179,8 +179,8 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  109  sn2003ch      Ia-norm    0.6024  13.46   0.0412   0.0038     1.80  0   good
  110  sn1996X       Ia-norm    0.6024  13.46   0.0445   0.0036     0.20  0   good
  111  sn2003kf      Ia-norm    0.6024  13.46   0.0482   0.0037    -5.40  0   good
- 112  sn2003it      Ia-norm    0.6024  13.45   0.0463   0.0038     0.80  0   good
- 113  sn2006S       Ia-norm    0.6024  13.45   0.0459   0.0037    -0.70  0   good
+ 112  sn2006S       Ia-norm    0.6024  13.45   0.0459   0.0037    -0.70  0   good
+ 113  sn2003it      Ia-norm    0.6024  13.45   0.0463   0.0038     0.80  0   good
  114  sn2001az      Ia-91T     0.6024  13.44   0.0479   0.0039    -3.10  0   good
  115  sn1992A       Ia-norm    0.5984  13.41   0.0539   0.0039    -0.80  0   good
  116  sn2007ae      Ia-norm    0.5916  13.33   0.0440   0.0038     2.30  0   good
@@ -237,7 +237,7 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  167  sn2003it      Ia-norm    0.6024  12.23   0.0451   0.0041     2.70  0   good
  168  sn2002jy      Ia-norm    0.6024  12.17   0.0433   0.0041     6.00  0   good
  169  sn2003du      Ia-norm    0.6024  12.16   0.0463   0.0042    -8.10  0   good
- 170  sn2005el      Ia-norm    0.6024  12.12   0.0453   0.0040    -4.80  0   good
+ 170  sn2005el      Ia-norm    0.6024  12.11   0.0453   0.0040    -4.80  0   good
  171  sn1998dh      Ia-norm    0.6024  12.03   0.0489   0.0042    -5.40  0   good
  172  sn2002kf      Ia-norm    0.6024  12.00   0.0448   0.0042     2.20  0   good
  173  sn2007af      Ia-norm    0.6024  11.99   0.0426   0.0041     0.30  0   good
@@ -1668,7 +1668,7 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
 1597  sn1997cy      IIn        0.6024   0.67  -0.0094   0.0000   196.10  1    cut
 1598  sn1991A       Ic-norm    0.4833   0.67   0.0497   0.0268   128.30  1    cut
 1599  lbv1999bw     LBV        0.6024   0.67   0.1135   0.0373   -99.90  2    cut
-1600  lbv1999bw     LBV        0.5862   0.66   0.3628   0.0580   -99.90  2    cut
+1600  lbv1999bw     LBV        0.5862   0.66   0.3628   0.0581   -99.90  2    cut
 1601  sn1990K       IIL        0.6024   0.66   0.3397   0.0270    55.60  1    cut
 1602  sn1997cy      IIn        0.6024   0.65   0.1177   0.0469    14.10  1    cut
 1603  kcSB5         Gal        0.6024   0.65   0.0108   0.0931   -99.90  2    cut

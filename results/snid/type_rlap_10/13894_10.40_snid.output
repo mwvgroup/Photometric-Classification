@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -249,8 +249,8 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  178  sn2001V       Ia-91T     0.6999   6.73   0.1261   0.0076    11.30  0    cut
  179  sn2000fa      Ia-norm    0.6972   6.72   0.1288   0.0074     9.10  0    cut
  180  sn2005bf      Ib-pec     0.6986   6.69   0.1154   0.0081     1.20  0    cut
- 181  sn2005cf      Ia-norm    0.8069   6.69   0.1211   0.0073    12.20  0    cut
- 182  sn2007af      Ia-norm    0.7135   6.69   0.1218   0.0073    10.20  0    cut
+ 181  sn2007af      Ia-norm    0.7135   6.69   0.1218   0.0073    10.20  0    cut
+ 182  sn2005cf      Ia-norm    0.8069   6.69   0.1211   0.0073    12.20  0    cut
  183  sn2001cj      Ia-norm    0.8069   6.68   0.1234   0.0074    13.60  0    cut
  184  sn2001fh      Ia-norm    0.6959   6.68   0.1202   0.0075     9.10  0    cut
  185  sn1999gd      Ia-norm    0.6986   6.68   0.1225   0.0074     7.90  0    cut

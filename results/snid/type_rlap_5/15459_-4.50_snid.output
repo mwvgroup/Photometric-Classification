@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -1098,8 +1098,8 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
 1027  sn1995F       Ic-norm    0.5442   1.73   0.1397   0.0363     1.90  1    cut
 1028  sn1994M       Ia-norm    0.5320   1.73   0.1252   0.0197     4.70  0    cut
 1029  sn2002ap      Ic-broad   0.5415   1.73  -0.0081   0.0339    -0.40  0    cut
-1030  sn1994T       Ia-norm    0.5036   1.72  -0.0084   0.0344     4.70  0    cut
-1031  lbv1999bw     LBV        0.4982   1.72   0.0434   0.0138   -99.90  2    cut
+1030  lbv1999bw     LBV        0.4982   1.72   0.0434   0.0138   -99.90  2    cut
+1031  sn1994T       Ia-norm    0.5036   1.72  -0.0084   0.0344     4.70  0    cut
 1032  sn2005bf      Ib-pec     0.5889   1.72   0.0954   0.0342    -1.60  0    cut
 1033  sn2005bf      Ib-pec     0.5889   1.72   0.0943   0.0336     1.20  0    cut
 1034  sn2002cx      Ia-pec     0.5618   1.72   0.1078   0.0248    -4.30  0    cut
@@ -1324,8 +1324,8 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
 1253  sn1994I       Ic-norm    0.5469   1.07   0.1311   0.0634    -1.60  0    cut
 1254  sn2008A       Ia-pec     0.5889   1.07   0.0893   0.0376    -1.00  0    cut
 1255  sn1997dc      Ib-norm    0.4806   1.06   0.0778   0.0272     0.00  1    cut
-1256  sn2004et      IIP        0.5889   1.06   0.0299   0.0460    -0.90  0    cut
-1257  sn2008ae      Ia-pec     0.5889   1.06   0.0892   0.0368     0.90  0    cut
+1256  sn2008ae      Ia-pec     0.5889   1.06   0.0892   0.0368     0.90  0    cut
+1257  sn2004et      IIP        0.5889   1.06   0.0299   0.0460    -0.90  0    cut
 1258  sn2006bp      IIP        0.4386   1.06   0.3125   0.0273     0.10  0    cut
 1259  sn2005hk      Ia-pec     0.5889   1.06   0.1110   0.0389    -9.30  0    cut
 1260  sn1990K       IIL        0.4562   1.06   0.0688   0.0281    76.30  1    cut

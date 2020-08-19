@@ -25,7 +25,7 @@
 # Nsigma for initial redshift    : NA
 # Redshift filter                :     0.0200
 # Wavenumbers k1,k2,k3,k4        :     1    4   85  102
-# Template directory             : /Users/daniel/snid-5.0/templates-2.0/
+# Template directory             : /home/djperrefort/snid-5.0/templates-2.0/
  
 ### initial/user-input redshift ###
 zinit       0.0000
@@ -858,7 +858,7 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  787  sn2004as      Ia-norm    0.6945   1.79   0.1194   0.0334    -5.90  0    cut
  788  sn2004gs      Ia-norm    0.6823   1.79   0.1071   0.0231    -3.20  0    cut
  789  sn1987A       II-pec     0.6796   1.79   0.1231   0.0248    -9.90  0    cut
- 790  sn1998dh      Ia-norm    0.6999   1.78   0.1136   0.0316    -9.40  0    cut
+ 790  sn1998dh      Ia-norm    0.6999   1.78   0.1136   0.0315    -9.40  0    cut
  791  sn2006cp      Ia-norm    0.6837   1.78   0.1287   0.0319   -11.20  0    cut
  792  sn1998dh      Ia-norm    0.6986   1.78   0.1110   0.0314    -3.50  0    cut
  793  sn2006cp      Ia-norm    0.6796   1.78   0.1250   0.0308   -10.30  0    cut
@@ -911,8 +911,8 @@ M-star          0      0.00    0.0000    0.0000    0.0000     0.000     0.000
  840  sn2004dt      Ia-norm    0.8069   1.71   0.1159   0.0283    -8.50  0    cut
  841  sn1997dt      Ia-norm    0.6959   1.71   0.1077   0.0299     0.20  0    cut
  842  sn2004dt      Ia-norm    0.7189   1.71   0.1234   0.0265    -8.90  0    cut
- 843  sn1987A       II-pec     0.5767   1.70   0.1277   0.0248    -4.70  0    cut
- 844  sn1997bp      Ia-norm    0.7053   1.70   0.1197   0.0341    -0.20  0    cut
+ 843  sn1997bp      Ia-norm    0.7053   1.70   0.1197   0.0341    -0.20  0    cut
+ 844  sn1987A       II-pec     0.5767   1.70   0.1277   0.0248    -4.70  0    cut
  845  sn2004ef      Ia-norm    0.6783   1.70   0.1076   0.0223     1.50  0    cut
  846  sn1986G       Ia-91bg    0.6728   1.70   0.1108   0.0326    -2.70  0    cut
  847  sn1999cl      Ia-norm    0.6661   1.70   0.1138   0.0282    -5.20  0    cut
