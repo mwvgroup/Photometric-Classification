@@ -15,7 +15,12 @@ import sndata
 import yaml
 from sndata.sdss import sako18spec
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+except NameError:
+    warnings.warn('Could not find __file__ in globals. Using relative path imports')
+    sys.path.insert(0, str(Path('.').resolve().parent))
 
 from phot_class import classification
 from phot_class import fit_func_wraps

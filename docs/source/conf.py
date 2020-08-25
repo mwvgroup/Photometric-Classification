@@ -3,11 +3,16 @@
 
 """Configuration file for the Sphinx documentation builder."""
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 # -- Project information -----------------------------------------------------
 
 project = 'SNe Classification'
-copyright = '2019, Daniel Perrefort'
-author = 'Daniel Perrefort, Yike Zhang'
+copyright = '2019, MWV Research Group'
+author = 'Daniel Perrefort'
 version, release = '', ''
 
 # -- General configuration ---------------------------------------------------
