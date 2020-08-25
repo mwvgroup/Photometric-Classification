@@ -133,7 +133,6 @@ summaries below for key files in the project repository::
    :caption: API Reference:
 
    api_reference/overview
-   api_reference/spectra
    api_reference/models
    api_reference/fit_func_wraps
    api_reference/fitting

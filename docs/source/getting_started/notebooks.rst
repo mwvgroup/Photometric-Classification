@@ -22,10 +22,14 @@ Online interactive versions are provided for each notebook via
 +------------------------------------+------------------------------------------------------------------------------+
 | creating_config_files.ipynb        | Creates config files for CSP, DES, and SDSS.                                 |
 +------------------------------------+------------------------------------------------------------------------------+
+| Data Cuts                          | Inspects SDSS targets and applys quality cuts on observed light-curves       |
++------------------------------------+------------------------------------------------------------------------------+
 | fit_inspection.ipynb               | Inspects fit results for individual light curves.                            |
 +------------------------------------+------------------------------------------------------------------------------+
 | fitting_method_comparison.ipynb    | Comparison of classification results when using band-by-band vs. collective  |
 |                                    | fitting.                                                                     |
++------------------------------------+------------------------------------------------------------------------------+
+| fom_optimization.ipynb             | Determines optimal classification boundaries by optimizing the FOM parameter.|
 +------------------------------------+------------------------------------------------------------------------------+
 | iminuit_vs_emcee.ipynb             | A simple comparison of the fit_lc and mcmc_lc minimization routines.         |
 +------------------------------------+------------------------------------------------------------------------------+
@@ -38,7 +42,7 @@ Online interactive versions are provided for each notebook via
 | sncosmo_chisq_bug.ipynb            | Outlines a bug in the calculation of chi-squared in SNCosmo and demonstrates |
 |                                    | that our results do not suffer from this bug.                                |
 +------------------------------------+------------------------------------------------------------------------------+
-|  spec_classification.ipynb         | Exploration of spectroscopic classifications for SDSS supernovae.            |
+| snid_classifications.ipynb         | Exploration of spectroscopic classifications for SDSS supernovae.            |
 +------------------------------------+------------------------------------------------------------------------------+
 
 .. _BinderHub: https://binderhub.readthedocs.io/en/latest/
