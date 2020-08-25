@@ -1,28 +1,6 @@
 Classification of Peculiar Supernovae
 =====================================
 
-.. |python| image:: https://img.shields.io/badge/python-3.7-success.svg
-    :target: #
-
-.. |travis| image:: https://travis-ci.com/mwvgroup/Photometric-Classification.svg?branch=master
-    :target: https://travis-ci.com/mwvgroup/Photometric-Classification
-
-.. |cover| image:: https://coveralls.io/repos/github/mwvgroup/Photometric-Classification/badge.svg?branch=master
-    :target: https://coveralls.io/github/mwvgroup/Photometric-Classification?branch=master
-
-.. |docs| image:: https://readthedocs.org/projects/perrefort2020/badge/?version=latest
-    :target: https://perrefort2020.readthedocs.io/en/latest/?badge=latest
-
-.. |binder| image:: https://mybinder.org/badge_logo.svg
-    :target: https://mybinder.org/v2/gh/mwvgroup/Photometric-Classification/master?filepath=notebooks%2F
-
-.. rst-class:: badges
-
-   +-------------------------------------------+
-   | |python| |travis| |cover| |docs| |binder| |
-   +-------------------------------------------+
-
-
 With the discovery of the accelerating expansion of the universe, type Ia
 supernovae (SNe Ia) have been used increasingly to determine cosmological
 parameters. The use of SNe Ia as cosmological probes relies on the fact that
