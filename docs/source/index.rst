@@ -10,8 +10,8 @@ Classification of Peculiar Supernovae
 .. |cover| image:: https://coveralls.io/repos/github/mwvgroup/Photometric-Classification/badge.svg?branch=master
     :target: https://coveralls.io/github/mwvgroup/Photometric-Classification?branch=master
 
-.. |docs| image:: https://readthedocs.org/projects/photometric-classification/badge/?version=latest
-    :target: https://photometric-classification.readthedocs.io/en/latest/?badge=latest
+.. |docs| image:: https://readthedocs.org/projects/perrefort2020/badge/?version=latest
+    :target: https://perrefort2020.readthedocs.io/en/latest/?badge=latest
 
 .. |binder| image:: https://mybinder.org/badge_logo.svg
     :target: https://mybinder.org/v2/gh/mwvgroup/Photometric-Classification/master?filepath=notebooks%2F
