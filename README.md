@@ -6,4 +6,4 @@
 [![Documentation Status](https://readthedocs.org/projects/photometric-classification/badge/?version=latest)](https://photometric-classification.readthedocs.io/en/latest/?badge=latest)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mwvgroup/Photometric-Classification/master?filepath=notebooks%2F)
   
-  This project applies the photometric classification technique from González-Gaitan et al. 2014 to SDSS data. For more project information, see the [online documentation](https://photometric-classification.readthedocs.io/en/latest/).
+  This project applies the photometric classification technique from González-Gaitan et al. 2014 to SDSS data. For more project information, see the [online documentation](https://perrefort2020.readthedocs.io/en/latest/).
